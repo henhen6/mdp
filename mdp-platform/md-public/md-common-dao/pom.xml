@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>top.mddata.common</groupId>
+        <artifactId>md-public</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>md-common-dao</artifactId>
+    <name>${project.artifactId}</name>
+    <description>公共dao模块</description>
+    <dependencies>
+        <dependency>
+            <groupId>top.mddata.common</groupId>
+            <artifactId>md-common-pojo</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-db-mybatis-flex</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-mvc-flex</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

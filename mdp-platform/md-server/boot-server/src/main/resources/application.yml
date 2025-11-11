@@ -1,0 +1,380 @@
+mdp:
+  database: # 字段介绍参考 DatabaseProperties
+    flex:
+      audit: true
+      auditCollector: DEFAULTS
+      logicDeleteProcessor: TIME_STAMP_DEL_BY_LOGIC_DELETE_PROCESSOR
+      deletedByColumn: deleted_by
+    # id生成策略
+    id-type: CACHE
+    hutoolId:
+      workerId: 0
+      dataCenterId: 0
+    cache-id:
+      time-bits: 31
+      worker-bits: 22
+      seq-bits: 10
+      epochStr: '2025-09-15'
+      boost-power: 3
+      padding-factor: 50
+  scan:
+    enabled: true
+    basePackage: top.mddata
+  system:
+    # 登录时否验证密码有效性 （常用于开发环境快速登录）
+    verifyPassword: true
+    # 登录时否验证验证码有效性 （常用于开发环境快速登录）
+    verifyCaptcha: true
+    # 默认用户密码
+    defPwd: '123456'
+    # log记录
+    recordLog: true
+    recordArgs: true
+    recordResult: true
+    # 缓存Key前缀
+    cachePrefix: mdp
+    # oauth 服务扫描枚举类的包路径
+    enumPackage: "top.mddata,com.gitee.sop"
+    # 单体架构
+    mode: boot
+  ignore:
+    # 是否启用网关的 uri权限鉴权 (设置为false，则后台不校验访问权限)
+    authEnabled: true
+    # 前端校验按钮 是否区分大小写
+    caseSensitive: false
+    anyone: # 需要携带Token，但不需要验证uri权限
+      ALL:
+        - /**/anyone/**
+    anyUser: # 不需要携带Token(不需要登录) 和 不需要验证uri权限
+      ALL:
+        - /**/anyUser/**
+        - /**/sso/**
+        - /**/oauth2/userinfo
+        - /**/oauth2/token
+        - /**/oauth2/refresh
+        - /**/oauth2/revoke
+        - /**/oauth2/client_token
+        - /**/user/**
+  echo: #详情看: EchoProperties
+    # 是否启用 远程数据 注解AOP注入
+    aop-enabled: true
+    # 字典类型 和 code 的分隔符
+    dictSeparator: '###'
+    # 多个字典code 之间的的分隔符
+    dictItemSeparator: ','
+    # 递归最大深度
+    maxDepth: 3
+    # 本地缓存配置信息 生产慎用
+    guavaCache:
+      enabled: false
+      maximumSize: 1000
+      refreshWriteTime: 2
+      refreshThreadPoolSize: 10
+  log: # 详情看：OptLogProperties
+    # 开启记录操作日志
+    enabled: true
+    # 记录到什么地方  DB:mysql LOGGER:日志文件
+    type: DB
+    mode: BOOT
+  xss:
+    # 是否开启 xss 过滤器  详情看：XssProperties
+    enabled: true
+    # 是否启用 RequestBody 注解标记的参数 反序列化时过滤XSS
+    requestBodyEnabled: false
+    ignoreParamValues:
+      - noxss
+  captcha:
+    # 登录界面的验证码配置 详情看：CaptchaProperties
+    type: ARITHMETIC
+    width: 158
+    height: 58
+    len: 2
+    charType: 2
+  async: # 全局线程池配置
+    corePoolSize: 2
+    maxPoolSize: 50
+    queueCapacity: 10000
+    keepAliveSeconds: 300
+    threadNamePrefix: 'mdp-async-executor-'
+  swagger:
+    license: Powered By henhen6
+    licenseUrl: https://mddata.top
+    termsOfServiceUrl: https://mddata.top
+    version: '@project.version@'
+    contact: # 联系人信息
+      url: https://mddata.top
+      name: henhen6
+      email: henhen6@qq.com
+    global-operation-parameters: # 全局参数
+      - name: Token
+        description: 用户信息
+        modelRef: String
+        parameterType: header
+        required: true
+        # 默认值只是方便本地开发时，少填参数，生产环境请禁用swagger或者禁用默认参数
+        defaultValue: "test"
+  file:
+    delFile: false
+    suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db
+
+#FAST_DFS配置
+fdfs:
+  soTimeout: 1500
+  connectTimeout: 600
+  thumb-image:
+    width: 150
+    height: 150
+  tracker-list:
+    - 39.108.109.234:22122
+  pool:
+    #从池中借出的对象的最大数目
+    max-total: 153
+    max-wait-millis: 102
+    jmx-name-base: 1
+    jmx-name-prefix: 1
+
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: '@project.artifactId@'
+  profiles:
+    active: '@profile.active@'
+  mvc:
+    pathmatch:
+      # 升级springboot2.6.6后临时处理，防止swagger报错
+      matching-strategy: ANT_PATH_MATCHER
+  lifecycle:
+    # 优雅停机宽限期时间
+    timeout-per-shutdown-phase: 30s
+  servlet:
+    # 上传文件最大值
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+      # multipart 懒加载
+      resolve-lazily: false
+  cache:
+    type: GENERIC
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 16379
+      password: 'SbtyMveYNfLzTks7H0apCmyStPzWJqjy'
+      database: 5
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      enable: true
+      db-type: mysql
+      validation-query: SELECT 'x'
+      filters: stat,wall
+      username: 'root'
+      password: 'root'
+      driverClassName: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/ua_admin?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
+      initialSize: 10
+      minIdle: 10
+      maxActive: 200
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000  #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      min-evictable-idle-time-millis: 300000    #配置一个连接在池中最小生存的时间，单位是毫秒
+      filter:
+        wall:
+          enabled: true
+          config:
+            strictSyntaxCheck: false
+            commentAllow: true
+            multiStatementAllow: true
+            noneBaseStatementAllow: true
+        slf4j:
+          enabled: false       # 使用slf4j打印可执行日志时，改成true
+          statement-executable-sql-log-enable: true  # 打印类似 p6spy 的可执行SQL 日志
+      # 以下的2段配置，同时适用于所有模式
+      web-stat-filter: # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js , *.gif ,*.jpg ,*.png ,*.css ,*.ico , /druid/*"
+        session-stat-max-count: 1000
+        profile-enable: true
+        session-stat-enable: false
+      stat-view-servlet: #展示Druid的统计信息,StatViewServlet的用途包括：1.提供监控信息展示的html页面2.提供监控信息的JSON API
+        enabled: true
+        url-pattern: /druid/*   #根据配置中的url-pattern来访问内置监控页面，如果是上面的配置，内置监控页面的首页是/druid/index.html例如：http://127.0.0.1:9000/druid/index.html
+        reset-enable: true    #允许清空统计数据
+        login-username: ''
+        login-password: ''
+        allow: ''
+  freemarker:
+    suffix: .ftl
+    cache: false
+    charset: UTF-8
+    contentType: text/html
+    requestContextAttribute: ctx
+    templateEncoding: UTF-8
+    templateLoaderPath: classpath:/
+    settings:
+      defaultEncoding: UTF-8
+      url_escaping_charset: UTF-8
+      locale: zh_CN
+
+mybatis-flex:
+  mapper-locations:
+    - classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    jdbc-type-for-null: null
+    auto-mapping-unknown-column-behavior: none
+    auto-mapping-behavior: full
+  global-config:
+    # 全局配置逻辑删除字段，表中有该字段就会进行逻辑删除，否则进行物理删除
+    logicDeleteColumn: deleted_at
+    key-config:
+      before: true
+      key-type: generator
+      value: 'uid'
+
+server:
+  port: 11000
+  # 优雅停机
+  shutdown: GRACEFUL
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+  endpoint:
+    shutdown:
+      access: unrestricted
+    health:
+      show-details: when_authorized  # 仅认证通过后显示详细健康信息
+
+# knife4j 文档通用配置 详情看: Knife4jProperties
+knife4j:
+  enable: true
+  setting:
+    enableReloadCacheParameter: true
+    enableVersion: true
+    enableDynamicParameter: true
+    enableFooter: false
+    enableFooterCustom: true
+    footerCustomContent: Apache License 2.0 | Copyright  2024 [uni-auth](https://mddata.top)
+
+springdoc:
+  # 默认是false，需要设置为true
+  default-flat-param-object: true
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'workbench'
+      displayName: '工作台'
+      paths-to-match: '/**'
+      packages-to-scan: top.mddata.workbench
+    - group: 'console'
+      displayName: '控制台'
+      paths-to-match: '/**'
+      packages-to-scan: top.mddata.console
+    - group: 'open'
+      displayName: '开放平台'
+      paths-to-match: '/**'
+      packages-to-scan: top.mddata.open
+    - group: 'api'
+      displayName: '第三方接口'
+      paths-to-match: '/**'
+      packages-to-scan: top.mddata.api
+
+dromara:
+  x-file-storage: #文件存储配置
+    # 默认使用的存储平台 localPlusExt是自己增强的配置
+    default-platform: localPlusExt
+    thumbnail-suffix: ".min.jpg" #缩略图后缀，例如【.min.jpg】【.png】
+    #对应平台的配置写在这里，注意缩进要对齐
+    local-plus:
+      - platform: localPlus
+        domain: http://127.0.0.1:${server.port}/preview/ # 访问域名，例如：“http://127.0.0.1:8030/file/”，注意后面要和 path-patterns 保持一致，“/”结尾，本地存储建议使用相对路径，方便后期更换域名
+        base-path: local-plus/ # 基础路径
+        path-patterns: /preview/** # 访问路径
+        storage-path: /Users/aaa/data/mdp/
+        enableStorage: true
+        enableAccess: true
+
+# Sa-Token配置
+sa-token:
+  # token前缀
+  token-prefix:
+  # token名称 (同时也是cookie名称)
+  token-name: Token
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  active-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+  sso-server:
+    # Ticket有效期 (单位: 秒)，默认五分钟
+    ticket-timeout: 300
+    # 时候模式三
+    is-http: false
+    # 关闭匿名 client 接入，要求应用端接入时必须携带 client 信息
+    allow-anon-client: false
+    # 接口调用秘钥（在某个 sso-client 没有配置单独秘钥的情况下使用此全局秘钥）
+    secret-key: YQfyZtAmDbYHTBaHPSx3GZeX7x2ip7ik
+  sso-client:
+    # 应用标识
+    client: '*'
+    # sso-server 端主机地址
+    server-url: http://127.0.0.1:11000/api/center
+    # 单点登录服务
+    authUrl: 'http://localhost:12000/#/auth/login'
+    signoutUrl: '/anyUser/sso/signout'
+    pushUrl: '/anyUser/sso/pushS'
+    getDataUrl: '/anyUser/sso/getData'
+    #  是否使用模式3
+    is-http: false
+    # API 接口调用秘钥
+    secret-key: SSO-C3-kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
+
+logging:
+  file:
+    path: ./logs
+    name: ${logging.file.path}/${spring.application.name}/root.log
+  level:
+    root: INFO
+    # 关闭不必要的日志
+    org.reflections.Reflections: off
+    com.alibaba.nacos.client: error
+    com.alibaba.nacos.common.remote.client: error
+    com.ulisesbocchio: error
+    # 开发、调试需要的日志
+    top.mddata: info
+    org.springframework: info
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS
+    console: "[${spring.application.name}:%X{TenantId}:%X{UserId}] %d{yyyy-MM-dd HH:mm:ss.SSS}[%5p] ${PID} [%X{trace}] [%t:%r] [%logger{50}.%M:%L] %m%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 64MB

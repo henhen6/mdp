@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.mddata.open</groupId>
+        <artifactId>md-open</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>open-service</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>top.mddata.open</groupId>
+            <artifactId>open-dao</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>sop-service-support</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.mddata.console</groupId>
+            <artifactId>console-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.common</groupId>
+            <artifactId>md-cache-key</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-echo-starter</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

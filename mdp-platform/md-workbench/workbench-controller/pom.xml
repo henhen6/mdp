@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.mddata.workbench</groupId>
+        <artifactId>md-workbench</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>workbench-controller</artifactId>
+
+    <dependencies>
+        <!-- SpringBoot 集成 thymeleaf 模板 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.workbench</groupId>
+            <artifactId>workbench-service</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.mddata.open</groupId>
+            <artifactId>open-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- Sa-Token 插件：整合SSO -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-sso</artifactId>
+        </dependency>
+        <!-- Sa-Token 插件：整合OAuth2 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-oauth2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

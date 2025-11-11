@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>top.mddata.mdp</groupId>
+        <artifactId>md-build</artifactId>
+        <version>${revision}</version>
+        <relativePath>../md-build/pom.xml</relativePath>
+    </parent>
+
+    <groupId>top.mddata.api</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>md-api</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>开放接口</description>
+
+    <modules>
+        <module>api-pojo</module>
+        <module>api-dao</module>
+        <module>api-service</module>
+        <module>api-controller</module>
+    </modules>
+
+
+    <build>
+        <plugins>
+            <!-- 文档推送 -->
+            <plugin>
+                <groupId>com.ly.smart-doc</groupId>
+                <artifactId>smart-doc-maven-plugin</artifactId>
+                <version>${smart-doc.version}</version>
+                <configuration>
+                    <!--指定生成文档的使用的配置文件-->
+                    <configFile>./src/main/resources/smart-doc.json</configFile>
+                    <!--指定项目名称-->
+                    <projectName>${project.artifactId}</projectName>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>top.mddata.base</groupId>
+                        <artifactId>sop-service-support</artifactId>
+                        <version>${revision}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>

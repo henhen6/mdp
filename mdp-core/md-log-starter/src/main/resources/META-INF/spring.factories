@@ -1,0 +1,2 @@
+org.springframework.context.ApplicationContextInitializer=\
+    top.mddata.base.log.MyMdcAdapterInitializer

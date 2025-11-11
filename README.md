@@ -1,11 +1,20 @@
 # 主数据平台
 
-master-data，简称MD。
+[![Language](https://img.shields.io/badge/语言-Java17%20%7C%20SpringCloud%20%7C%20Vue3%20%7C%20...-red?style=flat-square&color=42b883)](https://github.com/henhen6/mdp)
+[![License](https://img.shields.io/github/license/henhen6/mdp?color=42b883&style=flat-square)](https://github.com/henhen6/mdp/blob/master/LICENSE)
+[![Author](https://img.shields.io/badge/作者-很很-orange.svg)](https://github.com/zuihou)
+[![Star](https://img.shields.io/github/stars/henhen6/mdp?color=42b883&logo=github&style=flat-square)](https://github.com/henhen6/mdp/stargazers)
+[![Fork](https://img.shields.io/github/forks/henhen6/mdp?color=42b883&logo=github&style=flat-square)](https://github.com/henhen6/mdp/network/members)
+[![Star](https://gitee.com/henhen6/mdp/badge/star.svg?theme=gray)](https://gitee.com/henhen6/mdp/stargazers)
+[![Fork](https://gitee.com/henhen6/mdp/badge/fork.svg?theme=gray)](https://gitee.com/henhen6/mdp/members)
+![star](https://gitcode.com/henhen6/mdp/star/badge.svg)
 
-#### 介绍
-主数据平台
+## 介绍
+主数据平台，英文名master-data-platform，简称MDP。 主要为了解决 用户身份认证、用户访问子应用、子应用接入与审批、基础数据管理等。
 
-#### 子系统
+MDP支持SSO、Oauth2等多种主流的单点登录协议。
+
+## 子系统
 
 - 工作台
 
@@ -20,35 +29,34 @@ master-data，简称MD。
   md-open，简称mdo
 
 
-
-## 
-
-
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+## 技术栈
+- 开发方面： 
+  - JSON序列化：Jackson 
+  - 缓存：Redis 
+  - 数据库： MySQL 5.7.x 或者 MySQL 8.0.x 
+  - 定时器：采用xxl-job项目进行二次改造 
+  - 登录、权限框架：Sa-Token 
+  - 持久层框架： Mybatis-plus 
+  - 代码生成器：自主开发 
+  - 项目构建：Maven 
+  - 文件服务器：支持 FastDFS 5.0.5/阿里云OSS/本地存储/MinIO/华为云/七牛云 任意切换
+- 监控方面： 
+  - 监控： spring-boot-admin 
+  - 链路调用跟踪： SkyWalking 
+  - 分布式系统的流量防卫兵： Sentinel
+- 部署方面： 
+  - 服务器：CentOS 
+  - Nginx 
+  - Jenkins 
+  - Docker 
+  - Kubernetes
+- 前端 
+  - vue3
+  - vite
+  - vue-router
+  - Pinia
+  - typescript
+  - vxe-table
+  - Axios
+  - Dayjs 
+  - codemirror

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>单点登录系统 - HTMX实现</title>
+    <script src="../static/libs/htmx.js" th:src="@{/static/libs/htmx.js}"></script>
+    <script src="../static/libs/axios.js" th:src="@{/static/libs/axios.js}"></script>
+    <link href="../static/css/login.css" rel="stylesheet" th:href="@{/static/css/login.css}"/>
+    <style>
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>单点登录系统 - HTMX实现</h1>
+    </div>
+
+    <div class="form-container" id="loginSection">
+        <form hx-on::after-request="afterLoginRequest(event)" hx-post="/auth/login" hx-swap="innerHTML" hx-target="#loginStatus" hx-trigger="submit"
+              id="loginForm">
+            <div class="input-group">
+                <label for="username">用户名</label>
+                <input id="username" name="username" placeholder="请输入用户名" required type="text" value="admin">
+            </div>
+
+            <div class="input-group">
+                <label for="password">密码</label>
+                <input id="password" name="password" placeholder="请输入密码" required type="password"
+                       value="password123">
+            </div>
+
+            <button class="btn" type="submit">
+                <span id="loginText">登录</span>
+                <span class="loading" id="loginSpinner" style="display:none;"></span>
+            </button>
+
+            <div class="status-bar" id="loginStatus"></div>
+        </form>
+    </div>
+
+    <div class="user-info" id="userSection">
+        <h2>欢迎, <span id="userName"></span>!</h2>
+        <p>您已成功登录单点登录系统</p>
+
+        <div class="user-details">
+            <p><strong>用户ID:</strong> <span id="userId"></span></p>
+            <p><strong>邮箱:</strong> <span id="userEmail"></span></p>
+            <p><strong>角色:</strong> <span id="userRole"></span></p>
+        </div>
+
+        <div class="token-info">
+            <p><strong>访问令牌:</strong> <span id="accessToken"></span></p>
+            <p><strong>刷新令牌:</strong> <span id="refreshToken"></span></p>
+        </div>
+
+        <div class="actions">
+            <button class="btn" hx-get="/user/profile" hx-swap="innerHTML" hx-target="#apiStatus" hx-trigger="click">
+                获取用户数据
+            </button>
+            <button class="btn btn-secondary" hx-post="/auth/refresh" hx-swap="innerHTML" hx-target="#apiStatus"
+                    hx-trigger="click">刷新令牌
+            </button>
+            <button class="btn btn-danger" id="logoutBtn">退出登录</button>
+        </div>
+
+        <div class="status-bar" id="apiStatus"></div>
+    </div>
+</div>
+
+<script>
+    // 初始化函数
+    document.addEventListener('DOMContentLoaded', function () {
+        // 检查本地是否有保存的认证信息
+        checkLocalAuth();
+
+        // 退出登录按钮事件
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            logout();
+        });
+
+        // 配置HTMX
+        htmx.config.useTemplateFragments = true;
+
+        // 请求开始前显示加载状态
+        htmx.on('htmx:configRequest', function (evt) {
+            const path = evt.detail.pathInfo.requestPath;
+            if (path === '/auth/login') {
+                document.getElementById('loginText').style.display = 'none';
+                document.getElementById('loginSpinner').style.display = 'inline-block';
+            }
+        });
+    });
+
+    // 检查本地认证状态
+    function checkLocalAuth() {
+        const accessToken = localStorage.getItem('accessToken');
+        const userInfo = localStorage.getItem('userInfo');
+
+        if (accessToken && userInfo) {
+            showUserSection(JSON.parse(userInfo));
+            return true;
+        }
+
+        return false;
+    }
+
+    // 登录请求后处理
+    function afterLoginRequest(evt) {
+        document.getElementById('loginText').style.display = 'inline-block';
+        document.getElementById('loginSpinner').style.display = 'none';
+
+        if (evt.detail.xhr.status === 200) {
+            try {
+                const response = JSON.parse(evt.detail.xhr.responseText);
+                if (response.success) {
+                    // 保存令牌和用户信息
+                    localStorage.setItem('accessToken', response.data.accessToken);
+                    localStorage.setItem('refreshToken', response.data.refreshToken);
+                    localStorage.setItem('userInfo', JSON.stringify(response.data.user));
+
+                    // 显示用户界面
+                    showUserSection(response.data.user);
+                }
+            } catch (e) {
+                console.error('解析响应失败:', e);
+            }
+        }
+    }
+
+    // 显示用户界面
+    function showUserSection(userInfo) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('userSection').style.display = 'block';
+
+        document.getElementById('userName').textContent = userInfo.name;
+        document.getElementById('userId').textContent = userInfo.id;
+        document.getElementById('userEmail').textContent = userInfo.email;
+        document.getElementById('userRole').textContent = userInfo.role;
+
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        document.getElementById('accessToken').textContent = accessToken
+            ? `${accessToken.substring(0, 30)}...` : '无';
+        document.getElementById('refreshToken').textContent = refreshToken
+            ? `${refreshToken.substring(0, 30)}...` : '无';
+    }
+
+    // 退出登录
+    function logout() {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('userInfo');
+
+        document.getElementById('userSection').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'block';
+
+        showStatus('您已退出登录', 'success');
+    }
+
+    // 显示状态信息
+    function showStatus(message, type) {
+        const statusEl = document.getElementById('loginStatus');
+        statusEl.textContent = message;
+        statusEl.className = 'status-bar ' + type;
+        statusEl.style.display = 'block';
+    }
+
+    // 为HTMX请求添加认证令牌
+    document.addEventListener('htmx:configRequest', function (evt) {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            evt.detail.headers['Authorization'] = 'Bearer ' + accessToken;
+        }
+    });
+
+    // 处理HTMX响应错误
+    document.addEventListener('htmx:responseError', function (evt) {
+        const targetId = evt.detail.target.id;
+        if (targetId === 'loginStatus' || targetId === 'apiStatus') {
+            const targetEl = document.getElementById(targetId);
+            targetEl.textContent = '请求错误: ' + evt.detail.xhr.statusText;
+            targetEl.className = 'status-bar error';
+            targetEl.style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 768px) {
+}
+
+html {
+    height: 100%
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    background: bisque;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.header {
+    background: #4a6fc7;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+.header h1 {
+    font-weight: 500;
+    font-size: 24px;
+}
+
+.form-container {
+    padding: 30px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #4a6fc7;
+    outline: none;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: #4a6fc7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #3a5bb8;
+}
+
+.status-bar {
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 6px;
+    text-align: center;
+    display: none;
+}
+
+.status-bar.success {
+    background: #d4edda;
+    color: #155724;
+    display: block;
+}
+
+.status-bar.error {
+    background: #f8d7da;
+    color: #721c24;
+    display: block;
+}
+
+.user-info {
+    padding: 20px;
+    text-align: center;
+    display: none;
+}
+
+.user-info h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.user-details {
+    text-align: left;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.token-info {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+    word-break: break-all;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-secondary {
+    background: #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-danger {
+    background: #dc3545;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, .3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

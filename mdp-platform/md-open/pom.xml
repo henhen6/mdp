@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>top.mddata.mdp</groupId>
+        <artifactId>md-build</artifactId>
+        <version>${revision}</version>
+        <relativePath>../md-build/pom.xml</relativePath>
+    </parent>
+
+    <groupId>top.mddata.open</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>md-open</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>开发平台</description>
+
+    <modules>
+        <module>open-facade</module>
+        <module>open-pojo</module>
+        <module>open-dao</module>
+        <module>open-service</module>
+        <module>open-controller</module>
+    </modules>
+
+</project>

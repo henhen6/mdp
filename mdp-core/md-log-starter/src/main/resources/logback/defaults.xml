@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <!--
+         规则：
+            dev 开发环境： 启用实时打印日志，启用p6spy打印sql语句到控制台
+            其他环境:  启用异步打印，  禁用p6spy
+           %m
+           输出代码中指定的消息
+           %p
+           输出优先级，即DEBUG，INFO，WARN，ERROR，FATAL
+           %r
+           输出自应用启动到输出该log信息耗费的毫秒数
+           %c
+           输出所属的类目，通常就是所在类的全名
+           %t
+           输出产生该日志事件的线程名
+           %n
+           输出一个回车换行符，Windows平台为“\r\n”，Unix平台为“\n”
+           %d
+           输出日志时间点的日期或时间，默认格式为ISO8601，也可以在其后指定格式，比如：%d{yyy MMM dd HH:mm:ss,SSS}，
+           输出类似：2002年10月18日 22：10：28，921
+           %l
+           输出日志事件的发生位置，包括类目名、发生的线程，以及在代码中的行数。举例：TestLog.main(TestLog.java:10)
+        -->
+    <springProperty scope="context" name="log.path" source="logging.file.path" defaultValue="/data/projects/logs"/>
+    <springProperty scope="context" name="spring.application.name" source="spring.application.name"/>
+    <springProperty scope="context" name="spring.profiles.active" source="spring.profiles.active"/>
+    <springProperty scope="context" name="log.level.console" source="logging.level.console" defaultValue="INFO"/>
+    <springProperty scope="context" name="log.level.modules" source="logging.level.modules" defaultValue="INFO"/>
+    <springProperty scope="context" name="log.level.common" source="logging.level.common" defaultValue="INFO"/>
+    <springProperty scope="context" name="log.level.basic" source="logging.level.basic" defaultValue="INFO"/>
+    <springProperty scope="context" name="log.level.mapper" source="logging.level.mapper" defaultValue="DEBUG"/>
+    <springProperty scope="context" name="log.level.nacos" source="logging.level.nacos" defaultValue="WARN"/>
+    <springProperty scope="context" name="server.port" source="server.port" defaultValue="0000"/>
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <!-- 彩色日志格式 -->
+    <springProperty scope="context" name="common-pattern-color" source="logging.common-pattern-color"
+                    defaultValue="[${spring.application.name}:${server.port}:%X{UserId}] %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}:%clr([%5p]){blue} %clr([${PID}]){magenta} %clr([%X{trace}]){yellow} %clr([%t:%r]){orange} %clr([%logger{50}.%M:%L]){cyan} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <springProperty scope="context" name="common-pattern" source="logging.common-pattern"
+                    defaultValue="[${spring.application.name}:${server.port}:%X{UserId}] %d{yyyy-MM-dd HH:mm:ss.SSS}[%5p] ${PID} [%X{trace}] [%t:%r] [%logger{50}.%M:%L] %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <contextName>${spring.application.name}-logback</contextName>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <jmxConfigurator/>
+
+
+    <!-- 控制台实时输出，采用高亮语法，用于开发环境 -->
+    <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!--            <level>${log.level.console}</level>-->
+        </filter>
+        <encoder>
+            <pattern>${common-pattern-color}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 整个项目的所有日志， 包括第三方包 -->
+    <appender name="ROOT_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/root.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 每天一归档 -->
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/root-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <!-- 单个日志文件最多 100MB, 60天的日志周期，最大不能超过20GB -->
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 整个项目top.mddata.base包下的的所有日志， 不包括第三方包 -->
+    <appender name="BASIC_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/util.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 每天一归档 -->
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/util-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <!-- 单个日志文件最多 100MB, 60天的日志周期，最大不能超过20GB -->
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 整个项目第三方包下的的日志 -->
+    <appender name="THIRD_PARTY_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/third.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 每天一归档 -->
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/third-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <!-- 单个日志文件最多 100MB, 60天的日志周期，最大不能超过20GB -->
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- common包的日志 -->
+    <appender name="COMMON_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/common.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/common-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 埋点包的日志 -->
+    <appender name="POINT_LOG_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/point.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/point-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- controller 包的日志 -->
+    <appender name="MODULES_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/modules.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/modules-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- dao层日志，用于打印执行的sql  -->
+    <appender name="SQL_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/sql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/sql-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 共用异常包的日志 -->
+    <appender name="EXCEPTION_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${spring.application.name}/exception.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/${spring.application.name}/%d{yyyy-MM,aux}/exception-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <maxFileSize>128MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${common-pattern}</pattern>
+        </encoder>
+    </appender>
+
+</included>

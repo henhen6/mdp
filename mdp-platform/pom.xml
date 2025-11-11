@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>top.mddata.mdp</groupId>
+        <artifactId>md-build</artifactId>
+        <version>${revision}</version>
+        <relativePath>md-build/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>mdp-platform</artifactId>
+
+    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>${project.artifactId}</name>
+    <description>主数据平台</description>
+
+    <modules>
+        <!-- 依赖管理 -->
+        <module>md-build</module>
+        <!-- 公共方法 -->
+        <module>md-public</module>
+        <!-- 用户中心服务 -->
+        <module>md-workbench</module>
+        <!-- 后台管理 -->
+        <module>md-console</module>
+        <!-- 开放平台 -->
+        <module>md-open</module>
+        <!-- 对外接口服务 -->
+        <module>md-api</module>
+        <!-- 启动类 -->
+        <module>md-server</module>
+    </modules>
+
+</project>

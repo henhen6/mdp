@@ -1,0 +1,2 @@
+sopDubboProviderFilter=com.gitee.sop.support.dubbo.SopDubboProviderFilter
+sopDubboConsumerFilter=com.gitee.sop.support.dubbo.SopDubboConsumerFilter

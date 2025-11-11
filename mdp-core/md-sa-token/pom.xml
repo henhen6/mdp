@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>top.mddata.base</groupId>
+        <artifactId>mdp-core</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>md-sa-token</artifactId>
+    <version>${revision}</version>
+
+    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>${project.artifactId}</name>
+    <description>sa-token 扩展</description>
+
+    <modules>
+        <module>sa-token-oauth2-client</module>
+        <module>sa-token-oauth2-client-stater</module>
+    </modules>
+</project>
