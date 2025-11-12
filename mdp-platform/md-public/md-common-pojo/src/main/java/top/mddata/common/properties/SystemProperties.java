@@ -1,10 +1,10 @@
 package top.mddata.common.properties;
 
-import top.mddata.base.constant.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import top.mddata.base.constant.Constants;
 
 import java.util.HashMap;
 import java.util.List;

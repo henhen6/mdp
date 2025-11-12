@@ -1,13 +1,5 @@
 package top.mddata.common.configuration;
 
-import top.mddata.common.configurer.HeaderThreadLocalConfigurer;
-import top.mddata.common.configurer.TokenContextFilterConfigurer;
-import top.mddata.common.properties.IgnoreProperties;
-import top.mddata.common.properties.SystemProperties;
-import top.mddata.common.undertow.UndertowServerFactoryCustomizer;
-import top.mddata.base.boot.config.BaseConfig;
-import top.mddata.base.constant.Constants;
-import top.mddata.base.log.event.SysLogListener;
 import io.undertow.Undertow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +13,14 @@ import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.mddata.base.boot.config.BaseConfig;
+import top.mddata.base.constant.Constants;
+import top.mddata.base.log.event.SysLogListener;
+import top.mddata.common.configurer.HeaderThreadLocalConfigurer;
+import top.mddata.common.configurer.TokenContextFilterConfigurer;
+import top.mddata.common.properties.IgnoreProperties;
+import top.mddata.common.properties.SystemProperties;
+import top.mddata.common.undertow.UndertowServerFactoryCustomizer;
 
 /**
  * 基础服务-Web配置

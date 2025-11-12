@@ -1,12 +1,12 @@
 package top.mddata.common.properties;
 
-import top.mddata.common.enumeration.HttpMethod;
-import top.mddata.base.constant.Constants;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.AntPathMatcher;
+import top.mddata.base.constant.Constants;
+import top.mddata.common.enumeration.HttpMethod;
 
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +22,7 @@ import static top.mddata.base.utils.CollHelper.putAll;
  * 3. 是否需要uri权限?
  *
  * @author henhen6
- * @since 2019/01/03
+ * @since 2025/01/03
  */
 @Data
 @ConfigurationProperties(prefix = IgnoreProperties.PREFIX)

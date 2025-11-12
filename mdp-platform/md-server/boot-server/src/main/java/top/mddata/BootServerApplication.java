@@ -1,11 +1,11 @@
 package top.mddata;
 
-import top.mddata.common.ServerApplication;
-import top.mddata.base.validator.annotation.EnableFormValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.x.file.storage.spring.EnableFileStorage;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import top.mddata.base.validator.annotation.EnableFormValidator;
+import top.mddata.common.ServerApplication;
 
 import java.net.UnknownHostException;
 

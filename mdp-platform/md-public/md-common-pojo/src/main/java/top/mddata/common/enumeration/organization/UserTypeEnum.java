@@ -1,11 +1,11 @@
 package top.mddata.common.enumeration.organization;
 
-import top.mddata.base.interfaces.BaseEnum;
 import com.mybatisflex.annotation.EnumValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 人员类型

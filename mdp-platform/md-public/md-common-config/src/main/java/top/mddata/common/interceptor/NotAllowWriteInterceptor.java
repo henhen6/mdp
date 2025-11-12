@@ -1,7 +1,5 @@
 package top.mddata.common.interceptor;
 
-import top.mddata.common.properties.SystemProperties;
-import top.mddata.base.exception.BizException;
 import cn.hutool.core.collection.CollUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
+import top.mddata.base.exception.BizException;
+import top.mddata.common.properties.SystemProperties;
 
 import java.util.List;
 

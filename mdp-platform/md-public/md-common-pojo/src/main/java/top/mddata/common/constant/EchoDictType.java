@@ -5,19 +5,19 @@ package top.mddata.common.constant;
  * <p>
  * 存放系统中常用的类型
  * <p>
- * 本类中的 @ua.generator auto insert 请勿删除
+ * 本类中的 @md.generator auto insert 请勿删除
  *
  * @author henhen6
  * @since 2019/07/26
  */
 public interface EchoDictType {
-    // @ua.generator auto insert EchoDictType
+    // @md.generator auto insert EchoDictType
 
     /**
      * 全局字典类型
      */
     interface Global {
-        // @ua.generator auto insert Global
+        // @md.generator auto insert Global
 
         /**
          * 行政级别
@@ -50,7 +50,7 @@ public interface EchoDictType {
      * 后台服务
      */
     interface Admin {
-        // @ua.generator auto insert System
+        // @md.generator auto insert System
 
         /**
          * 数据范围 [01-全部 02-本单位及子级 03-本单位 04-本部门 05-本部门及子级 06-个人 07-自定义]

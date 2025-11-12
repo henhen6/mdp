@@ -1,11 +1,11 @@
 package top.mddata.common.enumeration.permission;
 
-import top.mddata.base.interfaces.BaseEnum;
 import com.mybatisflex.annotation.EnumValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 菜单类型 [10-目录  20-菜单 30-内链 40-外链]

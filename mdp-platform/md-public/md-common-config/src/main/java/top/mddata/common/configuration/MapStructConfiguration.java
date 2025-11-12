@@ -1,8 +1,8 @@
 package top.mddata.common.configuration;
 
-import top.mddata.base.utils.ClassUtils;
 import io.github.linpeilie.annotations.ComponentModelConfig;
 import org.mapstruct.Named;
+import top.mddata.base.utils.ClassUtils;
 
 /**
  * 类型转换

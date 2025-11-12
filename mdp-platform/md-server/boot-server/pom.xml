@@ -41,11 +41,6 @@
         </dependency>
         <dependency>
             <groupId>top.mddata.common</groupId>
-            <artifactId>md-database-starter</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>top.mddata.common</groupId>
             <artifactId>md-enumeration-scanning</artifactId>
             <version>${revision}</version>
         </dependency>
@@ -65,7 +60,10 @@
             <groupId>top.mddata.base</groupId>
             <artifactId>md-all-boot</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-codegen</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.dromara.x-file-storage</groupId>
             <artifactId>x-file-storage-spring</artifactId>
@@ -75,6 +73,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+
 
         <dependency>
             <groupId>io.github.linpeilie</groupId>

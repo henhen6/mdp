@@ -23,10 +23,6 @@
             <artifactId>md-log-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>top.mddata.base</groupId>
-            <artifactId>md-db-mybatis-flex</artifactId>
-        </dependency>
-        <dependency>
             <groupId>top.mddata.common</groupId>
             <artifactId>md-cache-key</artifactId>
             <version>${revision}</version>
@@ -35,6 +31,25 @@
             <groupId>top.mddata.common</groupId>
             <artifactId>md-common-pojo</artifactId>
             <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-db-mybatis-flex</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>HikariCP</artifactId>
+                    <groupId>com.zaxxer</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

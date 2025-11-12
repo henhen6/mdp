@@ -12,10 +12,10 @@ public interface ParamKey {
      */
     String NOT_ALLOW_WRITE = "NOT_ALLOW_WRITE";
 
-    interface Admin {
+    interface Console {
     }
 
-    interface Center {
+    interface Workbench {
         /**
          * 密码错误锁定用户时间
          * 示例： 0: 今天结束  1m: 1分钟后1h: 1小时后  4d: 4天后     2w: 2周后 3M: 3个月后  5y: 5年后

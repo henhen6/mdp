@@ -1,11 +1,5 @@
 package top.mddata.common.enumeration;
 
-import top.mddata.common.enumeration.system.DataTypeEnum;
-import top.mddata.common.properties.SystemProperties;
-import top.mddata.common.vo.Option;
-import top.mddata.base.interfaces.BaseEnum;
-import top.mddata.base.utils.ClassUtils;
-import top.mddata.base.utils.StrPool;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.TypeUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +7,12 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import top.mddata.base.interfaces.BaseEnum;
+import top.mddata.base.utils.ClassUtils;
+import top.mddata.base.utils.StrPool;
+import top.mddata.common.enumeration.system.DataTypeEnum;
+import top.mddata.common.properties.SystemProperties;
+import top.mddata.common.vo.Option;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;

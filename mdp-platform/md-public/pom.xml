@@ -24,7 +24,7 @@
         <module>md-common-pojo</module>
         <module>md-common-dao</module>
         <module>md-common-config</module>
-        <module>md-database-starter</module>
+        <!--        <module>md-database-starter</module>-->
         <module>md-enumeration-scanning</module>
     </modules>
 </project>

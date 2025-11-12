@@ -1,10 +1,10 @@
 package top.mddata.common.configurer;
 
-import top.mddata.common.interceptor.NotAllowWriteInterceptor;
-import top.mddata.common.properties.SystemProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.mddata.common.interceptor.NotAllowWriteInterceptor;
+import top.mddata.common.properties.SystemProperties;
 
 /**
  * 永远执行的配置

@@ -1,8 +1,5 @@
 package top.mddata.common.configuration;
 
-import top.mddata.common.cache.CacheKeyModular;
-import top.mddata.common.configurer.AlwaysConfigurer;
-import top.mddata.common.properties.SystemProperties;
 import cn.hutool.core.util.StrUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +8,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.mddata.common.cache.CacheKeyModular;
+import top.mddata.common.configurer.AlwaysConfigurer;
+import top.mddata.common.properties.SystemProperties;
 
 /**
  * @author henhen6

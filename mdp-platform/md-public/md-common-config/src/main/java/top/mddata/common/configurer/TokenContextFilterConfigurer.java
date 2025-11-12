@@ -1,9 +1,9 @@
 package top.mddata.common.configurer;
 
-import top.mddata.common.interceptor.TokenContextFilter;
-import top.mddata.common.properties.IgnoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import top.mddata.common.interceptor.TokenContextFilter;
+import top.mddata.common.properties.IgnoreProperties;
 
 /**
  *  请求头配置类

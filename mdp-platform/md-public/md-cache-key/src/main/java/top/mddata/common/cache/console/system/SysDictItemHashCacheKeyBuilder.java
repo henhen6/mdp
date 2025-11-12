@@ -1,10 +1,10 @@
 package top.mddata.common.cache.console.system;
 
-import top.mddata.common.cache.CacheKeyModular;
-import top.mddata.common.cache.CacheKeyTable;
 import top.mddata.base.model.cache.CacheHashKey;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
+import top.mddata.common.cache.CacheKeyModular;
+import top.mddata.common.cache.CacheKeyTable;
 
 import java.io.Serializable;
 

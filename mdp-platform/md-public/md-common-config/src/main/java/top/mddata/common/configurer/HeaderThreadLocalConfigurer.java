@@ -1,8 +1,8 @@
 package top.mddata.common.configurer;
 
-import top.mddata.common.interceptor.HeaderThreadLocalInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import top.mddata.common.interceptor.HeaderThreadLocalInterceptor;
 
 /**
  *  请求头配置类

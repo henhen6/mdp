@@ -1,7 +1,5 @@
 package top.mddata.common.enumeration;
 
-import top.mddata.common.vo.Option;
-import top.mddata.base.base.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.base.R;
+import top.mddata.common.vo.Option;
 
 import java.util.List;
 import java.util.Map;

@@ -1,8 +1,8 @@
 package top.mddata.common.enumeration;
 
-import top.mddata.base.interfaces.BaseEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import top.mddata.base.interfaces.BaseEnum;
 
 import java.util.stream.Stream;
 

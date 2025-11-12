@@ -1,9 +1,9 @@
 package top.mddata.common.enumeration;
 
-import top.mddata.base.interfaces.BaseEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 审核状态
@@ -22,7 +22,7 @@ public enum AuditStatusEnum implements BaseEnum<Integer> {
     /**
      * 申请中
      */
-    PENDING(1, "申请中"),
+    PENDING(1, "待审批"),
     APPROVED(2, "通过"),
     REJECTED(99, "退回");
     private final Integer code;
