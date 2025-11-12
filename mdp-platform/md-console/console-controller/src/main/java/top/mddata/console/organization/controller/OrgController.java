@@ -39,7 +39,6 @@ import java.util.List;
 @RequestMapping("/organization/org")
 @RequiredArgsConstructor
 public class OrgController extends SuperController<OrgService, Org> {
-    private final OrgService orgService;
 
     /**
      * 添加组织。
@@ -51,7 +50,7 @@ public class OrgController extends SuperController<OrgService, Org> {
     @Operation(summary = "新增", description = "保存组织")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody OrgDto dto) {
-        return R.success(orgService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +63,7 @@ public class OrgController extends SuperController<OrgService, Org> {
     @Operation(summary = "删除", description = "根据主键删除组织")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(orgService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +76,7 @@ public class OrgController extends SuperController<OrgService, Org> {
     @Operation(summary = "修改", description = "根据主键更新组织")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody OrgDto dto) {
-        return R.success(orgService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +89,7 @@ public class OrgController extends SuperController<OrgService, Org> {
     @Operation(summary = "单体查询", description = "根据主键获取组织")
     @RequestLog("'单体查询:' + #id")
     public R<OrgVo> get(@RequestParam Long id) {
-        Org entity = orgService.getById(id);
+        Org entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, OrgVo.class));
     }
 
@@ -109,7 +108,7 @@ public class OrgController extends SuperController<OrgService, Org> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        orgService.pageAs(page, wrapper, OrgVo.class);
+        superService.pageAs(page, wrapper, OrgVo.class);
         return R.success(page);
     }
 
@@ -124,7 +123,7 @@ public class OrgController extends SuperController<OrgService, Org> {
     public R<List<OrgVo>> list(@RequestBody @Validated OrgQuery params) {
         Org entity = BeanUtil.toBean(params, Org.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<OrgVo> listVo = orgService.listAs(wrapper, OrgVo.class);
+        List<OrgVo> listVo = superService.listAs(wrapper, OrgVo.class);
         return R.success(listVo);
     }
 }
