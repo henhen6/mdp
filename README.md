@@ -33,17 +33,15 @@ MDP支持SSO、Oauth2等多种主流的单点登录协议。
 - 开发方面： 
   - JSON序列化：Jackson 
   - 缓存：Redis 
-  - 数据库： MySQL 5.7.x 或者 MySQL 8.0.x 
-  - 定时器：采用xxl-job项目进行二次改造 
+  - 数据库： MySQL 8.0.x 
+  - 定时器：power-job 
   - 登录、权限框架：Sa-Token 
-  - 持久层框架： Mybatis-plus 
+  - 持久层框架： Mybatis-flex
   - 代码生成器：自主开发 
   - 项目构建：Maven 
   - 文件服务器：支持 FastDFS 5.0.5/阿里云OSS/本地存储/MinIO/华为云/七牛云 任意切换
 - 监控方面： 
   - 监控： spring-boot-admin 
-  - 链路调用跟踪： SkyWalking 
-  - 分布式系统的流量防卫兵： Sentinel
 - 部署方面： 
   - 服务器：CentOS 
   - Nginx 
