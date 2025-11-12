@@ -1,4 +1,4 @@
-package top.mddata.common.constant.admin;
+package top.mddata.common.constant.console;
 
 /**
  *
@@ -10,8 +10,14 @@ public interface AdminConstant {
      * 框架布局
      */
     String IFRAME = "IFRAME";
+    /**
+     * 默认后台菜单布局
+     */
     String LAYOUT = "LAYOUT";
-
+    /**
+     * 默认开放平台菜单布局
+     */
+    String OPEN_LAYOUT = "OPEN_LAYOUT";
 
     String NODE = "node";
     String META = "meta";

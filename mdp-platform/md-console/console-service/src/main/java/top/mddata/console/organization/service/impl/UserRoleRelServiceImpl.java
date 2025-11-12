@@ -18,5 +18,4 @@ import top.mddata.console.organization.service.UserRoleRelService;
 @Slf4j
 @RequiredArgsConstructor
 public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, UserRoleRel> implements UserRoleRelService {
-
 }

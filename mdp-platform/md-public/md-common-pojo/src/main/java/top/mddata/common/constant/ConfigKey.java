@@ -1,12 +1,12 @@
 package top.mddata.common.constant;
 
 /**
- * 参数表中配置的参数标识
+ * 配置表中配置的参数标识
  *
  * @author henhen6
  * @since 2025/10/20 23:46
  */
-public interface ParamKey {
+public interface ConfigKey {
     /**
      * 是否禁止新增修改数据，演示环境专用
      */

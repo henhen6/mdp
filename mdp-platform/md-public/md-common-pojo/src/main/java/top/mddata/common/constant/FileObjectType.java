@@ -11,7 +11,7 @@ package top.mddata.common.constant;
 public interface FileObjectType {
 
     /**
-     * 临时类型
+     * 文件临时对象类型
      */
     String TEMP_OBJECT_TYPE = "temp";
 

@@ -19,5 +19,5 @@ import top.mddata.console.permission.entity.base.ResourceMenuBase;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(ResourceMenuBase.TABLE_NAME)
-public class ResourceMenu extends ResourceMenuBase {
+public class ResourceMenu extends ResourceMenuBase<ResourceMenu> {
 }
