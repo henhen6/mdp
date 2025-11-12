@@ -31,7 +31,7 @@ import java.util.List;
  * 字典 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:21:25
+ * @since 2025-11-12 20:06:39
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/system/dict")
 @RequiredArgsConstructor
 public class DictController extends SuperController<DictService, Dict> {
-    private final DictService dictService;
-
     /**
      * 添加字典。
      *
@@ -51,7 +49,7 @@ public class DictController extends SuperController<DictService, Dict> {
     @Operation(summary = "新增", description = "保存字典")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody DictDto dto) {
-        return R.success(dictService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class DictController extends SuperController<DictService, Dict> {
     @Operation(summary = "删除", description = "根据主键删除字典")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(dictService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class DictController extends SuperController<DictService, Dict> {
     @Operation(summary = "修改", description = "根据主键更新字典")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody DictDto dto) {
-        return R.success(dictService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class DictController extends SuperController<DictService, Dict> {
     @Operation(summary = "单体查询", description = "根据主键获取字典")
     @RequestLog("'单体查询:' + #id")
     public R<DictVo> get(@RequestParam Long id) {
-        Dict entity = dictService.getById(id);
+        Dict entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, DictVo.class));
     }
 
@@ -109,7 +107,7 @@ public class DictController extends SuperController<DictService, Dict> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        dictService.pageAs(page, wrapper, DictVo.class);
+        superService.pageAs(page, wrapper, DictVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class DictController extends SuperController<DictService, Dict> {
     public R<List<DictVo>> list(@RequestBody @Validated DictQuery params) {
         Dict entity = BeanUtil.toBean(params, Dict.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<DictVo> listVo = dictService.listAs(wrapper, DictVo.class);
+        List<DictVo> listVo = superService.listAs(wrapper, DictVo.class);
         return R.success(listVo);
     }
 }

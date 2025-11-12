@@ -31,7 +31,7 @@ import java.util.List;
  * 组织 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 15:49:10
+ * @since 2025-11-12 20:03:50
  */
 @RestController
 @Validated
@@ -39,7 +39,6 @@ import java.util.List;
 @RequestMapping("/organization/org")
 @RequiredArgsConstructor
 public class OrgController extends SuperController<OrgService, Org> {
-
     /**
      * 添加组织。
      *

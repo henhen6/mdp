@@ -31,7 +31,7 @@ import java.util.List;
  * 按钮 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-11-12 19:49:35
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/permission/resourceButton")
 @RequiredArgsConstructor
 public class ResourceButtonController extends SuperController<ResourceButtonService, ResourceButton> {
-    private final ResourceButtonService resourceButtonService;
-
     /**
      * 添加按钮。
      *
@@ -51,7 +49,7 @@ public class ResourceButtonController extends SuperController<ResourceButtonServ
     @Operation(summary = "新增", description = "保存按钮")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody ResourceButtonDto dto) {
-        return R.success(resourceButtonService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class ResourceButtonController extends SuperController<ResourceButtonServ
     @Operation(summary = "删除", description = "根据主键删除按钮")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(resourceButtonService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class ResourceButtonController extends SuperController<ResourceButtonServ
     @Operation(summary = "修改", description = "根据主键更新按钮")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ResourceButtonDto dto) {
-        return R.success(resourceButtonService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class ResourceButtonController extends SuperController<ResourceButtonServ
     @Operation(summary = "单体查询", description = "根据主键获取按钮")
     @RequestLog("'单体查询:' + #id")
     public R<ResourceButtonVo> get(@RequestParam Long id) {
-        ResourceButton entity = resourceButtonService.getById(id);
+        ResourceButton entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, ResourceButtonVo.class));
     }
 
@@ -109,7 +107,7 @@ public class ResourceButtonController extends SuperController<ResourceButtonServ
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        resourceButtonService.pageAs(page, wrapper, ResourceButtonVo.class);
+        superService.pageAs(page, wrapper, ResourceButtonVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class ResourceButtonController extends SuperController<ResourceButtonServ
     public R<List<ResourceButtonVo>> list(@RequestBody @Validated ResourceButtonQuery params) {
         ResourceButton entity = BeanUtil.toBean(params, ResourceButton.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ResourceButtonVo> listVo = resourceButtonService.listAs(wrapper, ResourceButtonVo.class);
+        List<ResourceButtonVo> listVo = superService.listAs(wrapper, ResourceButtonVo.class);
         return R.success(listVo);
     }
 }

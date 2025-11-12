@@ -31,7 +31,7 @@ import java.util.List;
  * 岗位 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 15:48:54
+ * @since 2025-11-12 19:50:17
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/organization/position")
 @RequiredArgsConstructor
 public class PositionController extends SuperController<PositionService, Position> {
-    private final PositionService positionService;
-
     /**
      * 添加岗位。
      *
@@ -51,7 +49,7 @@ public class PositionController extends SuperController<PositionService, Positio
     @Operation(summary = "新增", description = "保存岗位")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody PositionDto dto) {
-        return R.success(positionService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class PositionController extends SuperController<PositionService, Positio
     @Operation(summary = "删除", description = "根据主键删除岗位")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(positionService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class PositionController extends SuperController<PositionService, Positio
     @Operation(summary = "修改", description = "根据主键更新岗位")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody PositionDto dto) {
-        return R.success(positionService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class PositionController extends SuperController<PositionService, Positio
     @Operation(summary = "单体查询", description = "根据主键获取岗位")
     @RequestLog("'单体查询:' + #id")
     public R<PositionVo> get(@RequestParam Long id) {
-        Position entity = positionService.getById(id);
+        Position entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, PositionVo.class));
     }
 
@@ -109,7 +107,7 @@ public class PositionController extends SuperController<PositionService, Positio
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        positionService.pageAs(page, wrapper, PositionVo.class);
+        superService.pageAs(page, wrapper, PositionVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class PositionController extends SuperController<PositionService, Positio
     public R<List<PositionVo>> list(@RequestBody @Validated PositionQuery params) {
         Position entity = BeanUtil.toBean(params, Position.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<PositionVo> listVo = positionService.listAs(wrapper, PositionVo.class);
+        List<PositionVo> listVo = superService.listAs(wrapper, PositionVo.class);
         return R.success(listVo);
     }
 }

@@ -31,7 +31,7 @@ import java.util.List;
  * 字段权限 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-11-12 19:49:35
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/permission/resourceField")
 @RequiredArgsConstructor
 public class ResourceFieldController extends SuperController<ResourceFieldService, ResourceField> {
-    private final ResourceFieldService resourceFieldService;
-
     /**
      * 添加字段权限。
      *
@@ -51,7 +49,7 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
     @Operation(summary = "新增", description = "保存字段权限")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody ResourceFieldDto dto) {
-        return R.success(resourceFieldService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
     @Operation(summary = "删除", description = "根据主键删除字段权限")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(resourceFieldService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
     @Operation(summary = "修改", description = "根据主键更新字段权限")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ResourceFieldDto dto) {
-        return R.success(resourceFieldService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
     @Operation(summary = "单体查询", description = "根据主键获取字段权限")
     @RequestLog("'单体查询:' + #id")
     public R<ResourceFieldVo> get(@RequestParam Long id) {
-        ResourceField entity = resourceFieldService.getById(id);
+        ResourceField entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, ResourceFieldVo.class));
     }
 
@@ -109,7 +107,7 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        resourceFieldService.pageAs(page, wrapper, ResourceFieldVo.class);
+        superService.pageAs(page, wrapper, ResourceFieldVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
     public R<List<ResourceFieldVo>> list(@RequestBody @Validated ResourceFieldQuery params) {
         ResourceField entity = BeanUtil.toBean(params, ResourceField.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ResourceFieldVo> listVo = resourceFieldService.listAs(wrapper, ResourceFieldVo.class);
+        List<ResourceFieldVo> listVo = superService.listAs(wrapper, ResourceFieldVo.class);
         return R.success(listVo);
     }
 }

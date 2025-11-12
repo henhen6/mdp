@@ -32,7 +32,7 @@ import java.util.List;
  * 仅在手动分片上传时使用 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:21:25
+ * @since 2025-11-12 20:06:39
  */
 @RestController
 @Validated
@@ -40,8 +40,6 @@ import java.util.List;
 @RequestMapping("/system/filePart")
 @RequiredArgsConstructor
 public class FilePartController extends SuperController<FilePartService, FilePart> {
-    private final FilePartService filePartService;
-
     /**
      * 添加文件分片
      * 仅在手动分片上传时使用。
@@ -53,7 +51,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
     @Operation(summary = "新增", description = "保存文件分片")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody FilePartDto dto) {
-        return R.success(filePartService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -67,7 +65,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
     @Operation(summary = "删除", description = "根据主键删除文件分片")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(filePartService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -81,7 +79,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
     @Operation(summary = "修改", description = "根据主键更新文件分片")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody FilePartDto dto) {
-        return R.success(filePartService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -95,7 +93,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
     @Operation(summary = "单体查询", description = "根据主键获取文件分片")
     @RequestLog("'单体查询:' + #id")
     public R<FilePartVo> get(@RequestParam Long id) {
-        FilePart entity = filePartService.getById(id);
+        FilePart entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, FilePartVo.class));
     }
 
@@ -115,7 +113,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        filePartService.pageAs(page, wrapper, FilePartVo.class);
+        superService.pageAs(page, wrapper, FilePartVo.class);
         return R.success(page);
     }
 
@@ -130,7 +128,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
     public R<List<FilePartVo>> list(@RequestBody @Validated FilePartQuery params) {
         FilePart entity = BeanUtil.toBean(params, FilePart.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<FilePartVo> listVo = filePartService.listAs(wrapper, FilePartVo.class);
+        List<FilePartVo> listVo = superService.listAs(wrapper, FilePartVo.class);
         return R.success(listVo);
     }
 }

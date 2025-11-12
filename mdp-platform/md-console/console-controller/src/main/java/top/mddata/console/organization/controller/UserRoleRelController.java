@@ -31,7 +31,7 @@ import java.util.List;
  * 用户角色关联 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 15:50:00
+ * @since 2025-11-12 20:03:50
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/organization/userRoleRel")
 @RequiredArgsConstructor
 public class UserRoleRelController extends SuperController<UserRoleRelService, UserRoleRel> {
-    private final UserRoleRelService userRoleRelService;
-
     /**
      * 添加用户角色关联。
      *
@@ -51,7 +49,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
     @Operation(summary = "新增", description = "保存用户角色关联")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody UserRoleRelDto dto) {
-        return R.success(userRoleRelService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
     @Operation(summary = "删除", description = "根据主键删除用户角色关联")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(userRoleRelService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
     @Operation(summary = "修改", description = "根据主键更新用户角色关联")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody UserRoleRelDto dto) {
-        return R.success(userRoleRelService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
     @Operation(summary = "单体查询", description = "根据主键获取用户角色关联")
     @RequestLog("'单体查询:' + #id")
     public R<UserRoleRelVo> get(@RequestParam Long id) {
-        UserRoleRel entity = userRoleRelService.getById(id);
+        UserRoleRel entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, UserRoleRelVo.class));
     }
 
@@ -109,7 +107,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        userRoleRelService.pageAs(page, wrapper, UserRoleRelVo.class);
+        superService.pageAs(page, wrapper, UserRoleRelVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
     public R<List<UserRoleRelVo>> list(@RequestBody @Validated UserRoleRelQuery params) {
         UserRoleRel entity = BeanUtil.toBean(params, UserRoleRel.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<UserRoleRelVo> listVo = userRoleRelService.listAs(wrapper, UserRoleRelVo.class);
+        List<UserRoleRelVo> listVo = superService.listAs(wrapper, UserRoleRelVo.class);
         return R.success(listVo);
     }
 }

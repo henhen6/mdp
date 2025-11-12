@@ -31,7 +31,7 @@ import java.util.List;
  * 菜单 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-11-12 19:49:35
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/permission/resourceMenu")
 @RequiredArgsConstructor
 public class ResourceMenuController extends SuperController<ResourceMenuService, ResourceMenu> {
-    private final ResourceMenuService resourceMenuService;
-
     /**
      * 添加菜单。
      *
@@ -51,7 +49,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     @Operation(summary = "新增", description = "保存菜单")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody ResourceMenuDto dto) {
-        return R.success(resourceMenuService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     @Operation(summary = "删除", description = "根据主键删除菜单")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(resourceMenuService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     @Operation(summary = "修改", description = "根据主键更新菜单")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ResourceMenuDto dto) {
-        return R.success(resourceMenuService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     @Operation(summary = "单体查询", description = "根据主键获取菜单")
     @RequestLog("'单体查询:' + #id")
     public R<ResourceMenuVo> get(@RequestParam Long id) {
-        ResourceMenu entity = resourceMenuService.getById(id);
+        ResourceMenu entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, ResourceMenuVo.class));
     }
 
@@ -109,7 +107,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        resourceMenuService.pageAs(page, wrapper, ResourceMenuVo.class);
+        superService.pageAs(page, wrapper, ResourceMenuVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     public R<List<ResourceMenuVo>> list(@RequestBody @Validated ResourceMenuQuery params) {
         ResourceMenu entity = BeanUtil.toBean(params, ResourceMenu.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ResourceMenuVo> listVo = resourceMenuService.listAs(wrapper, ResourceMenuVo.class);
+        List<ResourceMenuVo> listVo = superService.listAs(wrapper, ResourceMenuVo.class);
         return R.success(listVo);
     }
 }

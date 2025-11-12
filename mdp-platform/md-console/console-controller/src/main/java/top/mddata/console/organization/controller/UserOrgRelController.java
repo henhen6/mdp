@@ -31,7 +31,7 @@ import java.util.List;
  * 用户所属组织 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 15:50:00
+ * @since 2025-11-12 20:03:50
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/organization/userOrgRel")
 @RequiredArgsConstructor
 public class UserOrgRelController extends SuperController<UserOrgRelService, UserOrgRel> {
-    private final UserOrgRelService userOrgRelService;
-
     /**
      * 添加用户所属组织。
      *
@@ -51,7 +49,7 @@ public class UserOrgRelController extends SuperController<UserOrgRelService, Use
     @Operation(summary = "新增", description = "保存用户所属组织")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody UserOrgRelDto dto) {
-        return R.success(userOrgRelService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class UserOrgRelController extends SuperController<UserOrgRelService, Use
     @Operation(summary = "删除", description = "根据主键删除用户所属组织")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(userOrgRelService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class UserOrgRelController extends SuperController<UserOrgRelService, Use
     @Operation(summary = "修改", description = "根据主键更新用户所属组织")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody UserOrgRelDto dto) {
-        return R.success(userOrgRelService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class UserOrgRelController extends SuperController<UserOrgRelService, Use
     @Operation(summary = "单体查询", description = "根据主键获取用户所属组织")
     @RequestLog("'单体查询:' + #id")
     public R<UserOrgRelVo> get(@RequestParam Long id) {
-        UserOrgRel entity = userOrgRelService.getById(id);
+        UserOrgRel entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, UserOrgRelVo.class));
     }
 
@@ -109,7 +107,7 @@ public class UserOrgRelController extends SuperController<UserOrgRelService, Use
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        userOrgRelService.pageAs(page, wrapper, UserOrgRelVo.class);
+        superService.pageAs(page, wrapper, UserOrgRelVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class UserOrgRelController extends SuperController<UserOrgRelService, Use
     public R<List<UserOrgRelVo>> list(@RequestBody @Validated UserOrgRelQuery params) {
         UserOrgRel entity = BeanUtil.toBean(params, UserOrgRel.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<UserOrgRelVo> listVo = userOrgRelService.listAs(wrapper, UserOrgRelVo.class);
+        List<UserOrgRelVo> listVo = superService.listAs(wrapper, UserOrgRelVo.class);
         return R.success(listVo);
     }
 }

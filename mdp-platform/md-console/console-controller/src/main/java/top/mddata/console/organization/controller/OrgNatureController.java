@@ -31,7 +31,7 @@ import java.util.List;
  * 组织性质 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 15:50:00
+ * @since 2025-11-12 20:03:50
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/organization/orgNature")
 @RequiredArgsConstructor
 public class OrgNatureController extends SuperController<OrgNatureService, OrgNature> {
-    private final OrgNatureService orgNatureService;
-
     /**
      * 添加组织性质。
      *
@@ -51,7 +49,7 @@ public class OrgNatureController extends SuperController<OrgNatureService, OrgNa
     @Operation(summary = "新增", description = "保存组织性质")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody OrgNatureDto dto) {
-        return R.success(orgNatureService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class OrgNatureController extends SuperController<OrgNatureService, OrgNa
     @Operation(summary = "删除", description = "根据主键删除组织性质")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(orgNatureService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class OrgNatureController extends SuperController<OrgNatureService, OrgNa
     @Operation(summary = "修改", description = "根据主键更新组织性质")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody OrgNatureDto dto) {
-        return R.success(orgNatureService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class OrgNatureController extends SuperController<OrgNatureService, OrgNa
     @Operation(summary = "单体查询", description = "根据主键获取组织性质")
     @RequestLog("'单体查询:' + #id")
     public R<OrgNatureVo> get(@RequestParam Long id) {
-        OrgNature entity = orgNatureService.getById(id);
+        OrgNature entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, OrgNatureVo.class));
     }
 
@@ -109,7 +107,7 @@ public class OrgNatureController extends SuperController<OrgNatureService, OrgNa
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        orgNatureService.pageAs(page, wrapper, OrgNatureVo.class);
+        superService.pageAs(page, wrapper, OrgNatureVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class OrgNatureController extends SuperController<OrgNatureService, OrgNa
     public R<List<OrgNatureVo>> list(@RequestBody @Validated OrgNatureQuery params) {
         OrgNature entity = BeanUtil.toBean(params, OrgNature.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<OrgNatureVo> listVo = orgNatureService.listAs(wrapper, OrgNatureVo.class);
+        List<OrgNatureVo> listVo = superService.listAs(wrapper, OrgNatureVo.class);
         return R.success(listVo);
     }
 }

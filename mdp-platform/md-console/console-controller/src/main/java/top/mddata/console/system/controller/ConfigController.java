@@ -31,7 +31,7 @@ import java.util.List;
  * 系统配置 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:21:25
+ * @since 2025-11-12 20:06:39
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/system/config")
 @RequiredArgsConstructor
 public class ConfigController extends SuperController<ConfigService, Config> {
-    private final ConfigService configService;
-
     /**
      * 添加系统配置。
      *
@@ -51,7 +49,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     @Operation(summary = "新增", description = "保存系统配置")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody ConfigDto dto) {
-        return R.success(configService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     @Operation(summary = "删除", description = "根据主键删除系统配置")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(configService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     @Operation(summary = "修改", description = "根据主键更新系统配置")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ConfigDto dto) {
-        return R.success(configService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     @Operation(summary = "单体查询", description = "根据主键获取系统配置")
     @RequestLog("'单体查询:' + #id")
     public R<ConfigVo> get(@RequestParam Long id) {
-        Config entity = configService.getById(id);
+        Config entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, ConfigVo.class));
     }
 
@@ -109,7 +107,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        configService.pageAs(page, wrapper, ConfigVo.class);
+        superService.pageAs(page, wrapper, ConfigVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     public R<List<ConfigVo>> list(@RequestBody @Validated ConfigQuery params) {
         Config entity = BeanUtil.toBean(params, Config.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ConfigVo> listVo = configService.listAs(wrapper, ConfigVo.class);
+        List<ConfigVo> listVo = superService.listAs(wrapper, ConfigVo.class);
         return R.success(listVo);
     }
 }

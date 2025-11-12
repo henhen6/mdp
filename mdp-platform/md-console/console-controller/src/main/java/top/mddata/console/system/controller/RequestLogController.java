@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
-import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
@@ -30,7 +29,7 @@ import java.util.List;
  * 请求日志 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:21:25
+ * @since 2025-11-12 20:06:39
  */
 @RestController
 @Validated
@@ -38,8 +37,6 @@ import java.util.List;
 @RequestMapping("/system/requestLog")
 @RequiredArgsConstructor
 public class RequestLogController extends SuperController<RequestLogService, top.mddata.console.system.entity.RequestLog> {
-    private final RequestLogService requestLogService;
-
     /**
      * 添加请求日志。
      *
@@ -50,7 +47,7 @@ public class RequestLogController extends SuperController<RequestLogService, top
     @Operation(summary = "新增", description = "保存请求日志")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody RequestLogDto dto) {
-        return R.success(requestLogService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -63,21 +60,9 @@ public class RequestLogController extends SuperController<RequestLogService, top
     @Operation(summary = "删除", description = "根据主键删除请求日志")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(requestLogService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
-    /**
-     * 根据主键更新请求日志。
-     *
-     * @param dto 请求日志
-     * @return {@code true} 更新成功，{@code false} 更新失败
-     */
-    @PostMapping("/update")
-    @Operation(summary = "修改", description = "根据主键更新请求日志")
-    @RequestLog(value = "修改", request = false)
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody RequestLogDto dto) {
-        return R.success(requestLogService.updateDtoById(dto).getId());
-    }
 
     /**
      * 根据请求日志主键获取详细信息。
@@ -89,7 +74,7 @@ public class RequestLogController extends SuperController<RequestLogService, top
     @Operation(summary = "单体查询", description = "根据主键获取请求日志")
     @RequestLog("'单体查询:' + #id")
     public R<RequestLogVo> get(@RequestParam Long id) {
-        top.mddata.console.system.entity.RequestLog entity = requestLogService.getById(id);
+        top.mddata.console.system.entity.RequestLog entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, RequestLogVo.class));
     }
 
@@ -104,26 +89,12 @@ public class RequestLogController extends SuperController<RequestLogService, top
     @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
     public R<Page<RequestLogVo>> page(@RequestBody @Validated PageParams<RequestLogQuery> params) {
         Page<RequestLogVo> page = Page.of(params.getCurrent(), params.getSize());
-        RequestLog entity = BeanUtil.toBean(params.getModel(), RequestLog.class);
+        top.mddata.console.system.entity.RequestLog entity = BeanUtil.toBean(params.getModel(), top.mddata.console.system.entity.RequestLog.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        requestLogService.pageAs(page, wrapper, RequestLogVo.class);
+        superService.pageAs(page, wrapper, RequestLogVo.class);
         return R.success(page);
     }
 
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<RequestLogVo>> list(@RequestBody @Validated RequestLogQuery params) {
-        RequestLog entity = BeanUtil.toBean(params, RequestLog.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<RequestLogVo> listVo = requestLogService.listAs(wrapper, RequestLogVo.class);
-        return R.success(listVo);
-    }
 }

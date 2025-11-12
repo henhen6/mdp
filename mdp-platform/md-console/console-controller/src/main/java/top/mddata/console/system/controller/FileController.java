@@ -31,7 +31,7 @@ import java.util.List;
  * 文件 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:21:25
+ * @since 2025-11-12 20:06:39
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/system/file")
 @RequiredArgsConstructor
 public class FileController extends SuperController<FileService, File> {
-    private final FileService fileService;
-
     /**
      * 添加文件。
      *
@@ -51,7 +49,7 @@ public class FileController extends SuperController<FileService, File> {
     @Operation(summary = "新增", description = "保存文件")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody FileDto dto) {
-        return R.success(fileService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class FileController extends SuperController<FileService, File> {
     @Operation(summary = "删除", description = "根据主键删除文件")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(fileService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class FileController extends SuperController<FileService, File> {
     @Operation(summary = "修改", description = "根据主键更新文件")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody FileDto dto) {
-        return R.success(fileService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class FileController extends SuperController<FileService, File> {
     @Operation(summary = "单体查询", description = "根据主键获取文件")
     @RequestLog("'单体查询:' + #id")
     public R<FileVo> get(@RequestParam Long id) {
-        File entity = fileService.getById(id);
+        File entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, FileVo.class));
     }
 
@@ -109,7 +107,7 @@ public class FileController extends SuperController<FileService, File> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        fileService.pageAs(page, wrapper, FileVo.class);
+        superService.pageAs(page, wrapper, FileVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class FileController extends SuperController<FileService, File> {
     public R<List<FileVo>> list(@RequestBody @Validated FileQuery params) {
         File entity = BeanUtil.toBean(params, File.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<FileVo> listVo = fileService.listAs(wrapper, FileVo.class);
+        List<FileVo> listVo = superService.listAs(wrapper, FileVo.class);
         return R.success(listVo);
     }
 }

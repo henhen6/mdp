@@ -31,7 +31,7 @@ import java.util.List;
  * 角色资源关联 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:29
+ * @since 2025-11-12 18:28:23
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/permission/roleResourceRel")
 @RequiredArgsConstructor
 public class RoleResourceRelController extends SuperController<RoleResourceRelService, RoleResourceRel> {
-    private final RoleResourceRelService roleResourceRelService;
-
     /**
      * 添加角色资源关联。
      *
@@ -51,7 +49,7 @@ public class RoleResourceRelController extends SuperController<RoleResourceRelSe
     @Operation(summary = "新增", description = "保存角色资源关联")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody RoleResourceRelDto dto) {
-        return R.success(roleResourceRelService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class RoleResourceRelController extends SuperController<RoleResourceRelSe
     @Operation(summary = "删除", description = "根据主键删除角色资源关联")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(roleResourceRelService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class RoleResourceRelController extends SuperController<RoleResourceRelSe
     @Operation(summary = "修改", description = "根据主键更新角色资源关联")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody RoleResourceRelDto dto) {
-        return R.success(roleResourceRelService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class RoleResourceRelController extends SuperController<RoleResourceRelSe
     @Operation(summary = "单体查询", description = "根据主键获取角色资源关联")
     @RequestLog("'单体查询:' + #id")
     public R<RoleResourceRelVo> get(@RequestParam Long id) {
-        RoleResourceRel entity = roleResourceRelService.getById(id);
+        RoleResourceRel entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, RoleResourceRelVo.class));
     }
 
@@ -109,7 +107,7 @@ public class RoleResourceRelController extends SuperController<RoleResourceRelSe
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        roleResourceRelService.pageAs(page, wrapper, RoleResourceRelVo.class);
+        superService.pageAs(page, wrapper, RoleResourceRelVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class RoleResourceRelController extends SuperController<RoleResourceRelSe
     public R<List<RoleResourceRelVo>> list(@RequestBody @Validated RoleResourceRelQuery params) {
         RoleResourceRel entity = BeanUtil.toBean(params, RoleResourceRel.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<RoleResourceRelVo> listVo = roleResourceRelService.listAs(wrapper, RoleResourceRelVo.class);
+        List<RoleResourceRelVo> listVo = superService.listAs(wrapper, RoleResourceRelVo.class);
         return R.success(listVo);
     }
 }

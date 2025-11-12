@@ -15,7 +15,7 @@ import java.io.Serializable;
  * 角色资源关联实体类。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:29
+ * @since 2025-11-12 18:28:23
  */
 @Data
 @Builder

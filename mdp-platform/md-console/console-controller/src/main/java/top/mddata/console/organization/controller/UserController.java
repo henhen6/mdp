@@ -31,7 +31,7 @@ import java.util.List;
  * 用户 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 15:48:54
+ * @since 2025-11-12 19:50:17
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/organization/user")
 @RequiredArgsConstructor
 public class UserController extends SuperController<UserService, User> {
-    private final UserService userService;
-
     /**
      * 添加用户。
      *
@@ -51,7 +49,7 @@ public class UserController extends SuperController<UserService, User> {
     @Operation(summary = "新增", description = "保存用户")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody UserDto dto) {
-        return R.success(userService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class UserController extends SuperController<UserService, User> {
     @Operation(summary = "删除", description = "根据主键删除用户")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(userService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class UserController extends SuperController<UserService, User> {
     @Operation(summary = "修改", description = "根据主键更新用户")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody UserDto dto) {
-        return R.success(userService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class UserController extends SuperController<UserService, User> {
     @Operation(summary = "单体查询", description = "根据主键获取用户")
     @RequestLog("'单体查询:' + #id")
     public R<UserVo> get(@RequestParam Long id) {
-        User entity = userService.getById(id);
+        User entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, UserVo.class));
     }
 
@@ -109,7 +107,7 @@ public class UserController extends SuperController<UserService, User> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        userService.pageAs(page, wrapper, UserVo.class);
+        superService.pageAs(page, wrapper, UserVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class UserController extends SuperController<UserService, User> {
     public R<List<UserVo>> list(@RequestBody @Validated UserQuery params) {
         User entity = BeanUtil.toBean(params, User.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<UserVo> listVo = userService.listAs(wrapper, UserVo.class);
+        List<UserVo> listVo = superService.listAs(wrapper, UserVo.class);
         return R.success(listVo);
     }
 }

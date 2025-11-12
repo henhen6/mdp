@@ -31,7 +31,7 @@ import java.util.List;
  * 接口权限 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:29
+ * @since 2025-11-12 18:28:23
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/permission/resourceUri")
 @RequiredArgsConstructor
 public class ResourceUriController extends SuperController<ResourceUriService, ResourceUri> {
-    private final ResourceUriService resourceUriService;
-
     /**
      * 添加接口权限。
      *
@@ -51,7 +49,7 @@ public class ResourceUriController extends SuperController<ResourceUriService, R
     @Operation(summary = "新增", description = "保存接口权限")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody ResourceUriDto dto) {
-        return R.success(resourceUriService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class ResourceUriController extends SuperController<ResourceUriService, R
     @Operation(summary = "删除", description = "根据主键删除接口权限")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(resourceUriService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class ResourceUriController extends SuperController<ResourceUriService, R
     @Operation(summary = "修改", description = "根据主键更新接口权限")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ResourceUriDto dto) {
-        return R.success(resourceUriService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class ResourceUriController extends SuperController<ResourceUriService, R
     @Operation(summary = "单体查询", description = "根据主键获取接口权限")
     @RequestLog("'单体查询:' + #id")
     public R<ResourceUriVo> get(@RequestParam Long id) {
-        ResourceUri entity = resourceUriService.getById(id);
+        ResourceUri entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, ResourceUriVo.class));
     }
 
@@ -109,7 +107,7 @@ public class ResourceUriController extends SuperController<ResourceUriService, R
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        resourceUriService.pageAs(page, wrapper, ResourceUriVo.class);
+        superService.pageAs(page, wrapper, ResourceUriVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class ResourceUriController extends SuperController<ResourceUriService, R
     public R<List<ResourceUriVo>> list(@RequestBody @Validated ResourceUriQuery params) {
         ResourceUri entity = BeanUtil.toBean(params, ResourceUri.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ResourceUriVo> listVo = resourceUriService.listAs(wrapper, ResourceUriVo.class);
+        List<ResourceUriVo> listVo = superService.listAs(wrapper, ResourceUriVo.class);
         return R.success(listVo);
     }
 }

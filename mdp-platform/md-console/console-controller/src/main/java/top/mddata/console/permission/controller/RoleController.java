@@ -31,7 +31,7 @@ import java.util.List;
  * 角色 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-11-12 19:49:35
  */
 @RestController
 @Validated
@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/permission/role")
 @RequiredArgsConstructor
 public class RoleController extends SuperController<RoleService, Role> {
-    private final RoleService roleService;
-
     /**
      * 添加角色。
      *
@@ -51,7 +49,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     @Operation(summary = "新增", description = "保存角色")
     @RequestLog(value = "新增", request = false)
     public R<Long> save(@Validated @RequestBody RoleDto dto) {
-        return R.success(roleService.saveDto(dto).getId());
+        return R.success(superService.saveDto(dto).getId());
     }
 
     /**
@@ -64,7 +62,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     @Operation(summary = "删除", description = "根据主键删除角色")
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(roleService.removeByIds(ids));
+        return R.success(superService.removeByIds(ids));
     }
 
     /**
@@ -77,7 +75,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     @Operation(summary = "修改", description = "根据主键更新角色")
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody RoleDto dto) {
-        return R.success(roleService.updateDtoById(dto).getId());
+        return R.success(superService.updateDtoById(dto).getId());
     }
 
     /**
@@ -90,7 +88,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     @Operation(summary = "单体查询", description = "根据主键获取角色")
     @RequestLog("'单体查询:' + #id")
     public R<RoleVo> get(@RequestParam Long id) {
-        Role entity = roleService.getById(id);
+        Role entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, RoleVo.class));
     }
 
@@ -109,7 +107,7 @@ public class RoleController extends SuperController<RoleService, Role> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        roleService.pageAs(page, wrapper, RoleVo.class);
+        superService.pageAs(page, wrapper, RoleVo.class);
         return R.success(page);
     }
 
@@ -124,7 +122,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<RoleVo> listVo = roleService.listAs(wrapper, RoleVo.class);
+        List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         return R.success(listVo);
     }
 }
