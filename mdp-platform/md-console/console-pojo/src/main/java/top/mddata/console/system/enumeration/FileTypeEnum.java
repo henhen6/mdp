@@ -1,4 +1,3 @@
-
 package top.mddata.console.system.enumeration;
 
 import cn.hutool.core.util.StrUtil;

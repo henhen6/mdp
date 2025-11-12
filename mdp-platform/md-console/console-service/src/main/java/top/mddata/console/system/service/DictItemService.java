@@ -40,7 +40,6 @@ public interface DictItemService extends SuperService<DictItem> {
     Map<String, List<DictItemVo>> findDictItemByUniqKey(List<String> uniqKeyList);
 
 
-
     /**
      * 检查字典项标识是否可用
      *

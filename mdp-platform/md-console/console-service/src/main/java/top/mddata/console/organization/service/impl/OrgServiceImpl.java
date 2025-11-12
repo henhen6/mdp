@@ -47,14 +47,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements OrgService {
+    private final UidGenerator uidGenerator;
+    private final OrgNatureService orgNatureService;
+    private final UserOrgRelService userOrgRelService;
+
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
         return new OrgCacheKeyBuilder();
     }
-
-    private final UidGenerator uidGenerator;
-    private final OrgNatureService orgNatureService;
-    private final UserOrgRelService userOrgRelService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
