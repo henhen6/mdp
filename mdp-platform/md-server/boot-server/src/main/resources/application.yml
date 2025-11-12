@@ -272,7 +272,7 @@ knife4j:
     enableDynamicParameter: true
     enableFooter: false
     enableFooterCustom: true
-    footerCustomContent: Apache License 2.0 | Copyright  2024 [uni-auth](https://mddata.top)
+    footerCustomContent: Apache License 2.0 | Copyright  2024 [mddata](https://mddata.top)
 
 springdoc:
   # 默认是false，需要设置为true
