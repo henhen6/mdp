@@ -49,6 +49,7 @@ MDP支持SSO、Oauth2等多种主流的单点登录协议。
   - Docker 
   - Kubernetes
 - 前端 
+  - vue-vben-admin
   - vue3
   - vite
   - vue-router
