@@ -6,7 +6,6 @@
 #set(voClassName = table.buildVoClassName())
 #set(queryClassName = table.buildQueryClassName())
 #set(entityVarName = firstCharToLowerCase(entityClassName))
-#set(serviceVarName = firstCharToLowerCase(table.buildServiceClassName()))
 package #(packageConfig.controllerPackage);
 
 #for(importClass : table.buildControllerImports())
@@ -35,8 +34,9 @@ import #(importClass);
 @RequiredArgsConstructor
 public class #(controllerClassName) #if(controllerConfig.superClass)extends #(controllerConfig.buildSuperClassName(table)) #end {
 #if(controllerConfig.withCrud)
+#if(controllerConfig.superClass == null)
     private final #(table.buildServiceClassName()) #(serviceVarName);
-
+#end
     /**
      * 添加#(tableComment)。
      *

@@ -15,15 +15,6 @@
  */
 package top.mddata.codegen.generator.impl;
 
-import top.mddata.codegen.config.ControllerConfig;
-import top.mddata.codegen.config.GlobalConfig;
-import top.mddata.codegen.config.PackageConfig;
-import top.mddata.codegen.constant.GenTypeEnum;
-import top.mddata.codegen.constant.GenerationStrategyEnum;
-import top.mddata.codegen.entity.Table;
-import top.mddata.codegen.generator.IGenerator;
-import top.mddata.base.utils.DateUtils;
-import top.mddata.base.utils.StrPool;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.util.StringUtil;
@@ -31,6 +22,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import top.mddata.base.utils.DateUtils;
+import top.mddata.base.utils.StrPool;
+import top.mddata.codegen.config.ControllerConfig;
+import top.mddata.codegen.config.GlobalConfig;
+import top.mddata.codegen.config.PackageConfig;
+import top.mddata.codegen.constant.GenTypeEnum;
+import top.mddata.codegen.constant.GenerationStrategyEnum;
+import top.mddata.codegen.entity.Table;
+import top.mddata.codegen.generator.IGenerator;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static cn.hutool.core.date.DatePattern.CHINESE_DATE_TIME_PATTERN;
+import static com.mybatisflex.core.util.StringUtil.firstCharToLowerCase;
 
 /**
  * Controller 生成器。
@@ -71,6 +72,12 @@ public class ControllerGenerator implements IGenerator {
         params.put("javadocConfig", globalConfig.getJavadocConfig());
         params.put("withSwagger", globalConfig.isEntityWithSwagger());
         params.put("swaggerVersion", globalConfig.getSwaggerVersion());
+
+        if (controllerConfig.getSuperClass() == null && controllerConfig.getWithCrud()) {
+            params.put("serviceVarName", firstCharToLowerCase(table.buildServiceClassName()));
+        } else {
+            params.put("serviceVarName", "superService");
+        }
         params.putAll(globalConfig.getCustomConfig());
         return params;
     }

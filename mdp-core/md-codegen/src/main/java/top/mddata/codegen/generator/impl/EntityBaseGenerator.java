@@ -15,10 +15,13 @@
  */
 package top.mddata.codegen.generator.impl;
 
+import cn.hutool.core.io.FileUtil;
+import top.mddata.base.utils.DateUtils;
 import top.mddata.codegen.config.EntityConfig;
 import top.mddata.codegen.config.GlobalConfig;
 import top.mddata.codegen.config.PackageConfig;
 import top.mddata.codegen.constant.GenTypeEnum;
+import top.mddata.codegen.constant.GenerationStrategyEnum;
 import top.mddata.codegen.entity.Table;
 import top.mddata.codegen.generator.IGenerator;
 import top.mddata.base.utils.StrPool;
@@ -30,8 +33,11 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import static cn.hutool.core.date.DatePattern.CHINESE_DATE_TIME_PATTERN;
 
 /**
  * Entity Base 生成器。
@@ -96,24 +102,48 @@ public class EntityBaseGenerator implements IGenerator {
             return;
         }
         EntityConfig entityConfig = globalConfig.getEntityConfig();
+        if (entityConfig.getGenerationStrategy() == GenerationStrategyEnum.IGNORE) {
+            return;
+        }
 
         // 不需要生成 baseClass
         if (!entityConfig.getWithBaseClassEnable()) {
             return;
         }
 
-
         String path = getFilePath(table, globalConfig, true);
-        File baseEntityJavaFile = new File(path);
+        File javaFile = new File(path);
+
+        if (entityConfig.getGenerationStrategy() == GenerationStrategyEnum.EXIST_IGNORE) {
+            if (javaFile.exists()) {
+                return;
+            }
+        }
+
+        String entityClassName = table.buildEntityClassName();
+        if (javaFile.exists()) {
+            if (entityConfig.getGenerationStrategy() == GenerationStrategyEnum.BACKUPS) {
+                String now = DateUtils.format(LocalDateTime.now(), CHINESE_DATE_TIME_PATTERN);
+                String newPath = StrUtil.replaceLast(path, StrPool.DOT_JAVA, "_Backups" + now + StrPool.DOT_JAVA);
+                File newFile = new File(newPath);
+                FileUtil.copy(javaFile, newFile, true);
+            } else if (entityConfig.getGenerationStrategy() == GenerationStrategyEnum.ADD) {
+                String now = DateUtils.format(LocalDateTime.now(), CHINESE_DATE_TIME_PATTERN);
+                String newPath = StrUtil.replaceLast(path, StrPool.DOT_JAVA, "_Add" + now + StrPool.DOT_JAVA);
+                javaFile = new File(newPath);
+                entityClassName += "_Add" + now;
+            }
+        }
+
 
         String baseEntityClassName = table.buildEntityClassName() + entityConfig.getWithBaseClassSuffix();
         Map<String, Object> params = getTemplatePath(table, globalConfig, baseEntityClassName);
 
-        log.info("BaseEntity ---> {}", baseEntityJavaFile);
+        log.info("BaseEntity ---> {}", javaFile);
         if (StrUtil.isNotEmpty(templateContent)) {
-            globalConfig.getTemplateConfig().getTemplate().generateByContent(params, templateContent, baseEntityJavaFile);
+            globalConfig.getTemplateConfig().getTemplate().generateByContent(params, templateContent, javaFile);
         } else {
-            globalConfig.getTemplateConfig().getTemplate().generate(params, genType.getTemplate(), baseEntityJavaFile);
+            globalConfig.getTemplateConfig().getTemplate().generate(params, genType.getTemplate(), javaFile);
         }
     }
 
