@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @author henhen6
  * @since 2025/8/6 23:55
  */
-public class SysDictItemHashCacheKeyBuilder implements CacheKeyBuilder {
+public class DictItemHashCacheKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 构造器
@@ -28,7 +28,7 @@ public class SysDictItemHashCacheKeyBuilder implements CacheKeyBuilder {
      * @return HashKey
      */
     public static CacheKey builder(Serializable dictKey) {
-        return new SysDictItemHashCacheKeyBuilder().hashKey(dictKey);
+        return new DictItemHashCacheKeyBuilder().hashKey(dictKey);
     }
 
     /**
@@ -38,7 +38,7 @@ public class SysDictItemHashCacheKeyBuilder implements CacheKeyBuilder {
      * @return HashKey
      */
     public static CacheHashKey builder(String dictKey, String dictItemKey) {
-        return new SysDictItemHashCacheKeyBuilder().hashFieldKey(dictItemKey, dictKey);
+        return new DictItemHashCacheKeyBuilder().hashFieldKey(dictItemKey, dictKey);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SysDictItemHashCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Admin.SYS_DICT_ITEM;
+        return CacheKeyTable.Admin.DICT_ITEM;
     }
 
     @Override

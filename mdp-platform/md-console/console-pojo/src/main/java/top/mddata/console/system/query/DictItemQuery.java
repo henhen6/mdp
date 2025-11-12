@@ -1,6 +1,7 @@
 package top.mddata.console.system.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +42,11 @@ public class DictItemQuery extends ExtraParams implements Serializable {
      * 所属字典
      */
     @Schema(description = "所属字典")
+    @NotNull(message = "请选择字典")
     private Long dictId;
+
+    @Schema(description = "所属字典key")
+    private String dictUniqKey;
 
     /**
      * 父节点
@@ -60,20 +65,6 @@ public class DictItemQuery extends ExtraParams implements Serializable {
      */
     @Schema(description = "名称")
     private String name;
-
-    /**
-     * 数据类型
-     * [1-字符串 2-整型 3-布尔]
-     */
-    @Schema(description = "数据类型")
-    private String dataType;
-
-    /**
-     * 字典类型
-     * [10-系统字典 20-枚举字典 30-业务字典]
-     */
-    @Schema(description = "字典类型")
-    private String dictType;
 
     /**
      * 树路径
@@ -126,12 +117,6 @@ public class DictItemQuery extends ExtraParams implements Serializable {
     private String propType;
 
     /**
-     * 国际化配置
-     */
-    @Schema(description = "国际化配置")
-    private String i18nJson;
-
-    /**
      * 创建人
      */
     @Schema(description = "创建人")
@@ -154,5 +139,18 @@ public class DictItemQuery extends ExtraParams implements Serializable {
      */
     @Schema(description = "更新时间")
     private LocalDateTime updatedAt;
+
+    /**
+     * 数据类型
+     * [1-字符串 2-整型 3-布尔]
+     */
+    @Schema(description = "数据类型")
+    private String dataType;
+    /**
+     * 字典类型
+     * [10-系统字典 20-枚举字典 30-业务字典]
+     */
+    @Schema(description = "字典类型")
+    private String dictType;
 
 }

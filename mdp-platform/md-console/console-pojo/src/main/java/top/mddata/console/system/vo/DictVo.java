@@ -13,6 +13,7 @@ import top.mddata.console.system.entity.base.DictBase;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 字典 VO类（通常用作Controller出参）。
@@ -115,4 +116,15 @@ public class DictVo implements Serializable {
     @Schema(description = "更新时间")
     private LocalDateTime updatedAt;
 
+    /**
+     * 查询枚举字典时使用
+     */
+    @Schema(description = "枚举是否存在")
+    private Boolean exist;
+
+    /**
+     * 关联查询时使用
+     */
+    @Schema(description = "字典项")
+    private List<DictItemVo> itemList;
 }

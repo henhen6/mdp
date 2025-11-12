@@ -52,6 +52,7 @@ public class DictDto implements Serializable {
      */
     @Size(max = 100, message = "字典分组长度不能超过{max}")
     @Schema(description = "字典分组")
+    @NotEmpty(message = "请选择字典分组")
     private String dictGroup;
 
     /**

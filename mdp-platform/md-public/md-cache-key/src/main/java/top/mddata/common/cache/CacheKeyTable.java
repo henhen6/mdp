@@ -17,11 +17,11 @@ public interface CacheKeyTable {
         /**
          * 字典项
          */
-        String SYS_DICT_ITEM = "sys_dict_item";
+        String DICT_ITEM = "dict_item";
         /**
          * 系统参数
          */
-        String SYS_PARAM = "sys_param";
+        String PARAM = "param";
 
         /**
          * 用户拥有那些组织
@@ -31,7 +31,7 @@ public interface CacheKeyTable {
         /**
          * 组织
          */
-        String SYS_ORG = "sys_org";
+        String ORG = "org";
     }
 
     interface Center {
@@ -39,6 +39,6 @@ public interface CacheKeyTable {
         /**
          * 用户
          */
-        String SSO_USER = "sys_user";
+        String USER = "user";
     }
 }

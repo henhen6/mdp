@@ -67,31 +67,6 @@ public class DictItemDto implements Serializable {
     @Schema(description = "名称")
     private String name;
 
-    /**
-     * 数据类型
-     * [1-字符串 2-整型 3-布尔]
-     */
-    @NotEmpty(message = "请填写数据类型")
-    @Size(max = 1, message = "数据类型长度不能超过{max}")
-    @Schema(description = "数据类型")
-    private String dataType;
-
-    /**
-     * 字典类型
-     * [10-系统字典 20-枚举字典 30-业务字典]
-     */
-    @NotEmpty(message = "请填写字典类型")
-    @Size(max = 2, message = "字典类型长度不能超过{max}")
-    @Schema(description = "字典类型")
-    private String dictType;
-
-    /**
-     * 树路径
-     */
-    @NotEmpty(message = "请填写树路径")
-    @Size(max = 1024, message = "树路径长度不能超过{max}")
-    @Schema(description = "树路径")
-    private String treePath;
 
     /**
      * 状态

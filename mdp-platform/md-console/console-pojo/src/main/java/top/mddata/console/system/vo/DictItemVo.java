@@ -158,4 +158,15 @@ public class DictItemVo implements Serializable {
     @Schema(description = "更新时间")
     private LocalDateTime updatedAt;
 
+
+    /**
+     * 字典的key
+     */
+    private String dictKey;
+
+    /**
+     * 查询枚举字典时使用
+     */
+    @Schema(description = "枚举值是否存在")
+    private Boolean exist;
 }

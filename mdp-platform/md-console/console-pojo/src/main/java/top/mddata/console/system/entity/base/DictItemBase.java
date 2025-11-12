@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import top.mddata.base.base.entity.SuperEntity;
+import top.mddata.base.base.entity.TreeEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,7 +23,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class DictItemBase extends SuperEntity<Long> implements Serializable {
+public class DictItemBase<E extends TreeEntity<Long, E>> extends TreeEntity<Long, E> implements Serializable {
     /** 表名称 */
     public static final String TABLE_NAME = "mdc_dict_item";
 

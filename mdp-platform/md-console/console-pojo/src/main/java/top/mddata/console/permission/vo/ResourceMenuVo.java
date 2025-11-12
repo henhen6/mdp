@@ -1,5 +1,6 @@
 package top.mddata.console.permission.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,11 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.annotation.echo.Echo;
+import top.mddata.base.base.entity.TreeEntity;
+import top.mddata.common.constant.EchoApi;
+import top.mddata.common.constant.EchoDictType;
 import top.mddata.console.permission.entity.base.ResourceMenuBase;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 菜单 VO类（通常用作Controller出参）。
@@ -27,11 +33,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "菜单")
 @Table(ResourceMenuBase.TABLE_NAME)
-public class ResourceMenuVo implements Serializable {
+public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
+    @Builder.Default
+    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
     /**
      * ID
@@ -63,6 +70,7 @@ public class ResourceMenuVo implements Serializable {
      * [10-目录  20-菜单 30-内链 40-外链]
      */
     @Schema(description = "类型")
+    @Echo(api = EchoApi.DICT_CLASS, dictType = EchoDictType.Admin.MENU_TYPE)
     private String menuType;
 
     /**
@@ -119,7 +127,7 @@ public class ResourceMenuVo implements Serializable {
      *
      */
     @Schema(description = "元数据")
-    private String meta;
+    private RouterMeta meta;
 
     /**
      * 创建人id

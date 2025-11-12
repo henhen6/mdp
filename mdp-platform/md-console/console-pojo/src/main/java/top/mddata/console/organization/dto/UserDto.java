@@ -9,11 +9,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.annotation.constraints.NotEmptyPattern;
 import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static top.mddata.base.utils.ValidatorUtil.REGEX_EMAIL;
+import static top.mddata.base.utils.ValidatorUtil.REGEX_MOBILE;
+import static top.mddata.base.utils.ValidatorUtil.REGEX_PASSWORD;
 
 /**
  * 用户 DTO（写入方法入参）。
@@ -52,7 +58,13 @@ public class UserDto implements Serializable {
      */
     @Size(max = 255, message = "密码长度不能超过{max}")
     @Schema(description = "密码")
+    @NotEmptyPattern(regexp = REGEX_PASSWORD, message = "至少包含字母、数字、特殊字符")
     private String password;
+
+
+    @Schema(description = "是否使用默认密码")
+    @NotNull(message = "请选择是否使用默认密码")
+    private Boolean defPassword;
 
     /**
      * 性别
@@ -74,10 +86,13 @@ public class UserDto implements Serializable {
      */
     @Size(max = 20, message = "电话号码长度不能超过{max}")
     @Schema(description = "电话号码")
+    @NotEmptyPattern(regexp = REGEX_MOBILE, message = "请输入11位的手机号")
     private String phone;
 
     /**
      * 头像
+     *
+     * 前端传递的必须是文件表的id， 存储到数据库时，需要设置为对象id
      */
     @Schema(description = "头像")
     private Long avatar;
@@ -94,6 +109,7 @@ public class UserDto implements Serializable {
      */
     @Size(max = 128, message = "邮箱地址长度不能超过{max}")
     @Schema(description = "邮箱地址")
+    @NotEmptyPattern(regexp = REGEX_EMAIL, message = "邮箱格式不合法")
     private String email;
 
     /**
@@ -160,23 +176,15 @@ public class UserDto implements Serializable {
     private String ddOpenid;
 
     /**
-     * 人员类型
-     * [1-普通用户 2-管理员 99-运维管理员]
-     */
-    @Schema(description = "人员类型")
-    private Integer userType;
-
-    /**
      * 所属岗位
      */
     @Schema(description = "所属岗位")
     private Long positionId;
 
     /**
-     * 用户来源
+     * 机构ID
      */
-    @Size(max = 255, message = "用户来源长度不能超过{max}")
-    @Schema(description = "用户来源")
-    private String userSource;
+    @Schema(description = "所属部门")
+    private List<Long> orgIdList;
 
 }

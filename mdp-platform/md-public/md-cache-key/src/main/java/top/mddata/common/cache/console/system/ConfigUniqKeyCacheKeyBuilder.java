@@ -15,7 +15,7 @@ import top.mddata.common.cache.CacheKeyTable;
  * @author henhen6
  * @since 2025/8/6 23:55
  */
-public class SysParamUniqKeyCacheKeyBuilder implements CacheKeyBuilder {
+public class ConfigUniqKeyCacheKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 构造器
@@ -23,7 +23,7 @@ public class SysParamUniqKeyCacheKeyBuilder implements CacheKeyBuilder {
      * @return key
      */
     public static CacheKey builder(String uniqKey) {
-        return new SysParamUniqKeyCacheKeyBuilder().key(uniqKey);
+        return new ConfigUniqKeyCacheKeyBuilder().key(uniqKey);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class SysParamUniqKeyCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Admin.SYS_PARAM;
+        return CacheKeyTable.Admin.PARAM;
     }
 
     @Override

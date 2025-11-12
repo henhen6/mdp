@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import top.mddata.console.system.entity.base.DictBase;
 
+import java.util.List;
+
 /**
  * 字典实体类。
  * DO类：数据对象，可以在关联查询时，再次添加字段，重新生成代码时，忽略此文件。
@@ -20,4 +22,6 @@ import top.mddata.console.system.entity.base.DictBase;
 @NoArgsConstructor
 @Table(DictBase.TABLE_NAME)
 public class Dict extends DictBase {
+
+    private List<DictItem> sysDictItemList;
 }

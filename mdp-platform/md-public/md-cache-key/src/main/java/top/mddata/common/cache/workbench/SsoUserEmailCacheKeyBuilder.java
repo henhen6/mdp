@@ -29,7 +29,7 @@ public class SsoUserEmailCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Center.SSO_USER;
+        return CacheKeyTable.Center.USER;
     }
 
     @Override

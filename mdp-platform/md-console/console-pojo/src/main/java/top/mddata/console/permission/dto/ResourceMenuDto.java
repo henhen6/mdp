@@ -1,6 +1,7 @@
 package top.mddata.console.permission.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.console.permission.vo.RouterMeta;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -81,6 +83,7 @@ public class ResourceMenuDto implements Serializable {
      * 路由地址
      */
     @Size(max = 255, message = "路由地址长度不能超过{max}")
+    @NotEmpty(message = "请填写路由地址")
     @Schema(description = "路由地址")
     private String path;
 
@@ -107,13 +110,6 @@ public class ResourceMenuDto implements Serializable {
     private Boolean state;
 
     /**
-     * 树路径
-     */
-    @Size(max = 1024, message = "树路径长度不能超过{max}")
-    @Schema(description = "树路径")
-    private String treePath;
-
-    /**
      * 父级ID
      */
     @Schema(description = "父级ID")
@@ -125,12 +121,9 @@ public class ResourceMenuDto implements Serializable {
     @Schema(description = "顺序号")
     private Integer weight;
 
-    /**
-     * 元数据
-     *
-     */
-    @Size(max = 1024, message = "元数据长度不能超过{max}")
+
+    @Valid
     @Schema(description = "元数据")
-    private String meta;
+    private RouterMeta meta;
 
 }

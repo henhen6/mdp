@@ -1,5 +1,6 @@
 package top.mddata.console.system.entity;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,5 +20,11 @@ import top.mddata.console.system.entity.base.DictItemBase;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(DictItemBase.TABLE_NAME)
-public class DictItem extends DictItemBase {
+public class DictItem extends DictItemBase <DictItem> {
+    /**
+     * 字典的key
+     * 数据库不存在该字段，需要映射 字典表的key
+     */
+    @Column(ignore = true)
+    private String dictKey;
 }
