@@ -38,7 +38,7 @@ public interface ConfigService extends SuperService<Config> {
      * @param uniqKey 参数标识
      * @return 系统参数
      */
-    ConfigVo getParam(String uniqKey);
+    ConfigVo getConfig(String uniqKey);
 
     /**
      * 根据参数标识，查询长整型系统参数

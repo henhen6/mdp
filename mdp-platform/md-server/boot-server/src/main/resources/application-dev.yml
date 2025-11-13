@@ -4,7 +4,7 @@ spring:
       host: 127.0.0.1
       port: 16379
       password: 'SbtyMveYNfLzTks7H0apCmyStPzWJqjy'
-      database: 5
+      database: 6
   datasource:
     druid:
       username: 'root'

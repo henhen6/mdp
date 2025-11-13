@@ -14,6 +14,7 @@ import java.io.Serializable;
 /**
  * 菜单实体类。
  *
+ * @param <E> 树节点
  * @author henhen6
  * @since 2025-11-12 16:27:16
  */

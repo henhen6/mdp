@@ -347,7 +347,7 @@ sa-token:
     # 应用标识
     client: '*'
     # sso-server 端主机地址
-    server-url: http://127.0.0.1:11000/api/center
+    server-url: http://127.0.0.1:${server.port}/api/center
     # 单点登录服务
     authUrl: 'http://localhost:12000/#/auth/login'
     signoutUrl: '/anyUser/sso/signout'

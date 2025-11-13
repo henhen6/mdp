@@ -35,7 +35,7 @@ import top.mddata.console.organization.service.UserService;
 import top.mddata.console.organization.vo.UserVo;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.facade.FileFacade;
-import top.mddata.console.system.facade.ParamFacade;
+import top.mddata.console.system.facade.ConfigFacade;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -53,7 +53,7 @@ import java.util.List;
 public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implements UserService {
     private final UserOrgRelService userOrgRelService;
     private final FileFacade fileFacade;
-    private final ParamFacade paramFacade;
+    private final ConfigFacade configFacade;
     private final SystemProperties systemProperties;
     private final UidGenerator uidGenerator;
 
@@ -78,7 +78,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         entity.setSalt(salt);
         entity.setPassword(password);
         entity.setUserType(UserTypeEnum.USER.getCode());
-        String expireTime = paramFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
+        String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
         entity.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
         entity.setUserSource(UserSourceEnum.PLATFORM.getCode());
         entity.setAvatar(entity.getId());
@@ -179,7 +179,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         sysUser.setSalt(salt);
         sysUser.setPassword(password);
 
-        String expireTime = paramFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
+        String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
         sysUser.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
 
         boolean flag = updateById(sysUser);

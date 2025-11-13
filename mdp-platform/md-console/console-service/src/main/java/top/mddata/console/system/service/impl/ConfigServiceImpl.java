@@ -133,7 +133,7 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
 
     @Override
     @Transactional(readOnly = true)
-    public ConfigVo getParam(String uniqKey) {
+    public ConfigVo getConfig(String uniqKey) {
         Config sysParam = getByUniqKey(uniqKey);
         return BeanUtil.toBean(sysParam, ConfigVo.class);
     }
