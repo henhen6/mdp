@@ -35,7 +35,7 @@ import top.mddata.workbench.vo.LoginLogVo;
 @RestController
 @Validated
 @Tag(name = "登录日志")
-@RequestMapping("/mdwLoginLog")
+@RequestMapping("/loginLog")
 @RequiredArgsConstructor
 public class LoginLogController extends SuperController<LoginLogService, LoginLog> {
     /**
