@@ -35,8 +35,8 @@ public class GeneralController {
 
     @Operation(summary = "根据参数标识，查询参数值", description = "根据参数标识，查询参数值")
     @PostMapping("/param/findConfigByUniqKey")
-    public R<Map<String, ConfigVo>> findParamByUniqKey(@RequestBody List<String> uniqKeys) {
-        return R.success(configService.findParamByUniqKey(uniqKeys));
+    public R<Map<String, ConfigVo>> findConfigByUniqKey(@RequestBody List<String> uniqKeys) {
+        return R.success(configService.findConfigByUniqKey(uniqKeys));
     }
 
     @Operation(summary = "根据字典类型编码批量查询字典项", description = "根据字典类型编码批量查询字典项")

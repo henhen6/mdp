@@ -22,49 +22,49 @@ public interface ResourceMenuService extends SuperService<ResourceMenu> {
      * 3. 根据权限控制不同的用户可以访问不同的菜单
      * 4. 对于没有权限的菜单，可以做到：①菜单不可见，访问403； ②菜单可见，访问403
      *
-     * @param applicationId 应用ID
+     * @param appId 应用ID
      * @return 菜单树
      */
-    List<ResourceMenuVo> findAllMenu(Long applicationId);
+    List<ResourceMenuVo> findAllMenu(Long appId);
 
     /**
      * 检查菜单编码是否重复
      *
-     * @param applicationId 应用ID
+     * @param appId 应用ID
      * @param code 菜单编码
      * @param id 菜单ID
      * @return true:重复，false:不重复
      */
-    Boolean checkCode(Long applicationId, String code, Long id);
+    Boolean checkCode(Long appId, String code, Long id);
 
     /**
      * 检查菜单路径是否重复
      *
-     * @param applicationId 应用ID
+     * @param appId 应用ID
      * @param path 菜单路径
      * @param id 菜单ID
      * @return true:重复，false:不重复
      */
-    Boolean checkPath(Long applicationId, String path, Long id);
+    Boolean checkPath(Long appId, String path, Long id);
 
     /**
      * 检查菜单名称是否重复
      *
-     * @param applicationId 应用ID
+     * @param appId 应用ID
      * @param name 菜单名称
      * @param id 菜单ID
      * @return true:重复，false:不重复
      */
-    Boolean checkName(Long applicationId, String name, Long id);
+    Boolean checkName(Long appId, String name, Long id);
 
     /**
      * 获取默认菜单
      *
-     * @param applicationId 应用ID
+     * @param appId 应用ID
      * @param id 父级菜单ID
      * @return 默认菜单
      */
-    ResourceMenuVo getDefMenuByParentId(Long applicationId, Long id);
+    ResourceMenuVo getDefMenuByParentId(Long appId, Long id);
 
     /**
      * 获取所有子菜单

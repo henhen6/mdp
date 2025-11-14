@@ -37,8 +37,8 @@ public class ResourceController {
      */
     @Operation(summary = "查询指定应用所有的菜单", description = "查询指定应用所有的菜单")
     @GetMapping("/anyUser/findAllMenu")
-    public R<List<ResourceMenuVo>> findAllMenu(@RequestParam(value = "applicationId") Long applicationId) {
-        return R.success(resourceMenuService.findAllMenu(applicationId));
+    public R<List<ResourceMenuVo>> findAllMenu(@RequestParam(value = "appId") Long appId) {
+        return R.success(resourceMenuService.findAllMenu(appId));
     }
 
     /**
@@ -46,7 +46,7 @@ public class ResourceController {
      */
     @Operation(summary = "查询用户可用的所有资源", description = "根据员工ID查询员工在某个应用下可用的资源")
     @GetMapping("/anyone/visible/resource")
-    public R<VisibleResourceVO> visible(@RequestParam(value = "applicationId") Long applicationId) {
+    public R<VisibleResourceVO> visible(@RequestParam(value = "appId") Long appId) {
         return R.success(VisibleResourceVO.builder()
                 .enabled(ignoreProperties.getAuthEnabled())
                 .caseSensitive(ignoreProperties.getCaseSensitive())

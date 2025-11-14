@@ -242,7 +242,7 @@ mybatis-flex:
       value: 'uid'
 
 server:
-  port: 11000
+  port: 7800
   # 优雅停机
   shutdown: GRACEFUL
   servlet:

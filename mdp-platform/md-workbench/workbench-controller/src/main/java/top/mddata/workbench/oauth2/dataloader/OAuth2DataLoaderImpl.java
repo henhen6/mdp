@@ -56,7 +56,7 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
             throw new BizException("该应用已被封禁，无法授权认证");
         }
 
-        R<List<OauthScopeVo>> listR = scopeFacade.listByApplicationId(opApplicationVo.getId());
+        R<List<OauthScopeVo>> listR = scopeFacade.listByAppId(opApplicationVo.getId());
         List<String> scopes = new ArrayList<>();
         if (listR.getIsSuccess()) {
             List<OauthScopeVo> scopeList = listR.getData();

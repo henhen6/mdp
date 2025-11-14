@@ -15,8 +15,8 @@ public interface OauthScopeFacade {
     /**
      * 根据应用id查询应用拥有的权限
      *
-     * @param applicationId 应用id
+     * @param appId 应用id
      * @return 权限
      */
-    R<List<OauthScopeVo>> listByApplicationId(Long applicationId);
+    R<List<OauthScopeVo>> listByAppId(Long appId);
 }

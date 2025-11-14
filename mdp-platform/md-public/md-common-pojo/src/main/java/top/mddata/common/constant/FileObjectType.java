@@ -31,14 +31,14 @@ public interface FileObjectType {
         /**
          * 应用LOGO
          */
-        String APPLICATION_LOGO = "APPLICATION_LOGO";
+        String APP_LOGO = "APP_LOGO";
         /**
          * 应用申请LOGO
          */
-        String APPLICATION_APPLY_LOGO = "APPLICATION_APPLY_LOGO";
+        String APP_APPLY_LOGO = "APP_APPLY_LOGO";
         /**
          * 应用申请资质文件
          */
-        String APPLICATION_APPLY_CREDENTIAL_FILE = "APPLICATION_APPLY_CREDENTIAL_FILE";
+        String APP_APPLY_CREDENTIAL_FILE = "APP_APPLY_CREDENTIAL_FILE";
     }
 }

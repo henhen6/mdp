@@ -45,7 +45,7 @@ public class ResourceMenuDto implements Serializable {
      */
     @NotNull(message = "请填写所属应用")
     @Schema(description = "所属应用")
-    private Long applicationId;
+    private Long appId;
 
     /**
      * 编码

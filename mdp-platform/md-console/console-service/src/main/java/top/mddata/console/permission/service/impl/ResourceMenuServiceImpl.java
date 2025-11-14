@@ -73,10 +73,10 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
      * @return
      */
     @Override
-    public List<ResourceMenuVo> findAllMenu(Long applicationId) {
+    public List<ResourceMenuVo> findAllMenu(Long appId) {
         // 1 查询所有的菜单
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ResourceMenu::getApplicationId, applicationId).eq(ResourceMenu::getState, true);
+        queryWrapper.eq(ResourceMenu::getAppId, appId).eq(ResourceMenu::getState, true);
         queryWrapper.orderBy(ResourceMenu::getWeight, true);
         List<ResourceMenu> menuList = list(queryWrapper);
         List<ResourceMenuVo> resultList = BeanUtil.copyToList(menuList, ResourceMenuVo.class);
@@ -157,9 +157,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
 
     @Override
     @Transactional(readOnly = true)
-    public Boolean checkCode(Long applicationId, String code, Long id) {
+    public Boolean checkCode(Long appId, String code, Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ResourceMenu::getApplicationId, applicationId)
+        queryWrapper.eq(ResourceMenu::getAppId, appId)
                 .eq(ResourceMenu::getCode, code)
                 .ne(ResourceMenu::getId, id);
         return count(queryWrapper) > 0;
@@ -167,9 +167,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
 
     @Transactional(readOnly = true)
     @Override
-    public Boolean checkPath(Long applicationId, String path, Long id) {
+    public Boolean checkPath(Long appId, String path, Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ResourceMenu::getApplicationId, applicationId)
+        queryWrapper.eq(ResourceMenu::getAppId, appId)
                 .eq(ResourceMenu::getPath, path)
                 .ne(ResourceMenu::getId, id);
         return count(queryWrapper) > 0;
@@ -177,9 +177,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
 
     @Override
     @Transactional(readOnly = true)
-    public Boolean checkName(Long applicationId, String name, Long id) {
+    public Boolean checkName(Long appId, String name, Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ResourceMenu::getApplicationId, applicationId)
+        queryWrapper.eq(ResourceMenu::getAppId, appId)
                 .eq(ResourceMenu::getName, name)
                 .ne(ResourceMenu::getId, id);
         return count(queryWrapper) > 0;
@@ -188,9 +188,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     @Override
     protected ResourceMenu saveBefore(Object save) {
         ResourceMenuDto data = (ResourceMenuDto) save;
-        ArgumentAssert.isFalse(checkCode(data.getApplicationId(), data.getCode(), null), "编码重复：{}", data.getCode());
-        ArgumentAssert.isFalse(checkName(data.getApplicationId(), data.getName(), null), "菜单名称重复：{}", data.getName());
-        ArgumentAssert.isFalse(checkPath(data.getApplicationId(), data.getPath(), null), "路由地址重复：{}", data.getPath());
+        ArgumentAssert.isFalse(checkCode(data.getAppId(), data.getCode(), null), "编码重复：{}", data.getCode());
+        ArgumentAssert.isFalse(checkName(data.getAppId(), data.getName(), null), "菜单名称重复：{}", data.getName());
+        ArgumentAssert.isFalse(checkPath(data.getAppId(), data.getPath(), null), "路由地址重复：{}", data.getPath());
 
         ResourceMenu parent = validateAndFill(data);
 
@@ -259,9 +259,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     @Override
     protected ResourceMenu updateBefore(Object update) {
         ResourceMenuDto data = (ResourceMenuDto) update;
-        ArgumentAssert.isFalse(checkCode(data.getApplicationId(), data.getCode(), data.getId()), "编码重复：{}", data.getCode());
-        ArgumentAssert.isFalse(checkName(data.getApplicationId(), data.getName(), data.getId()), "菜单名称重复：{}", data.getName());
-        ArgumentAssert.isFalse(checkPath(data.getApplicationId(), data.getPath(), data.getId()), "路由地址重复：{}", data.getPath());
+        ArgumentAssert.isFalse(checkCode(data.getAppId(), data.getCode(), data.getId()), "编码重复：{}", data.getCode());
+        ArgumentAssert.isFalse(checkName(data.getAppId(), data.getName(), data.getId()), "菜单名称重复：{}", data.getName());
+        ArgumentAssert.isFalse(checkPath(data.getAppId(), data.getPath(), data.getId()), "路由地址重复：{}", data.getPath());
 
         if (data.getMeta() == null) {
             data.setMeta(new RouterMeta());
@@ -282,9 +282,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
 
     @Override
     @Transactional(readOnly = true)
-    public ResourceMenuVo getDefMenuByParentId(Long applicationId, Long id) {
+    public ResourceMenuVo getDefMenuByParentId(Long appId, Long id) {
         ResourceMenuVo sysMenu = new ResourceMenuVo();
-        sysMenu.setApplicationId(applicationId);
+        sysMenu.setAppId(appId);
         sysMenu.setState(true);
         sysMenu.setMeta(new RouterMeta().setKeepAlive(true));
         sysMenu.setParentId(id);
@@ -292,7 +292,7 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
         if (id == null) {
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.select(QueryMethods.max(ResourceMenu::getWeight))
-                    .eq(ResourceMenu::getApplicationId, applicationId)
+                    .eq(ResourceMenu::getAppId, appId)
                     .isNull(ResourceMenu::getParentId);
             Integer weight = getObjAs(queryWrapper, Integer.class);
             weight = weight == null ? 0 : weight;
@@ -308,7 +308,7 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.select(QueryMethods.max(ResourceMenu::getWeight))
-                .eq(ResourceMenu::getApplicationId, applicationId)
+                .eq(ResourceMenu::getAppId, appId)
                 .eq(ResourceMenu::getParentId, id);
         Integer weight = getObjAs(queryWrapper, Integer.class);
         weight = weight == null ? 0 : weight;

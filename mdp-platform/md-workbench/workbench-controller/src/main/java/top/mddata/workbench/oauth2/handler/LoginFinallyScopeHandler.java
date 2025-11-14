@@ -53,7 +53,7 @@ public class LoginFinallyScopeHandler implements SaOAuth2ScopeHandlerInterface {
         AppVo data = result.getData();
 
         OauthLogDto ool = new OauthLogDto();
-        ool.setApplicationId(data.getId());
+        ool.setAppId(data.getId());
         ool.setUserId(SaFoxUtil.getValueByType(at.getLoginId(), long.class));
         ool.setOpenid(SaFoxUtil.getValueByType(at.extraData.get("openid"), String.class));
         ool.setUnionid(SaFoxUtil.getValueByType(at.extraData.get("unionid"), String.class));

@@ -82,5 +82,5 @@ public interface ConfigService extends SuperService<Config> {
      * @param uniqKeys 参数标识
      * @return 参数
      */
-    Map<String, ConfigVo> findParamByUniqKey(List<String> uniqKeys);
+    Map<String, ConfigVo> findConfigByUniqKey(List<String> uniqKeys);
 }

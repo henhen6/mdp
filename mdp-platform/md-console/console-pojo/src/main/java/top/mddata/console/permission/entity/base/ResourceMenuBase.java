@@ -34,7 +34,7 @@ public class ResourceMenuBase<E extends TreeEntity<Long, E>> extends TreeEntity<
     /**
      * 所属应用
      */
-    private Long applicationId;
+    private Long appId;
 
     /**
      * 编码

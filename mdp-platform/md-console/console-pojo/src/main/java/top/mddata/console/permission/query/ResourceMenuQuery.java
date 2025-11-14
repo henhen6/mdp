@@ -41,7 +41,7 @@ public class ResourceMenuQuery extends ExtraParams implements Serializable {
      * 所属应用
      */
     @Schema(description = "所属应用")
-    private Long applicationId;
+    private Long appId;
 
     /**
      * 编码

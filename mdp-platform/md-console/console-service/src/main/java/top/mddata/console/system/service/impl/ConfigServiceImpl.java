@@ -188,7 +188,7 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, ConfigVo> findParamByUniqKey(List<String> uniqKeys) {
+    public Map<String, ConfigVo> findConfigByUniqKey(List<String> uniqKeys) {
         if (CollUtil.isEmpty(uniqKeys)) {
             return Collections.emptyMap();
         }
