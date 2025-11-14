@@ -1,5 +1,7 @@
 package top.mddata.console.permission.entity.base;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.Fastjson2TypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import top.mddata.base.base.entity.TreeEntity;
+import top.mddata.console.permission.vo.RouterMeta;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -97,7 +100,8 @@ public class ResourceMenuBase<E extends TreeEntity<Long, E>> extends TreeEntity<
      * 元数据
      *
      */
-    private String meta;
+    @Column(typeHandler = Fastjson2TypeHandler.class)
+    private RouterMeta meta;
 
     /**
      * 删除人

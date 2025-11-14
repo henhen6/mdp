@@ -112,13 +112,6 @@ public class ResourceMenuQuery extends ExtraParams implements Serializable {
     private Integer weight;
 
     /**
-     * 元数据
-     *
-     */
-    @Schema(description = "元数据")
-    private String meta;
-
-    /**
      * 创建人id
      */
     @Schema(description = "创建人id")

@@ -162,7 +162,7 @@ spring:
       host: 127.0.0.1
       port: 16379
       password: 'SbtyMveYNfLzTks7H0apCmyStPzWJqjy'
-      database: 5
+      database: 6
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
@@ -349,7 +349,7 @@ sa-token:
     # sso-server 端主机地址
     server-url: http://127.0.0.1:${server.port}/api/center
     # 单点登录服务
-    authUrl: 'http://localhost:12000/#/auth/login'
+    authUrl: 'http://localhost:7700/workbench/#/auth/login'
     signoutUrl: '/anyUser/sso/signout'
     pushUrl: '/anyUser/sso/pushS'
     getDataUrl: '/anyUser/sso/getData'

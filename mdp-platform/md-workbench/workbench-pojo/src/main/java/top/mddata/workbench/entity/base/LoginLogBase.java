@@ -1,16 +1,15 @@
 package top.mddata.workbench.entity.base;
 
-import java.io.Serializable;
-import top.mddata.base.base.entity.SuperEntity;
-
-import java.io.Serial;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.EqualsAndHashCode;
+import top.mddata.base.base.entity.BaseEntity;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * 登录日志实体类。
@@ -24,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class LoginLogBase extends SuperEntity<Long> implements Serializable {
+public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     /** 表名称 */
     public static final String TABLE_NAME = "mdw_login_log";
 

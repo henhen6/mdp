@@ -3,8 +3,8 @@ spring:
     redis:
       host: 127.0.0.1
       port: 16379
-      password: 'PJjs!@34'
-      database: 5
+      password: 'SbtyMveYNfLzTks7H0apCmyStPzWJqjy'
+      database: 6
   datasource:
     druid:
       username: 'root'
@@ -18,7 +18,7 @@ sa-token:
     # sso-server 端主机地址
     server-url: http://sso.mddata.top/api/workbench
     # 单点登录服务
-    authUrl: 'http://sso.mddata.top/#/auth/login'
+    authUrl: 'http://sso.mddata.top/workbench/#/auth/login'
     # API 接口调用秘钥
     secret-key: SSO-C3-kQwIOrYvnXmSDkwEiFngrKidMcdrg123
 
