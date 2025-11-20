@@ -3,7 +3,7 @@ package top.mddata.open.manage.facade.impl;
 import org.springframework.stereotype.Service;
 import top.mddata.base.base.R;
 import top.mddata.open.manage.facade.OauthScopeFacade;
-import top.mddata.open.manage.vo.OauthScopeVo;
+import top.mddata.open.admin.vo.OauthScopeVo;
 
 import java.util.List;
 

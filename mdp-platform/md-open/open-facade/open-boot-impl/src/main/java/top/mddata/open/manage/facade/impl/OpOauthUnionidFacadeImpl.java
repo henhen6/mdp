@@ -3,7 +3,7 @@ package top.mddata.open.manage.facade.impl;
 import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
 import top.mddata.open.manage.facade.OauthUnionidFacade;
-import top.mddata.open.manage.vo.OauthUnionidVo;
+import top.mddata.open.admin.vo.OauthUnionidVo;
 
 /**
  *

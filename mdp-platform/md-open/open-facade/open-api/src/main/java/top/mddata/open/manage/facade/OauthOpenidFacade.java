@@ -1,7 +1,7 @@
 package top.mddata.open.manage.facade;
 
 import top.mddata.base.base.R;
-import top.mddata.open.manage.vo.OauthOpenidVo;
+import top.mddata.open.admin.vo.OauthOpenidVo;
 
 /**
  * Openid

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
 import top.mddata.base.exception.BizException;
 import top.mddata.open.manage.facade.AppFacade;
-import top.mddata.open.manage.vo.AppVo;
+import top.mddata.open.admin.vo.AppVo;
 
 import java.util.List;
 
@@ -29,12 +29,12 @@ public class CustomSaSsoServerTemplate extends SaSsoServerTemplate {
     public SaSsoClientModel convertToSaSsoClientModel(AppVo client) {
         // 构建 SaSsoClientModel
         SaSsoClientModel model = new SaSsoClientModel();
-        model.setClient(client.getAppId());    // Client 标识
+        model.setClient(client.getAppKey());    // Client 标识
         model.setSecretKey(client.getAppSecret());   // 单独使用的秘钥
-        model.setAllowUrl(client.getAllowUrl());    // 所有允许的授权地址，多个用逗号隔开
-        model.setIsPush(client.getIsPush());  // 是否接收消息推送
-        model.setPushUrl(client.getPushUrl());   // 推送消息地址
-        model.setIsSlo(client.getIsSlo());   // 是否接收单点注销回调的消息推送
+        model.setAllowUrl(client.getSsoAllowUrl());    // 所有允许的授权地址，多个用逗号隔开
+        model.setIsPush(client.getSsoPush());  // 是否接收消息推送
+        model.setPushUrl(client.getSsoPushUrl());   // 推送消息地址
+        model.setIsSlo(client.getSsoSlo());   // 是否接收单点注销回调的消息推送
         return model;
     }
 

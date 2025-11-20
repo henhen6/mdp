@@ -13,9 +13,9 @@ import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.open.manage.facade.AppFacade;
 import top.mddata.open.manage.facade.OauthOpenidFacade;
 import top.mddata.open.manage.facade.OauthScopeFacade;
-import top.mddata.open.manage.vo.AppVo;
-import top.mddata.open.manage.vo.OauthOpenidVo;
-import top.mddata.open.manage.vo.OauthScopeVo;
+import top.mddata.open.admin.vo.AppVo;
+import top.mddata.open.admin.vo.OauthOpenidVo;
+import top.mddata.open.admin.vo.OauthScopeVo;
 
 import java.util.ArrayList;
 import java.util.List;

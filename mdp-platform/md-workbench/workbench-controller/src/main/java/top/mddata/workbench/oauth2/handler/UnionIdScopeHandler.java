@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
 import top.mddata.open.manage.facade.AppFacade;
 import top.mddata.open.manage.facade.OauthUnionidFacade;
-import top.mddata.open.manage.vo.AppVo;
-import top.mddata.open.manage.vo.OauthUnionidVo;
+import top.mddata.open.admin.vo.AppVo;
+import top.mddata.open.admin.vo.OauthUnionidVo;
 
 /**
  * UnionId Scope 处理器，在返回的 AccessToken 中增加 unionid 字段

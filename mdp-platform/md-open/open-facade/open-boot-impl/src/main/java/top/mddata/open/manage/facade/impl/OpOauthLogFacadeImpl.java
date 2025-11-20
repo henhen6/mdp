@@ -1,7 +1,7 @@
 package top.mddata.open.manage.facade.impl;
 
 import org.springframework.stereotype.Service;
-import top.mddata.open.manage.dto.OauthLogDto;
+import top.mddata.open.admin.dto.OauthLogDto;
 import top.mddata.open.manage.facade.OauthLogFacade;
 
 /**

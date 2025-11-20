@@ -1,6 +1,6 @@
 package top.mddata.open.manage.facade;
 
-import top.mddata.open.manage.dto.OauthLogDto;
+import top.mddata.open.admin.dto.OauthLogDto;
 
 /**
  * 授权日志

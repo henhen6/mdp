@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.base.R;
 import top.mddata.open.manage.facade.AppFacade;
-import top.mddata.open.manage.vo.AppVo;
+import top.mddata.open.admin.vo.AppVo;
 
 import static top.mddata.base.exception.code.ExceptionCode.JWT_TOKEN_EXPIRED;
 
