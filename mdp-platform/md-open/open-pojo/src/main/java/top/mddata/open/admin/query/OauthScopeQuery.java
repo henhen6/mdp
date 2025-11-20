@@ -1,6 +1,7 @@
 package top.mddata.open.admin.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -110,4 +111,19 @@ public class OauthScopeQuery extends ExtraParams implements Serializable {
     @Schema(description = "最后修改时间")
     private LocalDateTime updatedAt;
 
+    @NotNull(message = "分组ID不能为空", groups = {ApiQuery.GroupPage.class})
+    @Schema(description = "分组ID")
+    private Long groupId;
+
+    /**
+     * true: 查询分组拥有的接口
+     * false: 查询分组没有的接口
+     */
+    @Schema(description = "是否有权限")
+    private Boolean hasAuth;
+
+
+    public interface GroupPage {
+
+    }
 }

@@ -14,6 +14,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 应用 DTO（写入方法入参）。
@@ -39,21 +40,6 @@ public class AppDto implements Serializable {
     @Schema(description = "ID")
     private Long id;
 
-    /**
-     * 应用ID
-     */
-    @NotEmpty(message = "请填写应用ID")
-    @Size(max = 255, message = "应用ID长度不能超过{max}")
-    @Schema(description = "应用ID")
-    private String appKey;
-
-    /**
-     * 应用秘钥
-     */
-    @NotEmpty(message = "请填写应用秘钥")
-    @Size(max = 255, message = "应用秘钥长度不能超过{max}")
-    @Schema(description = "应用秘钥")
-    private String appSecret;
 
     /**
      * 应用名称
@@ -191,7 +177,7 @@ public class AppDto implements Serializable {
      */
     @Size(max = 512, message = "允许的授权类型长度不能超过{max}")
     @Schema(description = "允许的授权类型")
-    private String oauth2AllowGrantTypes;
+    private List<String> oauth2AllowGrantTypes;
 
     /**
      * Refresh-Token刷新策略
@@ -240,10 +226,5 @@ public class AppDto implements Serializable {
     @Schema(description = "是否自动授权")
     private Boolean oauth2IsConfirm;
 
-    /**
-     * 应用申请ID
-     */
-    @Schema(description = "应用申请ID")
-    private Long applyId;
 
 }

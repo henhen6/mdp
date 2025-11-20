@@ -45,6 +45,12 @@ public class AppKeysVo implements Serializable {
      */
     @Schema(description = "所属应用")
     private Long appId;
+    @Schema(description = "所属应用标识")
+    private String appKey;
+    @Schema(description = "所属应用秘钥")
+    private String appSecret;
+    @Schema(description = "应用名称")
+    private String appName;
 
     /**
      * 秘钥格式

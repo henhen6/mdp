@@ -7,10 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 应用拥有的权限分组 DTO（写入方法入参）。
@@ -29,12 +29,6 @@ public class AppGroupRelDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @NotNull(message = "请填写ID", groups = BaseEntity.Update.class)
-    @Schema(description = "ID")
-    private Long id;
 
     /**
      * 所属应用
@@ -47,8 +41,7 @@ public class AppGroupRelDto implements Serializable {
      * 分组
      * perm_group.id
      */
-    @NotNull(message = "请填写分组")
     @Schema(description = "分组")
-    private Long groupId;
+    private List<Long> groupIdList;
 
 }
