@@ -7,7 +7,7 @@ import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 审核状态
- * [0-初始化 1-申请中 2-通过 99-退回]
+ * [0-待提交 1-待审批 2-通过 99-退回]
  * @author henhen6
  * @since 2021/4/16 11:26 上午
  */
