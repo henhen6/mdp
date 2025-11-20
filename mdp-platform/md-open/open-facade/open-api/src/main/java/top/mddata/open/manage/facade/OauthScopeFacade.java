@@ -1,7 +1,7 @@
 package top.mddata.open.manage.facade;
 
-import top.mddata.open.manage.vo.OauthScopeVo;
 import top.mddata.base.base.R;
+import top.mddata.open.manage.vo.OauthScopeVo;
 
 import java.util.List;
 
