@@ -1,8 +1,8 @@
 package top.mddata.base.echo.properties;
 
-import top.mddata.base.constant.Constants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.mddata.base.constant.Constants;
 
 import java.util.List;
 

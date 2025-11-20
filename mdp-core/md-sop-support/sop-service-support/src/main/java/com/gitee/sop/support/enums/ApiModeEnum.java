@@ -1,9 +1,9 @@
 package com.gitee.sop.support.enums;
 
-import top.mddata.base.interfaces.BaseEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.dubbo.remoting.http12.rest.Schema;
+import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 接口模式

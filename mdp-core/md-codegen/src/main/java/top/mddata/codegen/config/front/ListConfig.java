@@ -1,9 +1,9 @@
 package top.mddata.codegen.config.front;
 
-import top.mddata.codegen.config.BaseConfig;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import top.mddata.codegen.config.BaseConfig;
 
 /**
  * 前端列表配置

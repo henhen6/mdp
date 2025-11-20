@@ -1,11 +1,6 @@
 package top.mddata.base.db.config;
 
 
-import top.mddata.base.db.properties.DatabaseProperties;
-import top.mddata.base.db.typehandler.FullLikeTypeHandler;
-import top.mddata.base.db.typehandler.LeftLikeTypeHandler;
-import top.mddata.base.db.typehandler.RightLikeTypeHandler;
-import top.mddata.base.uid.dao.WorkerNodeDao;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.baidu.fsg.uid.UidGenerator;
@@ -18,6 +13,11 @@ import com.baidu.fsg.uid.worker.DisposableWorkerIdAssigner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import top.mddata.base.db.properties.DatabaseProperties;
+import top.mddata.base.db.typehandler.FullLikeTypeHandler;
+import top.mddata.base.db.typehandler.LeftLikeTypeHandler;
+import top.mddata.base.db.typehandler.RightLikeTypeHandler;
+import top.mddata.base.uid.dao.WorkerNodeDao;
 
 /**
  * 持久层常用配置

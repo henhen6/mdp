@@ -15,9 +15,9 @@
  */
 package top.mddata.codegen.dialect;
 
+import com.mybatisflex.core.util.StringUtil;
 import top.mddata.codegen.entity.Column;
 import top.mddata.codegen.entity.Table;
-import com.mybatisflex.core.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;

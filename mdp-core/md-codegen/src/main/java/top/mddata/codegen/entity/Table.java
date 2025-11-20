@@ -15,6 +15,17 @@
  */
 package top.mddata.codegen.entity;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.mybatisflex.core.util.StringUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import top.mddata.base.annotation.log.RequestLog;
+import top.mddata.base.base.entity.TreeEntity;
+import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.codegen.config.ControllerConfig;
 import top.mddata.codegen.config.DtoConfig;
 import top.mddata.codegen.config.EntityConfig;
@@ -29,17 +40,6 @@ import top.mddata.codegen.config.TableConfig;
 import top.mddata.codegen.config.TableDefConfig;
 import top.mddata.codegen.config.VoConfig;
 import top.mddata.codegen.constant.PackageConst;
-import top.mddata.base.annotation.log.RequestLog;
-import top.mddata.base.base.entity.TreeEntity;
-import top.mddata.base.model.cache.CacheKeyBuilder;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.BooleanUtil;
-import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
-import com.mybatisflex.core.util.StringUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

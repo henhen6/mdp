@@ -1,6 +1,5 @@
 package top.mddata.base.xss.filter;
 
-import top.mddata.base.xss.wrapper.XssRequestWrapper;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.CharUtil;
 import cn.hutool.core.util.StrUtil;
@@ -13,6 +12,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
+import top.mddata.base.xss.wrapper.XssRequestWrapper;
 
 import java.io.IOException;
 import java.util.List;

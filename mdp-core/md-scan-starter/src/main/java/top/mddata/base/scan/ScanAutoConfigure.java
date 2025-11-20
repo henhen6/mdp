@@ -1,7 +1,5 @@
 package top.mddata.base.scan;
 
-import top.mddata.base.scan.properties.ScanProperties;
-import top.mddata.base.scan.utils.RequestMappingScanUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -10,6 +8,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import top.mddata.base.scan.properties.ScanProperties;
+import top.mddata.base.scan.utils.RequestMappingScanUtils;
 
 /**
  * 启动配置

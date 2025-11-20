@@ -1,8 +1,8 @@
 package top.mddata.base.log.event;
 
 
-import top.mddata.base.model.log.OptLogDTO;
 import org.springframework.context.ApplicationEvent;
+import top.mddata.base.model.log.OptLogDTO;
 
 /**
  * 系统日志事件

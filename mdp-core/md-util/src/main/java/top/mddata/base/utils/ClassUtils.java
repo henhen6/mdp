@@ -1,6 +1,5 @@
 package top.mddata.base.utils;
 
-import top.mddata.base.exception.BizException;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.SneakyThrows;
@@ -12,6 +11,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import top.mddata.base.exception.BizException;
 
 import java.io.IOException;
 import java.util.Collections;

@@ -1,11 +1,11 @@
 package top.mddata.base.mybatisflex.logicdelete;
 
-import top.mddata.base.utils.ContextUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.mybatisflex.core.dialect.IDialect;
 import com.mybatisflex.core.logicdelete.impl.TimeStampLogicDeleteProcessor;
 import com.mybatisflex.core.table.TableInfo;
 import lombok.RequiredArgsConstructor;
+import top.mddata.base.utils.ContextUtil;
 
 import static com.mybatisflex.core.constant.SqlConsts.EQUALS;
 

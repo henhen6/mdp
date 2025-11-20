@@ -1,11 +1,11 @@
 package top.mddata.base.tree;
 
-import top.mddata.base.base.entity.TreeEntity;
 import cn.hutool.core.builder.Builder;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import top.mddata.base.base.entity.TreeEntity;
 
 import java.io.Serial;
 import java.util.LinkedHashMap;

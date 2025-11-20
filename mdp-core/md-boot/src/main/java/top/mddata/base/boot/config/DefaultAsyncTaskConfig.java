@@ -1,6 +1,5 @@
 package top.mddata.base.boot.config;
 
-import top.mddata.base.boot.config.properties.AsyncProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +13,7 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import top.mddata.base.boot.config.properties.AsyncProperties;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;

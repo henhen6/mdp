@@ -1,7 +1,5 @@
 package top.mddata.base.scan.utils;
 
-import top.mddata.base.scan.model.SystemApiVO;
-import top.mddata.base.utils.StrPool;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +15,8 @@ import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import top.mddata.base.scan.model.SystemApiVO;
+import top.mddata.base.utils.StrPool;
 
 import java.util.ArrayList;
 import java.util.Arrays;

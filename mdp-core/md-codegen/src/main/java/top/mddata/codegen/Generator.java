@@ -15,6 +15,7 @@
  */
 package top.mddata.codegen;
 
+import lombok.extern.slf4j.Slf4j;
 import top.mddata.codegen.config.GlobalConfig;
 import top.mddata.codegen.config.StrategyConfig;
 import top.mddata.codegen.constant.GenTypeEnum;
@@ -22,7 +23,6 @@ import top.mddata.codegen.dialect.IDialect;
 import top.mddata.codegen.entity.Table;
 import top.mddata.codegen.generator.GeneratorFactory;
 import top.mddata.codegen.generator.IGenerator;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -1,6 +1,5 @@
 package top.mddata.base.utils;
 
-import top.mddata.base.interfaces.BaseEnum;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -11,6 +10,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import top.mddata.base.interfaces.BaseEnum;
 
 import java.io.Serializable;
 import java.util.ArrayList;

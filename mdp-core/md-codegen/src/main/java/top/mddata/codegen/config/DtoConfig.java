@@ -15,10 +15,6 @@
  */
 package top.mddata.codegen.config;
 
-import top.mddata.codegen.constant.GenerationStrategyEnum;
-import top.mddata.codegen.constant.PackageConst;
-import top.mddata.codegen.entity.Column;
-import top.mddata.codegen.entity.Table;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.util.StringUtil;
 import jakarta.validation.constraints.Digits;
@@ -27,6 +23,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.mddata.codegen.constant.GenerationStrategyEnum;
+import top.mddata.codegen.constant.PackageConst;
+import top.mddata.codegen.entity.Column;
+import top.mddata.codegen.entity.Table;
 
 import java.io.Serial;
 import java.io.Serializable;

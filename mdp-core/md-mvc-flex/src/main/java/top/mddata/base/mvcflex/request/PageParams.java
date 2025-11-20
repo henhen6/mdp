@@ -1,6 +1,5 @@
 package top.mddata.base.mvcflex.request;
 
-import top.mddata.base.base.entity.BaseEntity;
 import cn.hutool.core.map.MapUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import top.mddata.base.base.entity.BaseEntity;
 
 import java.util.HashMap;
 import java.util.Map;

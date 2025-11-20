@@ -15,11 +15,11 @@
  */
 package top.mddata.codegen.config;
 
-import top.mddata.codegen.constant.GenerationStrategyEnum;
-import top.mddata.codegen.entity.Table;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import top.mddata.codegen.constant.GenerationStrategyEnum;
+import top.mddata.codegen.entity.Table;
 
 import java.io.Serial;
 import java.io.Serializable;

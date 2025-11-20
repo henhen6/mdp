@@ -2,18 +2,17 @@ package top.mddata.workbench.vo;
 
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import top.mddata.workbench.entity.base.LoginLogBase;
-
-import java.io.Serial;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.Accessors;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import top.mddata.workbench.entity.base.LoginLogBase;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 登录日志 VO类（通常用作Controller出参）。
@@ -32,7 +31,6 @@ public class LoginLogVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
 
 
     /**

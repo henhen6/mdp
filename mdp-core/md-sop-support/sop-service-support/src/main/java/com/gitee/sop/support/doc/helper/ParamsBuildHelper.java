@@ -123,7 +123,7 @@ public class ParamsBuildHelper extends BaseHelper {
             // obtain generics from parent class
             JavaClass superJavaClass = Objects.nonNull(cls) ? cls.getSuperJavaClass() : null;
             if (Objects.nonNull(superJavaClass)
-                    && !JavaTypeConstants.OBJECT_SIMPLE_NAME.equals(superJavaClass.getSimpleName())) {
+                && !JavaTypeConstants.OBJECT_SIMPLE_NAME.equals(superJavaClass.getSimpleName())) {
                 globGicName = DocClassUtil.getSimpleGicName(superJavaClass.getGenericFullyQualifiedName());
             }
         }
@@ -420,7 +420,7 @@ public class ParamsBuildHelper extends BaseHelper {
                     }
                     if (Objects.nonNull(docField.getActualJavaType())) {
                         appendComment = " (ActualType: "
-                                + JavaClassUtil.getClassSimpleName(docField.getActualJavaType()) + ")";
+                                        + JavaClassUtil.getClassSimpleName(docField.getActualJavaType()) + ")";
                     }
                 }
 
@@ -461,7 +461,7 @@ public class ParamsBuildHelper extends BaseHelper {
                     // hand Param
                     commonHandleParam(paramList, param, isRequired, comment + appendComment, since, strRequired);
                 } else if (JavaClassValidateUtil.isCollection(subTypeName)
-                        || JavaClassValidateUtil.isArray(subTypeName)) {
+                           || JavaClassValidateUtil.isArray(subTypeName)) {
                     if (isShowJavaType) {
                         // rpc
                         param.setType(
@@ -545,7 +545,7 @@ public class ParamsBuildHelper extends BaseHelper {
                     String valType = DocClassUtil.getMapKeyValueType(fieldGicName).length == 0 ? fieldGicName
                             : DocClassUtil.getMapKeyValueType(fieldGicName)[1];
                     if (JavaClassValidateUtil.isMap(fieldGicName)
-                            || JavaTypeConstants.JAVA_OBJECT_FULLY.equals(valType)) {
+                        || JavaTypeConstants.JAVA_OBJECT_FULLY.equals(valType)) {
                         ApiParam param1 = ApiParam.of()
                                 .setField(preBuilder + "any object")
                                 .setId(atomicOrDefault(atomicInteger, fieldPid + 1))
@@ -692,9 +692,9 @@ public class ParamsBuildHelper extends BaseHelper {
                         .setClassName(valueSimpleName)
                         .setDesc(StringUtil.isEmpty(enumConstant.getComment()) ? enumConstant.getName()
                                 : enumConstant.getComment() + " "
-                                + Optional.ofNullable(projectBuilder.getClassByName(valueSimpleName))
-                                .map(JavaClass::getComment)
-                                .orElse(DocGlobalConstants.DEFAULT_MAP_KEY_DESC))
+                                  + Optional.ofNullable(projectBuilder.getClassByName(valueSimpleName))
+                                          .map(JavaClass::getComment)
+                                          .orElse(DocGlobalConstants.DEFAULT_MAP_KEY_DESC))
                         .setVersion(DocGlobalConstants.DEFAULT_VERSION)
                         .setPid(null == keyParentId ? pid : keyParentId);
                 apiParam.setId(apiParam.getPid() + paramList.size() + 1);
@@ -764,7 +764,7 @@ public class ParamsBuildHelper extends BaseHelper {
     public String dictionaryListComment(List<EnumDictionary> enumDataDict) {
         return enumDataDict.stream()
                 .map(apiDataDictionary -> apiDataDictionary.getName() + "-(\"" + apiDataDictionary.getValue() + "\",\""
-                        + apiDataDictionary.getDesc() + "\")")
+                                          + apiDataDictionary.getDesc() + "\")")
                 .collect(Collectors.joining(","));
     }
 
@@ -827,7 +827,7 @@ public class ParamsBuildHelper extends BaseHelper {
                     }
                 }
                 comment = comment + "<br/>[Enum: " + dictionaryListComment(dataDictionary.getEnumDataDict(enumClass))
-                        + "]";
+                          + "]";
             }
         } else {
             if (StringUtil.isNotEmpty(enumComments)) {

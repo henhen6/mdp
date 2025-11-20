@@ -15,10 +15,10 @@
  */
 package top.mddata.codegen.config;
 
-import top.mddata.codegen.config.front.ButtonConfig;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import top.mddata.codegen.config.front.ButtonConfig;
 
 import java.io.Serial;
 import java.util.List;

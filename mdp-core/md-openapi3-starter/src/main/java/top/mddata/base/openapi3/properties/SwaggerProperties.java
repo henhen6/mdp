@@ -1,12 +1,12 @@
 package top.mddata.base.openapi3.properties;
 
-import top.mddata.base.constant.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.mddata.base.constant.Constants;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package top.mddata.base.mybatisflex.utils;
 
-import top.mddata.base.utils.BeanPlusUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.mybatisflex.core.paginate.Page;
+import top.mddata.base.utils.BeanPlusUtil;
 
 import java.util.List;
 

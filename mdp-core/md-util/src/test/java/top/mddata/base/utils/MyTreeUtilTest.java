@@ -1,8 +1,8 @@
 package top.mddata.base.utils;
 
-import top.mddata.base.base.entity.TreeEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.mddata.base.base.entity.TreeEntity;
 
 import java.util.ArrayList;
 import java.util.List;

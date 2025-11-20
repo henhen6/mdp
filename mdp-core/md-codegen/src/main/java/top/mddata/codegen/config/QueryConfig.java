@@ -15,13 +15,13 @@
  */
 package top.mddata.codegen.config;
 
-import top.mddata.codegen.constant.GenerationStrategyEnum;
-import top.mddata.codegen.entity.Column;
-import top.mddata.codegen.entity.Table;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.util.StringUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.mddata.codegen.constant.GenerationStrategyEnum;
+import top.mddata.codegen.entity.Column;
+import top.mddata.codegen.entity.Table;
 
 import java.io.Serial;
 import java.io.Serializable;

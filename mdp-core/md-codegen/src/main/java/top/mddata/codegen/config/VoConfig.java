@@ -15,17 +15,17 @@
  */
 package top.mddata.codegen.config;
 
-import top.mddata.codegen.constant.GenerationStrategyEnum;
-import top.mddata.codegen.entity.Column;
-import top.mddata.codegen.entity.Table;
-import top.mddata.base.base.entity.TreeEntity;
-import top.mddata.base.interfaces.echo.EchoVO;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.util.StringUtil;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.mddata.base.base.entity.TreeEntity;
+import top.mddata.base.interfaces.echo.EchoVO;
+import top.mddata.codegen.constant.GenerationStrategyEnum;
+import top.mddata.codegen.entity.Column;
+import top.mddata.codegen.entity.Table;
 
 import java.io.Serial;
 import java.io.Serializable;

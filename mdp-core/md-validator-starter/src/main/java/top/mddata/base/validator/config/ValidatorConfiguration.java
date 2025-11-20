@@ -1,9 +1,5 @@
 package top.mddata.base.validator.config;
 
-import top.mddata.base.validator.component.FormValidatorController;
-import top.mddata.base.validator.component.extract.DefaultConstraintExtractImpl;
-import top.mddata.base.validator.component.extract.IConstraintExtract;
-import top.mddata.base.validator.utils.ValidatorUtils;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -12,6 +8,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+import top.mddata.base.validator.component.FormValidatorController;
+import top.mddata.base.validator.component.extract.DefaultConstraintExtractImpl;
+import top.mddata.base.validator.component.extract.IConstraintExtract;
+import top.mddata.base.validator.utils.ValidatorUtils;
 
 /**
  * 验证器配置

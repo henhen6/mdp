@@ -15,7 +15,6 @@
  */
 package com.baidu.fsg.uid.worker;
 
-import top.mddata.base.uid.dao.WorkerNodeDao;
 import cn.hutool.core.util.RandomUtil;
 import com.baidu.fsg.uid.utils.DockerUtils;
 import com.baidu.fsg.uid.utils.NetUtils;
@@ -24,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.uid.dao.WorkerNodeDao;
 
 import java.util.Date;
 

@@ -1,8 +1,8 @@
 package top.mddata.base.oauth2.processor;
 
-import top.mddata.base.oauth2.template.SaOauth2ClientTemplate;
 import lombok.Getter;
 import lombok.Setter;
+import top.mddata.base.oauth2.template.SaOauth2ClientTemplate;
 
 /**
  * Oauth2 请求处理器 （Client端）

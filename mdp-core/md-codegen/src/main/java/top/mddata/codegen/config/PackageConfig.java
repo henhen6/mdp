@@ -16,11 +16,11 @@
 
 package top.mddata.codegen.config;
 
-import top.mddata.base.utils.StrPool;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.util.StringUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.mddata.base.utils.StrPool;
 
 import java.io.Serial;
 import java.io.Serializable;

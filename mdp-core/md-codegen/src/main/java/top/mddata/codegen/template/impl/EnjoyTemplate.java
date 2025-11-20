@@ -15,7 +15,6 @@
  */
 package top.mddata.codegen.template.impl;
 
-import top.mddata.codegen.template.ITemplate;
 import com.jfinal.template.Engine;
 import com.jfinal.template.expr.ast.FieldGetters;
 import com.jfinal.template.source.ClassPathSource;
@@ -24,6 +23,7 @@ import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.mybatisflex.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import top.mddata.codegen.template.ITemplate;
 
 import java.io.File;
 import java.io.FileOutputStream;

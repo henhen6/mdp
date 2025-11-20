@@ -1,11 +1,11 @@
 package top.mddata.base.oauth2.spring;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import top.mddata.base.oauth2.SaOauth2ClientManager;
 import top.mddata.base.oauth2.processor.SaOauth2ClientProcessor;
 import top.mddata.base.oauth2.properties.Oauth2ClientConfig;
 import top.mddata.base.oauth2.template.SaOauth2ClientTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 
 /**
  * 注入 Sa-Token Oauth2 client 所需要的 Bean

@@ -1,13 +1,13 @@
 package top.mddata.base.echo.aspect;
 
-import top.mddata.base.annotation.echo.EchoResult;
-import top.mddata.base.interfaces.echo.EchoService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import top.mddata.base.annotation.echo.EchoResult;
+import top.mddata.base.interfaces.echo.EchoService;
 
 /**
  * InjectionResult 注解的 AOP 工具

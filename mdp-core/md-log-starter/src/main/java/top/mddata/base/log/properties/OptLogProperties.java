@@ -1,9 +1,9 @@
 package top.mddata.base.log.properties;
 
-import top.mddata.base.constant.Constants;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.mddata.base.constant.Constants;
 
 import static top.mddata.base.log.properties.OptLogProperties.PREFIX;
 

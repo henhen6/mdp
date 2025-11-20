@@ -222,7 +222,7 @@ public class SopDocBuildTemplate extends RpcDocBuildTemplate {
 
     @Override
     public boolean isEntryPoint(JavaClass javaClass, FrameworkAnnotations frameworkAnnotations) {
-       return javaClass.isInterface();
+        return javaClass.isInterface();
     }
 
 }

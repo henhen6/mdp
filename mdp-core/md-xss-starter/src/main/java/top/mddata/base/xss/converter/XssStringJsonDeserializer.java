@@ -1,11 +1,11 @@
 package top.mddata.base.xss.converter;
 
-import top.mddata.base.xss.utils.XssUtils;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import top.mddata.base.xss.utils.XssUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;

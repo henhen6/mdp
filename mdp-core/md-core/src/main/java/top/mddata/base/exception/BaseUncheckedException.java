@@ -1,7 +1,7 @@
 package top.mddata.base.exception;
 
-import top.mddata.base.utils.StrPool;
 import cn.hutool.core.util.StrUtil;
+import top.mddata.base.utils.StrPool;
 
 /**
  * 非运行期异常基类，所有自定义非运行时异常继承该类

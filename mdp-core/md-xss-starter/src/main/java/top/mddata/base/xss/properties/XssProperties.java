@@ -1,9 +1,9 @@
 package top.mddata.base.xss.properties;
 
-import top.mddata.base.constant.Constants;
 import cn.hutool.core.collection.CollUtil;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.mddata.base.constant.Constants;
 
 import java.util.List;
 

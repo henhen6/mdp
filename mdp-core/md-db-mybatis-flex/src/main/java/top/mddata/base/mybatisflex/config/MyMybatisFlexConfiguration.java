@@ -1,13 +1,6 @@
 package top.mddata.base.mybatisflex.config;
 
 
-import top.mddata.base.base.entity.BaseEntity;
-import top.mddata.base.db.config.DbConfiguration;
-import top.mddata.base.db.properties.DatabaseProperties;
-import top.mddata.base.mybatisflex.keygen.UidKeyGenerator;
-import top.mddata.base.mybatisflex.listener.DefaultInsertListener;
-import top.mddata.base.mybatisflex.listener.DefaultUpdateListener;
-import top.mddata.base.mybatisflex.logicdelete.TimeStampDelByLogicDeleteProcessor;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.audit.AuditManager;
@@ -28,6 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.springframework.context.annotation.Bean;
+import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.db.config.DbConfiguration;
+import top.mddata.base.db.properties.DatabaseProperties;
+import top.mddata.base.mybatisflex.keygen.UidKeyGenerator;
+import top.mddata.base.mybatisflex.listener.DefaultInsertListener;
+import top.mddata.base.mybatisflex.listener.DefaultUpdateListener;
+import top.mddata.base.mybatisflex.logicdelete.TimeStampDelByLogicDeleteProcessor;
 
 import java.util.Properties;
 

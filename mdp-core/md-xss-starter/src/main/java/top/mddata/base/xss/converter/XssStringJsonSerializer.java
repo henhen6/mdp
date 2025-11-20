@@ -1,11 +1,11 @@
 package top.mddata.base.xss.converter;
 
-import top.mddata.base.xss.utils.XssUtils;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import lombok.extern.slf4j.Slf4j;
+import top.mddata.base.xss.utils.XssUtils;
 
 /**
  * 基于xss的 json 序列化器

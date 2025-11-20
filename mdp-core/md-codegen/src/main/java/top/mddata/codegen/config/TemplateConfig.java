@@ -15,12 +15,12 @@
  */
 package top.mddata.codegen.config;
 
+import lombok.Data;
+import lombok.experimental.Accessors;
 import top.mddata.codegen.constant.GenTypeEnum;
 import top.mddata.codegen.generator.GeneratorFactory;
 import top.mddata.codegen.template.ITemplate;
 import top.mddata.codegen.template.impl.EnjoyTemplate;
-import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;

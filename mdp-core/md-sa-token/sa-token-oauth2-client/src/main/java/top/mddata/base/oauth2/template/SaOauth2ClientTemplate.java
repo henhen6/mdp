@@ -1,10 +1,10 @@
 package top.mddata.base.oauth2.template;
 
+import cn.dev33.satoken.util.SaFoxUtil;
+import lombok.Getter;
 import top.mddata.base.oauth2.SaOauth2ClientManager;
 import top.mddata.base.oauth2.name.ParamName;
 import top.mddata.base.oauth2.properties.Oauth2ClientConfig;
-import cn.dev33.satoken.util.SaFoxUtil;
-import lombok.Getter;
 
 /**
  * Oauth2 模板方法类 （Client端）

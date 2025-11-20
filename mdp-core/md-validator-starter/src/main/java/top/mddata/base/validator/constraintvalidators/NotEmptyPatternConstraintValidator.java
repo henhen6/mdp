@@ -1,6 +1,5 @@
 package top.mddata.base.validator.constraintvalidators;
 
-import top.mddata.base.annotation.constraints.NotEmptyPattern;
 import cn.hutool.core.util.StrUtil;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -8,6 +7,7 @@ import org.hibernate.validator.constraintvalidation.HibernateConstraintValidator
 import org.hibernate.validator.internal.engine.messageinterpolation.util.InterpolationHelper;
 import org.hibernate.validator.internal.util.logging.Log;
 import org.hibernate.validator.internal.util.logging.LoggerFactory;
+import top.mddata.base.annotation.constraints.NotEmptyPattern;
 
 import java.lang.invoke.MethodHandles;
 import java.util.regex.Matcher;

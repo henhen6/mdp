@@ -1,12 +1,12 @@
 package top.mddata.base.echo.manager;
 
-import top.mddata.base.annotation.echo.Echo;
-import top.mddata.base.interfaces.echo.LoadService;
 import com.google.common.base.Objects;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import top.mddata.base.annotation.echo.Echo;
+import top.mddata.base.interfaces.echo.LoadService;
 
 import java.io.Serializable;
 import java.util.HashSet;

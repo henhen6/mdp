@@ -1,11 +1,11 @@
 package top.mddata.workbench.entity;
 
 import com.mybatisflex.annotation.Table;
-import top.mddata.workbench.entity.base.LoginLogBase;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.workbench.entity.base.LoginLogBase;
 
 /**
  * 登录日志实体类。

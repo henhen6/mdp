@@ -1,10 +1,10 @@
 package top.mddata.base.boot.config;
 
-import top.mddata.base.boot.handler.ParamArgumentProcessor;
-import top.mddata.base.boot.handler.ParamAttrProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.mddata.base.boot.handler.ParamArgumentProcessor;
+import top.mddata.base.boot.handler.ParamAttrProcessor;
 
 import java.util.List;
 

@@ -15,11 +15,11 @@
  */
 package top.mddata.codegen.dialect.impl;
 
-import top.mddata.codegen.dialect.AbstractJdbcDialect;
-import top.mddata.codegen.entity.Table;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.mybatisflex.core.util.ClassUtil;
 import com.mybatisflex.core.util.StringUtil;
+import top.mddata.codegen.dialect.AbstractJdbcDialect;
+import top.mddata.codegen.entity.Table;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;

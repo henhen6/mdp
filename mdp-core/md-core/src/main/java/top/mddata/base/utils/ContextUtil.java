@@ -192,12 +192,12 @@ public final class ContextUtil {
         set(ContextConstants.CURRENT_DEPT_ID_HEADER, val);
     }
 
-    public static void setTopCompanyIsAdmin(Boolean val) {
-        set(ContextConstants.CURRENT_TOP_COMPANY_IS_ADMIN_HEADER, val);
-    }
-
     public static boolean getTopCompanyIsAdmin() {
         return get(ContextConstants.CURRENT_TOP_COMPANY_IS_ADMIN_HEADER, Boolean.class);
+    }
+
+    public static void setTopCompanyIsAdmin(Boolean val) {
+        set(ContextConstants.CURRENT_TOP_COMPANY_IS_ADMIN_HEADER, val);
     }
 
     private static boolean isEmptyLong(String key) {

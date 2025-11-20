@@ -15,9 +15,9 @@
  */
 package top.mddata.codegen.config;
 
-import top.mddata.codegen.constant.GenerationStrategyEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.mddata.codegen.constant.GenerationStrategyEnum;
 
 import java.io.Serial;
 import java.io.Serializable;

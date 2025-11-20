@@ -1,9 +1,5 @@
 package top.mddata.base.scan.controller;
 
-import top.mddata.base.base.R;
-import top.mddata.base.scan.model.SystemApiVO;
-import top.mddata.base.scan.properties.ScanProperties;
-import top.mddata.base.scan.utils.RequestMappingScanUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +7,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.base.R;
+import top.mddata.base.scan.model.SystemApiVO;
+import top.mddata.base.scan.properties.ScanProperties;
+import top.mddata.base.scan.utils.RequestMappingScanUtils;
 
 import java.util.List;
 import java.util.Map;

@@ -1,8 +1,5 @@
 package top.mddata.base.xss;
 
-import top.mddata.base.xss.converter.XssStringJsonDeserializer;
-import top.mddata.base.xss.filter.XssFilter;
-import top.mddata.base.xss.properties.XssProperties;
 import cn.hutool.core.collection.CollUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -10,6 +7,9 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import top.mddata.base.xss.converter.XssStringJsonDeserializer;
+import top.mddata.base.xss.filter.XssFilter;
+import top.mddata.base.xss.properties.XssProperties;
 
 import java.util.HashMap;
 import java.util.Map;

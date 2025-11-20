@@ -1,13 +1,13 @@
 package top.mddata.base.oauth2.spring;
 
-import top.mddata.base.oauth2.SaOauth2ClientManager;
-import top.mddata.base.oauth2.processor.SaOauth2ClientProcessor;
-import top.mddata.base.oauth2.properties.Oauth2ClientConfig;
-import top.mddata.base.oauth2.template.SaOauth2ClientTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import top.mddata.base.oauth2.SaOauth2ClientManager;
+import top.mddata.base.oauth2.processor.SaOauth2ClientProcessor;
+import top.mddata.base.oauth2.properties.Oauth2ClientConfig;
+import top.mddata.base.oauth2.template.SaOauth2ClientTemplate;
 
 /**
  * 注册 Sa-Token oauth2 client 所需要的 Bean

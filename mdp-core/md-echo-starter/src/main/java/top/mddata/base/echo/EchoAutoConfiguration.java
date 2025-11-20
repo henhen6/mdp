@@ -1,10 +1,5 @@
 package top.mddata.base.echo;
 
-import top.mddata.base.echo.aspect.EchoResultAspect;
-import top.mddata.base.echo.core.EchoServiceImpl;
-import top.mddata.base.echo.properties.EchoProperties;
-import top.mddata.base.interfaces.echo.EchoService;
-import top.mddata.base.interfaces.echo.LoadService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,6 +7,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.mddata.base.echo.aspect.EchoResultAspect;
+import top.mddata.base.echo.core.EchoServiceImpl;
+import top.mddata.base.echo.properties.EchoProperties;
+import top.mddata.base.interfaces.echo.EchoService;
+import top.mddata.base.interfaces.echo.LoadService;
 
 import java.util.Map;
 

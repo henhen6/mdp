@@ -1,19 +1,17 @@
 package top.mddata.workbench.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.io.Serializable;
-
-import top.mddata.base.base.entity.BaseEntity;
-
-import java.io.Serial;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.Accessors;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import top.mddata.base.base.entity.BaseEntity;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * 登录日志 DTO（写入方法入参）。

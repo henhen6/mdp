@@ -1,10 +1,10 @@
 package top.mddata.base.echo.manager;
 
-import top.mddata.base.annotation.echo.Echo;
 import com.google.common.base.Objects;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import top.mddata.base.annotation.echo.Echo;
 
 /**
  * 封装 Echo 注解中解析出来的参数

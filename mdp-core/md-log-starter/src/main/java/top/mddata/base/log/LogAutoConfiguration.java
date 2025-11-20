@@ -1,10 +1,6 @@
 package top.mddata.base.log;
 
 
-import top.mddata.base.log.aspect.SysLogAspect;
-import top.mddata.base.log.event.SysLogListener;
-import top.mddata.base.log.monitor.PointUtil;
-import top.mddata.base.log.properties.OptLogProperties;
 import com.alibaba.fastjson2.JSON;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,6 +10,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import top.mddata.base.log.aspect.SysLogAspect;
+import top.mddata.base.log.event.SysLogListener;
+import top.mddata.base.log.monitor.PointUtil;
+import top.mddata.base.log.properties.OptLogProperties;
 
 /**
  * 日志自动配置

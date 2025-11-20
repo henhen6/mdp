@@ -1,10 +1,10 @@
 package top.mddata.base.echo.manager;
 
-import top.mddata.base.annotation.echo.Echo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import top.mddata.base.annotation.echo.Echo;
 
 import java.io.Serializable;
 

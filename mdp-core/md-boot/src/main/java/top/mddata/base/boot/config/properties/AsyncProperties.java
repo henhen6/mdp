@@ -1,9 +1,9 @@
 package top.mddata.base.boot.config.properties;
 
-import top.mddata.base.constant.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.mddata.base.constant.Constants;
 
 import static top.mddata.base.boot.config.properties.AsyncProperties.PREFIX;
 

@@ -1,7 +1,5 @@
 package top.mddata.base.openapi3;
 
-import top.mddata.base.openapi3.properties.SwaggerProperties;
-import top.mddata.base.swagger2.MyKnife4jOpenApiCustomizer;
 import cn.hutool.core.collection.CollUtil;
 import com.github.xiaoymin.knife4j.spring.configuration.Knife4jProperties;
 import com.github.xiaoymin.knife4j.spring.extension.Knife4jOpenApiCustomizer;
@@ -18,6 +16,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import top.mddata.base.openapi3.properties.SwaggerProperties;
+import top.mddata.base.swagger2.MyKnife4jOpenApiCustomizer;
 
 import java.util.List;
 

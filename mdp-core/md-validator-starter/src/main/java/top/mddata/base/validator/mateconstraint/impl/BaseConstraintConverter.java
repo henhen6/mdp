@@ -1,9 +1,9 @@
 package top.mddata.base.validator.mateconstraint.impl;
 
-import top.mddata.base.validator.mateconstraint.IConstraintConverter;
-import top.mddata.base.validator.model.ConstraintInfo;
 import cn.hutool.core.map.MapUtil;
 import jakarta.validation.constraints.Email;
+import top.mddata.base.validator.mateconstraint.IConstraintConverter;
+import top.mddata.base.validator.model.ConstraintInfo;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;

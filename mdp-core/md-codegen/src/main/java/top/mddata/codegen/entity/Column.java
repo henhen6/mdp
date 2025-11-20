@@ -15,13 +15,6 @@
  */
 package top.mddata.codegen.entity;
 
-import top.mddata.codegen.config.ColumnConfig;
-import top.mddata.codegen.config.EntityConfig;
-import top.mddata.codegen.config.JavadocConfig;
-import top.mddata.codegen.config.front.FormConfig;
-import top.mddata.codegen.config.front.ListConfig;
-import top.mddata.codegen.config.front.PropertyConfig;
-import top.mddata.codegen.config.front.SearchConfig;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.annotation.ColumnMask;
 import com.mybatisflex.annotation.Id;
@@ -29,6 +22,13 @@ import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.core.mask.MaskManager;
 import com.mybatisflex.core.mask.Masks;
 import com.mybatisflex.core.util.StringUtil;
+import top.mddata.codegen.config.ColumnConfig;
+import top.mddata.codegen.config.EntityConfig;
+import top.mddata.codegen.config.JavadocConfig;
+import top.mddata.codegen.config.front.FormConfig;
+import top.mddata.codegen.config.front.ListConfig;
+import top.mddata.codegen.config.front.PropertyConfig;
+import top.mddata.codegen.config.front.SearchConfig;
 
 import java.math.BigDecimal;
 import java.sql.ResultSetMetaData;

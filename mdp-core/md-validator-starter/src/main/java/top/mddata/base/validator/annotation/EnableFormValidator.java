@@ -1,7 +1,7 @@
 package top.mddata.base.validator.annotation;
 
-import top.mddata.base.validator.config.ValidatorConfiguration;
 import org.springframework.context.annotation.Import;
+import top.mddata.base.validator.config.ValidatorConfiguration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

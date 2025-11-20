@@ -57,11 +57,10 @@ import java.util.function.Consumer;
 @Slf4j
 @Aspect
 public class SysLogAspect {
-    private final OptLogProperties properties;
-
     public static final int MAX_LENGTH = 65535;
     private static final ThreadLocal<OptLogDTO> THREAD_LOCAL = new ThreadLocal<>();
     private static final String FORM_DATA_CONTENT_TYPE = "multipart/form-data";
+    private final OptLogProperties properties;
     /**
      * 用于SpEL表达式解析.
      */

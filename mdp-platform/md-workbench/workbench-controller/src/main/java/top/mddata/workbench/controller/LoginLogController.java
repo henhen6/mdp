@@ -5,7 +5,6 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +24,8 @@ import top.mddata.workbench.entity.LoginLog;
 import top.mddata.workbench.query.LoginLogQuery;
 import top.mddata.workbench.service.LoginLogService;
 import top.mddata.workbench.vo.LoginLogVo;
+
+import java.util.List;
 
 /**
  * 登录日志 控制层。

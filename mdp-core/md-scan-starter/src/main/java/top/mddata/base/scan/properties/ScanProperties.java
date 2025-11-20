@@ -1,8 +1,8 @@
 package top.mddata.base.scan.properties;
 
-import top.mddata.base.constant.Constants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.mddata.base.constant.Constants;
 
 /**
  * 缓存配置

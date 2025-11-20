@@ -1,12 +1,12 @@
 package top.mddata.base.model.cache;
 
-import top.mddata.base.utils.StrPool;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
+import top.mddata.base.utils.StrPool;
 
 import java.time.Duration;
 

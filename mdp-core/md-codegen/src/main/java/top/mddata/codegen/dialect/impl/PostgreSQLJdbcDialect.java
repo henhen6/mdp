@@ -15,8 +15,8 @@
  */
 package top.mddata.codegen.dialect.impl;
 
-import top.mddata.codegen.dialect.AbstractJdbcDialect;
 import com.mybatisflex.core.util.StringUtil;
+import top.mddata.codegen.dialect.AbstractJdbcDialect;
 
 /**
  * @author strignke
