@@ -38,7 +38,7 @@ public class HeaderThreadLocalInterceptor implements AsyncHandlerInterceptor {
 
 //        其他信息
         ContextUtil.setPath(WebUtils.getHeader(request, ContextConstants.PATH_HEADER));
-        ContextUtil.setApplicationId(WebUtils.getHeader(request, ContextConstants.APPLICATION_ID_HEADER));
+        ContextUtil.setAppId(WebUtils.getHeader(request, ContextConstants.APP_ID_HEADER));
         ContextUtil.setLogTraceId(WebUtils.getHeader(request, ContextConstants.TRACE_ID_HEADER));
         ContextUtil.setGrayVersion(WebUtils.getHeader(request, ContextConstants.GRAY_VERSION));
 

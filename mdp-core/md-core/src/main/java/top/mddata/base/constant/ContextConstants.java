@@ -18,7 +18,7 @@ public final class ContextConstants {
     /**
      * 请求头中携带的 应用id key
      */
-    public static final String APPLICATION_ID_KEY = "ApplicationId";
+    public static final String APP_ID_KEY = "AppId";
     /**
      * JWT中封装的 用户id
      */
@@ -62,7 +62,7 @@ public final class ContextConstants {
     /**
      * 请求头和线程变量中的 应用ID
      */
-    public static final String APPLICATION_ID_HEADER = APPLICATION_ID_KEY;
+    public static final String APP_ID_HEADER = APP_ID_KEY;
     /**
      * 请求头和线程变量中的 前端页面地址栏#号后的路径
      */

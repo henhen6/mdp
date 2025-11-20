@@ -97,25 +97,25 @@ public final class ContextUtil {
         return isEmptyLong(ContextConstants.USER_ID_HEADER);
     }
 
-    public static boolean isEmptyApplicationId() {
-        return isEmptyLong(ContextConstants.APPLICATION_ID_HEADER);
+    public static boolean isEmptyAppId() {
+        return isEmptyLong(ContextConstants.APP_ID_HEADER);
     }
 
 
     /**
      * 应用ID
      */
-    public static Long getApplicationId() {
-        return get(ContextConstants.APPLICATION_ID_HEADER, Long.class);
+    public static Long getAppId() {
+        return get(ContextConstants.APP_ID_HEADER, Long.class);
     }
 
     /**
      * 应用ID
      *
-     * @param applicationId 应用ID
+     * @param appId 应用ID
      */
-    public static void setApplicationId(Object applicationId) {
-        set(ContextConstants.APPLICATION_ID_HEADER, applicationId);
+    public static void setAppId(Object appId) {
+        set(ContextConstants.APP_ID_HEADER, appId);
     }
 
     /**

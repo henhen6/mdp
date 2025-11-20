@@ -16,8 +16,8 @@ import top.mddata.base.constant.ContextConstants;
 import top.mddata.base.utils.ContextUtil;
 import top.mddata.common.properties.IgnoreProperties;
 
-import static top.mddata.base.constant.ContextConstants.APPLICATION_ID_HEADER;
-import static top.mddata.base.constant.ContextConstants.APPLICATION_ID_KEY;
+import static top.mddata.base.constant.ContextConstants.APP_ID_HEADER;
+import static top.mddata.base.constant.ContextConstants.APP_ID_KEY;
 import static top.mddata.base.constant.ContextConstants.JWT_KEY_COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.JWT_KEY_DEPT_ID;
 import static top.mddata.base.constant.ContextConstants.JWT_KEY_TOP_COMPANY_ID;
@@ -100,10 +100,10 @@ public class TokenContextFilter extends SaInterceptor {
     }
 
     private void parseApplication(HttpServletRequest request) {
-        String applicationIdStr = getHeader(APPLICATION_ID_KEY, request);
-        if (StrUtil.isNotEmpty(applicationIdStr)) {
-            ContextUtil.setApplicationId(applicationIdStr);
-            MDC.put(APPLICATION_ID_HEADER, applicationIdStr);
+        String appIdStr = getHeader(APP_ID_KEY, request);
+        if (StrUtil.isNotEmpty(appIdStr)) {
+            ContextUtil.setAppId(appIdStr);
+            MDC.put(APP_ID_HEADER, appIdStr);
         }
     }
 
