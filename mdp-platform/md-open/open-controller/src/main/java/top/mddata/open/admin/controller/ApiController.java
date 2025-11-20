@@ -21,6 +21,7 @@ import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.open.admin.dto.ApiDto;
 import top.mddata.open.admin.entity.Api;
+import top.mddata.open.admin.entity.GroupApiRel;
 import top.mddata.open.admin.query.ApiQuery;
 import top.mddata.open.admin.service.ApiService;
 import top.mddata.open.admin.vo.ApiVo;
@@ -36,9 +37,11 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "开放接口")
-@RequestMapping("//api")
+@RequestMapping("/admin/api")
 @RequiredArgsConstructor
 public class ApiController extends SuperController<ApiService, Api> {
+    private final ApiService apiService;
+
     /**
      * 添加开放接口。
      *
@@ -125,4 +128,40 @@ public class ApiController extends SuperController<ApiService, Api> {
         List<ApiVo> listVo = superService.listAs(wrapper, ApiVo.class);
         return R.success(listVo);
     }
+
+
+    /**
+     * 根据应用权限分组ID分页查询接口。
+     *
+     * @param params 分页对象
+     * @return 分页对象
+     */
+    @PostMapping("/pageByGroupId")
+    @Operation(summary = "根据应用权限分组ID分页查询对外接口", description = "根据应用权限分组ID分页查询对外接口")
+    @RequestLog(value = "'根据应用权限分组ID分页查询对外接口:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    public R<Page<ApiVo>> pageByGroupId(@RequestBody @Validated(ApiQuery.GroupPage.class) PageParams<ApiQuery> params) {
+        Page<ApiVo> page = Page.of(params.getCurrent(), params.getSize());
+        Api entity = BeanUtil.toBean(params.getModel(), Api.class);
+        ApiQuery query = params.getModel();
+        QueryWrapper wrapper;
+        if (query.getHasAuth() == null || !query.getHasAuth()) {
+            // 相当于 select op_api.* from op_api api where 1=1  and not exists ( select 1 from op_group_api_rel ga where ga.api_id = api.id and ga.group_id = 695047019844641792) ;
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
+                    .leftJoin(GroupApiRel.class)
+                    .on(wrap -> wrap.where(Api::getId).eq(GroupApiRel::getApiId).and(GroupApiRel::getGroupId).eq(query.getGroupId()))
+                    .isNull(GroupApiRel::getApiId);
+        } else {
+            // 相当于 select op_api.* from op_api api where 1=1  and exists ( select 1 from op_group_api_rel ga where ga.api_id = api.id and ga.group_id = 695047019844641792) ;
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
+                    .innerJoin(GroupApiRel.class)
+                    .on(GroupApiRel::getApiId, Api::getId)
+                    .eq(GroupApiRel::getGroupId, query.getGroupId());
+        }
+
+        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
+        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
+        apiService.pageAs(page, wrapper, ApiVo.class);
+        return R.success(page);
+    }
+
 }

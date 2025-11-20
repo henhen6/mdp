@@ -36,7 +36,7 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "openid")
-@RequestMapping("//oauthOpenid")
+@RequestMapping("/admin/oauthOpenid")
 @RequiredArgsConstructor
 public class OauthOpenidController extends SuperController<OauthOpenidService, OauthOpenid> {
     /**
@@ -124,5 +124,13 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<OauthOpenidVo> listVo = superService.listAs(wrapper, OauthOpenidVo.class);
         return R.success(listVo);
+    }
+
+
+    @GetMapping("/getByAppIdAndUserId")
+    @Operation(summary = "根据应用标识查询用户的openid", description = "根据应用标识查询用户的openid")
+    @RequestLog("'根据应用标识查询用户的openid:' + #subjectId + '---' + #userId")
+    public R<OauthOpenidVo> getByAppKeyAndUserId(@RequestParam String appKey, @RequestParam Long userId) {
+        return R.success(superService.getByAppKeyAndUserId(appKey, userId));
     }
 }

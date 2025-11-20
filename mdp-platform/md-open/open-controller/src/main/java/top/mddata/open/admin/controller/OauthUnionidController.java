@@ -36,7 +36,7 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "unionid")
-@RequestMapping("//oauthUnionid")
+@RequestMapping("/admin/oauthUnionid")
 @RequiredArgsConstructor
 public class OauthUnionidController extends SuperController<OauthUnionidService, OauthUnionid> {
     /**
@@ -124,5 +124,13 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<OauthUnionidVo> listVo = superService.listAs(wrapper, OauthUnionidVo.class);
         return R.success(listVo);
+    }
+
+
+    @GetMapping("/getBySubjectIdAndUserId")
+    @Operation(summary = "根据主体id和用户id单体查询", description = "根据主体id和用户id单体查询")
+    @RequestLog("'根据主体id和用户id单体查询:' + #subjectId + '---' + #userId")
+    public R<OauthUnionidVo> getBySubjectIdAndUserId(@RequestParam Long subjectId, @RequestParam Long userId) {
+        return R.success(superService.getBySubjectIdAndUserId(subjectId, userId));
     }
 }

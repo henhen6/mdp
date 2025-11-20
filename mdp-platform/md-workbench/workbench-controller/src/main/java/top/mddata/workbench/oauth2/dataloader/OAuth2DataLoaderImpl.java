@@ -10,12 +10,12 @@ import top.mddata.base.base.R;
 import top.mddata.base.exception.BizException;
 import top.mddata.common.constant.ConfigKey;
 import top.mddata.console.system.facade.ConfigFacade;
-import top.mddata.open.manage.facade.AppFacade;
-import top.mddata.open.manage.facade.OauthOpenidFacade;
-import top.mddata.open.manage.facade.OauthScopeFacade;
 import top.mddata.open.admin.vo.AppVo;
 import top.mddata.open.admin.vo.OauthOpenidVo;
 import top.mddata.open.admin.vo.OauthScopeVo;
+import top.mddata.open.manage.facade.AppFacade;
+import top.mddata.open.manage.facade.OauthOpenidFacade;
+import top.mddata.open.manage.facade.OauthScopeFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
     @Autowired
     private AppFacade appFacade;
     @Autowired
-    private OauthScopeFacade scopeFacade;
+    private OauthScopeFacade oauthScopeFacade;
     @Autowired
     private ConfigFacade configFacade;
 
@@ -44,7 +44,7 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
      */
     @Override
     public SaClientModel getClientModel(String clientId) {
-        R<AppVo> result = appFacade.getByAppId(clientId);
+        R<AppVo> result = appFacade.getByAppKey(clientId);
         if (!result.getIsSuccess()) {
             return null;
         }
@@ -56,7 +56,7 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
             throw new BizException("该应用已被封禁，无法授权认证");
         }
 
-        R<List<OauthScopeVo>> listR = scopeFacade.listByAppId(opApplicationVo.getId());
+        R<List<OauthScopeVo>> listR = oauthScopeFacade.listByAppId(opApplicationVo.getId());
         List<String> scopes = new ArrayList<>();
         if (listR.getIsSuccess()) {
             List<OauthScopeVo> scopeList = listR.getData();
@@ -77,7 +77,7 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
 
         // 是否每次刷新 Refresh-Token
         if (opApplicationVo.getOauth2NewRefresh() == -1) {
-            Boolean defaultNewRefresh = configFacade.getBoolean(ConfigKey.Open.APPLICATION_NEW_REFRESH, true);
+            Boolean defaultNewRefresh = configFacade.getBoolean(ConfigKey.Open.APP_NEW_REFRESH, true);
             model.setIsNewRefresh(defaultNewRefresh);
         } else {
             model.setIsNewRefresh(opApplicationVo.getOauth2NewRefresh() == 1);
@@ -85,19 +85,19 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
 
         // AccessToken 有效期
         if (opApplicationVo.getOauth2AccessTokenTimeout() == -1) {
-            model.setAccessTokenTimeout(configFacade.getLong(ConfigKey.Open.APPLICATION_ACCESS_TOKEN_TIMEOUT, 1L));
+            model.setAccessTokenTimeout(configFacade.getLong(ConfigKey.Open.APP_ACCESS_TOKEN_TIMEOUT, 1L));
         } else {
             model.setAccessTokenTimeout(opApplicationVo.getOauth2AccessTokenTimeout());
         }
         // RefreshToken 有效期
         if (opApplicationVo.getOauth2RefreshTokenTimeout() == -1) {
-            model.setRefreshTokenTimeout(configFacade.getLong(ConfigKey.Open.APPLICATION_REFRESH_TOKEN_TIMEOUT, 1L));
+            model.setRefreshTokenTimeout(configFacade.getLong(ConfigKey.Open.APP_REFRESH_TOKEN_TIMEOUT, 1L));
         } else {
             model.setRefreshTokenTimeout(opApplicationVo.getOauth2RefreshTokenTimeout());
         }
         // ClientToken 有效期
         if (opApplicationVo.getOauth2ClientTokenTimeout() == -1) {
-            model.setClientTokenTimeout(configFacade.getLong(ConfigKey.Open.APPLICATION_CLIENT_TOKEN_TIMEOUT, 1L));
+            model.setClientTokenTimeout(configFacade.getLong(ConfigKey.Open.APP_CLIENT_TOKEN_TIMEOUT, 1L));
         } else {
             model.setClientTokenTimeout(opApplicationVo.getOauth2ClientTokenTimeout());
         }
@@ -114,7 +114,7 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
     public String getOpenid(String clientIdString, Object loginId) {
         String appId = SaFoxUtil.getValueByType(clientIdString, String.class);
         Long userId = SaFoxUtil.getValueByType(loginId, Long.class);
-        R<OauthOpenidVo> result = oauthOpenidFacade.getByAppIdAndUserId(appId, userId);
+        R<OauthOpenidVo> result = oauthOpenidFacade.getByAppKeyAndUserId(appId, userId);
         if (!result.getIsSuccess() || result.getData() == null) {
             log.warn("查询openid失败: {}", result.getMsg());
             return null;

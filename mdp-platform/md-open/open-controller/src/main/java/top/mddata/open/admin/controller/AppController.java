@@ -19,10 +19,19 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.utils.ContextUtil;
 import top.mddata.open.admin.dto.AppDto;
+import top.mddata.open.admin.dto.AppGroupRelDto;
+import top.mddata.open.admin.dto.AppKeysDto;
 import top.mddata.open.admin.entity.App;
+import top.mddata.open.admin.entity.AppGroupRel;
+import top.mddata.open.admin.entity.AppKeys;
 import top.mddata.open.admin.query.AppQuery;
+import top.mddata.open.admin.service.AppGroupRelService;
+import top.mddata.open.admin.service.AppKeysService;
 import top.mddata.open.admin.service.AppService;
+import top.mddata.open.admin.utils.RsaTool;
+import top.mddata.open.admin.vo.AppKeysVo;
 import top.mddata.open.admin.vo.AppVo;
 
 import java.util.List;
@@ -36,9 +45,12 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "应用")
-@RequestMapping("//app")
+@RequestMapping("/admin/app")
 @RequiredArgsConstructor
 public class AppController extends SuperController<AppService, App> {
+    private final AppKeysService appKeysService;
+    private final AppGroupRelService appGroupRelService;
+
     /**
      * 添加应用。
      *
@@ -124,5 +136,121 @@ public class AppController extends SuperController<AppService, App> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<AppVo> listVo = superService.listAs(wrapper, AppVo.class);
         return R.success(listVo);
+    }
+
+    /**
+     * 根据应用id获取详细信息。
+     *
+     * @param appKey 应用标识
+     * @return 应用详情
+     */
+    @GetMapping("/getByAppKey")
+    @Operation(summary = "单体查询-appKey", description = "根据应用id获取应用")
+    @RequestLog("'单体查询-appKey:' + #appKey")
+    public R<AppVo> getByAppKey(@RequestParam String appKey) {
+        return R.success(superService.getAppByAppKey(appKey));
+    }
+
+
+    /**
+     * 查询需要 接收事件推送的应用
+     *
+     * @return 应用
+     */
+    @GetMapping("/listNeedPushApplication")
+    @Operation(summary = "查询需要接收事件推送的应用", description = "查询需要接收事件推送的应用")
+    @RequestLog(value = "查询需要接收事件推送的应用")
+    public R<List<AppVo>> listNeedPushApplication() {
+        return R.success(superService.listNeedPushApp());
+    }
+
+
+    /**
+     * 根据应用ID查询应用
+     *
+     * @param appKey 应用标识
+     * @return 应用
+     */
+    @GetMapping("/getAppByAppId")
+    @Operation(summary = "根据应用ID查询应用", description = "根据应用ID查询应用")
+    @RequestLog(value = "根据应用ID查询应用")
+    public R<AppVo> getAppByAppId(@RequestParam String appKey) {
+        return R.success(superService.getAppByAppKey(appKey));
+    }
+
+
+    /**
+     * 查询用户能访问的应用
+     *
+     * @return
+     */
+    @PostMapping("listMyApplication")
+    @Operation(summary = "查询用户能访问的应用", description = "查询用户能访问的应用")
+    @RequestLog(value = "查询用户能访问的应用")
+    public R<List<AppVo>> listMyApplication() {
+        List<AppVo> list = superService.listMyApp(ContextUtil.getUserId());
+        return R.success(list);
+    }
+
+
+    /**
+     * 获取秘钥信息
+     *
+     * @param applicationId 应用ID
+     * @return 秘钥
+     */
+    @GetMapping("getKeys")
+    @Operation(summary = "获取秘钥信息", description = "获取秘钥信息")
+    @RequestLog(value = "获取秘钥信息")
+    public R<AppKeysVo> getKeys(@RequestParam Long applicationId) {
+        return R.success(superService.getKeys(applicationId, true));
+    }
+
+    /**
+     * 生成秘钥
+     *
+     * @param keyFormat 秘钥格式，1：PKCS8(JAVA适用)，2：PKCS1(非JAVA适用)
+     * @return 秘钥
+     * @throws Exception 异常
+     */
+    @PostMapping("createKeys")
+    @Operation(summary = "生成秘钥", description = "生成秘钥")
+    @RequestLog(value = "生成秘钥")
+    public R<RsaTool.KeyStore> createKeys(@RequestParam Integer keyFormat) throws Exception {
+        return R.success(superService.createKeys(keyFormat));
+    }
+
+    /**
+     * 修改秘钥
+     *
+     * @param param 表单数据
+     * @return 返回影响行数
+     */
+    @PostMapping("/updateKeys")
+    @Operation(summary = "修改秘钥", description = "修改秘钥")
+    @RequestLog(value = "修改秘钥")
+    public R<AppKeys> updateKeys(@Validated @RequestBody AppKeysDto param) {
+        return R.success(appKeysService.saveDto(param));
+    }
+
+
+    @Operation(summary = "查询拥有的权限组", description = "根据应用ID查询拥有的权限组")
+    @RequestLog(value = "查询拥有的权限组")
+    @GetMapping("/listGroupIdByApplicationId")
+    public R<List<Long>> listGroupIdByApplicationId(@RequestParam Long appId) {
+        return R.success(appGroupRelService.listGroupIdByAppId(appId));
+    }
+
+    /**
+     * 给应用授权权限组
+     *
+     * @param param 表单数据
+     * @return 返回影响行数
+     */
+    @Operation(summary = "给应用授权权限组", description = "设置应用的权限组")
+    @RequestLog(value = "给应用授权权限组")
+    @PostMapping("/saveApplicationGroup")
+    public R<AppGroupRel> saveApplicationGroup(@Validated @RequestBody AppGroupRelDto param) {
+        return R.success(appGroupRelService.saveDto(param));
     }
 }

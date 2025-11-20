@@ -71,24 +71,24 @@ public interface ConfigKey {
         /**
          * 默认 Lower-Client-Token有效期（秒）
          */
-        String APPLICATION_LOWER_CLIENT_TOKEN_TIMEOUT = "ApplicationLowerClientTokenTimeout";
+        String APP_LOWER_CLIENT_TOKEN_TIMEOUT = "AppLowerClientTokenTimeout";
         /**
          * 默认 Client-Token 有效期（秒）
          */
-        String APPLICATION_CLIENT_TOKEN_TIMEOUT = "ApplicationClientTokenTimeout";
+        String APP_CLIENT_TOKEN_TIMEOUT = "AppClientTokenTimeout";
         /**
          * 默认Refresh-Token有效期，单位（秒）
          */
-        String APPLICATION_REFRESH_TOKEN_TIMEOUT = "ApplicationRefreshTokenTimeout";
+        String APP_REFRESH_TOKEN_TIMEOUT = "AppRefreshTokenTimeout";
         /**
          * 默认 Access-Token 有效期，单位（秒）
          */
-        String APPLICATION_ACCESS_TOKEN_TIMEOUT = "ApplicationAccessTokenTimeout";
+        String APP_ACCESS_TOKEN_TIMEOUT = "AppAccessTokenTimeout";
         /**
          * Refresh-Token 刷新策略
          * true=每次构建新 RefreshToken，false=每次延用旧RefreshToken
          */
-        String APPLICATION_NEW_REFRESH = "ApplicationNewRefresh";
+        String APP_NEW_REFRESH = "AppNewRefresh";
     }
 
 }

@@ -13,9 +13,9 @@ public interface OauthOpenidFacade {
     /**
      * 根据应用id和用户id 查询union
      *
-     * @param appId  应用id
+     * @param appKey  应用id
      * @param userId 用户id
      * @return union
      */
-    R<OauthOpenidVo> getByAppIdAndUserId(String appId, Long userId);
+    R<OauthOpenidVo> getByAppKeyAndUserId(String appKey, Long userId);
 }

@@ -36,7 +36,7 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "应用权限分组")
-@RequestMapping("//scopeGroup")
+@RequestMapping("/admin/scopeGroup")
 @RequiredArgsConstructor
 public class ScopeGroupController extends SuperController<ScopeGroupService, ScopeGroup> {
     /**

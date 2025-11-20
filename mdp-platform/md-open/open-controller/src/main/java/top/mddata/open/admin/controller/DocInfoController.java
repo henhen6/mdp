@@ -1,13 +1,9 @@
 package top.mddata.open.admin.controller;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.mybatisflex.core.paginate.Page;
-import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
-import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
-import top.mddata.base.mvcflex.request.PageParams;
-import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.open.admin.dto.DocInfoDto;
+import top.mddata.common.dto.IdDto;
 import top.mddata.open.admin.entity.DocInfo;
-import top.mddata.open.admin.query.DocInfoQuery;
 import top.mddata.open.admin.service.DocInfoService;
 import top.mddata.open.admin.vo.DocInfoVo;
 
@@ -36,93 +28,43 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "文档信息")
-@RequestMapping("//docInfo")
+@RequestMapping("/admin/docInfo")
 @RequiredArgsConstructor
 public class DocInfoController extends SuperController<DocInfoService, DocInfo> {
     /**
-     * 添加文档信息。
+     * 按树结构查询
      *
-     * @param dto 文档信息
-     * @return {@code true} 添加成功，{@code false} 添加失败
+     * @param docGroupId 文档分组ID
+     * @return 查询结果
      */
-    @PostMapping("/save")
-    @Operation(summary = "新增", description = "保存文档信息")
-    @RequestLog(value = "新增", request = false)
-    public R<Long> save(@Validated @RequestBody DocInfoDto dto) {
-        return R.success(superService.saveDto(dto).getId());
+    @Operation(summary = "按树结构查询", description = "按树结构查询")
+    @PostMapping("/tree")
+    @RequestLog("按树结构查询")
+    public R<List<DocInfoVo>> tree(@RequestParam Long docGroupId) {
+        return R.success(superService.tree(docGroupId, null));
     }
 
-    /**
-     * 根据主键删除文档信息。
-     *
-     * @param ids 主键
-     * @return {@code true} 删除成功，{@code false} 删除失败
-     */
-    @PostMapping("/delete")
-    @Operation(summary = "删除", description = "根据主键删除文档信息")
-    @RequestLog("'删除:' + #ids")
-    public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(superService.removeByIds(ids));
+
+    @Operation(summary = "修改文档状态", description = "修改文档状态")
+    @PostMapping("updatePublish")
+    @RequestLog("修改文档状态")
+    public R<Boolean> updatePublish(@RequestParam Long id, @RequestParam Integer isPublish) {
+        return R.success(superService.updatePublish(id, isPublish));
     }
 
-    /**
-     * 根据主键更新文档信息。
-     *
-     * @param dto 文档信息
-     * @return {@code true} 更新成功，{@code false} 更新失败
-     */
-    @PostMapping("/update")
-    @Operation(summary = "修改", description = "根据主键更新文档信息")
-    @RequestLog(value = "修改", request = false)
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody DocInfoDto dto) {
-        return R.success(superService.updateDtoById(dto).getId());
+    @Operation(summary = "同步所有文档", description = "同步所有文档")
+    @PostMapping("syncAllDoc")
+    @RequestLog("同步所有文档")
+    public R<Boolean> syncAllDoc(@Validated @RequestBody IdDto param) {
+        superService.syncAllDoc(param.getId());
+        return R.success();
     }
 
-    /**
-     * 根据文档信息主键获取详细信息。
-     *
-     * @param id 文档信息主键
-     * @return 文档信息详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取文档信息")
-    @RequestLog("'单体查询:' + #id")
-    public R<DocInfoVo> get(@RequestParam Long id) {
-        DocInfo entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, DocInfoVo.class));
-    }
-
-    /**
-     * 分页查询文档信息。
-     *
-     * @param params 分页对象
-     * @return 分页对象
-     */
-    @PostMapping("/page")
-    @Operation(summary = "分页列表查询", description = "分页查询文档信息")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
-    public R<Page<DocInfoVo>> page(@RequestBody @Validated PageParams<DocInfoQuery> params) {
-        Page<DocInfoVo> page = Page.of(params.getCurrent(), params.getSize());
-        DocInfo entity = BeanUtil.toBean(params.getModel(), DocInfo.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
-        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        superService.pageAs(page, wrapper, DocInfoVo.class);
-        return R.success(page);
-    }
-
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<DocInfoVo>> list(@RequestBody @Validated DocInfoQuery params) {
-        DocInfo entity = BeanUtil.toBean(params, DocInfo.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<DocInfoVo> listVo = superService.listAs(wrapper, DocInfoVo.class);
-        return R.success(listVo);
+    @Operation(summary = "同步文档", description = "同步文档")
+    @PostMapping("syncDoc")
+    @RequestLog("同步文档")
+    public R<Boolean> syncDoc(@Validated @RequestBody IdDto param) {
+        superService.syncDoc(param.getId());
+        return R.success();
     }
 }

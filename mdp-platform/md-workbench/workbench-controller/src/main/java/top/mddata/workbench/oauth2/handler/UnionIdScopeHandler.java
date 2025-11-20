@@ -38,7 +38,7 @@ public class UnionIdScopeHandler implements SaOAuth2ScopeHandlerInterface {
     public void workAccessToken(AccessTokenModel at) {
         Long userId = SaFoxUtil.getValueByType(at.getLoginId(), long.class);
         String clientId = SaFoxUtil.getValueByType(at.getClientId(), String.class);
-        R<AppVo> result = opApplicationFacade.getByAppId(clientId);
+        R<AppVo> result = opApplicationFacade.getByAppKey(clientId);
         if (!result.getIsSuccess() || result.getData() == null) {
             log.warn("应用不存在, {}", result.getMsg());
             return;

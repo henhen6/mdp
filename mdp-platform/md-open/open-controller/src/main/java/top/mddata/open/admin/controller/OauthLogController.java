@@ -36,7 +36,7 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "授权记录")
-@RequestMapping("//oauthLog")
+@RequestMapping("/admin/oauthLog")
 @RequiredArgsConstructor
 public class OauthLogController extends SuperController<OauthLogService, OauthLog> {
     /**

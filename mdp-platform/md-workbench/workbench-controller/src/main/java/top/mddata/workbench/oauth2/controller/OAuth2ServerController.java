@@ -198,7 +198,7 @@ public class OAuth2ServerController {
     public R<ConfirmInfoVo> getConfirmInfo(@RequestParam(value = "client_id") String clientId, @RequestParam String scope) {
 
         // 查询应用信息
-        R<AppVo> result = appFacade.getByAppId(clientId);
+        R<AppVo> result = appFacade.getByAppKey(clientId);
         if (!result.getIsSuccess()) {
             return R.fail("查询应用失败");
         }

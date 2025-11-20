@@ -20,6 +20,7 @@ import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.open.admin.dto.OauthScopeDto;
+import top.mddata.open.admin.entity.GroupScopeRel;
 import top.mddata.open.admin.entity.OauthScope;
 import top.mddata.open.admin.query.OauthScopeQuery;
 import top.mddata.open.admin.service.OauthScopeService;
@@ -36,7 +37,7 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "oauth2权限")
-@RequestMapping("//oauthScope")
+@RequestMapping("/admin/oauthScope")
 @RequiredArgsConstructor
 public class OauthScopeController extends SuperController<OauthScopeService, OauthScope> {
     /**
@@ -124,5 +125,74 @@ public class OauthScopeController extends SuperController<OauthScopeService, Oau
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<OauthScopeVo> listVo = superService.listAs(wrapper, OauthScopeVo.class);
         return R.success(listVo);
+    }
+
+
+    /**
+     * 检测权限编码是否存在
+     *
+     * @param code 权限编码
+     * @param id   权限id
+     * @return true 存在， false 不存在
+     */
+    @GetMapping("/check")
+    @Operation(summary = "检测权限编码是否存在", description = "检测权限编码是否存在")
+    @RequestLog("检测权限编码是否存在")
+    public R<Boolean> check(@RequestParam String code, @RequestParam(required = false) Long id) {
+        return R.success(superService.check(code, id));
+    }
+
+
+    @Operation(summary = "根据权限编码查询应用权限", description = "根据权限编码查询应用权限")
+    @GetMapping("/getScopeListByCode")
+    public R<List<OauthScopeVo>> getScopeListByCode(List<String> scopes) {
+        return R.success(superService.getScopeListByCode(scopes));
+    }
+
+    /**
+     * 根据应用id查询应用拥有的权限
+     *
+     * @param appId 应用id
+     * @return 权限
+     */
+    @Operation(summary = "根据应用id查询应用拥有的权限", description = "根据应用id查询应用拥有的权限")
+    @GetMapping("/listByAppId")
+    public R<List<OauthScopeVo>> listByAppId(@RequestParam Long appId) {
+        return R.success(superService.listByAppId(appId));
+    }
+
+
+    /**
+     * 根据权限分组ID分页查询权限
+     *
+     * @param params 分页对象
+     * @return 分页对象
+     */
+    @PostMapping("/pageByGroupId")
+    @Operation(summary = "根据应用权限分组ID分页查询权限", description = "根据应用权限分组ID分页查询权限")
+    @RequestLog(value = "'根据应用权限分组ID分页查询权限:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    public R<Page<OauthScopeVo>> pageByGroupId(@RequestBody @Validated(OauthScopeQuery.GroupPage.class) PageParams<OauthScopeQuery> params) {
+        Page<OauthScopeVo> page = Page.of(params.getCurrent(), params.getSize());
+        OauthScope entity = BeanUtil.toBean(params.getModel(), OauthScope.class);
+        OauthScopeQuery query = params.getModel();
+        QueryWrapper wrapper;
+        if (query.getHasAuth() == null || !query.getHasAuth()) {
+            // 相当于 not exists 查询
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
+                    .leftJoin(GroupScopeRel.class)
+                    .on(wrap -> wrap.where(OauthScope::getId).eq(GroupScopeRel::getScopeId).and(GroupScopeRel::getGroupId).eq(query.getGroupId()))
+                    .isNull(GroupScopeRel::getScopeId);
+        } else {
+            // 相当于 exists 查询
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
+                    .innerJoin(GroupScopeRel.class)
+                    .on(GroupScopeRel::getScopeId, OauthScope::getId)
+                    .eq(GroupScopeRel::getGroupId, query.getGroupId());
+        }
+
+        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
+        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
+        superService.pageAs(page, wrapper, OauthScopeVo.class);
+        return R.success(page);
     }
 }

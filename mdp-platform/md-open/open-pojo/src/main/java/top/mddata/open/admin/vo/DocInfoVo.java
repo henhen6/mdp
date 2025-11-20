@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.base.entity.TreeEntity;
 import top.mddata.open.admin.entity.base.DocInfoBase;
 
 import java.io.Serial;
@@ -27,7 +28,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "文档信息")
 @Table(DocInfoBase.TABLE_NAME)
-public class DocInfoVo implements Serializable {
+public class DocInfoVo extends TreeEntity<Long, DocInfoVo> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

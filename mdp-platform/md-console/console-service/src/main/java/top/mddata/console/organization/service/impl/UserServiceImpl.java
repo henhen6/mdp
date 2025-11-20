@@ -95,7 +95,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 即可生成新的唯一id）
         fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
                 .objectId(entity.getAvatar())
-                .objectType(FileObjectType.Admin.USER_AVATAR)
+                .objectType(FileObjectType.Console.USER_AVATAR)
                 .build().setKeepFileIds(dto.getAvatar()));
     }
 
@@ -129,7 +129,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
         fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
                 .objectId(entity.getAvatar())
-                .objectType(FileObjectType.Admin.USER_AVATAR)
+                .objectType(FileObjectType.Console.USER_AVATAR)
                 .build().setKeepFileIds(dto.getAvatar()));
     }
 

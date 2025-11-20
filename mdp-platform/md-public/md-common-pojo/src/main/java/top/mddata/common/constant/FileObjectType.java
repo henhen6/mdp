@@ -15,7 +15,7 @@ public interface FileObjectType {
      */
     String TEMP_OBJECT_TYPE = "temp";
 
-    interface Admin {
+    interface Console {
         /**
          * 用户头像
          */
@@ -23,7 +23,7 @@ public interface FileObjectType {
 
     }
 
-    interface Center {
+    interface Workbench {
     }
 
     interface Open {
