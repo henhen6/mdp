@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import top.mddata.base.annotation.echo.Echo;
 import top.mddata.base.base.entity.TreeEntity;
+import top.mddata.base.interfaces.echo.EchoVO;
 import top.mddata.common.constant.EchoApi;
 import top.mddata.common.constant.EchoDictType;
 import top.mddata.console.permission.entity.base.ResourceMenuBase;
@@ -33,7 +34,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Schema(description = "菜单")
 @Table(ResourceMenuBase.TABLE_NAME)
-public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements Serializable {
+public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements Serializable, EchoVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -70,7 +71,7 @@ public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements 
      * [10-目录  20-菜单 30-内链 40-外链]
      */
     @Schema(description = "类型")
-    @Echo(api = EchoApi.DICT_CLASS, dictType = EchoDictType.Admin.MENU_TYPE)
+    @Echo(api = EchoApi.DICT_CLASS, dictType = EchoDictType.Console.MENU_TYPE)
     private String menuType;
 
     /**

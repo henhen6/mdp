@@ -49,7 +49,7 @@ public interface EchoDictType {
     /**
      * 后台服务
      */
-    interface Admin {
+    interface Console {
         // @md.generator auto insert System
 
         /**

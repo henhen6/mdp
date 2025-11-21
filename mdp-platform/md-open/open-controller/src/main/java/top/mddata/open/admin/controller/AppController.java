@@ -184,10 +184,10 @@ public class AppController extends SuperController<AppService, App> {
      *
      * @return
      */
-    @PostMapping("listMyApplication")
+    @PostMapping("listMyApp")
     @Operation(summary = "查询用户能访问的应用", description = "查询用户能访问的应用")
     @RequestLog(value = "查询用户能访问的应用")
-    public R<List<AppVo>> listMyApplication() {
+    public R<List<AppVo>> listMyApp() {
         List<AppVo> list = superService.listMyApp(ContextUtil.getUserId());
         return R.success(list);
     }
@@ -196,14 +196,14 @@ public class AppController extends SuperController<AppService, App> {
     /**
      * 获取秘钥信息
      *
-     * @param applicationId 应用ID
+     * @param appId 应用ID
      * @return 秘钥
      */
     @GetMapping("getKeys")
     @Operation(summary = "获取秘钥信息", description = "获取秘钥信息")
     @RequestLog(value = "获取秘钥信息")
-    public R<AppKeysVo> getKeys(@RequestParam Long applicationId) {
-        return R.success(superService.getKeys(applicationId, true));
+    public R<AppKeysVo> getKeys(@RequestParam Long appId) {
+        return R.success(superService.getKeys(appId, true));
     }
 
     /**
@@ -236,8 +236,8 @@ public class AppController extends SuperController<AppService, App> {
 
     @Operation(summary = "查询拥有的权限组", description = "根据应用ID查询拥有的权限组")
     @RequestLog(value = "查询拥有的权限组")
-    @GetMapping("/listGroupIdByApplicationId")
-    public R<List<Long>> listGroupIdByApplicationId(@RequestParam Long appId) {
+    @GetMapping("/listGroupIdByAppId")
+    public R<List<Long>> listGroupIdByAppId(@RequestParam Long appId) {
         return R.success(appGroupRelService.listGroupIdByAppId(appId));
     }
 

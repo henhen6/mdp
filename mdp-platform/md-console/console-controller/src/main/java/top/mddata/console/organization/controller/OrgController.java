@@ -16,16 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.entity.Org;
 import top.mddata.console.organization.dto.OrgDto;
 import top.mddata.console.organization.query.OrgQuery;
 import top.mddata.console.organization.service.OrgService;
 import top.mddata.console.organization.vo.OrgVo;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 组织 控制层。
@@ -39,6 +44,8 @@ import java.util.List;
 @RequestMapping("/organization/org")
 @RequiredArgsConstructor
 public class OrgController extends SuperController<OrgService, Org> {
+    private final EchoService echoService;
+
     /**
      * 添加组织。
      *
@@ -124,5 +131,38 @@ public class OrgController extends SuperController<OrgService, Org> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<OrgVo> listVo = superService.listAs(wrapper, OrgVo.class);
         return R.success(listVo);
+    }
+
+    /**
+     * 查询组织树
+     */
+    @Operation(summary = "查询组织树", description = "查询组织树")
+    @PostMapping("/tree")
+    @RequestLog("查询组织树")
+    public R<List<OrgVo>> tree(@RequestBody @Validated OrgQuery query) {
+        /*
+        TODO 控制权限
+        运维企业 * 1  的用户，能查： 运维企业、开发者内置企业、普通企业
+        开发者内置企业 * 1 的用户，能查： 开发者内置企业
+        普通企业 * N 的用户，能查： 普通企业
+         */
+        List<OrgVo> list = superService.listAs(QueryWrapper.create(BeanUtil.toBean(query, Org.class)).orderBy(Org::getWeight, true), OrgVo.class);
+        echoService.action(list);
+        List<OrgVo> menuTreeList = MyTreeUtil.buildTreeEntity(list, OrgVo::new);
+        return R.success(menuTreeList);
+    }
+
+
+    @Operation(summary = "移动组织架构", description = "移动组织架构")
+    @PostMapping("/move")
+    @RequestLog("移动组织架构")
+    public R<Boolean> move(@RequestParam Long sourceId, @RequestParam(required = false) Long targetId) {
+        superService.move(sourceId, targetId);
+        return R.success();
+    }
+
+    @PostMapping("/findByIds")
+    public Map<Serializable, Object> findByIds(@RequestParam("ids") Set<Serializable> ids) {
+        return superService.findByIds(ids);
     }
 }

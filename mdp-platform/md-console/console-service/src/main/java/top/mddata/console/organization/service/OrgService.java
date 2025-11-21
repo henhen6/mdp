@@ -26,7 +26,7 @@ public interface OrgService extends SuperService<Org> {
     /**
      * 根据父id 递归查询所有的子集
      * @param parentId 父id
-     * @return
+     * @return 组织列表
      */
     List<Org> findAllChildrenByParentId(Long parentId);
 

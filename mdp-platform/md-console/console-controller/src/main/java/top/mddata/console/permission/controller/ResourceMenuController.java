@@ -1,9 +1,12 @@
 package top.mddata.console.permission.controller;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -16,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
-import top.mddata.base.mvcflex.request.PageParams;
-import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.console.permission.dto.ResourceMenuDto;
 import top.mddata.console.permission.entity.ResourceMenu;
 import top.mddata.console.permission.query.ResourceMenuQuery;
@@ -26,6 +29,9 @@ import top.mddata.console.permission.service.ResourceMenuService;
 import top.mddata.console.permission.vo.ResourceMenuVo;
 
 import java.util.List;
+
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
 /**
  * 菜单 控制层。
@@ -39,6 +45,8 @@ import java.util.List;
 @RequestMapping("/permission/resourceMenu")
 @RequiredArgsConstructor
 public class ResourceMenuController extends SuperController<ResourceMenuService, ResourceMenu> {
+    private final EchoService echoService;
+
     /**
      * 添加菜单。
      *
@@ -92,37 +100,73 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
         return R.success(BeanUtil.toBean(entity, ResourceMenuVo.class));
     }
 
-    /**
-     * 分页查询菜单。
-     *
-     * @param params 分页对象
-     * @return 分页对象
-     */
-    @PostMapping("/page")
-    @Operation(summary = "分页列表查询", description = "分页查询菜单")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
-    public R<Page<ResourceMenuVo>> page(@RequestBody @Validated PageParams<ResourceMenuQuery> params) {
-        Page<ResourceMenuVo> page = Page.of(params.getCurrent(), params.getSize());
-        ResourceMenu entity = BeanUtil.toBean(params.getModel(), ResourceMenu.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
-        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        superService.pageAs(page, wrapper, ResourceMenuVo.class);
-        return R.success(page);
-    }
 
     /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
+     * 按照树结构查询系统的所有菜单
      */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<ResourceMenuVo>> list(@RequestBody @Validated ResourceMenuQuery params) {
-        ResourceMenu entity = BeanUtil.toBean(params, ResourceMenu.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ResourceMenuVo> listVo = superService.listAs(wrapper, ResourceMenuVo.class);
-        return R.success(listVo);
+    @Operation(summary = "按照树结构查询系统的所有菜单", description = "按照树结构查询系统的所有菜单")
+    @PostMapping("/tree")
+    @RequestLog("按照树结构查询系统的所有菜单")
+    public R<List<ResourceMenuVo>> tree(@RequestBody ResourceMenuQuery query) {
+        List<ResourceMenu> list = superService.list(new QueryWrapper().eq(ResourceMenu::getAppId, query.getAppId()).orderBy(ResourceMenu::getWeight, true));
+        List<ResourceMenuVo> resultList = BeanUtil.copyToList(list, ResourceMenuVo.class);
+        // 回显 @Echo 标记的字段
+        echoService.action(resultList);
+        return R.success(MyTreeUtil.buildTreeEntity(resultList, ResourceMenuVo::new));
     }
+
+
+    @Parameters({
+            @Parameter(name = "appId", description = "应用ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "code", description = "编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
+    @GetMapping("/checkCode")
+    public R<Boolean> checkCode(@RequestParam Long appId, @RequestParam String code, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkCode(appId, code, id));
+    }
+
+
+    @Parameters({
+            @Parameter(name = "appId", description = "应用ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "path", description = "路径", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "检测路径是否存在", description = "检测路径是否存在")
+    @GetMapping("/checkPath")
+    public R<Boolean> checkPath(@RequestParam Long appId, @RequestParam String path, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkPath(appId, path, id));
+    }
+
+    @Parameters({
+            @Parameter(name = "appId", description = "应用ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "name", description = "菜单名称", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "检测名称是否存在", description = "检测名称是否存在")
+    @GetMapping("/checkName")
+    public R<Boolean> checkName(@RequestParam Long appId, @RequestParam String name, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkName(appId, name, id));
+    }
+
+
+    @Parameters({
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "根据父ID获取菜单的默认值", description = "新增时，根据父ID获取菜单的默认值")
+    @GetMapping("/getDefMenuByParentId")
+    public R<ResourceMenuVo> getDefMenuByParentId(@RequestParam Long appId, @RequestParam(required = false) Long id) {
+        return R.success(superService.getDefMenuByParentId(appId, id));
+    }
+
+
+    @Operation(summary = "移动菜单", description = "移动菜单")
+    @PostMapping("/move")
+    @RequestLog("移动菜单")
+    public R<Boolean> move(@RequestParam Long sourceId, @RequestParam(required = false) Long targetId) {
+        superService.move(sourceId, targetId);
+        return R.success();
+    }
+
 }
