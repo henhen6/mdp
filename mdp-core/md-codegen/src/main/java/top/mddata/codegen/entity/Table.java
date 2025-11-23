@@ -521,7 +521,7 @@ public class Table {
         imports.add("import type { VbenFormSchema } from '@vben/components/adapter';");
         imports.add("import type { FormSchemaExt } from '#/api';");
         imports.add(StrUtil.format("import type { {}Type } from '#/api/{}/{}/{}/model';", buildEntityClassName(), packageConfig.getSubSystem(), packageConfig.getModule(), StringUtil.firstCharToLowerCase(buildEntityClassName())));
-        imports.add("import type { ApiTreeSelect } from '#/components/form';");
+        imports.add("import type { ApiTreeSelect } from '@vben/components/form';");
 
 
         imports.add("import { computed, reactive } from 'vue';");
