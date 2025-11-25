@@ -102,6 +102,7 @@ public class UserDto implements Serializable {
      */
     @Size(max = 255, message = "姓名长度不能超过{max}")
     @Schema(description = "姓名")
+    @NotEmpty(message = "请填写姓名")
     private String name;
 
     /**
