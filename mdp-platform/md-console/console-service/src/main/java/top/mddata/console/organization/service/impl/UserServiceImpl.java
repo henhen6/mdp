@@ -3,10 +3,13 @@ package top.mddata.console.organization.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baidu.fsg.uid.UidGenerator;
+import com.mybatisflex.core.constant.SqlOperator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.query.SqlOperators;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.mybatisflex.utils.BeanPageUtil;
+import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.DateUtils;
 import top.mddata.common.cache.console.organization.UserCacheKeyBuilder;
 import top.mddata.common.constant.ConfigKey;
@@ -89,6 +93,14 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     protected void saveAfter(Object save, User entity) {
         UserDto dto = (UserDto) save;
+        ArgumentAssert.isFalse(checkUsername(dto.getUsername(), null), "用户名[{}]， 重复", dto.getUsername());
+        if (StrUtil.isNotEmpty(dto.getEmail())) {
+            ArgumentAssert.isFalse(checkEmail(dto.getEmail(), null), "邮箱[{}]， 重复", dto.getEmail());
+        }
+        if (StrUtil.isNotEmpty(dto.getPhone())) {
+            ArgumentAssert.isFalse(checkPhone(dto.getPhone(), null), "手机号[{}]， 重复", dto.getPhone());
+        }
+
         List<Long> orgIdList = dto.getOrgIdList();
         saveOrg(entity, orgIdList);
 
@@ -115,6 +127,13 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     protected User updateBefore(Object updateDto) {
         User sysUser = super.updateBefore(updateDto);
+        ArgumentAssert.isFalse(checkUsername(sysUser.getUsername(), sysUser.getId()), "用户名[{}]， 重复", sysUser.getUsername());
+        if (StrUtil.isNotEmpty(sysUser.getEmail())) {
+            ArgumentAssert.isFalse(checkEmail(sysUser.getEmail(), sysUser.getId()), "邮箱[{}]， 重复", sysUser.getEmail());
+        }
+        if (StrUtil.isNotEmpty(sysUser.getPhone())) {
+            ArgumentAssert.isFalse(checkPhone(sysUser.getPhone(), sysUser.getId()), "手机号[{}]， 重复", sysUser.getPhone());
+        }
         // 注意：前端传递的avatar是文件id，存入数据库时，需要设置为唯一的对象id（通常为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
         sysUser.setAvatar(sysUser.getId());
         return sysUser;
@@ -133,12 +152,15 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
                 .build().setKeepFileIds(dto.getAvatar()));
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public Page<UserVo> page(PageParams<UserQuery> params) {
         Page<User> page = Page.of(params.getCurrent(), params.getSize());
         User entity = BeanUtil.toBean(params.getModel(), User.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+        SqlOperators sqlOperators = WrapperUtil.buildOperators(entity.getClass());
+        sqlOperators.set(User::getSex, SqlOperator.EQUALS);
+        QueryWrapper wrapper = QueryWrapper.create(entity, sqlOperators);
         wrapper.eq(User::getUserType, UserTypeEnum.USER.getCode());
         if (CollUtil.isNotEmpty(params.getModel().getOrgIdList())) {
             QueryWrapper orgWrapper = QueryWrapper.create();
@@ -185,5 +207,23 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         boolean flag = updateById(sysUser);
         delCache(data.getId());
         return flag;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean checkUsername(String username, Long id) {
+        return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getUsername, username).ne(User::getId, id)) > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean checkPhone(String phone, Long id) {
+        return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getPhone, phone).ne(User::getId, id)) > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean checkEmail(String email, Long id) {
+        return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getEmail, email).ne(User::getId, id)) > 0;
     }
 }

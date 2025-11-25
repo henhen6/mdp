@@ -1,5 +1,6 @@
 package top.mddata.console.organization.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,11 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.annotation.echo.Echo;
+import top.mddata.base.interfaces.echo.EchoVO;
+import top.mddata.common.constant.EchoApi;
 import top.mddata.common.entity.base.UserBase;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户 VO类（通常用作Controller出参）。
@@ -27,10 +33,12 @@ import java.util.List;
 @AllArgsConstructor
 @Schema(description = "用户")
 @Table(UserBase.TABLE_NAME)
-public class UserVo implements Serializable {
+public class UserVo implements Serializable, EchoVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
+    @Builder.Default
+    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
 
     /**
@@ -48,7 +56,7 @@ public class UserVo implements Serializable {
 
     /**
      * 性别
-     * [1-男 2-女]
+     * [0-男 1-女]
      */
     @Schema(description = "性别")
     private String sex;
@@ -106,6 +114,7 @@ public class UserVo implements Serializable {
      * 所属岗位
      */
     @Schema(description = "所属岗位")
+    @Echo(api = EchoApi.POSITION_CLASS)
     private Long positionId;
     /**
      * 用户来源
@@ -113,9 +122,21 @@ public class UserVo implements Serializable {
     @Schema(description = "用户来源")
     private String userSource;
     /**
-     * 所属组织
+     * 组织
      */
-    @Schema(description = "所属组织")
+    @Echo(api = EchoApi.ORG_CLASS)
     private List<Long> orgIdList;
 
+    /**
+     * 创建日期
+     */
+    @Schema(description = "创建日期")
+    private LocalDateTime createdAt;
+
+
+    /**
+     * 修改日期
+     */
+    @Schema(description = "修改日期")
+    private LocalDateTime updatedAt;
 }

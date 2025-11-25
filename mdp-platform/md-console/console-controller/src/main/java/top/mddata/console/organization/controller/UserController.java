@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.common.entity.User;
 import top.mddata.console.organization.dto.UserDto;
+import top.mddata.console.organization.dto.UserResetPasswordDto;
 import top.mddata.console.organization.query.UserQuery;
 import top.mddata.console.organization.service.UserService;
 import top.mddata.console.organization.vo.UserVo;
@@ -39,6 +41,8 @@ import java.util.List;
 @RequestMapping("/organization/user")
 @RequiredArgsConstructor
 public class UserController extends SuperController<UserService, User> {
+    private final EchoService echoService;
+
     /**
      * 添加用户。
      *
@@ -47,7 +51,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存用户")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增")
     public R<Long> save(@Validated @RequestBody UserDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -73,7 +77,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新用户")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改")
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody UserDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -100,14 +104,10 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询用户")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'")
     public R<Page<UserVo>> page(@RequestBody @Validated PageParams<UserQuery> params) {
-        Page<UserVo> page = Page.of(params.getCurrent(), params.getSize());
-        User entity = BeanUtil.toBean(params.getModel(), User.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
-        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        superService.pageAs(page, wrapper, UserVo.class);
+        Page<UserVo> page = superService.page(params);
+        echoService.action(page);
         return R.success(page);
     }
 
@@ -118,11 +118,60 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询")
     public R<List<UserVo>> list(@RequestBody @Validated UserQuery params) {
         User entity = BeanUtil.toBean(params, User.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<UserVo> listVo = superService.listAs(wrapper, UserVo.class);
         return R.success(listVo);
     }
+
+    /**
+     * 重置密码
+     *
+     * @param data 修改实体
+     * @return 是否成功
+     */
+    @Operation(summary = "重置密码", description = "重置密码")
+    @PostMapping("/resetPassword")
+    @RequestLog("重置密码")
+    public R<Boolean> resetPassword(@RequestBody @Validated UserResetPasswordDto data) {
+        return R.success(superService.resetPassword(data));
+    }
+
+    /**
+     * 账号解锁。
+     *
+     * @param id 用户id
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/unlock")
+    @Operation(summary = "账号解锁", description = "根据主键账号解锁")
+    @RequestLog(value = "账号解锁")
+    public R<Boolean> unlock(@RequestParam Long id) {
+        return R.success(superService.unlock(id));
+    }
+
+
+    @GetMapping("/checkUsername")
+    @Operation(summary = "检测用户名是否存在", description = "检测用户名是否存在")
+    @RequestLog(value = "检测用户名是否存在")
+    public R<Boolean> checkUsername(@RequestParam String username, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkUsername(username, id));
+    }
+
+    @GetMapping("/checkEmail")
+    @Operation(summary = "检测邮箱是否存在", description = "检测邮箱是否存在")
+    @RequestLog(value = "检测邮箱是否存在")
+    public R<Boolean> checkEmail(@RequestParam String email, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkEmail(email, id));
+    }
+
+    @GetMapping("/checkPhone")
+    @Operation(summary = "检测手机号是否存在", description = "检测手机号是否存在")
+    @RequestLog(value = "检测手机号是否存在")
+    public R<Boolean> checkPhone(@RequestParam String phone, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkPhone(phone, id));
+    }
+
 }

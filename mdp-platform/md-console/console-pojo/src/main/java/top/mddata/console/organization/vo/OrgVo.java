@@ -1,5 +1,6 @@
 package top.mddata.console.organization.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,12 +10,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.annotation.echo.Echo;
 import top.mddata.base.base.entity.TreeEntity;
+import top.mddata.base.interfaces.echo.EchoVO;
+import top.mddata.common.constant.EchoApi;
+import top.mddata.common.constant.EchoDictType;
 import top.mddata.common.entity.base.OrgBase;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 组织 VO类（通常用作Controller出参）。
@@ -30,10 +36,12 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "组织")
 @Table(OrgBase.TABLE_NAME)
-public class OrgVo extends TreeEntity<Long, OrgVo> implements Serializable {
+public class OrgVo extends TreeEntity<Long, OrgVo> implements Serializable, EchoVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
+    @Builder.Default
+    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
 
     /**
@@ -54,6 +62,7 @@ public class OrgVo extends TreeEntity<Long, OrgVo> implements Serializable {
      * [10-单位 20-部门]
      */
     @Schema(description = "类型")
+    @Echo(api = EchoApi.DICT_CLASS, dictType = EchoDictType.Console.ORG_TYPE)
     private String orgType;
 
     /**

@@ -18,21 +18,46 @@ public interface UserService extends SuperService<User> {
     /**
      * 分页查询用户
      * @param params 分页参数
-     * @return
+     * @return 分页结果
      */
     Page<UserVo> page(PageParams<UserQuery> params);
 
     /**
      * 解锁用户
      * @param id 用户id
-     * @return 是否成功
+     * @return true=成功，false=失败
      */
     Boolean unlock(Long id);
 
     /**
      * 重置密码
      * @param data 参数
-     * @return
+     * @return true=成功，false=失败
      */
     Boolean resetPassword(UserResetPasswordDto data);
+
+    /**
+     * 检查用户名
+     * @param username 用户名
+     * @param id 用户id
+     * @return true=存在，false=不存在
+     */
+    Boolean checkUsername(String username, Long id);
+
+    /**
+     * 检查手机号
+     * @param phone 手机号
+     * @param id 用户id
+     * @return true=存在，false=不存在
+     */
+    Boolean checkPhone(String phone, Long id);
+
+    /**
+     * 检查邮箱
+     * @param email 邮箱
+     * @param id 用户id
+     * @return true=存在，false=不存在
+     */
+    Boolean checkEmail(String email, Long id);
+
 }
