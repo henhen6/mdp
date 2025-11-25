@@ -5,7 +5,7 @@
 
     <groupId>top.mddata.mdp</groupId>
     <artifactId>mdp</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4</version>
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
 
