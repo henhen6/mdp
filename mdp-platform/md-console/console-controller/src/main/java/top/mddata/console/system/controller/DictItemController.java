@@ -1,6 +1,7 @@
 package top.mddata.console.system.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,9 +20,11 @@ import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.console.system.dto.DictItemDto;
+import top.mddata.console.system.entity.Dict;
 import top.mddata.console.system.entity.DictItem;
 import top.mddata.console.system.query.DictItemQuery;
 import top.mddata.console.system.service.DictItemService;
+import top.mddata.console.system.service.DictService;
 import top.mddata.console.system.vo.DictItemVo;
 
 import java.util.List;
@@ -38,6 +41,8 @@ import java.util.List;
 @RequestMapping("/system/dictItem")
 @RequiredArgsConstructor
 public class DictItemController extends SuperController<DictItemService, DictItem> {
+    private final DictService dictService;
+
     /**
      * 添加字典项。
      *
@@ -96,6 +101,26 @@ public class DictItemController extends SuperController<DictItemService, DictIte
         return R.success(page);
     }
 
+    /**
+     * 批量查询
+     * @param query 查询参数
+     * @return 集合
+     */
+    @PostMapping("/list")
+    @Operation(summary = "批量查询", description = "批量查询")
+    @RequestLog(value = "批量查询", response = false)
+    public R<List<DictItemVo>> list(@RequestBody DictItemQuery query) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if (StrUtil.isNotEmpty(query.getDictUniqKey())) {
+            Dict sysDict = dictService.getOne(QueryWrapper.create().eq(Dict::getUniqKey, query.getDictUniqKey()));
+            if (sysDict != null) {
+                queryWrapper.eq(DictItem::getDictId, sysDict.getId());
+            }
+        }
+        queryWrapper.orderBy(DictItem::getWeight, true);
+        List<DictItemVo> listVo = superService.listAs(queryWrapper, DictItemVo.class);
+        return R.success(listVo);
+    }
 
     /**
      * 查询字典项树结构

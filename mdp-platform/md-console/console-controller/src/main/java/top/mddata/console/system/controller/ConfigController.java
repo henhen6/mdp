@@ -79,20 +79,6 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     }
 
     /**
-     * 根据系统配置主键获取详细信息。
-     *
-     * @param id 系统配置主键
-     * @return 系统配置详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取系统配置")
-    @RequestLog("'单体查询:' + #id")
-    public R<ConfigVo> get(@RequestParam Long id) {
-        Config entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, ConfigVo.class));
-    }
-
-    /**
      * 分页查询系统配置。
      *
      * @param params 分页对象
@@ -112,17 +98,66 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     }
 
     /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
+     * 检查参数标识是否重复
+     * @param uniqKey 标识
+     * @param id 参数id
+     * @return
      */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<ConfigVo>> list(@RequestBody @Validated ConfigQuery params) {
-        Config entity = BeanUtil.toBean(params, Config.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ConfigVo> listVo = superService.listAs(wrapper, ConfigVo.class);
-        return R.success(listVo);
+    @PostMapping("/check")
+    @Operation(summary = "检查参数标识是否重复", description = "检查参数标识是否重复")
+    @RequestLog(value = "检查参数标识是否重复")
+    public R<Boolean> check(@RequestParam String uniqKey, @RequestParam(required = false) Long id) {
+        return R.success(superService.check(uniqKey, null, id));
+    }
+
+
+    /**
+     * 根据参数标识，查询系统参数VO
+     * @param uniqKey 参数标识
+     * @return 系统参数
+     */
+    @GetMapping("/getParam")
+    public R<ConfigVo> getParam(@RequestParam String uniqKey) {
+        return R.success(superService.getConfig(uniqKey));
+    }
+
+    /**
+     * 根据参数标识，查询长整型系统参数
+     * @param uniqKey 参数标识
+     * @return 参数值
+     */
+    @GetMapping("/getLong")
+    public R<Long> getLong(@RequestParam String uniqKey, @RequestParam(required = false) Long defaultValue) {
+        return R.success(superService.getLong(uniqKey, defaultValue));
+    }
+
+    /**
+     * 根据参数标识，查询整型系统参数
+     * @param uniqKey 参数标识
+     * @return 参数值
+     */
+    @GetMapping("/getInteger")
+    public R<Integer> getInteger(@RequestParam String uniqKey, @RequestParam(required = false) Integer defaultValue) {
+        return R.success(superService.getInteger(uniqKey, defaultValue));
+    }
+
+    /**
+     * 根据参数标识，查询字符型系统参数
+     * @param uniqKey 参数标识
+     * @return 参数值
+     */
+    @GetMapping("/getString")
+    public R<String> getString(@RequestParam String uniqKey, @RequestParam(required = false) String defaultValue) {
+        return R.success(superService.getString(uniqKey, defaultValue));
+    }
+
+    /**
+     * 根据参数标识，查询布尔型系统参数
+     * @param uniqKey 参数标识
+     * @return 参数值
+     */
+    @GetMapping("/getBoolean")
+    public R<Boolean> getBoolean(@RequestParam String uniqKey, @RequestParam(required = false) Boolean defaultValue) {
+        return R.success(superService.getBoolean(uniqKey, defaultValue));
     }
 }
