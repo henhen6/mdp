@@ -80,7 +80,7 @@ export function useMove(emit: Emits) {
         onOk: async () => {
           try {
             await #(table.buildEntityClassName())Api.move(state.current.id, parentId);
-            createMessage.success('移动成功');
+            createMessage.success($t('common.tips.moveSuccess'));
             modalApi.close();
             emit('success');
           } catch {}

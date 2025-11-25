@@ -6,6 +6,7 @@ import { VbenVxeTree } from '@vben/plugins/vxe-tree';
 import { Button } from 'ant-design-vue';
 
 import { useMove } from '../data/move';
+import { $t } from '#/locales';
 
 defineOptions({
   name: '移动',
@@ -27,9 +28,15 @@ defineExpose(modalApi);
 </script>
 
 <template>
-  <Modal class="w-[50%]" title="调整层级关系" confirm-text="移动到选中节点">
+    <Modal
+      class="w-[50%]"
+      :title="$t('common.title.moveLevel')"
+      :confirm-text="$t('common.title.moveSelect')"
+    >
     <template #center-footer>
-      <Button @click="handleMoveToRoot"> 移动到根节点</Button>
+      <Button @click="handleMoveToRoot">
+        {{ $t('common.title.moveRoot') }}
+      </Button>
     </template>
 
     <VbenVxeTree
@@ -46,7 +53,7 @@ defineExpose(modalApi);
       }"
       :checkbox-config="{ checkStrictly: true }"
       :header="{
-        title: `您正在移动【${state.current?.name}】`,
+        title: $t('common.title.moveTips', { name: state.current?.name }),
         search: true,
         toolbar: true,
       }"
