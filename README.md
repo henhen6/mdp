@@ -89,3 +89,17 @@ MDP支持SSO、Oauth2等多种主流的单点登录协议。
   - Axios
   - Dayjs 
   - codemirror
+
+## 项目预览
+- 组织管理
+  ![](./docs/imgs/组织管理.png)
+- 岗位管理
+  ![](./docs/imgs/岗位管理.png)
+- 用户管理
+  ![](./docs/imgs/用户管理.png)
+- 用户新增
+  ![](./docs/imgs/用户新增.png)
+- 菜单管理
+  ![](./docs/imgs/菜单管理.png)
+- 菜单新增
+  ![](./docs/imgs/菜单新增.png)
