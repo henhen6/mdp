@@ -4,6 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +29,11 @@ import top.mddata.console.system.query.DictQuery;
 import top.mddata.console.system.service.DictService;
 import top.mddata.console.system.vo.DictVo;
 
+import java.io.Serializable;
 import java.util.List;
+
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
 /**
  * 字典 控制层。
@@ -79,20 +87,6 @@ public class DictController extends SuperController<DictService, Dict> {
     }
 
     /**
-     * 根据字典主键获取详细信息。
-     *
-     * @param id 字典主键
-     * @return 字典详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取字典")
-    @RequestLog("'单体查询:' + #id")
-    public R<DictVo> get(@RequestParam Long id) {
-        Dict entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, DictVo.class));
-    }
-
-    /**
      * 分页查询字典。
      *
      * @param params 分页对象
@@ -124,5 +118,31 @@ public class DictController extends SuperController<DictService, Dict> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<DictVo> listVo = superService.listAs(wrapper, DictVo.class);
         return R.success(listVo);
+    }
+
+    @Parameters({
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "uniqKey", description = "字典标识", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "检测字典标识是否可用", description = "检测字典标识是否可用")
+    @GetMapping("/check")
+    @RequestLog("检测字典标识是否可用")
+    public R<Boolean> check(@RequestParam String uniqKey, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkByUniqKey(uniqKey, id));
+    }
+
+    @Operation(summary = "通过枚举导入字典", description = "通过枚举导入字典")
+    @PostMapping("/importDictByEnum")
+    @RequestLog("通过枚举导入字典")
+    public R<Boolean> importDictByEnum(@RequestBody List<DictVo> list) {
+        return R.success(superService.importDictByEnum(list));
+    }
+
+    @Operation(summary = "清空缓存", description = "清空缓存")
+    @PostMapping("/clearCache")
+    @RequestLog("清空缓存")
+    public R<Boolean> clearCache(@RequestBody List<Serializable> list) {
+        superService.clearCache(list);
+        return R.success();
     }
 }

@@ -23,5 +23,5 @@ import java.util.List;
 @Table(DictBase.TABLE_NAME)
 public class Dict extends DictBase {
 
-    private List<DictItem> sysDictItemList;
+    private List<DictItem> dictItemList;
 }

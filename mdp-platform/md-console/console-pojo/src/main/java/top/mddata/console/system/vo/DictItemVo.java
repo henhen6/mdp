@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.base.entity.TreeEntity;
 import top.mddata.console.system.entity.base.DictItemBase;
 
 import java.io.Serial;
@@ -27,7 +28,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "字典项")
 @Table(DictItemBase.TABLE_NAME)
-public class DictItemVo implements Serializable {
+public class DictItemVo extends TreeEntity<Long, DictItemVo> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

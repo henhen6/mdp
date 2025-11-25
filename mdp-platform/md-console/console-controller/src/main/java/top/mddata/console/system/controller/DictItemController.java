@@ -7,11 +7,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
@@ -19,6 +17,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.console.system.dto.DictItemDto;
 import top.mddata.console.system.entity.DictItem;
 import top.mddata.console.system.query.DictItemQuery;
@@ -79,20 +78,6 @@ public class DictItemController extends SuperController<DictItemService, DictIte
     }
 
     /**
-     * 根据字典项主键获取详细信息。
-     *
-     * @param id 字典项主键
-     * @return 字典项详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取字典项")
-    @RequestLog("'单体查询:' + #id")
-    public R<DictItemVo> get(@RequestParam Long id) {
-        DictItem entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, DictItemVo.class));
-    }
-
-    /**
      * 分页查询字典项。
      *
      * @param params 分页对象
@@ -111,18 +96,16 @@ public class DictItemController extends SuperController<DictItemService, DictIte
         return R.success(page);
     }
 
+
     /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
+     * 查询字典项树结构
      */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<DictItemVo>> list(@RequestBody @Validated DictItemQuery params) {
-        DictItem entity = BeanUtil.toBean(params, DictItem.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<DictItemVo> listVo = superService.listAs(wrapper, DictItemVo.class);
-        return R.success(listVo);
+    @Operation(summary = "查询字典项-树结构", description = "查询字典项-树结构")
+    @PostMapping("/tree")
+    @RequestLog("查询字典项-树结构")
+    public R<List<DictItemVo>> tree(@RequestBody @Validated DictItemQuery query) {
+        List<DictItemVo> list = superService.listAs(new QueryWrapper().eq(DictItem::getDictId, query.getDictId()).orderBy(DictItem::getWeight, true), DictItemVo.class);
+        List<DictItemVo> menuTreeList = MyTreeUtil.buildTreeEntity(list, DictItemVo::new);
+        return R.success(menuTreeList);
     }
 }
