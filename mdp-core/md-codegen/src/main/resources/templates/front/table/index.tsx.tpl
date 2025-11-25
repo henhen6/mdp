@@ -151,6 +151,9 @@ export function useIndex() {
             if (firstSort) {
               queryParams.sort = firstSort.field;
               queryParams.order = firstSort.order;
+            } else {
+              queryParams.sort = 'createdAt';
+              queryParams.order = 'desc';
             }
             return await #(table.buildEntityClassName())Api.page(queryParams);
           },
