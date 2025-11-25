@@ -1,5 +1,6 @@
 package top.mddata.console.organization.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,11 +9,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.annotation.echo.Echo;
+import top.mddata.base.interfaces.echo.EchoVO;
+import top.mddata.common.constant.EchoApi;
 import top.mddata.common.entity.base.PositionBase;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 岗位 VO类（通常用作Controller出参）。
@@ -27,11 +32,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "岗位")
 @Table(PositionBase.TABLE_NAME)
-public class PositionVo implements Serializable {
+public class PositionVo implements Serializable, EchoVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @Builder.Default
+    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
     /**
      * ID
@@ -46,6 +53,7 @@ public class PositionVo implements Serializable {
      * @Echo(api = EchoApi.ORG_ID_CLASS)
      */
     @Schema(description = "所属组织")
+    @Echo(api = EchoApi.ORG_CLASS)
     private Long orgId;
 
     /**

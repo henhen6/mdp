@@ -52,6 +52,7 @@ public class OrgDto implements Serializable {
      */
     @Size(max = 2, message = "类型长度不能超过{max}")
     @Schema(description = "类型")
+    @NotEmpty(message = "请选择类型")
     private String orgType;
 
     /**

@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
@@ -25,7 +27,10 @@ import top.mddata.console.organization.query.PositionQuery;
 import top.mddata.console.organization.service.PositionService;
 import top.mddata.console.organization.vo.PositionVo;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 岗位 控制层。
@@ -39,6 +44,7 @@ import java.util.List;
 @RequestMapping("/organization/position")
 @RequiredArgsConstructor
 public class PositionController extends SuperController<PositionService, Position> {
+    private final EchoService echoService;
     /**
      * 添加岗位。
      *
@@ -108,6 +114,7 @@ public class PositionController extends SuperController<PositionService, Positio
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, PositionVo.class);
+        echoService.action(page);
         return R.success(page);
     }
 
@@ -124,5 +131,17 @@ public class PositionController extends SuperController<PositionService, Positio
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<PositionVo> listVo = superService.listAs(wrapper, PositionVo.class);
         return R.success(listVo);
+    }
+
+    @PostMapping("/updateState")
+    @Operation(summary = "修改状态", description = "修改状态")
+    @RequestLog(value = "修改状态")
+    public R<Boolean> updateState(@Parameter(description = "岗位主键") @RequestParam Long id, @Parameter(description = "状态") @RequestParam Boolean state) {
+        return R.success(superService.updateState(id, state));
+    }
+
+    @PostMapping("/findByIds")
+    public Map<Serializable, Object> findByIds(@RequestParam("ids") Set<Serializable> ids) {
+        return superService.findByIds(ids);
     }
 }
