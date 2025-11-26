@@ -1,5 +1,6 @@
 package top.mddata.console.system.facade;
 
+import top.mddata.console.system.dto.CopyFilesDto;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 
 /**
@@ -12,4 +13,10 @@ public interface FileFacade {
      * @param relateFilesToBizDto 参数
      */
     void relateFilesToBiz(RelateFilesToBizDto relateFilesToBizDto);
+
+    /**
+     * 复制文件
+     * @param copyFilesDto 复制参数
+     */
+    Boolean copyFile(CopyFilesDto copyFilesDto);
 }

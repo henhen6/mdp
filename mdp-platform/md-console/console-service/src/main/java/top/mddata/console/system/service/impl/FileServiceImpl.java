@@ -1,6 +1,7 @@
 package top.mddata.console.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.StrUtil;
@@ -17,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
+import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.base.utils.JsonUtil;
+import top.mddata.console.system.dto.CopyFilesDto;
 import top.mddata.console.system.dto.FileUploadDto;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.entity.File;
@@ -122,6 +125,67 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         // 这里手动获 哈希信息 并转成 json 字符串，方便存储在数据库中
         detail.setHashInfo(JsonUtil.toJson(info.getHashInfo()));
         return detail;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean copyFile(CopyFilesDto copyFilesDto) {
+        String objectType = copyFilesDto.getObjectType();
+        Long objectId = copyFilesDto.getObjectId();
+        List<CopyFilesDto> targetFiles = copyFilesDto.getTargetFiles();
+        ArgumentAssert.notNull(objectId, "原业务对象业务id不能为空");
+        ArgumentAssert.notEmpty(objectType, "原业务对象业务类型不能为空");
+        ArgumentAssert.notEmpty(targetFiles, "新业务对象不能为空");
+        List<File> originalFiles = list(QueryWrapper.create().eq(File::getObjectType, objectType).eq(File::getObjectId, objectId));
+        if (originalFiles.isEmpty()) {
+            log.info("未找到【{}--{}】对应的附件", copyFilesDto.getObjectType(), copyFilesDto.getObjectId());
+            return false;
+        }
+
+        try {
+            List<File> targetFileList = new ArrayList<>();
+            originalFiles.forEach(original -> {
+                targetFiles.forEach(targetFile -> {
+                    CopyOptions copyOptions = CopyOptions.create().setIgnoreProperties(File::getId, File::getCreatedAt, File::getCreatedBy, File::getUpdatedAt, File::getUpdatedBy);
+                    File newFile = BeanUtil.toBean(original, File.class, copyOptions);
+
+                    // 相对路径
+                    String path = getDateFolder();
+
+                    // 构造原始文件
+                    FileInfo originalFileInfo = new FileInfo();
+                    originalFileInfo.setPlatform(original.getPlatform()).setBasePath(original.getBasePath()).setPath(original.getPath()).setFilename(original.getFilename());
+
+                    // 构造新文件，并执行复制
+                    FileInfo newFileInfo = fileStorageService.copy(originalFileInfo)
+                            .setPath(path)
+                            .setPlatform(original.getPlatform())
+//                            .setFilename(targetFile.getFilename())
+                            .setProgressListener((progressSize, allSize) ->
+                                    log.info("文件复制进度：{} {}%", progressSize, progressSize * 100 / allSize))
+                            .copy();
+
+                    newFile.setUrl(newFileInfo.getUrl());
+                    newFile.setFilename(newFileInfo.getFilename());
+                    newFile.setPath(newFileInfo.getPath());
+
+                    // 重置分片上传相关字段（复制后的附件为完整文件，无需分片状态）
+                    newFile.setUploadId(null);
+                    newFile.setUploadStatus(null);
+
+                    // 设置新业务标识
+                    newFile.setObjectType(targetFile.getObjectType());
+                    newFile.setObjectId(targetFile.getObjectId());
+                    targetFileList.add(newFile);
+                });
+            });
+
+            saveBatch(targetFileList);
+            return true;
+        } catch (Exception e) {
+            log.error("文件复制失败", e);
+            return false;
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)

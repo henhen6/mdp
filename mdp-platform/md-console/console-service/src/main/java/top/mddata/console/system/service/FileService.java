@@ -2,6 +2,7 @@ package top.mddata.console.system.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import top.mddata.base.mvcflex.service.SuperService;
+import top.mddata.console.system.dto.CopyFilesDto;
 import top.mddata.console.system.dto.FileUploadDto;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.entity.File;
@@ -24,6 +25,12 @@ public interface FileService extends SuperService<File> {
      * @return 文件信息
      */
     FileVo upload(MultipartFile file, FileUploadDto fileUploadDto);
+
+    /**
+     * 复制文件
+     * @param copyFilesDto 复制参数
+     */
+    Boolean copyFile(CopyFilesDto copyFilesDto);
 
     /**
      * 关联文件到业务 （新增、修改时调用）

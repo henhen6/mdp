@@ -2,6 +2,7 @@ package top.mddata.console.system.facade.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.mddata.console.system.dto.CopyFilesDto;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.facade.FileFacade;
 import top.mddata.console.system.service.FileService;
@@ -14,5 +15,10 @@ public class FileFacadeImpl implements FileFacade {
     @Override
     public void relateFilesToBiz(RelateFilesToBizDto relateFilesToBizDto) {
         fileService.relateFilesToBiz(relateFilesToBizDto);
+    }
+
+    @Override
+    public Boolean copyFile(CopyFilesDto copyFilesDto) {
+        return fileService.copyFile(copyFilesDto);
     }
 }

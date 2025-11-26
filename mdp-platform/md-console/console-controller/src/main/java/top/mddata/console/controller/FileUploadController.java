@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.console.system.dto.CopyFilesDto;
 import top.mddata.console.system.dto.FileUploadDto;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.service.FileService;
@@ -53,6 +54,13 @@ public class FileUploadController {
     @RequestLog("上传文件")
     public R<FileVo> upload(@RequestParam(value = "file") MultipartFile file, @Validated FileUploadDto fileUploadDto) {
         return R.success(fileService.upload(file, fileUploadDto));
+    }
+
+
+    @Operation(summary = "复制文件", description = "复制文件")
+    @PostMapping(value = "/copyFile")
+    public R<Boolean> copyFile(@Validated @RequestBody CopyFilesDto copyFilesDto) {
+        return R.success(fileService.copyFile(copyFilesDto));
     }
 
 
