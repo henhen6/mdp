@@ -18,9 +18,9 @@ export function useDetail() {
 
   async function loadFormData({ formData, type }: FormState) {
     state.type = type;
-    state.formData = formData;
+    state.formData = { ...formData };
 
-    schemaGroup.value = schemaToDetailForm(useSchema(), formData);
+    schemaGroup.value = schemaToDetailForm(useSchema(), state.formData);
   }
 
   return { schemaGroup, state, loadFormData };
