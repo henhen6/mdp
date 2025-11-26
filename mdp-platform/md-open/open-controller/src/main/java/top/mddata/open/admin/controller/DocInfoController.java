@@ -48,8 +48,8 @@ public class DocInfoController extends SuperController<DocInfoService, DocInfo> 
     @Operation(summary = "修改文档状态", description = "修改文档状态")
     @PostMapping("updatePublish")
     @RequestLog("修改文档状态")
-    public R<Boolean> updatePublish(@RequestParam Long id, @RequestParam Integer isPublish) {
-        return R.success(superService.updatePublish(id, isPublish));
+    public R<Boolean> updatePublish(@RequestParam Long id, @RequestParam Integer publish) {
+        return R.success(superService.updatePublish(id, publish));
     }
 
     @Operation(summary = "同步所有文档", description = "同步所有文档")

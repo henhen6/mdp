@@ -44,7 +44,7 @@ public class ApiDto implements Serializable {
     @NotEmpty(message = "请填写应用名称")
     @Size(max = 64, message = "应用名称长度不能超过{max}")
     @Schema(description = "应用名称")
-    private String applicationName;
+    private String appName;
 
     /**
      * 接口名称

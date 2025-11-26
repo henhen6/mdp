@@ -44,7 +44,7 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
      */
     @Override
     public SaClientModel getClientModel(String clientId) {
-        R<AppVo> result = appFacade.getByAppKey(clientId);
+        R<AppVo> result = appFacade.getAppByAppKey(clientId);
         if (!result.getIsSuccess()) {
             return null;
         }

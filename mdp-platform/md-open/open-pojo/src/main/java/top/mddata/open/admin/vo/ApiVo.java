@@ -44,7 +44,7 @@ public class ApiVo implements Serializable {
      * 应用名称
      */
     @Schema(description = "应用名称")
-    private String applicationName;
+    private String appName;
 
     /**
      * 接口名称

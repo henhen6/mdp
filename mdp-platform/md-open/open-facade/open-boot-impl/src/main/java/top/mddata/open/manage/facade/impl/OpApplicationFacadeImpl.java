@@ -35,7 +35,7 @@ public class OpApplicationFacadeImpl implements AppFacade {
     }
 
     @Override
-    public R<AppVo> getByAppKey(String key) {
+    public R<AppVo> getAppByAppKey(String key) {
         return R.success(appService.getAppByAppKey(key));
     }
 }

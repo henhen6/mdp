@@ -28,10 +28,10 @@ public interface DocInfoService extends SuperService<DocInfo> {
      * 修改发布状态
      *
      * @param id        id
-     * @param isPublish 状态
+     * @param publish 状态
      * @return 是否成功
      */
-    Boolean updatePublish(Long id, Integer isPublish);
+    Boolean updatePublish(Long id, Integer publish);
 
     /**
      * 同步文档

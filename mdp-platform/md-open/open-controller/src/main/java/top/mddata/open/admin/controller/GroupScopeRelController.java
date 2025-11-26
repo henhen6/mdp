@@ -15,8 +15,6 @@ import top.mddata.open.admin.dto.GroupScopeRelDto;
 import top.mddata.open.admin.entity.GroupScopeRel;
 import top.mddata.open.admin.service.GroupScopeRelService;
 
-import java.util.List;
-
 /**
  * 分组拥有的oauth2权限 控制层。
  *
@@ -45,14 +43,14 @@ public class GroupScopeRelController extends SuperController<GroupScopeRelServic
     /**
      * 根据主键删除分组拥有的oauth2权限。
      *
-     * @param ids 主键
+     * @param dto 待删除信息
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除分组拥有的oauth2权限")
     @RequestLog("'删除:' + #ids")
-    public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(superService.removeByIds(ids));
+    public R<Boolean> delete(@Validated @RequestBody GroupScopeRelDto dto) {
+        return R.success(superService.delete(dto.getGroupId(), dto.getScopeIdList()));
     }
 
 }

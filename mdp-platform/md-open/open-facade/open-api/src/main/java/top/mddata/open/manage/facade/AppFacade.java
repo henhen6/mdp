@@ -34,6 +34,6 @@ public interface AppFacade {
      * @param appKey 应用标识
      * @return 应用
      */
-    R<AppVo> getByAppKey(String appKey);
+    R<AppVo> getAppByAppKey(String appKey);
 
 }

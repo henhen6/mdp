@@ -49,7 +49,7 @@ public class SsoServerController {
 
         // 判断应用状态
         long loginId = StpUtil.getLoginIdAsLong();
-        R<AppVo> appResult = appFacade.getByAppKey(client);
+        R<AppVo> appResult = appFacade.getAppByAppKey(client);
         if (appResult.getIsSuccess()) {
             AppVo opApplication = appResult.getData();
 

@@ -66,10 +66,9 @@ public class DocInfoServiceImpl extends SuperServiceImpl<DocInfoMapper, DocInfo>
 
         return MyTreeUtil.buildTreeEntity(voList, 0L, DocInfoVo::new);
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean updatePublish(Long id, Integer isPublish) {
+    public Boolean updatePublish(Long id, Integer publish) {
         DocInfo docInfo = getById(id);
         ArgumentAssert.notNull(docInfo, "文档不存在");
         // 如果是文件夹,发布下面所有的文档
@@ -79,18 +78,18 @@ public class DocInfoServiceImpl extends SuperServiceImpl<DocInfoMapper, DocInfo>
             Set<Long> ids = children.stream().map(DocInfo::getId).collect(Collectors.toSet());
             ids.add(id);
             DocInfo build = new DocInfo();
-            build.setPublish(isPublish);
+            build.setPublish(publish);
             result = update(build, QueryWrapper.create().in(DocInfo::getId, ids));
         } else {
             // 发布单个文档
             DocInfo build = UpdateEntity.of(DocInfo.class, docInfo.getId());
-            build.setPublish(isPublish);
+            build.setPublish(publish);
             result = updateById(build);
 
             // 发布父节点
-            if (BooleanEnum.TRUE.eq(isPublish)) {
+            if (BooleanEnum.TRUE.eq(publish)) {
                 DocInfo parent = new DocInfo();
-                parent.setPublish(isPublish);
+                parent.setPublish(publish);
                 parent.setId(docInfo.getParentId());
                 updateById(parent);
             }
@@ -98,9 +97,9 @@ public class DocInfoServiceImpl extends SuperServiceImpl<DocInfoMapper, DocInfo>
 
         // 发布一个接口自动发布所属应用
         Long docGroupId = docInfo.getDocGroupId();
-        if (BooleanEnum.TRUE.eq(isPublish)) {
+        if (BooleanEnum.TRUE.eq(publish)) {
             DocGroup docGroup = UpdateEntity.of(DocGroup.class, docGroupId);
-            docGroup.setPublish(isPublish);
+            docGroup.setPublish(publish);
             docGroupMapper.update(docGroup);
         } else {
             // 如果应用下的接口都未发布,应用也改成未发布

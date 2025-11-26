@@ -144,13 +144,12 @@ public class AppController extends SuperController<AppService, App> {
      * @param appKey 应用标识
      * @return 应用详情
      */
-    @GetMapping("/getByAppKey")
+    @GetMapping("/getAppByAppKey")
     @Operation(summary = "单体查询-appKey", description = "根据应用id获取应用")
     @RequestLog("'单体查询-appKey:' + #appKey")
-    public R<AppVo> getByAppKey(@RequestParam String appKey) {
+    public R<AppVo> getAppByAppKey(@RequestParam String appKey) {
         return R.success(superService.getAppByAppKey(appKey));
     }
-
 
     /**
      * 查询需要 接收事件推送的应用
@@ -164,19 +163,6 @@ public class AppController extends SuperController<AppService, App> {
         return R.success(superService.listNeedPushApp());
     }
 
-
-    /**
-     * 根据应用ID查询应用
-     *
-     * @param appKey 应用标识
-     * @return 应用
-     */
-    @GetMapping("/getAppByAppId")
-    @Operation(summary = "根据应用ID查询应用", description = "根据应用ID查询应用")
-    @RequestLog(value = "根据应用ID查询应用")
-    public R<AppVo> getAppByAppId(@RequestParam String appKey) {
-        return R.success(superService.getAppByAppKey(appKey));
-    }
 
 
     /**
@@ -249,8 +235,8 @@ public class AppController extends SuperController<AppService, App> {
      */
     @Operation(summary = "给应用授权权限组", description = "设置应用的权限组")
     @RequestLog(value = "给应用授权权限组")
-    @PostMapping("/saveApplicationGroup")
-    public R<AppGroupRel> saveApplicationGroup(@Validated @RequestBody AppGroupRelDto param) {
+    @PostMapping("/saveAppGroup")
+    public R<AppGroupRel> saveAppGroup(@Validated @RequestBody AppGroupRelDto param) {
         return R.success(appGroupRelService.saveDto(param));
     }
 }

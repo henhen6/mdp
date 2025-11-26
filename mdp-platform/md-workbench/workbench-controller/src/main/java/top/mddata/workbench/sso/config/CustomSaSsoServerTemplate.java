@@ -41,7 +41,7 @@ public class CustomSaSsoServerTemplate extends SaSsoServerTemplate {
     // 根据 client 标识获取 SaSsoClientModel 对象
     @Override
     public SaSsoClientModel getClient(String clientSn) {
-        R<AppVo> result = appFacade.getByAppKey(clientSn);
+        R<AppVo> result = appFacade.getAppByAppKey(clientSn);
         if (result.getIsSuccess()) {
             AppVo opApplication = result.getData();
             if (opApplication == null) {

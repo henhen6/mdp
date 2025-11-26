@@ -33,7 +33,7 @@ public class ApiBase extends SuperEntity<Long> implements Serializable {
     /**
      * 应用名称
      */
-    private String applicationName;
+    private String appName;
 
     /**
      * 接口名称

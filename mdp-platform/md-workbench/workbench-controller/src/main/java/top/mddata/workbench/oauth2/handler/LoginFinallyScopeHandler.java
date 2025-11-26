@@ -46,7 +46,7 @@ public class LoginFinallyScopeHandler implements SaOAuth2ScopeHandlerInterface {
     @Override
     public void workAccessToken(AccessTokenModel at) {
         String appId = SaFoxUtil.getValueByType(at.getClientId(), String.class);
-        R<AppVo> result = appFacade.getByAppKey(appId);
+        R<AppVo> result = appFacade.getAppByAppKey(appId);
         if (!result.getIsSuccess()) {
             return;
         }
