@@ -36,8 +36,9 @@ public class GroupScopeRelController extends SuperController<GroupScopeRelServic
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存分组拥有的oauth2权限")
     @RequestLog(value = "新增", request = false)
-    public R<Long> save(@Validated @RequestBody GroupScopeRelDto dto) {
-        return R.success(superService.saveDto(dto).getId());
+    public R<Boolean> save(@Validated @RequestBody GroupScopeRelDto dto) {
+        superService.saveDto(dto);
+        return R.success(true);
     }
 
     /**

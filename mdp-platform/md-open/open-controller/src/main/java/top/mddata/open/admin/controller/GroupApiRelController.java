@@ -46,14 +46,14 @@ public class GroupApiRelController extends SuperController<GroupApiRelService, G
     /**
      * 根据主键删除分组拥有的对外接口。
      *
-     * @param ids 主键
+     * @param dto 主键
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除分组拥有的对外接口")
     @RequestLog("'删除:' + #ids")
-    public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(superService.removeByIds(ids));
+    public R<Boolean> delete(@Validated @RequestBody GroupApiRelDto dto) {
+        return R.success(superService.delete(dto.getGroupId(), dto.getApiIdList()));
     }
 
 }
