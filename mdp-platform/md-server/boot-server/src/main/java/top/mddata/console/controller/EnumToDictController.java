@@ -69,9 +69,9 @@ public class EnumToDictController {
         Map<String, DictItem> existingDictItemMap = new HashMap<>();
         for (Dict dict : existsDictList) {
             existingDictMap.put(dict.getUniqKey(), dict);
-            List<DictItem> DictItemList = dict.getDictItemList();
-            if (CollUtil.isNotEmpty(DictItemList)) {
-                for (DictItem item : DictItemList) {
+            List<DictItem> dictItemList = dict.getDictItemList();
+            if (CollUtil.isNotEmpty(dictItemList)) {
+                for (DictItem item : dictItemList) {
                     existingDictItemMap.put(dict.getUniqKey() + item.getUniqKey(), item);
                 }
             }

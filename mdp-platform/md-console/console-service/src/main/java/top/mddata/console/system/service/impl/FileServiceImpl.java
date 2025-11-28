@@ -1,9 +1,9 @@
 package top.mddata.console.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.file.FileNameUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ import top.mddata.console.system.enumeration.FileTypeEnum;
 import top.mddata.console.system.mapper.FileMapper;
 import top.mddata.console.system.properties.FileProperties;
 import top.mddata.console.system.service.FileService;
+import top.mddata.console.system.utils.FileConvert;
 import top.mddata.console.system.vo.FileVo;
 
 import java.time.LocalDate;
@@ -56,6 +57,7 @@ import static top.mddata.common.constant.FileObjectType.TEMP_OBJECT_TYPE;
 public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implements FileService {
     private final FileStorageService fileStorageService;
     private final FileProperties fileProperties;
+    private final FileConvert fileConvert;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -143,44 +145,30 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         }
 
         try {
-            List<File> targetFileList = new ArrayList<>();
             originalFiles.forEach(original -> {
                 targetFiles.forEach(targetFile -> {
-                    CopyOptions copyOptions = CopyOptions.create().setIgnoreProperties(File::getId, File::getCreatedAt, File::getCreatedBy, File::getUpdatedAt, File::getUpdatedBy);
-                    File newFile = BeanUtil.toBean(original, File.class, copyOptions);
-
                     // 相对路径
                     String path = getDateFolder();
 
-                    // 构造原始文件
-                    FileInfo originalFileInfo = new FileInfo();
+                    // 从数据库数据构造出 原文件
+                    FileInfo originalFileInfo = fileConvert.toTarget(original);
                     originalFileInfo.setPlatform(original.getPlatform()).setBasePath(original.getBasePath()).setPath(original.getPath()).setFilename(original.getFilename());
 
-                    // 构造新文件，并执行复制
-                    FileInfo newFileInfo = fileStorageService.copy(originalFileInfo)
+                    // 指定新文件的业务参数 （其实x-file-storage这里做的不算友好，有优化空间）
+                    originalFileInfo.setObjectId(String.valueOf(targetFile.getObjectId())).setObjectType(targetFile.getObjectType());
+
+                    // 传递新文件必要参数，并执行复制
+                    String newFilename = IdUtil.objectId() + (StrUtil.isEmpty(original.getExt()) ? StrUtil.EMPTY : "." + original.getExt());
+                    fileStorageService.copy(originalFileInfo)
                             .setPath(path)
                             .setPlatform(original.getPlatform())
-//                            .setFilename(targetFile.getFilename())
+                            .setFilename(newFilename)  // 需要指定新名字
                             .setProgressListener((progressSize, allSize) ->
                                     log.info("文件复制进度：{} {}%", progressSize, progressSize * 100 / allSize))
                             .copy();
-
-                    newFile.setUrl(newFileInfo.getUrl());
-                    newFile.setFilename(newFileInfo.getFilename());
-                    newFile.setPath(newFileInfo.getPath());
-
-                    // 重置分片上传相关字段（复制后的附件为完整文件，无需分片状态）
-                    newFile.setUploadId(null);
-                    newFile.setUploadStatus(null);
-
-                    // 设置新业务标识
-                    newFile.setObjectType(targetFile.getObjectType());
-                    newFile.setObjectId(targetFile.getObjectId());
-                    targetFileList.add(newFile);
                 });
             });
 
-            saveBatch(targetFileList);
             return true;
         } catch (Exception e) {
             log.error("文件复制失败", e);

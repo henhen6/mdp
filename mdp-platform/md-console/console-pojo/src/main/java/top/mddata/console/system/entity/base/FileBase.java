@@ -1,10 +1,7 @@
 package top.mddata.console.system.entity.base;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import top.mddata.base.base.entity.SuperEntity;
 
@@ -18,10 +15,7 @@ import java.io.Serializable;
  * @since 2025-11-12 16:21:25
  */
 @Data
-@Builder
 @Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class FileBase extends SuperEntity<Long> implements Serializable {
     /** 表名称 */

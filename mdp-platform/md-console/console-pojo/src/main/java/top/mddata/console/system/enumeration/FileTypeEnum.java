@@ -25,30 +25,29 @@ public enum FileTypeEnum implements BaseEnum<Integer> {
     DIR(0, "目录", Collections.emptyList()),
 
     /**
-     * 其他
-     */
-    UNKNOWN(1, "其他", Collections.emptyList()),
-
-    /**
      * 图片
      */
-    IMAGE(2, "图片", List
+    IMAGE(1, "图片", List
             .of("jpg", "jpeg", "png", "gif", "bmp", "webp", "ico", "psd", "tiff", "dwg", "jxr", "apng", "xcf")),
 
     /**
      * 文档
      */
-    DOC(3, "文档", List.of("txt", "pdf", "doc", "xls", "ppt", "docx", "xlsx", "pptx")),
+    DOC(2, "文档", List.of("txt", "pdf", "doc", "xls", "ppt", "docx", "xlsx", "pptx")),
 
     /**
      * 视频
      */
-    VIDEO(4, "视频", List.of("mp4", "avi", "mkv", "flv", "webm", "wmv", "m4v", "mov", "mpg", "rmvb", "3gp")),
+    VIDEO(3, "视频", List.of("mp4", "avi", "mkv", "flv", "webm", "wmv", "m4v", "mov", "mpg", "rmvb", "3gp")),
 
     /**
      * 音频
      */
-    AUDIO(5, "音频", List.of("mp3", "flac", "wav", "ogg", "midi", "m4a", "aac", "amr", "ac3", "aiff"));
+    AUDIO(4, "音频", List.of("mp3", "flac", "wav", "ogg", "midi", "m4a", "aac", "amr", "ac3", "aiff")),
+    /**
+     * 其他
+     */
+    UNKNOWN(99, "其他", Collections.emptyList());
 
     private final Integer code;
     private final String desc;
