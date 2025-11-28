@@ -35,10 +35,10 @@ public interface FileConvert extends MapStructMethod {
         return FileTypeEnum.getByExtension(ext).getCode();
     }
 
-    @Mapping(target = "metadata", qualifiedByName = PARSE_MAP)
-    @Mapping(target = "userMetadata", qualifiedByName = PARSE_MAP)
-    @Mapping(target = "thMetadata", qualifiedByName = PARSE_MAP)
-    @Mapping(target = "thUserMetadata", qualifiedByName = PARSE_MAP)
+    @Mapping(target = "metadata", qualifiedBy = ParseMap.class)
+    @Mapping(target = "userMetadata", qualifiedBy = ParseMap.class)
+    @Mapping(target = "thMetadata", qualifiedBy = ParseMap.class)
+    @Mapping(target = "thUserMetadata", qualifiedBy = ParseMap.class)
     @Mapping(target = "hashInfo", expression = "java(parseObject(file.getHashInfo(), org.dromara.x.file.storage.core.hash.HashInfo.class))")
     @Mapping(target = "attr", expression = "java(parseObject(file.getAttr(), cn.hutool.core.lang.Dict.class))")
     @Mapping(source = "fileSize", target = "size")
@@ -48,12 +48,12 @@ public interface FileConvert extends MapStructMethod {
 
 
     @Mapping(source = "ext", target = "fileType", qualifiedBy = ExtToFileType.class)
-    @Mapping(target = "metadata", qualifiedByName = TO_JSON_STRING)
-    @Mapping(target = "userMetadata", qualifiedByName = TO_JSON_STRING)
-    @Mapping(target = "thMetadata", qualifiedByName = TO_JSON_STRING)
-    @Mapping(target = "thUserMetadata", qualifiedByName = TO_JSON_STRING)
-    @Mapping(target = "hashInfo", qualifiedByName = TO_JSON_STRING)
-    @Mapping(target = "attr", qualifiedByName = TO_JSON_STRING)
+    @Mapping(target = "metadata", qualifiedBy = ToJson.class)
+    @Mapping(target = "userMetadata", qualifiedBy = ToJson.class)
+    @Mapping(target = "thMetadata", qualifiedBy = ToJson.class)
+    @Mapping(target = "thUserMetadata", qualifiedBy = ToJson.class)
+    @Mapping(target = "hashInfo", qualifiedBy = ToJson.class)
+    @Mapping(target = "attr", qualifiedBy = ToJson.class)
     @Mapping(source = "size", target = "fileSize")
     @Mapping(target = "fileAcl", ignore = true)
     @Mapping(target = "thFileAcl", ignore = true)

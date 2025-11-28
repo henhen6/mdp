@@ -2,10 +2,14 @@ package top.mddata.base.mapstruct;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.mapstruct.Named;
+import org.mapstruct.Qualifier;
 import top.mddata.base.utils.ClassUtils;
 import top.mddata.base.utils.JsonUtil;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
 
 /**
@@ -14,10 +18,29 @@ import java.util.Map;
  * @since 2024/6/28 21:31
  */
 public interface MapStructMethod {
-    String NAME_TO_CLASS = "nameToClass";
-    String TO_JSON_STRING = "toJsonString";
-    String PARSE_MAP = "parseMap";
-    String PARSE_OBJECT = "parseObject";
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ToJson {
+    }
+
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ParseMap {
+    }
+
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ParseObject {
+    }
+
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface NameToClass {
+    }
 
     /**
      * 获取类
@@ -25,7 +48,7 @@ public interface MapStructMethod {
      * @param name 类名
      * @return 类
      */
-    @Named(NAME_TO_CLASS)
+    @NameToClass
     default Class<?> nameToClass(String name) {
         return ClassUtils.forName(name);
     }
@@ -37,7 +60,7 @@ public interface MapStructMethod {
      * @param clazz 目标对象
      * @return 目标对象
      */
-    @Named(PARSE_OBJECT)
+    @ParseObject
     default <T> T parseObject(String str, Class<T> clazz) {
         if (StrUtil.isBlank(str)) {
             return null;
@@ -51,7 +74,7 @@ public interface MapStructMethod {
      * @param obj 对象
      * @return json字符串
      */
-    @Named(TO_JSON_STRING)
+    @ToJson
     default String toJsonString(Object obj) {
         return JsonUtil.toJson(obj);
     }
@@ -62,7 +85,7 @@ public interface MapStructMethod {
      * @param str 带解析字符串
      * @return Map
      */
-    @Named(PARSE_MAP)
+    @ParseMap
     default Map<String, String> parseMap(String str) {
         return JsonUtil.parse(str, new TypeReference<>() {
         });
