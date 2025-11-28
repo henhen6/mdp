@@ -26,7 +26,7 @@ public interface FileConvert extends MapStructMethod {
 
     @Qualifier
     @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.SOURCE)
+    @Retention(RetentionPolicy.CLASS)
     @interface ExtToFileType {
     }
 

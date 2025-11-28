@@ -18,27 +18,30 @@ import java.util.Map;
  * @since 2024/6/28 21:31
  */
 public interface MapStructMethod {
+    /**
+     * 任意对象 转为json字符串
+     */
     @Qualifier
     @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.SOURCE)
+    @Retention(RetentionPolicy.CLASS)
     @interface ToJson {
     }
 
+    /**
+     * json字符串 解析为Map
+     */
     @Qualifier
     @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.SOURCE)
+    @Retention(RetentionPolicy.CLASS)
     @interface ParseMap {
     }
 
+    /**
+     * 获取类
+     */
     @Qualifier
     @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ParseObject {
-    }
-
-    @Qualifier
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.SOURCE)
+    @Retention(RetentionPolicy.CLASS)
     @interface NameToClass {
     }
 
@@ -56,11 +59,13 @@ public interface MapStructMethod {
     /**
      * 字符串转为对象
      *
+     * 因为这个方法是2个参数，不能通过 qualifiedBy 方法使用
+     * 只能通过这种方式使用 expression = "java(parseObject(xx, xxx.class))"
+     *
      * @param str 带解析字符串
      * @param clazz 目标对象
      * @return 目标对象
      */
-    @ParseObject
     default <T> T parseObject(String str, Class<T> clazz) {
         if (StrUtil.isBlank(str)) {
             return null;
