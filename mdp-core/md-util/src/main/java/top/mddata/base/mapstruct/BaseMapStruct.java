@@ -1,4 +1,4 @@
-package top.mddata.base.utils;
+package top.mddata.base.mapstruct;
 
 
 import org.mapstruct.MappingTarget;
@@ -13,7 +13,7 @@ import java.util.List;
  * @author henhen6
  * @since 2024年06月23日14:14:33
  */
-public interface BaseMapping<Source, Target> {
+public interface BaseMapStruct<Source, Target> {
     /**
      * Source转Target
      *
@@ -45,7 +45,6 @@ public interface BaseMapping<Source, Target> {
      *
      * @param aList /
      * @param bList /
-     * @return /
      */
     void copySourceProperties(List<Source> aList, @MappingTarget List<Target> bList);
 

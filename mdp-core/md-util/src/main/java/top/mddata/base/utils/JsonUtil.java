@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import static top.mddata.base.utils.DateUtils.DEFAULT_DATE_TIME_FORMAT;
@@ -39,6 +40,9 @@ public final class JsonUtil {
 
     public static <T> String toJson(T value) {
         try {
+            if (Objects.isNull(value)) {
+                return null;
+            }
             return getInstance().writeValueAsString(value);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
