@@ -59,8 +59,8 @@ public class AppApplyServiceImpl extends SuperServiceImpl<AppApplyMapper, AppApp
 
             // 新建应用
             app.setApplyId(applicationApply.getId());
-            String appId = new SimpleDateFormat("yyyyMMdd").format(new Date()) + RandomUtil.randomString(10);
-            app.setAppKey(appId);
+            String appKey = new SimpleDateFormat("yyyyMMdd").format(new Date()) + RandomUtil.randomString(10);
+            app.setAppKey(appKey);
             if (copyFlag) {
                 app.setLogo(app.getId());
             }
