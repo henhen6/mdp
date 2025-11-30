@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import top.mddata.base.interfaces.BaseEnum;
 
 /**
- * 组织性质 ;
+ * 组织性质
+ * [1-默认 90-开发者 99-运维]
  *
  * @author henhen6
  * @since 2021/3/12 21:20
@@ -27,9 +28,9 @@ public enum OrgNatureEnum implements BaseEnum<Integer> {
      */
     DEVELOPER(90, "开发者"),
     /**
-     * 运维管理员
+     * 运维
      */
-    OPERATIONS_ADMIN(99, "运维管理员");
+    OPERATIONS(99, "运维");
 
     /**
      * 资源类型

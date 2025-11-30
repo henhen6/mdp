@@ -44,7 +44,7 @@ public class OrgNatureDto implements Serializable {
 
     /**
      * 组织性质
-     * [1-默认 90-开发者 99-超管]
+     * [1-默认 90-开发者 99-运维]
      */
     @Schema(description = "组织性质")
     private Integer nature;

@@ -261,7 +261,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     public boolean getTopCompanyIsAdminById(Long id) {
         List<OrgNature> sysOrgTypes = orgNatureMapper.selectListByQuery(QueryWrapper.create().eq(OrgNature::getOrgId, id));
 
-        return sysOrgTypes.stream().anyMatch(item -> OrgNatureEnum.OPERATIONS_ADMIN.eq(item.getNature()));
+        return sysOrgTypes.stream().anyMatch(item -> OrgNatureEnum.OPERATIONS.eq(item.getNature()));
     }
 
     private void initSsoUser(User defUser) {

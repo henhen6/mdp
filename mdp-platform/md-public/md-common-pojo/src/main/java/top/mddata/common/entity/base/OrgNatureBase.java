@@ -37,7 +37,7 @@ public class OrgNatureBase extends BaseEntity<Long> implements Serializable {
 
     /**
      * 组织性质
-     * [1-默认 90-开发者 99-超管]
+     * [1-默认 90-开发者 99-运维]
      */
     private Integer nature;
 
