@@ -45,7 +45,7 @@ const {
 } = useIndex();
 </script>
 <template>
-  <ColPage v-bind="props">
+  <ColPage v-bind="props" auto-content-height>
     <template #left="{ isCollapsed, expand }">
       <div v-if="isCollapsed" @click="expand">
         <Tooltip :title="$t('common.title.expand')">
@@ -58,7 +58,7 @@ const {
       </div>
       <div
         v-else
-        class="border-border bg-card mr-2 h-full rounded-[var(--radius)] border p-2"
+        class="mr-2 h-full overflow-auto rounded-[var(--radius)] border border-border bg-card p-2"
       >
         <Tree
           ref="treeRef"
