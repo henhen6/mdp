@@ -103,3 +103,23 @@ MDP支持SSO、Oauth2等多种主流的单点登录协议。
   ![](./docs/imgs/菜单管理.png)
 - 菜单新增
   ![](./docs/imgs/菜单新增.png)
+- 字典管理
+  - ![](./docs/imgs/字典管理.png)
+  - ![](./docs/imgs/字典新增.png)
+  - ![](./docs/imgs/字典项新增.png)
+- 系统配置
+  ![](./docs/imgs/系统配置.png)
+- 应用管理
+  - ![](./docs/imgs/应用管理.png)
+  - ![](./docs/imgs/应用秘钥.png)
+  - ![](./docs/imgs/应用新增.png)
+- 应用审核
+  ![](./docs/imgs/应用审核.png)
+- 开放接口
+  ![](./docs/imgs/开放接口.png)
+- 开放文档
+  ![](./docs/imgs/开放文档.png)
+- 权限组
+  ![](./docs/imgs/权限组.png)
+- Oauth2权限
+  ![](./docs/imgs/Oauth2权限.png)
