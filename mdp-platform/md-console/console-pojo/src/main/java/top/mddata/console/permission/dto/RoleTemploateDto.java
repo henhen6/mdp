@@ -1,20 +1,21 @@
-package top.mddata.console.permission.query;
+package top.mddata.console.permission.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import top.mddata.base.base.ExtraParams;
+import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
- * 角色 Query类（查询方法入参）。
+ * 角色 DTO（写入方法入参）。
  *
  * @author henhen6
  * @since 2025-12-01 00:12:36
@@ -24,9 +25,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Schema(description = "角色")
-public class RoleQuery extends ExtraParams implements Serializable {
+public class RoleTemploateDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -34,18 +34,23 @@ public class RoleQuery extends ExtraParams implements Serializable {
     /**
      * ID
      */
+    @NotNull(message = "请填写ID", groups = BaseEntity.Update.class)
     @Schema(description = "ID")
     private Long id;
 
     /**
      * 角色编码
      */
+    @NotEmpty(message = "请填写角色编码")
+    @Size(max = 255, message = "角色编码长度不能超过{max}")
     @Schema(description = "角色编码")
     private String code;
 
     /**
      * 角色名称
      */
+    @NotEmpty(message = "请填写角色名称")
+    @Size(max = 255, message = "角色名称长度不能超过{max}")
     @Schema(description = "角色名称")
     private String name;
 
@@ -53,6 +58,7 @@ public class RoleQuery extends ExtraParams implements Serializable {
      * 角色分类
      * [10-普通角色 20-管理员角色 30-权限集合]
      */
+    @Size(max = 2, message = "角色分类长度不能超过{max}")
     @Schema(description = "角色分类")
     private String roleCategory;
 
@@ -60,6 +66,8 @@ public class RoleQuery extends ExtraParams implements Serializable {
      * 角色类型
      * [10-功能角色 20-桌面角色 30-数据角色]
      */
+    @NotEmpty(message = "请填写角色类型")
+    @Size(max = 2, message = "角色类型长度不能超过{max}")
     @Schema(description = "角色类型")
     private String roleType;
 
@@ -71,14 +79,9 @@ public class RoleQuery extends ExtraParams implements Serializable {
     private Integer orgNature;
 
     /**
-     * 是否模版
-     */
-    @Schema(description = "是否模版")
-    private Boolean templateRole;
-
-    /**
      * 说明
      */
+    @Size(max = 255, message = "说明长度不能超过{max}")
     @Schema(description = "说明")
     private String remarks;
 
@@ -86,43 +89,8 @@ public class RoleQuery extends ExtraParams implements Serializable {
      * 状态
      * [0-禁用 1-启用]
      */
+    @NotNull(message = "请填写状态")
     @Schema(description = "状态")
     private Boolean state;
-
-    /**
-     * 创建人id
-     */
-    @Schema(description = "创建人id")
-    private Long createdBy;
-
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private LocalDateTime createdAt;
-
-    /**
-     * 更新人id
-     */
-    @Schema(description = "更新人id")
-    private Long updatedBy;
-
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    private LocalDateTime updatedAt;
-
-    /**
-     * 删除人
-     */
-    @Schema(description = "删除人")
-    private Long deletedBy;
-
-    /**
-     * 删除标志
-     */
-    @Schema(description = "删除标志")
-    private Long deletedAt;
 
 }

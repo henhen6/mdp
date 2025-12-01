@@ -18,7 +18,7 @@ import java.io.Serializable;
  * 角色 DTO（写入方法入参）。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-12-01 00:12:36
  */
 @Accessors(chain = true)
 @Data
@@ -54,21 +54,23 @@ public class RoleDto implements Serializable {
     @Schema(description = "角色名称")
     private String name;
 
-    /**
-     * 角色类别
-     * [10-功能角色 20-桌面角色 30-数据角色]
-     */
-    @Size(max = 255, message = "角色类别长度不能超过{max}")
-    @Schema(description = "角色类别")
-    private String category;
 
     /**
-     * 类型
-     * [10-系统角色 20-业务角色]
+     * 角色类型
+     * [10-功能角色 20-桌面角色 30-数据角色]
      */
-    @Size(max = 255, message = "类型长度不能超过{max}")
-    @Schema(description = "类型")
+    @NotEmpty(message = "请填写角色类型")
+    @Size(max = 2, message = "角色类型长度不能超过{max}")
+    @Schema(description = "角色类型")
     private String roleType;
+
+    /**
+     * 组织性质
+     * [1-默认 90-开发者 99-运维]
+     */
+    @NotNull(message = "请填写组织性质")
+    @Schema(description = "组织性质")
+    private Integer orgNature;
 
     /**
      * 说明

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  * 角色 VO类（通常用作Controller出参）。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-12-01 00:12:36
  */
 @Accessors(chain = true)
 @Data
@@ -31,6 +31,7 @@ public class RoleVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
 
 
     /**
@@ -53,18 +54,31 @@ public class RoleVo implements Serializable {
     private String name;
 
     /**
-     * 角色类别
-     * [10-功能角色 20-桌面角色 30-数据角色]
+     * 角色分类
+     * [10-普通角色 20-管理员角色 30-权限集合]
      */
-    @Schema(description = "角色类别")
-    private String category;
+    @Schema(description = "角色分类")
+    private String roleCategory;
 
     /**
-     * 类型
-     * [10-系统角色 20-业务角色]
+     * 角色类型
+     * [10-功能角色 20-桌面角色 30-数据角色]
      */
-    @Schema(description = "类型")
+    @Schema(description = "角色类型")
     private String roleType;
+
+    /**
+     * 组织性质
+     * [1-默认 90-开发者 99-运维]
+     */
+    @Schema(description = "组织性质")
+    private Integer orgNature;
+
+    /**
+     * 是否模版
+     */
+    @Schema(description = "是否模版")
+    private Boolean templateRole;
 
     /**
      * 说明

@@ -12,7 +12,7 @@ import top.mddata.console.permission.entity.base.RoleBase;
  * DO类：数据对象，可以在关联查询时，再次添加字段，重新生成代码时，忽略此文件。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-12-01 00:12:36
  */
 @Accessors(chain = true)
 @Data

@@ -17,26 +17,26 @@ import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.console.permission.dto.RoleDto;
+import top.mddata.console.permission.dto.RoleTemploateDto;
 import top.mddata.console.permission.entity.Role;
 import top.mddata.console.permission.query.RoleQuery;
-import top.mddata.console.permission.service.RoleService;
+import top.mddata.console.permission.service.RoleTemplateService;
 import top.mddata.console.permission.vo.RoleVo;
 
 import java.util.List;
 
 /**
- * 角色 控制层。
+ * 角色模版 控制层。
  *
  * @author henhen6
  * @since 2025-12-01 00:12:36
  */
 @RestController
 @Validated
-@Tag(name = "角色")
-@RequestMapping("/permission/role")
+@Tag(name = "角色模版")
+@RequestMapping("/permission/roleTemplate")
 @RequiredArgsConstructor
-public class RoleController extends SuperController<RoleService, Role> {
+public class RoleTemplateController extends SuperController<RoleTemplateService, Role> {
     /**
      * 添加角色。
      *
@@ -46,7 +46,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存角色")
     @RequestLog(value = "新增", request = false)
-    public R<Long> save(@Validated @RequestBody RoleDto dto) {
+    public R<Long> save(@Validated @RequestBody RoleTemploateDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
 
@@ -72,7 +72,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新角色")
     @RequestLog(value = "修改", request = false)
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody RoleDto dto) {
+    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody RoleTemploateDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
 
@@ -90,6 +90,7 @@ public class RoleController extends SuperController<RoleService, Role> {
         return R.success(BeanUtil.toBean(entity, RoleVo.class));
     }
 
+
     /**
      * 批量查询
      * @param params 查询参数
@@ -101,7 +102,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        wrapper.eq(Role::getTemplateRole, false);
+        wrapper.eq(Role::getTemplateRole, true);
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         return R.success(listVo);
     }

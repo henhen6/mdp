@@ -15,7 +15,7 @@ import java.io.Serializable;
  * 角色实体类。
  *
  * @author henhen6
- * @since 2025-11-12 16:27:16
+ * @since 2025-12-01 00:12:36
  */
 @Data
 @Builder
@@ -41,16 +41,27 @@ public class RoleBase extends SuperEntity<Long> implements Serializable {
     private String name;
 
     /**
-     * 角色类别
-     * [10-功能角色 20-桌面角色 30-数据角色]
+     * 角色分类
+     * [10-普通角色 20-管理员角色 30-权限集合]
      */
-    private String category;
+    private String roleCategory;
 
     /**
-     * 类型
-     * [10-系统角色 20-业务角色]
+     * 角色类型
+     * [10-功能角色 20-桌面角色 30-数据角色]
      */
     private String roleType;
+
+    /**
+     * 组织性质
+     * [1-默认 90-开发者 99-运维]
+     */
+    private Integer orgNature;
+
+    /**
+     * 是否模版
+     */
+    private Boolean templateRole;
 
     /**
      * 说明
