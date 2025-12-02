@@ -3,6 +3,10 @@ package top.mddata.console.permission.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +28,9 @@ import top.mddata.console.permission.service.RoleService;
 import top.mddata.console.permission.vo.RoleVo;
 
 import java.util.List;
+
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
 /**
  * 角色 控制层。
@@ -88,6 +95,16 @@ public class RoleController extends SuperController<RoleService, Role> {
     public R<RoleVo> get(@RequestParam Long id) {
         Role entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, RoleVo.class));
+    }
+
+    @Parameters({
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "code", description = "编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
+    @GetMapping("/checkCode")
+    public R<Boolean> checkCode(@RequestParam String code, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkCode(code, id));
     }
 
     /**

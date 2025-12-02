@@ -58,6 +58,7 @@ public class RoleTemploateDto implements Serializable {
      * 角色分类
      * [10-普通角色 20-管理员角色 30-权限集合]
      */
+    @NotEmpty(message = "请填写角色分类")
     @Size(max = 2, message = "角色分类长度不能超过{max}")
     @Schema(description = "角色分类")
     private String roleCategory;
@@ -75,6 +76,7 @@ public class RoleTemploateDto implements Serializable {
      * 组织性质
      * [1-默认 90-开发者 99-运维]
      */
+    @NotEmpty(message = "请填写组织性质")
     @Schema(description = "组织性质")
     private Integer orgNature;
 

@@ -37,6 +37,7 @@ import java.util.List;
 @RequestMapping("/permission/roleTemplate")
 @RequiredArgsConstructor
 public class RoleTemplateController extends SuperController<RoleTemplateService, Role> {
+
     /**
      * 添加角色。
      *

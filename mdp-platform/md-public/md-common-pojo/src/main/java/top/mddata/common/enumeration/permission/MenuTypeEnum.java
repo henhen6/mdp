@@ -33,7 +33,11 @@ public enum MenuTypeEnum implements BaseEnum<String> {
     /**
      * 外链
      */
-    OUTER_HREF("40", "外链");
+    OUTER_HREF("40", "外链"),
+    /**
+     * 按钮
+     */
+    BUTTON("50", "按钮");
 
     /**
      * 资源类型

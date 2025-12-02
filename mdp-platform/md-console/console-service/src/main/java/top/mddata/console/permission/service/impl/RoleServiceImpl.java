@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
-import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.permission.entity.Role;
@@ -32,7 +31,7 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
         if (StrUtil.isEmptyIfStr(code)) {
             return true;
         }
-        return mapper.selectCountByQuery(QueryWrapper.create().eq(Role::getCode, code).ne(User::getId, id)) > 0;
+        return mapper.selectCountByQuery(QueryWrapper.create().eq(Role::getCode, code).ne(Role::getId, id)) > 0;
     }
 
 
