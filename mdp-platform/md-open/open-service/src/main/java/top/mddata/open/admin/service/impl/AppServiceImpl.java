@@ -6,6 +6,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.gitee.sop.support.util.StrPool;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
+import top.mddata.base.mybatisflex.utils.BeanPageUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
@@ -22,6 +24,7 @@ import top.mddata.open.admin.dto.AppKeysDto;
 import top.mddata.open.admin.entity.App;
 import top.mddata.open.admin.entity.AppKeys;
 import top.mddata.open.admin.mapper.AppMapper;
+import top.mddata.open.admin.query.AppQuery;
 import top.mddata.open.admin.service.AppKeysService;
 import top.mddata.open.admin.service.AppService;
 import top.mddata.open.admin.utils.RsaTool;
@@ -32,7 +35,9 @@ import top.mddata.open.client.dto.AppInfoUpdateDto;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 应用 服务层实现。
@@ -47,6 +52,22 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
     private final FileFacade fileFacade;
     private final UidGenerator uidGenerator;
     private final AppKeysService appKeysService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AppVo> page(Page<App> page, AppQuery query) {
+        Map<String, Object> otherParams = new HashMap<>();
+        otherParams.put("name", query.getName());
+        otherParams.put("appKey", query.getAppKey());
+        otherParams.put("loginType", query.getLoginType());
+        otherParams.put("type", query.getType());
+        otherParams.put("roleId", query.getRoleId());
+        otherParams.put("hasApp", query.getHasApp() != null && query.getHasApp());
+
+
+        Page<App> pageResult = mapper.xmlPaginate("pageByRoleId", page, otherParams);
+        return BeanPageUtil.toBeanPage(pageResult, AppVo.class);
+    }
 
     @Override
     @Transactional(readOnly = true)

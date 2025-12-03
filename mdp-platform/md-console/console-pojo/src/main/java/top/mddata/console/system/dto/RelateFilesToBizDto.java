@@ -28,7 +28,7 @@ public class RelateFilesToBizDto implements Serializable {
     @Schema(description = "当前关联文件")
     private List<Long> keepFileIds;
 
-    public RelateFilesToBizDto setKeepFileIds(List<Long> keepFileIds) {
+    public RelateFilesToBizDto addKeepFileIds(List<Long> keepFileIds) {
         if (keepFileIds == null) {
             keepFileIds = Collections.emptyList();
         } else {

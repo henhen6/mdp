@@ -27,7 +27,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "菜单")
+@Schema(description = "菜单Dto")
 public class ResourceMenuDto implements Serializable {
 
     @Serial

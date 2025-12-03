@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "菜单")
+@Schema(description = "菜单Query")
 public class ResourceMenuQuery extends ExtraParams implements Serializable {
 
     @Serial

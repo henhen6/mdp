@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.mddata.open.admin.mapper.AppMapper">
+
+
+    <sql id="Base_Column_List">
+        id,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at,
+        app_key,
+        app_secret,
+        name,
+        login_type,
+        type,
+        state,
+        intro,
+        logo,
+        remark,
+        validity_start,
+        validity_end,
+        home_url,
+        `show`,
+        is_public,
+        allow_ip,
+        sso_push,
+        sso_slo,
+        sso_push_url,
+        sso_allow_url,
+        oauth2_allow_redirect_uris,
+        oauth2_allow_grant_types,
+        oauth2_new_refresh,
+        oauth2_access_token_timeout,
+        oauth2_refresh_token_timeout,
+        oauth2_client_token_timeout,
+        oauth2_lower_client_token_timeout,
+        oauth2_is_confirm,
+        apply_id
+    </sql>
+
+
+    <select id="pageByRoleId_COUNT" resultType="long">
+        select count(id) from `mdo_app`
+        <where>
+            <if test="appKey != null and appKey != ''">
+                and app_key like #{appKey, typeHandler=fullLike}
+            </if>
+            <if test="name != null and name != ''">
+                and `name` like #{name, typeHandler=fullLike}
+            </if>
+            <if test="type != null  ">
+                and `type` = #{type}
+            </if>
+            <if test="loginType != null  ">
+                and login_type = #{loginType}
+            </if>
+            <if test="hasApp">
+                and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+            </if>
+            <if test="!hasApp">
+                and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+            </if>
+        </where>
+    </select>
+
+    <select id="pageByRoleId" resultType="top.mddata.open.admin.entity.App">
+        select
+        <include refid="Base_Column_List"/>
+        from mdo_app
+        <where>
+            <if test="appKey != null and appKey != ''">
+                and app_key like #{appKey, typeHandler=fullLike}
+            </if>
+            <if test="name != null and name != ''">
+                and `name` like #{name, typeHandler=fullLike}
+            </if>
+            <if test="type != null  ">
+                and `type` = #{type}
+            </if>
+            <if test="loginType != null  ">
+                and login_type = #{loginType}
+            </if>
+            <if test="hasApp">
+                and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+            </if>
+            <if test="!hasApp">
+                and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+            </if>
+            order by mdo_app.created_at desc
+            limit ${pageOffset}, ${pageSize}
+        </where>
+    </select>
+</mapper>

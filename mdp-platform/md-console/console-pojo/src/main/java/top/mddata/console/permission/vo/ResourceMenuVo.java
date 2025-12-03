@@ -32,7 +32,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "菜单")
+@Schema(description = "菜单Vo")
 @Table(ResourceMenuBase.TABLE_NAME)
 public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements Serializable, EchoVO {
 

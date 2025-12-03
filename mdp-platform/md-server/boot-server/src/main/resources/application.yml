@@ -39,7 +39,7 @@ mdp:
     mode: boot
   ignore:
     # 是否启用网关的 uri权限鉴权 (设置为false，则后台不校验访问权限)
-    authEnabled: true
+    authEnabled: false
     # 前端校验按钮 是否区分大小写
     caseSensitive: false
     anyone: # 需要携带Token，但不需要验证uri权限
@@ -233,6 +233,7 @@ mybatis-flex:
     jdbc-type-for-null: null
     auto-mapping-unknown-column-behavior: none
     auto-mapping-behavior: full
+  typeAliasesPackage: top.mddata.base.db.typehandler
   global-config:
     # 全局配置逻辑删除字段，表中有该字段就会进行逻辑删除，否则进行物理删除
     logicDeleteColumn: deleted_at

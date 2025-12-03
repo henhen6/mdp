@@ -13,7 +13,7 @@ import java.sql.SQLException;
  *
  * @author henhen6
  */
-public class BaseLikeTypeHandler extends BaseTypeHandler<CharSequence> {
+public abstract class BaseLikeTypeHandler extends BaseTypeHandler<CharSequence> {
 
     private final SqlLike likeType;
 

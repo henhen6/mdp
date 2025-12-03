@@ -13,4 +13,5 @@ import top.mddata.open.admin.entity.App;
 @Repository
 public interface AppMapper extends SuperMapper<App> {
 
+
 }

@@ -1,6 +1,7 @@
 package top.mddata.open.admin.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -220,5 +221,20 @@ public class AppQuery extends ExtraParams implements Serializable {
     @Schema(description = "应用申请ID")
     private Long applyId;
 
+
+    @NotNull(message = "角色ID不能为空", groups = {RolePage.class})
+    @Schema(description = "角色ID")
+    private Long roleId;
+
+    /**
+     * true: 查询角色拥有的应用
+     * false: 查询角色没有的应用
+     */
+    @Schema(description = "是否有权限")
+    private Boolean hasApp;
+
+    public interface RolePage {
+
+    }
 
 }

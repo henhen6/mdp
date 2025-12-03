@@ -1,7 +1,9 @@
 package top.mddata.open.admin.service;
 
+import com.mybatisflex.core.paginate.Page;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.open.admin.entity.App;
+import top.mddata.open.admin.query.AppQuery;
 import top.mddata.open.admin.utils.RsaTool;
 import top.mddata.open.admin.vo.AppKeysVo;
 import top.mddata.open.admin.vo.AppVo;
@@ -17,6 +19,14 @@ import java.util.List;
  * @since 2025-11-20 16:31:25
  */
 public interface AppService extends SuperService<App> {
+
+    /**
+     * 根据权限角色ID 分页查询角色拥有的应用 或者 没有的应用
+     * @param page  分页对象
+     * @param query 查询参数
+     * @return 分页信息
+     */
+    Page<AppVo> page(Page<App> page, AppQuery query);
 
     /**
      * 查询需要 接收事件推送的应用
