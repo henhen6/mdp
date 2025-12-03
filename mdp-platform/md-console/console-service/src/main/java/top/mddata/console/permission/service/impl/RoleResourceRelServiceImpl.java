@@ -35,9 +35,9 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
     public Boolean saveRoleResource(RoleResourceRelDto dto) {
         Long roleId = dto.getRoleId();
         Map<Long, List<Long>> appResourceMap = dto.getAppResourceMap();
-        List<RoleResourceRel> roleResourceRels = mapper.selectListByQuery(QueryWrapper.create().eq(RoleAppRel::getRoleId, roleId));
+        List<RoleResourceRel> roleResourceRels = mapper.selectListByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId));
 
-        mapper.deleteByQuery(QueryWrapper.create().eq(RoleAppRel::getRoleId, roleId));
+        mapper.deleteByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId));
         List<Long> roleAppIdList = roleResourceRels.stream().map(RoleResourceRel::getAppId).toList();
 
         List<CacheKey> keys = new ArrayList<>();
