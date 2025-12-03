@@ -8,6 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import top.mddata.base.base.entity.TreeEntity;
 
 import java.io.Serial;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class MyTreeBuilder<E, F extends TreeEntity<E, F>> implements Builder<Tre
     private F root;
     private Integer deep;
     private boolean isBuild;
+    // 新增：排序比较器（用户可自定义，null 时用默认规则）
+    private Comparator<Map.Entry<E, F>> sortComparator;
 
 
     /**
@@ -40,6 +43,7 @@ public class MyTreeBuilder<E, F extends TreeEntity<E, F>> implements Builder<Tre
         entity.setId(rootId);
         this.root = entity;
         this.idTreeMap = new LinkedHashMap<>();
+        this.sortComparator = null;
     }
 
     /**
@@ -102,6 +106,17 @@ public class MyTreeBuilder<E, F extends TreeEntity<E, F>> implements Builder<Tre
         return this;
     }
 
+    /**
+     * 新增：设置节点排序规则（可选）
+     * 未设置时，默认按节点 value（F 实体）升序排序（保持原有逻辑）
+     *
+     * @param sortComparator 排序比较器（基于 Map.Entry<E, F>，可自定义多字段排序）
+     * @return this（支持链式调用）
+     */
+    public MyTreeBuilder<E, F> setSortComparator(Comparator<Map.Entry<E, F>> sortComparator) {
+        this.sortComparator = sortComparator;
+        return this;
+    }
 
     /**
      * 增加节点列表，增加的节点是不带子节点的
@@ -115,6 +130,7 @@ public class MyTreeBuilder<E, F extends TreeEntity<E, F>> implements Builder<Tre
         this.idTreeMap.putAll(map);
         return this;
     }
+
 
     /**
      * 增加节点列表，增加的节点是不带子节点的
@@ -168,6 +184,7 @@ public class MyTreeBuilder<E, F extends TreeEntity<E, F>> implements Builder<Tre
         this.idTreeMap.clear();
         this.root.setChildren(null);
         this.isBuild = false;
+        this.sortComparator = null; // 重置排序规则
         return this;
     }
 
@@ -213,8 +230,18 @@ public class MyTreeBuilder<E, F extends TreeEntity<E, F>> implements Builder<Tre
         if (MapUtil.isEmpty(this.idTreeMap)) {
             return;
         }
+        Map<E, F> eTreeMap = null;
+        if (Objects.nonNull(this.sortComparator)) {
+            // 1. 用户传递了排序规则：按规则排序，用 LinkedHashMap 保持顺序
+            Map<E, F> result = new LinkedHashMap<>();
+            this.idTreeMap.entrySet().stream()
+                    .sorted(this.sortComparator) // 应用用户排序规则
+                    .forEachOrdered(e -> result.put(e.getKey(), e.getValue()));
+            eTreeMap = result;
+        } else {
+            eTreeMap = MapUtil.sortByValue(this.idTreeMap, false);
+        }
 
-        final Map<E, F> eTreeMap = MapUtil.sortByValue(this.idTreeMap, false);
         E parentId;
         for (F node : eTreeMap.values()) {
             if (node == null) {
