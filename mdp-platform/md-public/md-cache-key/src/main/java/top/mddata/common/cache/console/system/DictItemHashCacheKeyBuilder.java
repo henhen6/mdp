@@ -48,7 +48,7 @@ public class DictItemHashCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Admin.DICT_ITEM;
+        return CacheKeyTable.Console.DICT_ITEM;
     }
 
     @Override

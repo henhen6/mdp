@@ -120,9 +120,9 @@ public abstract class MyMybatisFlexConfiguration extends DbConfiguration impleme
             default -> AuditManager.setMessageCollector(auditMessage ->
                     log.info("""
                                     SQL:
-                                    数据源: {} | 查询数据量: {} 条 | 消耗时间: {} ms
+                                    Mapper: {} | 查询数据量: {} 条 | 消耗时间: {} ms
                                     {}""",
-                            auditMessage.getDsName(),
+                            auditMessage.getStmtId(),
                             auditMessage.getQueryCount(),
                             auditMessage.getElapsedTime(),
                             formatSql(auditMessage.getFullSql())

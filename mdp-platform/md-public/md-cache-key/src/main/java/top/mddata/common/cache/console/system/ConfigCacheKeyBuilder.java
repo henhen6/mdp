@@ -34,7 +34,7 @@ public class ConfigCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Admin.PARAM;
+        return CacheKeyTable.Console.PARAM;
     }
 
 }

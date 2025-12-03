@@ -40,4 +40,5 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
         ArgumentAssert.isFalse(roleService.checkCode(entity.getCode(), entity.getId()), "角色编码重复");
         return entity;
     }
+
 }

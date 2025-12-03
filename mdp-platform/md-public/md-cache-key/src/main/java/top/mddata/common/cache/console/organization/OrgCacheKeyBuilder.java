@@ -21,7 +21,7 @@ public class OrgCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Admin.ORG;
+        return CacheKeyTable.Console.ORG;
     }
 
     @Override

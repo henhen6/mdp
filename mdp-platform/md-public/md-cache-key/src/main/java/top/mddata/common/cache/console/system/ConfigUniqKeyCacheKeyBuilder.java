@@ -33,7 +33,7 @@ public class ConfigUniqKeyCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Admin.PARAM;
+        return CacheKeyTable.Console.PARAM;
     }
 
     @Override

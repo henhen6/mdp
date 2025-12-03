@@ -21,7 +21,7 @@ public class UserCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public String getTable() {
-        return CacheKeyTable.Center.USER;
+        return CacheKeyTable.Workbench.USER;
     }
 
     @Override

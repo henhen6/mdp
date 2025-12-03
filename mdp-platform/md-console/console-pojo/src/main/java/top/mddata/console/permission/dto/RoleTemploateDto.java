@@ -76,7 +76,7 @@ public class RoleTemploateDto implements Serializable {
      * 组织性质
      * [1-默认 90-开发者 99-运维]
      */
-    @NotEmpty(message = "请填写组织性质")
+    @NotNull(message = "请填写组织性质")
     @Schema(description = "组织性质")
     private Integer orgNature;
 

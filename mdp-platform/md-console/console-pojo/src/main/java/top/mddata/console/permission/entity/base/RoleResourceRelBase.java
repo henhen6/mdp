@@ -34,6 +34,7 @@ public class RoleResourceRelBase extends BaseEntity<Long> implements Serializabl
      * 所属角色
      */
     private Long roleId;
+    private Long appId;
 
     /**
      * 资源类型

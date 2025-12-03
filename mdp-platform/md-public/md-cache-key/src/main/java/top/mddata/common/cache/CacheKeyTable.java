@@ -13,7 +13,7 @@ public interface CacheKeyTable {
     String CAPTCHA = "captcha";
 
 
-    interface Admin {
+    interface Console {
         /**
          * 字典项
          */
@@ -32,9 +32,11 @@ public interface CacheKeyTable {
          * 组织
          */
         String ORG = "org";
+        /** 角色拥有的资源 */
+        String ROLE_RESOURCE = "role_resource";
     }
 
-    interface Center {
+    interface Workbench {
 
         /**
          * 用户
