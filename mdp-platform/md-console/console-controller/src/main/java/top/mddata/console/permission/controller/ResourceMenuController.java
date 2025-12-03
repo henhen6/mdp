@@ -21,15 +21,18 @@ import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
-import top.mddata.base.utils.MyTreeUtil;
+import top.mddata.base.tree.MyTreeBuilder;
 import top.mddata.console.permission.dto.ResourceMenuDto;
 import top.mddata.console.permission.entity.ResourceMenu;
 import top.mddata.console.permission.query.ResourceMenuQuery;
 import top.mddata.console.permission.service.ResourceMenuService;
 import top.mddata.console.permission.vo.ResourceMenuVo;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import static top.mddata.base.utils.MyTreeUtil.DEF_PARENT_ID;
 import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
 import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
@@ -102,17 +105,31 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
 
 
     /**
-     * 按照树结构查询系统的所有菜单
+     * 按照树结构查询系统的所有资源
      */
-    @Operation(summary = "按照树结构查询系统的所有菜单", description = "按照树结构查询系统的所有菜单")
+    @Operation(summary = "按照树结构查询系统的所有资源", description = "按照树结构查询系统的所有资源")
     @PostMapping("/tree")
-    @RequestLog("按照树结构查询系统的所有菜单")
+    @RequestLog("按照树结构查询系统的所有资源")
     public R<List<ResourceMenuVo>> tree(@RequestBody ResourceMenuQuery query) {
-        List<ResourceMenu> list = superService.list(new QueryWrapper().eq(ResourceMenu::getAppId, query.getAppId()).orderBy(ResourceMenu::getWeight, true));
+        List<ResourceMenu> list = superService.list(new QueryWrapper().eq(ResourceMenu::getAppId, query.getAppId())
+                .orderBy(ResourceMenu::getMenuType, true).orderBy(ResourceMenu::getWeight, true));
         List<ResourceMenuVo> resultList = BeanUtil.copyToList(list, ResourceMenuVo.class);
         // 回显 @Echo 标记的字段
         echoService.action(resultList);
-        return R.success(MyTreeUtil.buildTreeEntity(resultList, ResourceMenuVo::new));
+
+        // 优先按：menuType（字符串字典序升序）, 然后在按：weight（数值升序）
+
+
+        MyTreeBuilder<Long, ResourceMenuVo> builder = MyTreeBuilder.of(DEF_PARENT_ID, ResourceMenuVo::new).append(resultList);
+        if (query.getDefSort() != null && !query.getDefSort()) {
+            builder.setSortComparator(
+                    Comparator.comparing((Map.Entry<Long, ResourceMenuVo> entry) -> entry.getValue().getMenuType())
+                            .thenComparing(entry -> entry.getValue().getWeight())
+            );
+        }
+        ResourceMenuVo root = builder.build();
+
+        return R.success(root.getChildren());
     }
 
 

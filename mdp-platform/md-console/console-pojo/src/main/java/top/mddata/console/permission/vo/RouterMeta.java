@@ -27,7 +27,7 @@ public class RouterMeta implements Serializable {
      *
      * 可用于文档标题中
      */
-    @NotEmpty(message = "请填写路由标题")
+//    @NotEmpty(message = "请填写路由标题")
     private String title;
     /**
      * Iconify 图标

@@ -83,7 +83,7 @@ public class ResourceMenuDto implements Serializable {
      * 路由地址
      */
     @Size(max = 255, message = "路由地址长度不能超过{max}")
-    @NotEmpty(message = "请填写路由地址")
+//    @NotEmpty(message = "请填写路由地址")
     @Schema(description = "路由地址")
     private String path;
 

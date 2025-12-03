@@ -147,4 +147,7 @@ public class ResourceMenuQuery extends ExtraParams implements Serializable {
     @Schema(description = "删除标志")
     private Long deletedAt;
 
+    @Schema(description = "默认排序 true=按weight升序， false=按菜单类型升序后，在按weight升序", name="name", title="title")
+    private Boolean defSort;
+
 }

@@ -73,11 +73,15 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
      * @return
      */
     @Override
+    @Transactional(readOnly = true)
     public List<ResourceMenuVo> findAllMenu(Long appId) {
         // 1 查询所有的菜单
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ResourceMenu::getAppId, appId).eq(ResourceMenu::getState, true);
-        queryWrapper.orderBy(ResourceMenu::getWeight, true);
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .eq(ResourceMenu::getAppId, appId)
+                .in(ResourceMenu::getMenuType, MenuTypeEnum.DIR.getCode(), MenuTypeEnum.MENU.getCode(), MenuTypeEnum.INNER_HREF.getCode(), MenuTypeEnum.OUTER_HREF.getCode())
+                .eq(ResourceMenu::getState, true)
+                .orderBy(ResourceMenu::getMenuType, true)
+                .orderBy(ResourceMenu::getWeight, true);
         List<ResourceMenu> menuList = list(queryWrapper);
         List<ResourceMenuVo> resultList = BeanUtil.copyToList(menuList, ResourceMenuVo.class);
 
@@ -93,9 +97,7 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     }
 
     private void forEachTree(List<ResourceMenuVo> tree, int level, ResourceMenuVo parent) {
-
         for (ResourceMenuVo node : tree) {
-
             if (MenuTypeEnum.INNER_HREF.eq(node.getMenuType())) {
                 node.setComponent(IFRAME);
             } else if (MenuTypeEnum.OUTER_HREF.eq(node.getMenuType())) {
@@ -189,8 +191,10 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     protected ResourceMenu saveBefore(Object save) {
         ResourceMenuDto data = (ResourceMenuDto) save;
         ArgumentAssert.isFalse(checkCode(data.getAppId(), data.getCode(), null), "编码重复：{}", data.getCode());
-        ArgumentAssert.isFalse(checkName(data.getAppId(), data.getName(), null), "菜单名称重复：{}", data.getName());
-        ArgumentAssert.isFalse(checkPath(data.getAppId(), data.getPath(), null), "路由地址重复：{}", data.getPath());
+        if (!MenuTypeEnum.BUTTON.eq(data.getMenuType())) {
+            ArgumentAssert.isFalse(checkName(data.getAppId(), data.getName(), null), "名称重复：{}", data.getName());
+            ArgumentAssert.isFalse(checkPath(data.getAppId(), data.getPath(), null), "路由地址重复：{}", data.getPath());
+        }
 
         ResourceMenu parent = validateAndFill(data);
 
@@ -260,8 +264,10 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     protected ResourceMenu updateBefore(Object update) {
         ResourceMenuDto data = (ResourceMenuDto) update;
         ArgumentAssert.isFalse(checkCode(data.getAppId(), data.getCode(), data.getId()), "编码重复：{}", data.getCode());
-        ArgumentAssert.isFalse(checkName(data.getAppId(), data.getName(), data.getId()), "菜单名称重复：{}", data.getName());
-        ArgumentAssert.isFalse(checkPath(data.getAppId(), data.getPath(), data.getId()), "路由地址重复：{}", data.getPath());
+        if (!MenuTypeEnum.BUTTON.eq(data.getMenuType())) {
+            ArgumentAssert.isFalse(checkName(data.getAppId(), data.getName(), data.getId()), "名称重复：{}", data.getName());
+            ArgumentAssert.isFalse(checkPath(data.getAppId(), data.getPath(), data.getId()), "路由地址重复：{}", data.getPath());
+        }
 
         if (data.getMeta() == null) {
             data.setMeta(new RouterMeta());
