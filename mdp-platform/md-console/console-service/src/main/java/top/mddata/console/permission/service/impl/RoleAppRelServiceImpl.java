@@ -28,7 +28,7 @@ public class RoleAppRelServiceImpl extends SuperServiceImpl<RoleAppRelMapper, Ro
     @Transactional(rollbackFor = Exception.class)
     public Boolean delete(RoleAppRelDto dto) {
         return super.remove(QueryWrapper.create()
-                .eq(RoleAppRel::getRoleId, dto.getRoleId()).in(RoleAppRel::getAppId, dto.getAppId()));
+                .eq(RoleAppRel::getRoleId, dto.getRoleId()).in(RoleAppRel::getAppId, dto.getAppIdList()));
     }
 
     @Override
@@ -37,7 +37,7 @@ public class RoleAppRelServiceImpl extends SuperServiceImpl<RoleAppRelMapper, Ro
         List<RoleAppRel> existList = list(QueryWrapper.create().eq(RoleAppRel::getRoleId, dto.getRoleId()));
         List<Long> existAppIdList = existList.stream().map(RoleAppRel::getAppId).distinct().toList();
 
-        List<RoleAppRel> saveList = dto.getAppId().stream()
+        List<RoleAppRel> saveList = dto.getAppIdList().stream()
                 // 已存在的不添加
                 .filter(appId -> !existAppIdList.contains(appId))
                 .map(appId -> {

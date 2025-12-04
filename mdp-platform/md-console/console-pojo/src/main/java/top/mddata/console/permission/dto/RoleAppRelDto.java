@@ -35,13 +35,13 @@ public class RoleAppRelDto implements Serializable {
      */
     @NotNull(message = "请填写所属角色")
     @Schema(description = "所属角色")
-        private Long roleId;
+    private Long roleId;
 
     /**
      * 所属应用
      */
     @NotEmpty(message = "请填写所属应用")
     @Schema(description = "所属应用")
-    private List<Long> appId;
+    private List<Long> appIdList;
 
 }
