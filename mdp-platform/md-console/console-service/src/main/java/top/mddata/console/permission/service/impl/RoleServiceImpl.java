@@ -2,6 +2,7 @@ package top.mddata.console.permission.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import com.google.common.collect.Multimap;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,9 @@ import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.permission.entity.Role;
 import top.mddata.console.permission.mapper.RoleMapper;
 import top.mddata.console.permission.service.RoleService;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * 角色 服务层实现。
@@ -33,7 +37,6 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
         }
         return mapper.selectCountByQuery(QueryWrapper.create().eq(Role::getCode, code).ne(Role::getId, id)) > 0;
     }
-
 
     @Override
     protected Role saveBefore(Object save) {

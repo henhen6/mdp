@@ -22,12 +22,16 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.console.permission.dto.RoleDto;
+import top.mddata.console.permission.dto.RoleResourceRelDto;
 import top.mddata.console.permission.entity.Role;
 import top.mddata.console.permission.query.RoleQuery;
+import top.mddata.console.permission.service.RoleResourceRelService;
 import top.mddata.console.permission.service.RoleService;
 import top.mddata.console.permission.vo.RoleVo;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
 import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
@@ -44,6 +48,8 @@ import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 @RequestMapping("/permission/role")
 @RequiredArgsConstructor
 public class RoleController extends SuperController<RoleService, Role> {
+    private final RoleResourceRelService roleResourceRelService;
+
     /**
      * 添加角色。
      *
@@ -97,16 +103,6 @@ public class RoleController extends SuperController<RoleService, Role> {
         return R.success(BeanUtil.toBean(entity, RoleVo.class));
     }
 
-    @Parameters({
-            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
-            @Parameter(name = "code", description = "编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-    })
-    @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
-    @GetMapping("/checkCode")
-    public R<Boolean> checkCode(@RequestParam String code, @RequestParam(required = false) Long id) {
-        return R.success(superService.checkCode(code, id));
-    }
-
     /**
      * 批量查询
      * @param params 查询参数
@@ -121,5 +117,43 @@ public class RoleController extends SuperController<RoleService, Role> {
         wrapper.eq(Role::getTemplateRole, false);
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         return R.success(listVo);
+    }
+
+
+    @Parameters({
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "code", description = "编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
+    @GetMapping("/checkCode")
+    @RequestLog(value = "检测编码是否存在")
+    public R<Boolean> checkCode(@RequestParam String code, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkCode(code, id));
+    }
+
+    /**
+     * 查询角色拥有的资源集合
+     *
+     * @param roleId 角色id
+     * @return 新增结果
+     */
+    @Operation(summary = "查询角色拥有的资源集合")
+    @GetMapping("/findResourceIdByRoleId")
+    @RequestLog("查询角色拥有的资源集合")
+    public R<Map<Long, Collection<Long>>> findResourceIdByRoleId(@RequestParam Long roleId) {
+        return R.success(roleResourceRelService.findResourceIdByRoleId(roleId));
+    }
+
+    /**
+     * 新增角色资源。
+     *
+     * @param dto 角色
+     * @return {@code true} 添加成功，{@code false} 添加失败
+     */
+    @PostMapping("/saveRoleResource")
+    @Operation(summary = "新增角色资源", description = "新增角色资源")
+    @RequestLog(value = "新增角色资源", request = false)
+    public R<Boolean> saveRoleResource(@Validated @RequestBody RoleResourceRelDto dto) {
+        return R.success(roleResourceRelService.saveRoleResource(dto));
     }
 }

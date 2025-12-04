@@ -1,6 +1,7 @@
 package top.mddata.console.permission.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.google.common.collect.Multimap;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,14 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
+import top.mddata.base.utils.CollHelper;
 import top.mddata.common.cache.console.permission.RoleResourceCacheKeyBuilder;
 import top.mddata.console.permission.dto.RoleResourceRelDto;
-import top.mddata.console.permission.entity.RoleAppRel;
 import top.mddata.console.permission.entity.RoleResourceRel;
 import top.mddata.console.permission.mapper.RoleResourceRelMapper;
 import top.mddata.console.permission.service.RoleResourceRelService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -65,5 +67,14 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
         boolean flag = saveBatch(list);
         cacheOps.del(keys);
         return flag;
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Long, Collection<Long>> findResourceIdByRoleId(Long roleId) {
+        List<RoleResourceRel> list = mapper.selectListByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId));
+        Multimap<Long, Long> map = CollHelper.iterableToMultiMap(list, RoleResourceRel::getAppId, RoleResourceRel::getResourceId);
+        return map.asMap();
     }
 }

@@ -17,4 +17,6 @@ public interface RoleService extends SuperService<Role> {
      * @return true-已存在，false-不存在
      */
     Boolean checkCode(String code, Long id);
+
+
 }

@@ -4,6 +4,9 @@ import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.permission.dto.RoleResourceRelDto;
 import top.mddata.console.permission.entity.RoleResourceRel;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * 角色资源关联 服务层。
  *
@@ -19,4 +22,10 @@ public interface RoleResourceRelService extends SuperService<RoleResourceRel> {
      */
     Boolean saveRoleResource(RoleResourceRelDto dto);
 
+    /**
+     * 查询角色拥有的资源集合
+     * @param roleId 角色ID
+     * @return 应用-资源集合
+     */
+    Map<Long, Collection<Long>> findResourceIdByRoleId(Long roleId);
 }

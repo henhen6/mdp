@@ -17,11 +17,9 @@ import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.console.permission.dto.RoleResourceRelDto;
 import top.mddata.console.permission.dto.RoleTemploateDto;
 import top.mddata.console.permission.entity.Role;
 import top.mddata.console.permission.query.RoleQuery;
-import top.mddata.console.permission.service.RoleResourceRelService;
 import top.mddata.console.permission.service.RoleTemplateService;
 import top.mddata.console.permission.vo.RoleVo;
 
@@ -39,7 +37,6 @@ import java.util.List;
 @RequestMapping("/permission/roleTemplate")
 @RequiredArgsConstructor
 public class RoleTemplateController extends SuperController<RoleTemplateService, Role> {
-    private final RoleResourceRelService roleResourceRelService;
 
     /**
      * 添加角色。
@@ -111,16 +108,4 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
         return R.success(listVo);
     }
 
-    /**
-     * 新增角色资源。
-     *
-     * @param dto 角色
-     * @return {@code true} 添加成功，{@code false} 添加失败
-     */
-    @PostMapping("/saveRoleResource")
-    @Operation(summary = "新增角色资源", description = "新增角色资源")
-    @RequestLog(value = "新增角色资源", request = false)
-    public R<Boolean> saveRoleResource(@Validated @RequestBody RoleResourceRelDto dto) {
-        return R.success(roleResourceRelService.saveRoleResource(dto));
-    }
 }
