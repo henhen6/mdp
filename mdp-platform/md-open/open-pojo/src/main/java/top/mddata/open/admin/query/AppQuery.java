@@ -43,6 +43,8 @@ public class AppQuery extends ExtraParams implements Serializable {
      */
     @Schema(description = "应用ID")
     private String appKey;
+    @Schema(description = "权重")
+    private Integer weight;
 
     /**
      * 应用秘钥

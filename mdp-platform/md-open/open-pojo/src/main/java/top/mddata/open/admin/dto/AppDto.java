@@ -73,6 +73,11 @@ public class AppDto implements Serializable {
     @NotNull(message = "请填写状态")
     @Schema(description = "状态")
     private Boolean state;
+    /**
+     * 权重
+     */
+    @Schema(description = "权重")
+    private Integer weight;
 
     /**
      * 应用简介

@@ -62,6 +62,7 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
      * 状态
      */
     private Boolean state;
+    private Integer weight;
 
     /**
      * 应用简介

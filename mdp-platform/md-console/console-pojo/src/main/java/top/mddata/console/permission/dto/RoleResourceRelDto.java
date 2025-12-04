@@ -44,4 +44,6 @@ public class RoleResourceRelDto implements Serializable {
     @NotNull
     private Map<Long, List<Long>> appResourceMap;
 
+    @Schema(description = "批量操作")
+    private Boolean batch;
 }

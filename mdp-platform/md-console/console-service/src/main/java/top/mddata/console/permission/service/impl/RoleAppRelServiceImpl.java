@@ -1,5 +1,6 @@
 package top.mddata.console.permission.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import top.mddata.console.permission.entity.RoleAppRel;
 import top.mddata.console.permission.mapper.RoleAppRelMapper;
 import top.mddata.console.permission.service.RoleAppRelService;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,5 +52,14 @@ public class RoleAppRelServiceImpl extends SuperServiceImpl<RoleAppRelMapper, Ro
                 .collect(Collectors.toList());
 
         return super.saveBatch(saveList);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByRoleIds(Collection<? extends Serializable> roleIdList) {
+        if (CollUtil.isEmpty(roleIdList)) {
+            return;
+        }
+        super.remove(QueryWrapper.create().in(RoleAppRel::getRoleId, roleIdList));
     }
 }

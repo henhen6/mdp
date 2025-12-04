@@ -4,6 +4,7 @@ import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.permission.dto.RoleResourceRelDto;
 import top.mddata.console.permission.entity.RoleResourceRel;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -28,4 +29,10 @@ public interface RoleResourceRelService extends SuperService<RoleResourceRel> {
      * @return 应用-资源集合
      */
     Map<Long, Collection<Long>> findResourceIdByRoleId(Long roleId);
+
+    /**
+     * 批量删除角色资源关系
+     * @param roleIdList 角色ID
+     */
+    void removeByRoleIds(Collection<? extends Serializable> roleIdList);
 }

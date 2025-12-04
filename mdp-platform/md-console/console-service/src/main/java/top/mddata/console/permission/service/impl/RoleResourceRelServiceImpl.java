@@ -1,6 +1,7 @@
 package top.mddata.console.permission.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import com.google.common.collect.Multimap;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,12 @@ import top.mddata.console.permission.entity.RoleResourceRel;
 import top.mddata.console.permission.mapper.RoleResourceRelMapper;
 import top.mddata.console.permission.service.RoleResourceRelService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 角色资源关联 服务层实现。
@@ -31,15 +34,39 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRelMapper, RoleResourceRel> implements RoleResourceRelService {
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByRoleIds(Collection<? extends Serializable> roleIdList) {
+        if (CollUtil.isEmpty(roleIdList)) {
+            return;
+        }
+
+        List<RoleResourceRel> roleResourceRels = mapper.selectListByQuery(QueryWrapper.create().in(RoleResourceRel::getRoleId, roleIdList));
+
+        super.remove(QueryWrapper.create().in(RoleResourceRel::getRoleId, roleIdList));
+
+        List<CacheKey> keys = new ArrayList<>();
+        List<Long> roleAppIdList = roleResourceRels.stream().map(RoleResourceRel::getAppId).toList();
+        roleAppIdList.forEach(appId -> roleIdList.forEach(roleId -> keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), appId))));
+        roleIdList.forEach(roleId -> keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), null)));
+        cacheOps.del(keys);
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveRoleResource(RoleResourceRelDto dto) {
         Long roleId = dto.getRoleId();
+        Boolean batch = dto.getBatch() != null && dto.getBatch();
         Map<Long, List<Long>> appResourceMap = dto.getAppResourceMap();
         List<RoleResourceRel> roleResourceRels = mapper.selectListByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId));
 
-        mapper.deleteByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId));
+        if (batch) {
+            mapper.deleteByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId));
+        } else {
+            Set<Long> appIds = appResourceMap.keySet();
+            mapper.deleteByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId).in(RoleResourceRel::getAppId, appIds));
+        }
+
         List<Long> roleAppIdList = roleResourceRels.stream().map(RoleResourceRel::getAppId).toList();
 
         List<CacheKey> keys = new ArrayList<>();
