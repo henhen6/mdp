@@ -57,6 +57,7 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
     @Transactional(readOnly = true)
     public Page<AppVo> page(Page<App> page, AppQuery query) {
         Map<String, Object> otherParams = new HashMap<>();
+        otherParams.put("state", query.getState());
         otherParams.put("name", query.getName());
         otherParams.put("appKey", query.getAppKey());
         otherParams.put("loginType", query.getLoginType());

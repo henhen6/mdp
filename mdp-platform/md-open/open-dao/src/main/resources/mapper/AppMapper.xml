@@ -45,50 +45,39 @@
     <select id="pageByRoleId_COUNT" resultType="long">
         select count(id) from `mdo_app`
         <where>
-            <if test="appKey != null and appKey != ''">
-                and app_key like #{appKey, typeHandler=fullLike}
-            </if>
-            <if test="name != null and name != ''">
-                and `name` like #{name, typeHandler=fullLike}
-            </if>
-            <if test="type != null  ">
-                and `type` = #{type}
-            </if>
-            <if test="loginType != null  ">
-                and login_type = #{loginType}
-            </if>
-            <if test="hasApp">
-                and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
-            </if>
-            <if test="!hasApp">
-                and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
-            </if>
+            <include refid="pageByRoleIdWhere"/>
         </where>
     </select>
 
+    <sql id="pageByRoleIdWhere">
+        <if test="appKey != null and appKey != ''">
+            and app_key like #{appKey, typeHandler=fullLike}
+        </if>
+        <if test="name != null and name != ''">
+            and `name` like #{name, typeHandler=fullLike}
+        </if>
+        <if test="type != null  ">
+            and `type` = #{type}
+        </if>
+        <if test="loginType != null  ">
+            and login_type = #{loginType}
+        </if>
+        <if test="state != null  ">
+            and state = #{state}
+        </if>
+        <if test="hasApp">
+            and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+        </if>
+        <if test="!hasApp">
+            and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+        </if>
+    </sql>
     <select id="pageByRoleId" resultType="top.mddata.open.admin.entity.App">
         select
         <include refid="Base_Column_List"/>
         from mdo_app
         <where>
-            <if test="appKey != null and appKey != ''">
-                and app_key like #{appKey, typeHandler=fullLike}
-            </if>
-            <if test="name != null and name != ''">
-                and `name` like #{name, typeHandler=fullLike}
-            </if>
-            <if test="type != null  ">
-                and `type` = #{type}
-            </if>
-            <if test="loginType != null  ">
-                and login_type = #{loginType}
-            </if>
-            <if test="hasApp">
-                and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
-            </if>
-            <if test="!hasApp">
-                and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
-            </if>
+            <include refid="pageByRoleIdWhere"/>
             order by mdo_app.created_at desc
             limit ${pageOffset}, ${pageSize}
         </where>
