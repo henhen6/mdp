@@ -1,6 +1,7 @@
 package top.mddata.console.organization.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -114,5 +115,21 @@ public class UserQuery extends ExtraParams implements Serializable {
      */
     @Schema(description = "所属组织")
     private List<Long> orgIdList;
+
+
+    @NotNull(message = "角色ID不能为空", groups = {RolePage.class})
+    @Schema(description = "角色ID")
+    private Long roleId;
+
+    /**
+     * true: 查询角色拥有的用户
+     * false: 查询角色没有的用户
+     */
+    @Schema(description = "是否有权限")
+    private Boolean hasUser;
+
+    public interface RolePage {
+
+    }
 
 }

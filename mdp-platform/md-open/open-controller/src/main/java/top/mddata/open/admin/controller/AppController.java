@@ -247,8 +247,8 @@ public class AppController extends SuperController<AppService, App> {
      * @return 分页对象
      */
     @PostMapping("/pageByRoleId")
-    @Operation(summary = "根据应用权限ID分页查询应用", description = "根据应用权限ID分页查询权限")
-    @RequestLog(value = "'根据应用权限ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @Operation(summary = "根据角色ID分页查询应用", description = "根据角色ID分页查询应用")
+    @RequestLog(value = "'根据角色ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
     public R<Page<AppVo>> pageByRoleId(@RequestBody @Validated(AppQuery.RolePage.class) PageParams<AppQuery> params) {
         Page<App> page = Page.of(params.getCurrent(), params.getSize());
         return R.success(superService.page(page, params.getModel()));

@@ -2,6 +2,7 @@ package top.mddata.console.organization.service;
 
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.UserRoleRel;
+import top.mddata.console.organization.dto.UserRoleRelDto;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -19,4 +20,17 @@ public interface UserRoleRelService extends SuperService<UserRoleRel> {
      */
     void removeByRoleIds(Collection<? extends Serializable> roleIdList);
 
+    /**
+     * 保存角色-用户关系
+     * @param dto 角色-用户关系
+     * @return 保存结果
+     */
+    Boolean saveByDto(UserRoleRelDto dto);
+
+    /**
+     * 删除角色-用户关系
+     * @param dto 角色-用户关系
+     * @return 删除结果
+     */
+    Boolean delete(UserRoleRelDto dto);
 }

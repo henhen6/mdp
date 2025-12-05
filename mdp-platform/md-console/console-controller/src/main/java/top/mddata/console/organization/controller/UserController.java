@@ -2,6 +2,7 @@ package top.mddata.console.organization.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +22,7 @@ import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.common.entity.User;
+import top.mddata.common.entity.UserRoleRel;
 import top.mddata.console.organization.dto.UserDto;
 import top.mddata.console.organization.dto.UserResetPasswordDto;
 import top.mddata.console.organization.query.UserQuery;
@@ -174,4 +176,54 @@ public class UserController extends SuperController<UserService, User> {
         return R.success(superService.checkPhone(phone, id));
     }
 
+    /**
+     * 根据权限角色ID 分页查询角色拥有的用户 或者 没有的用户
+     *
+     * @param params 分页对象
+     * @return 分页对象
+     */
+    @PostMapping("/pageByRoleId")
+    @Operation(summary = "根据角色ID分页查询用户", description = "根据角色ID分页查询用户")
+    @RequestLog(value = "'根据角色ID分页查询用户:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    public R<Page<UserVo>> pageByRoleId(@RequestBody @Validated(UserQuery.RolePage.class) PageParams<UserQuery> params) {
+
+        Page<UserVo> page = Page.of(params.getCurrent(), params.getSize());
+        User entity = BeanUtil.toBean(params.getModel(), User.class);
+        UserQuery query = params.getModel();
+        QueryWrapper wrapper;
+        if (query.getHasUser() == null || !query.getHasUser()) {
+            // 相当于 not exists 查询
+            /*
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
+                    .leftJoin(UserRoleRel.class)
+                    .on(wrap -> wrap.where(User::getId).eq(UserRoleRel::getUserId).and(UserRoleRel::getRoleId).eq(query.getRoleId()))
+                    .isNull(UserRoleRel::getUserId);
+            */
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+            QueryWrapper userRoleWrapper = QueryWrapper.create().select("1").from(UserRoleRel.class).where(UserRoleRel::getUserId).eq(User::getId).eq(UserRoleRel::getRoleId, query.getRoleId());
+            wrapper.where(QueryMethods.notExists(userRoleWrapper));
+        } else {
+            // 相当于 exists 查询
+            /*
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
+                    .innerJoin(UserRoleRel.class)
+                    .on(UserRoleRel::getUserId, User::getId)
+                    .eq(UserRoleRel::getRoleId, query.getRoleId());
+             */
+            /*
+            select * from mdc_user u
+            where EXISTS ( select 1 from mdc_user_role_rel ur where ur.user_id = u.id and ur.role_id = 1)
+            */
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+            QueryWrapper userRoleWrapper = QueryWrapper.create().select("1").from(UserRoleRel.class).where(UserRoleRel::getUserId).eq(User::getId).eq(UserRoleRel::getRoleId, query.getRoleId());
+            wrapper.where(QueryMethods.exists(userRoleWrapper));
+        }
+
+
+        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
+        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
+        superService.pageAs(page, wrapper, UserVo.class);
+        return R.success(page);
+
+    }
 }
