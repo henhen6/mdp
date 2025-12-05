@@ -26,6 +26,7 @@ import top.mddata.base.model.cache.CacheHashKey;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
+import top.mddata.base.utils.JsonUtil;
 import top.mddata.base.utils.StrPool;
 
 import java.time.Duration;
@@ -156,6 +157,7 @@ public abstract class BaseRedis {
         for (List<String> list : partitionKeys) {
             Long delete = redisTemplate.delete(list);
             count += delete != null ? delete : 0L;
+            log.info("已淘汰缓存: {}", JsonUtil.toJson(list));
         }
         return count;
     }

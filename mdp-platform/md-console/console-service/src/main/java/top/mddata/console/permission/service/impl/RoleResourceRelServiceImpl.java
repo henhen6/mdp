@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
+import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.common.cache.console.permission.RoleResourceCacheKeyBuilder;
 import top.mddata.console.permission.dto.RoleResourceRelDto;
@@ -64,6 +65,8 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
             mapper.deleteByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId));
         } else {
             Set<Long> appIds = appResourceMap.keySet();
+            ArgumentAssert.notEmpty(appIds, "应用不能为空");
+
             mapper.deleteByQuery(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId).in(RoleResourceRel::getAppId, appIds));
         }
 
