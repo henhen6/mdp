@@ -61,8 +61,18 @@ public interface EchoDictType {
          */
         String MENU_TYPE = "MenuTypeEnum";
         /**
+         * 角色分类
+         * [10-普通角色 20-管理员角色 30-权限集合]
+         */
+        String ROLE_CATEGORY = "RoleCategoryEnum";
+        /**
          * 机构类型 [10-公司 20-部门]
          */
         String ORG_TYPE = "OrgTypeEnum";
+        /**
+         * 组织性质
+         * [1-默认 90-开发者 99-运维]
+         */
+        String ORG_NATURE = "OrgNatureEnum";
     }
 }

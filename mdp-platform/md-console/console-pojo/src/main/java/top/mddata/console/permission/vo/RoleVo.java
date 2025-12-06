@@ -1,5 +1,6 @@
 package top.mddata.console.permission.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,11 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.base.annotation.echo.Echo;
+import top.mddata.base.interfaces.echo.EchoVO;
+import top.mddata.common.constant.EchoApi;
+import top.mddata.common.constant.EchoDictType;
 import top.mddata.console.permission.entity.base.RoleBase;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 角色 VO类（通常用作Controller出参）。
@@ -27,12 +33,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "角色")
 @Table(RoleBase.TABLE_NAME)
-public class RoleVo implements Serializable {
+public class RoleVo implements Serializable, EchoVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-
+    @Builder.Default
+    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
     /**
      * ID
@@ -58,6 +65,7 @@ public class RoleVo implements Serializable {
      * [10-普通角色 20-管理员角色 30-权限集合]
      */
     @Schema(description = "角色分类")
+    @Echo(api = EchoApi.DICT_CLASS, dictType = EchoDictType.Console.ROLE_CATEGORY)
     private String roleCategory;
 
     /**
@@ -72,6 +80,7 @@ public class RoleVo implements Serializable {
      * [1-默认 90-开发者 99-运维]
      */
     @Schema(description = "组织性质")
+    @Echo(api = EchoApi.DICT_CLASS, dictType = EchoDictType.Console.ORG_NATURE)
     private Integer orgNature;
 
     /**

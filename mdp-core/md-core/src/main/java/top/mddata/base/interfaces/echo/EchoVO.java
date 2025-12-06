@@ -1,5 +1,6 @@
 package top.mddata.base.interfaces.echo;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Map;
  * @author henhen6
  * @date 2021/3/22 2:22 下午
  */
-public interface EchoVO {
+public interface EchoVO extends Serializable {
 
     /**
      * 回显值 集合

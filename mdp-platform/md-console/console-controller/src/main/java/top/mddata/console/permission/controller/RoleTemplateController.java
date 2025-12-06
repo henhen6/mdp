@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.console.permission.dto.RoleTemploateDto;
@@ -37,6 +38,7 @@ import java.util.List;
 @RequestMapping("/permission/roleTemplate")
 @RequiredArgsConstructor
 public class RoleTemplateController extends SuperController<RoleTemplateService, Role> {
+    private final EchoService echoService;
 
     /**
      * 添加角色。
@@ -105,6 +107,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         wrapper.eq(Role::getTemplateRole, true);
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
+        echoService.action(listVo);
         return R.success(listVo);
     }
 
