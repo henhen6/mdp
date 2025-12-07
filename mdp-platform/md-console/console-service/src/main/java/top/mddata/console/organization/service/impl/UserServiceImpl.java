@@ -33,6 +33,7 @@ import top.mddata.common.mapper.UserMapper;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.organization.dto.UserDto;
 import top.mddata.console.organization.dto.UserResetPasswordDto;
+import top.mddata.console.organization.dto.UserUpdateDto;
 import top.mddata.console.organization.query.UserQuery;
 import top.mddata.console.organization.service.UserOrgRelService;
 import top.mddata.console.organization.service.UserService;
@@ -136,12 +137,17 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         // 注意：前端传递的avatar是文件id，存入数据库时，需要设置为唯一的对象id（通常为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
         sysUser.setAvatar(sysUser.getId());
+
+        // 防止修改了用户所属的部门信息后，登录时，切换到不存在的单位或部门。
+        sysUser.setLastTopCompanyId(null);
+        sysUser.setLastCompanyId(null);
+        sysUser.setLastDeptId(null);
         return sysUser;
     }
 
     @Override
     protected void updateAfter(Object updateDto, User entity) {
-        UserDto dto = (UserDto) updateDto;
+        UserUpdateDto dto = (UserUpdateDto) updateDto;
         List<Long> orgIdList = dto.getOrgIdList();
         saveOrg(entity, orgIdList);
 
@@ -207,6 +213,10 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         boolean flag = updateById(sysUser);
         delCache(data.getId());
         return flag;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(SecureUtil.sha256("admin" + "s8x2k9d3"));
     }
 
     @Override

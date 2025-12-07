@@ -18,10 +18,9 @@ import java.util.List;
 
 import static top.mddata.base.utils.ValidatorUtil.REGEX_EMAIL;
 import static top.mddata.base.utils.ValidatorUtil.REGEX_MOBILE;
-import static top.mddata.base.utils.ValidatorUtil.REGEX_PASSWORD;
 
 /**
- * 用户 DTO（写入方法入参）。
+ * 用户修改 DTO（写入方法入参）。
  *
  * @author henhen6
  * @since 2025-11-12 15:48:54
@@ -31,8 +30,8 @@ import static top.mddata.base.utils.ValidatorUtil.REGEX_PASSWORD;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "用户")
-public class UserDto implements Serializable {
+@Schema(description = "用户修改")
+public class UserUpdateDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -53,25 +52,13 @@ public class UserDto implements Serializable {
     private String username;
 
     /**
-     * 密码
-     */
-    @Size(max = 255, message = "密码长度不能超过{max}")
-    @Schema(description = "密码")
-    @NotEmptyPattern(regexp = REGEX_PASSWORD, message = "至少包含字母、数字、特殊字符")
-    private String password;
-
-
-    @Schema(description = "是否使用默认密码")
-    @NotNull(message = "请选择是否使用默认密码")
-    private Boolean defPassword;
-
-    /**
      * 性别
      * [0-男 1-女]
      */
     @Size(max = 1, message = "性别长度不能超过{max}")
     @Schema(description = "性别")
     private String sex;
+
 
     /**
      * 电话号码

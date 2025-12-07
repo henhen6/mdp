@@ -25,6 +25,7 @@ import top.mddata.common.entity.User;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.console.organization.dto.UserDto;
 import top.mddata.console.organization.dto.UserResetPasswordDto;
+import top.mddata.console.organization.dto.UserUpdateDto;
 import top.mddata.console.organization.query.UserQuery;
 import top.mddata.console.organization.service.UserService;
 import top.mddata.console.organization.vo.UserVo;
@@ -80,7 +81,7 @@ public class UserController extends SuperController<UserService, User> {
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新用户")
     @RequestLog(value = "修改")
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody UserDto dto) {
+    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody UserUpdateDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
 
