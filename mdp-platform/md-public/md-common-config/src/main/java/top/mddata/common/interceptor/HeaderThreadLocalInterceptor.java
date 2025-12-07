@@ -37,19 +37,21 @@ public class HeaderThreadLocalInterceptor implements AsyncHandlerInterceptor {
         }
 
 //        其他信息
-        ContextUtil.setPath(WebUtils.getHeader(request, ContextConstants.PATH_HEADER));
-        ContextUtil.setAppId(WebUtils.getHeader(request, ContextConstants.APP_ID_HEADER));
-        ContextUtil.setLogTraceId(WebUtils.getHeader(request, ContextConstants.TRACE_ID_HEADER));
+        ContextUtil.setPath(WebUtils.getHeader(request, ContextConstants.PATH));
+        ContextUtil.setAppId(WebUtils.getHeader(request, ContextConstants.APP_ID));
+        ContextUtil.setLogTraceId(WebUtils.getHeader(request, ContextConstants.TRACE));
         ContextUtil.setGrayVersion(WebUtils.getHeader(request, ContextConstants.GRAY_VERSION));
 
 //        用户信息
-        String userId = WebUtils.getHeader(request, ContextConstants.JWT_KEY_USER_ID);
-        MDC.put(ContextConstants.USER_ID_HEADER, userId);
+        String userId = WebUtils.getHeader(request, ContextConstants.USER_ID);
+        MDC.put(ContextConstants.USER_ID, userId);
         ContextUtil.setUserId(userId);
-        ContextUtil.setCurrentTopCompanyId(WebUtils.getHeader(request, ContextConstants.CURRENT_TOP_COMPANY_ID_HEADER));
-        ContextUtil.setCurrentCompanyId(WebUtils.getHeader(request, ContextConstants.CURRENT_COMPANY_ID_HEADER));
-        ContextUtil.setCurrentDeptId(WebUtils.getHeader(request, ContextConstants.CURRENT_DEPT_ID_HEADER));
-        ContextUtil.setTopCompanyIsAdmin(Convert.toBool(WebUtils.getHeader(request, ContextConstants.CURRENT_TOP_COMPANY_IS_ADMIN_HEADER)));
+        ContextUtil.setCurrentTopCompanyId(WebUtils.getHeader(request, ContextConstants.TOP_COMPANY_ID));
+        ContextUtil.setCurrentCompanyId(WebUtils.getHeader(request, ContextConstants.COMPANY_ID));
+        ContextUtil.setCurrentTopCompanyNature(WebUtils.getHeader(request, ContextConstants.TOP_COMPANY_NATURE));
+        ContextUtil.setCurrentCompanyNature(WebUtils.getHeader(request, ContextConstants.COMPANY_NATURE));
+        ContextUtil.setCurrentDeptId(WebUtils.getHeader(request, ContextConstants.DEPT_ID));
+        ContextUtil.setTopCompanyIsAdmin(Convert.toBool(WebUtils.getHeader(request, ContextConstants.TOP_COMPANY_IS_ADMIN)));
 
         Map<String, String> localMap = ContextUtil.getLocalMap();
         localMap.forEach(MDC::put);

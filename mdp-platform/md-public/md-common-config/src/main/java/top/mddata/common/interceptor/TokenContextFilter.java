@@ -16,12 +16,13 @@ import top.mddata.base.constant.ContextConstants;
 import top.mddata.base.utils.ContextUtil;
 import top.mddata.common.properties.IgnoreProperties;
 
-import static top.mddata.base.constant.ContextConstants.APP_ID_HEADER;
-import static top.mddata.base.constant.ContextConstants.APP_ID_KEY;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_COMPANY_ID;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_DEPT_ID;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_TOP_COMPANY_ID;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_TOP_COMPANY_IS_ADMIN;
+import static top.mddata.base.constant.ContextConstants.APP_ID;
+import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
+import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
+import static top.mddata.base.constant.ContextConstants.DEPT_ID;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_IS_ADMIN;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
 
 /**
  * 单体架构专用， 请求头信息解析器 + uri 接口鉴权拦截器
@@ -55,9 +56,9 @@ public class TokenContextFilter extends SaInterceptor {
             log.debug("not exec!!! url={}", request.getRequestURL());
             return true;
         }
-        ContextUtil.setPath(getHeader(ContextConstants.PATH_HEADER, request));
+        ContextUtil.setPath(getHeader(ContextConstants.PATH, request));
         String traceId = IdUtil.fastSimpleUUID();
-        MDC.put(ContextConstants.TRACE_ID_HEADER, traceId);
+        MDC.put(ContextConstants.TRACE, traceId);
         try {
 
             // 2, 获取 应用id
@@ -84,26 +85,30 @@ public class TokenContextFilter extends SaInterceptor {
 
         if (accountSession != null) {
             Long userId = (Long) accountSession.getLoginId();
-            Object topCompanyId = accountSession.get(JWT_KEY_TOP_COMPANY_ID);
-            Object companyId = accountSession.get(JWT_KEY_COMPANY_ID);
-            Object deptId = accountSession.get(JWT_KEY_DEPT_ID);
-            Object topCompanyIsAdmin = accountSession.get(JWT_KEY_TOP_COMPANY_IS_ADMIN);
+            Object topCompanyId = accountSession.get(TOP_COMPANY_ID);
+            Object companyId = accountSession.get(COMPANY_ID);
+            Object topCompanyNature = accountSession.get(TOP_COMPANY_NATURE);
+            Object companyNature = accountSession.get(COMPANY_NATURE);
+            Object deptId = accountSession.get(DEPT_ID);
+            Object topCompanyIsAdmin = accountSession.get(TOP_COMPANY_IS_ADMIN);
 
             ContextUtil.setUserId(userId);
             ContextUtil.setCurrentCompanyId(companyId);
             ContextUtil.setCurrentTopCompanyId(topCompanyId);
+            ContextUtil.setCurrentCompanyNature(companyNature);
+            ContextUtil.setCurrentTopCompanyNature(topCompanyNature);
             ContextUtil.setCurrentDeptId(deptId);
             ContextUtil.setTopCompanyIsAdmin(topCompanyIsAdmin != null && Convert.toBool(topCompanyIsAdmin));
-            MDC.put(ContextConstants.USER_ID_HEADER, String.valueOf(userId));
+            MDC.put(ContextConstants.USER_ID, String.valueOf(userId));
         }
 
     }
 
     private void parseApplication(HttpServletRequest request) {
-        String appIdStr = getHeader(APP_ID_KEY, request);
+        String appIdStr = getHeader(APP_ID, request);
         if (StrUtil.isNotEmpty(appIdStr)) {
             ContextUtil.setAppId(appIdStr);
-            MDC.put(APP_ID_HEADER, appIdStr);
+            MDC.put(APP_ID, appIdStr);
         }
     }
 
