@@ -200,13 +200,13 @@ public class SysLogAspect {
             optLogDTO.setCreatedOrgId(ContextUtil.getCurrentCompanyId());
             optLogDTO.setToken(ContextUtil.getToken());
         } else {
-            optLogDTO.setToken(Convert.toStr(request.getHeader(ContextConstants.TOKEN_HEADER)));
-            optLogDTO.setUserId(Convert.toLong(request.getHeader(ContextConstants.USER_ID_HEADER)));
-            optLogDTO.setCreatedOrgId(Convert.toLong(request.getHeader(ContextConstants.CURRENT_COMPANY_ID_HEADER)));
+            optLogDTO.setToken(Convert.toStr(request.getHeader(ContextConstants.TOKEN)));
+            optLogDTO.setUserId(Convert.toLong(request.getHeader(ContextConstants.USER_ID)));
+            optLogDTO.setCreatedOrgId(Convert.toLong(request.getHeader(ContextConstants.COMPANY_ID)));
         }
-        optLogDTO.setTrace(MDC.get(ContextConstants.TRACE_ID_HEADER));
+        optLogDTO.setTrace(MDC.get(ContextConstants.TRACE));
         if (StrUtil.isEmpty(optLogDTO.getTrace())) {
-            optLogDTO.setTrace(request.getHeader(ContextConstants.TRACE_ID_HEADER));
+            optLogDTO.setTrace(request.getHeader(ContextConstants.TRACE));
         }
         optLogDTO.setStartTime(LocalDateTime.now());
         return optLogDTO;

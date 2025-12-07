@@ -24,7 +24,6 @@ public final class ContextUtil {
      * @since 2021/6/23 9:26 下午
      */
     private static final ThreadLocal<Map<String, String>> THREAD_LOCAL = new ThreadLocal<>();
-//    private static final ThreadLocal<Map<String, String>> THREAD_LOCAL = new TransmittableThreadLocal<>();  // 配合 @Async 使用时会有问题
 
     private ContextUtil() {
     }
@@ -81,7 +80,7 @@ public final class ContextUtil {
      * @return 用户ID
      */
     public static Long getUserId() {
-        return get(ContextConstants.USER_ID_HEADER, Long.class);
+        return get(ContextConstants.USER_ID, Long.class);
     }
 
     /**
@@ -90,15 +89,15 @@ public final class ContextUtil {
      * @param userId 用户ID
      */
     public static void setUserId(Object userId) {
-        set(ContextConstants.USER_ID_HEADER, userId);
+        set(ContextConstants.USER_ID, userId);
     }
 
     public static boolean isEmptyUserId() {
-        return isEmptyLong(ContextConstants.USER_ID_HEADER);
+        return isEmptyLong(ContextConstants.USER_ID);
     }
 
     public static boolean isEmptyAppId() {
-        return isEmptyLong(ContextConstants.APP_ID_HEADER);
+        return isEmptyLong(ContextConstants.APP_ID);
     }
 
 
@@ -106,7 +105,7 @@ public final class ContextUtil {
      * 应用ID
      */
     public static Long getAppId() {
-        return get(ContextConstants.APP_ID_HEADER, Long.class);
+        return get(ContextConstants.APP_ID, Long.class);
     }
 
     /**
@@ -115,14 +114,14 @@ public final class ContextUtil {
      * @param appId 应用ID
      */
     public static void setAppId(Object appId) {
-        set(ContextConstants.APP_ID_HEADER, appId);
+        set(ContextConstants.APP_ID, appId);
     }
 
     /**
      * 地址栏路径
      */
     public static String getPath() {
-        return get(ContextConstants.PATH_HEADER, String.class, StrPool.EMPTY);
+        return get(ContextConstants.PATH, String.class, StrPool.EMPTY);
     }
 
     /**
@@ -131,7 +130,7 @@ public final class ContextUtil {
      * @param path 地址栏路径
      */
     public static void setPath(Object path) {
-        set(ContextConstants.PATH_HEADER, path == null ? StrPool.EMPTY : path);
+        set(ContextConstants.PATH, path == null ? StrPool.EMPTY : path);
     }
 
     /**
@@ -140,11 +139,11 @@ public final class ContextUtil {
      * @return token
      */
     public static String getToken() {
-        return get(ContextConstants.TOKEN_HEADER, String.class);
+        return get(ContextConstants.TOKEN, String.class);
     }
 
     public static void setToken(String token) {
-        set(ContextConstants.TOKEN_HEADER, token == null ? StrPool.EMPTY : token);
+        set(ContextConstants.TOKEN, token == null ? StrPool.EMPTY : token);
     }
 
     /**
@@ -155,11 +154,54 @@ public final class ContextUtil {
      * @since 2022/9/9 4:50 PM
      */
     public static Long getCurrentCompanyId() {
-        return get(ContextConstants.CURRENT_COMPANY_ID_HEADER, Long.class);
+        return get(ContextConstants.COMPANY_ID, Long.class);
     }
 
     public static void setCurrentCompanyId(Object val) {
-        set(ContextConstants.CURRENT_COMPANY_ID_HEADER, val);
+        set(ContextConstants.COMPANY_ID, val);
+    }
+
+
+    /**
+     * 获取 当前所属的公司组织性质
+     *
+     * @return java.lang.Integer
+     */
+    public static Integer getCurrentCompanyNature() {
+        return get(ContextConstants.COMPANY_NATURE, Integer.class);
+    }
+
+    public static void setCurrentCompanyNature(Object val) {
+        set(ContextConstants.COMPANY_NATURE, val);
+    }
+
+
+    /**
+     * 获取 当前所属的部门ID
+     *
+     * @return java.lang.Long
+     * @create [2022/9/9 4:50 PM ] [henhen6] [初始创建]
+     * @since 2022/9/9 4:50 PM
+     */
+    public static Long getCurrentDeptId() {
+        return get(ContextConstants.DEPT_ID, Long.class);
+    }
+
+    public static void setCurrentDeptId(Object val) {
+        set(ContextConstants.DEPT_ID, val);
+    }
+
+    /**
+     * 获取 当前所属的顶级公司组织性质
+     *
+     * @return java.lang.Integer
+     */
+    public static Integer getCurrentTopCompanyNature() {
+        return get(ContextConstants.TOP_COMPANY_NATURE, Integer.class);
+    }
+
+    public static void setCurrentTopCompanyNature(Object val) {
+        set(ContextConstants.TOP_COMPANY_NATURE, val);
     }
 
     /**
@@ -170,34 +212,24 @@ public final class ContextUtil {
      * @since 2022/9/9 4:50 PM
      */
     public static Long getCurrentTopCompanyId() {
-        return get(ContextConstants.CURRENT_TOP_COMPANY_ID_HEADER, Long.class);
+        return get(ContextConstants.TOP_COMPANY_ID, Long.class);
     }
 
     public static void setCurrentTopCompanyId(Object val) {
-        set(ContextConstants.CURRENT_TOP_COMPANY_ID_HEADER, val);
+        set(ContextConstants.TOP_COMPANY_ID, val);
     }
+
 
     /**
-     * 获取 当前所属的部门ID
-     *
-     * @return java.lang.Long
-     * @create [2022/9/9 4:50 PM ] [henhen6] [初始创建]
-     * @since 2022/9/9 4:50 PM
+     * 顶级单位是否是管理员
+     * @return
      */
-    public static Long getCurrentDeptId() {
-        return get(ContextConstants.CURRENT_DEPT_ID_HEADER, Long.class);
-    }
-
-    public static void setCurrentDeptId(Object val) {
-        set(ContextConstants.CURRENT_DEPT_ID_HEADER, val);
-    }
-
     public static boolean getTopCompanyIsAdmin() {
-        return get(ContextConstants.CURRENT_TOP_COMPANY_IS_ADMIN_HEADER, Boolean.class);
+        return get(ContextConstants.TOP_COMPANY_IS_ADMIN, Boolean.class);
     }
 
     public static void setTopCompanyIsAdmin(Boolean val) {
-        set(ContextConstants.CURRENT_TOP_COMPANY_IS_ADMIN_HEADER, val);
+        set(ContextConstants.TOP_COMPANY_IS_ADMIN, val);
     }
 
     private static boolean isEmptyLong(String key) {
@@ -211,11 +243,11 @@ public final class ContextUtil {
     }
 
     public static String getLogTraceId() {
-        return get(ContextConstants.TRACE_ID_HEADER, String.class);
+        return get(ContextConstants.TRACE, String.class);
     }
 
     public static void setLogTraceId(String val) {
-        set(ContextConstants.TRACE_ID_HEADER, val);
+        set(ContextConstants.TRACE, val);
     }
 
 

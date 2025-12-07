@@ -10,71 +10,79 @@ public final class ContextConstants {
     /**
      * 请求头中携带的 token key
      */
-    public static final String TOKEN_KEY = "Token";
+    public static final String TOKEN = "Token";
     /**
      * 请求头中携带的 客户端信息 key
      */
-    public static final String CLIENT_KEY = "Authorization";
+    public static final String AUTHORIZATION = "Authorization";
     /**
      * 请求头中携带的 应用id key
      */
-    public static final String APP_ID_KEY = "AppId";
+    public static final String APP_ID = "AppId";
     /**
      * JWT中封装的 用户id
      */
-    public static final String JWT_KEY_USER_ID = "UserId";
+    public static final String USER_ID = "UserId";
     /**
-     * JWT中封装的 用户当前所有单位ID
+     * JWT中封装的 用户当前所有公司ID
      */
-    public static final String JWT_KEY_COMPANY_ID = "CurrentCompanyId";
+    public static final String COMPANY_ID = "CurrentCompanyId";
+    /**
+     * JWT中封装的 用户当前所有公司组织性质
+     */
+    public static final String COMPANY_NATURE = "CurrentCompanyNature";
     /**
      * 请求头中携带的 当前所属的顶级公司ID key
      */
-    public static final String JWT_KEY_TOP_COMPANY_ID = "CurrentTopCompanyId";
+    public static final String TOP_COMPANY_ID = "CurrentTopCompanyId";
+    /**
+     * 请求头中携带的 当前所属的顶级公司组织性质 key
+     */
+    public static final String TOP_COMPANY_NATURE = "CurrentTopCompanyNature";
     /**
      * 请求头中携带的 当前所属的部门ID key
      */
-    public static final String JWT_KEY_DEPT_ID = "CurrentDeptId";
+    public static final String DEPT_ID = "CurrentDeptId";
     /**
      * 请求头中携带的 当前所属的顶级公司是否是管理员
      */
-    public static final String JWT_KEY_TOP_COMPANY_IS_ADMIN = "CurrentTopCompanyIsAdmin";
-    /**
-     * 请求头和线程变量中的 用户ID
-     */
-    public static final String USER_ID_HEADER = JWT_KEY_USER_ID;
-    /**
-     * 请求头和线程变量中的 当前单位ID
-     */
-    public static final String CURRENT_COMPANY_ID_HEADER = JWT_KEY_COMPANY_ID;
-    /**
-     * 请求头和线程变量中的 当前所属的顶级公司ID
-     */
-    public static final String CURRENT_TOP_COMPANY_ID_HEADER = JWT_KEY_TOP_COMPANY_ID;
-    /**
-     * 请求头和线程变量中的 当前所属的部门ID
-     */
-    public static final String CURRENT_DEPT_ID_HEADER = JWT_KEY_DEPT_ID;
-    /**
-     * 线程变量和请求头中的 当前所属的顶级公司是否是管理员
-     */
-    public static final String CURRENT_TOP_COMPANY_IS_ADMIN_HEADER = JWT_KEY_TOP_COMPANY_IS_ADMIN;
-    /**
-     * 请求头和线程变量中的 应用ID
-     */
-    public static final String APP_ID_HEADER = APP_ID_KEY;
+    public static final String TOP_COMPANY_IS_ADMIN = "CurrentTopCompanyIsAdmin";
+//    /**
+//     * 请求头和线程变量中的 用户ID
+//     */
+//    public static final String USER_ID_HEADER = JWT_KEY_USER_ID;
+//    /**
+//     * 请求头和线程变量中的 当前单位ID
+//     */
+//    public static final String CURRENT_COMPANY_ID_HEADER = JWT_KEY_COMPANY_ID;
+//    /**
+//     * 请求头和线程变量中的 当前所属的顶级公司ID
+//     */
+//    public static final String CURRENT_TOP_COMPANY_ID_HEADER = JWT_KEY_TOP_COMPANY_ID;
+//    /**
+//     * 请求头和线程变量中的 当前所属的部门ID
+//     */
+//    public static final String CURRENT_DEPT_ID_HEADER = JWT_KEY_DEPT_ID;
+//    /**
+//     * 线程变量和请求头中的 当前所属的顶级公司是否是管理员
+//     */
+//    public static final String CURRENT_TOP_COMPANY_IS_ADMIN_HEADER = JWT_KEY_TOP_COMPANY_IS_ADMIN;
+//    /**
+//     * 请求头和线程变量中的 应用ID
+//     */
+//    public static final String APP_ID_HEADER = APP_ID_KEY;
     /**
      * 请求头和线程变量中的 前端页面地址栏#号后的路径
      */
-    public static final String PATH_HEADER = "Path";
-    /**
-     * 请求头和线程变量中的 token
-     */
-    public static final String TOKEN_HEADER = TOKEN_KEY;
+    public static final String PATH = "Path";
+//    /**
+//     * 请求头和线程变量中的 token
+//     */
+//    public static final String TOKEN_HEADER = TOKEN_KEY;
     /**
      * 日志链路追踪id信息头
      */
-    public static final String TRACE_ID_HEADER = "trace";
+    public static final String TRACE = "trace";
     /**
      * 灰度发布版本号
      */
