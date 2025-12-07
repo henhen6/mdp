@@ -96,13 +96,13 @@ public class UsernameLoginStrategyImpl implements LoginStrategy {
         }
 
         String passwordMd5 = null;
-        if (!StrUtil.equals(UserSourceEnum.PLATFORM.getCode(), user.getUserSource())) {
-            passwordMd5 = SecureUtil.sha256(UaSecureUtil.md5BySalt(user.getPassword(), user.getSalt()));
-        } else {
+        if (StrUtil.equals(UserSourceEnum.PLATFORM.getCode(), user.getUserSource())) {
             passwordMd5 = SecureUtil.sha256(login.getPassword() + user.getSalt());
+        } else {
+            passwordMd5 = SecureUtil.sha256(UaSecureUtil.md5BySalt(user.getPassword(), user.getSalt()));
         }
         if (!passwordMd5.equalsIgnoreCase(user.getPassword())) {
-            String msg = StrUtil.format("用户名或密码错误{}次，连续输错{}次您将被锁定！", (user.getPwErrorNum() + 1), maxPasswordErrorNum);
+            String msg = StrUtil.format("用户名或密码错误{}次，连续输错{}次您将被锁定！", (Convert.toInt(user.getPwErrorNum(), 0) + 1), maxPasswordErrorNum);
             // 密码错误事件
             SpringUtils.publishEvent(new LoginEvent(LoginStatusDto.fail(user.getId(), LoginStatusEnum.PASSWORD_ERROR, msg)));
             throw new BizException(msg);

@@ -241,6 +241,20 @@ public class AppController extends SuperController<AppService, App> {
 
 
     /**
+     * 根据角色模板ID，分页查询角色模板拥有的应用 或者 没有的应用
+     *
+     * @param params 分页对象
+     * @return 分页对象
+     */
+    @PostMapping("/pageByRoleTemplateId")
+    @Operation(summary = "根据角色模板ID分页查询应用", description = "根据角色模板ID分页查询应用")
+    @RequestLog(value = "'根据角色模板ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    public R<Page<AppVo>> pageByRoleTemplateId(@RequestBody @Validated(AppQuery.RolePage.class) PageParams<AppQuery> params) {
+        Page<App> page = Page.of(params.getCurrent(), params.getSize());
+        return R.success(superService.pageByRoleTemplateId(page, params.getModel()));
+    }
+
+    /**
      * 根据权限角色ID 分页查询角色拥有的应用 或者 没有的应用
      *
      * @param params 分页对象
@@ -251,8 +265,6 @@ public class AppController extends SuperController<AppService, App> {
     @RequestLog(value = "'根据角色ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
     public R<Page<AppVo>> pageByRoleId(@RequestBody @Validated(AppQuery.RolePage.class) PageParams<AppQuery> params) {
         Page<App> page = Page.of(params.getCurrent(), params.getSize());
-        return R.success(superService.page(page, params.getModel()));
+        return R.success(superService.pageByRoleId(page, params.getModel()));
     }
-
-
 }

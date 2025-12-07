@@ -24,7 +24,9 @@ import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
 import top.mddata.common.entity.Org;
+import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
+import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
@@ -40,11 +42,13 @@ import top.mddata.workbench.vo.LoginVo;
 import java.util.List;
 import java.util.Map;
 
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_COMPANY_ID;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_DEPT_ID;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_TOP_COMPANY_ID;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_TOP_COMPANY_IS_ADMIN;
-import static top.mddata.base.constant.ContextConstants.JWT_KEY_USER_ID;
+import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
+import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
+import static top.mddata.base.constant.ContextConstants.DEPT_ID;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_IS_ADMIN;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
+import static top.mddata.base.constant.ContextConstants.USER_ID;
 
 
 /**
@@ -92,21 +96,32 @@ public class AuthServiceImpl implements AuthService {
         SaSession session = StpUtil.getSession();
         session.setLoginId(ssoUser.getId());
         if (org.getCurrentTopCompanyId() != null) {
-            session.set(JWT_KEY_TOP_COMPANY_ID, org.getCurrentTopCompanyId());
+            session.set(TOP_COMPANY_ID, org.getCurrentTopCompanyId());
         } else {
-            session.delete(JWT_KEY_TOP_COMPANY_ID);
+            session.delete(TOP_COMPANY_ID);
+        }
+        if (org.getCurrentTopCompanyNature() != null) {
+            session.set(TOP_COMPANY_NATURE, org.getCurrentTopCompanyNature());
+        } else {
+            session.delete(TOP_COMPANY_NATURE);
+        }
+        if (org.getCurrentCompanyNature() != null) {
+            session.set(COMPANY_NATURE, org.getCurrentCompanyNature());
+        } else {
+            session.delete(COMPANY_NATURE);
         }
         if (org.getCurrentCompanyId() != null) {
-            session.set(JWT_KEY_COMPANY_ID, org.getCurrentCompanyId());
+            session.set(COMPANY_ID, org.getCurrentCompanyId());
         } else {
-            session.delete(JWT_KEY_COMPANY_ID);
+            session.delete(COMPANY_ID);
         }
         if (org.getCurrentDeptId() != null) {
-            session.set(JWT_KEY_DEPT_ID, org.getCurrentDeptId());
+            session.set(DEPT_ID, org.getCurrentDeptId());
         } else {
-            session.delete(JWT_KEY_DEPT_ID);
+            session.delete(DEPT_ID);
         }
-        session.set(JWT_KEY_TOP_COMPANY_IS_ADMIN, org.isCurrentTopCompanyIsAdmin());
+
+        session.set(TOP_COMPANY_IS_ADMIN, org.isCurrentTopCompanyIsAdmin());
 
         // 发送登录成功事件
         LoginStatusDto loginStatus = LoginStatusDto.success(ssoUser.getId());
@@ -114,7 +129,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 封装返回值
         JSONObject obj = new JSONObject();
-        obj.put(JWT_KEY_USER_ID, ssoUser.getId());
+        obj.put(USER_ID, ssoUser.getId());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         LoginVo loginVO = BeanUtil.toBean(tokenInfo, LoginVo.class);
         loginVO.setExpire(tokenInfo.getTokenTimeout());
@@ -128,8 +143,10 @@ public class AuthServiceImpl implements AuthService {
         Long currentDeptId = null;
         // 当前所属单位
         Long currentCompanyId = null;
+        Integer currentCompanyNature = OrgNatureEnum.DEFAULT.getCode();
         // 当前所属顶级单位
         Long currentTopCompanyId = null;
+        Integer currentTopCompanyNature = OrgNatureEnum.DEFAULT.getCode();
 //        当前顶级组织是否超级管理
         boolean currentTopCompanyIsAdmin = false;
 
@@ -137,7 +154,9 @@ public class AuthServiceImpl implements AuthService {
         if (sysUser == null) {
             return TempOrg.builder()
                     .currentTopCompanyId(currentTopCompanyId)
+                    .currentTopCompanyNature(currentTopCompanyNature)
                     .currentCompanyId(currentCompanyId)
+                    .currentCompanyNature(currentCompanyNature)
                     .currentDeptId(currentDeptId).currentTopCompanyIsAdmin(currentTopCompanyIsAdmin).build();
         }
         Long userId = sysUser.getId();
@@ -175,6 +194,14 @@ public class AuthServiceImpl implements AuthService {
             defaultCompany = ssoUserService.getOrgByIdCache(currentCompanyId);
         }
 
+        // 查询单位的组织性质
+        if (defaultCompany != null) {
+            OrgNature orgNature = ssoUserService.getOrgNatureByOrgId(defaultCompany.getId());
+            if (orgNature != null) {
+                currentCompanyNature = orgNature.getNature();
+            }
+        }
+
         // 查最后一次登录时 所属顶级单位
         Org rootCompany = null;
         if (sysUser.getLastTopCompanyId() == null) {
@@ -193,6 +220,14 @@ public class AuthServiceImpl implements AuthService {
             rootCompany = ssoUserService.getOrgByIdCache(currentTopCompanyId);
         }
 
+        // 查询顶级单位的组织性质
+        if (rootCompany != null) {
+            OrgNature orgNature = ssoUserService.getOrgNatureByOrgId(rootCompany.getId());
+            if (orgNature != null) {
+                currentTopCompanyNature = orgNature.getNature();
+            }
+        }
+
         ssoUserService.updateById(updateUser);
 
 
@@ -202,7 +237,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return TempOrg.builder()
+                .currentTopCompanyNature(currentTopCompanyNature)
                 .currentTopCompanyId(currentTopCompanyId)
+                .currentCompanyNature(currentCompanyNature)
                 .currentCompanyId(currentCompanyId)
                 .currentDeptId(currentDeptId)
                 .currentTopCompanyIsAdmin(currentTopCompanyIsAdmin)
@@ -313,9 +350,17 @@ public class AuthServiceImpl implements AuthService {
          */
         private Long currentCompanyId;
         /**
+         * 当前公司性质
+         */
+        private Integer currentCompanyNature;
+        /**
          * 当前顶级公司id
          */
         private Long currentTopCompanyId;
+        /**
+         * 当前顶级公司性质
+         */
+        private Integer currentTopCompanyNature;
         /**
          * 当前部门id
          */

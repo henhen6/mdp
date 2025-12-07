@@ -16,7 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.mybatisflex.utils.BeanPageUtil;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.base.utils.ContextUtil;
 import top.mddata.common.constant.FileObjectType;
+import top.mddata.common.enumeration.organization.OrgNatureEnum;
+import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.facade.FileFacade;
 import top.mddata.open.admin.dto.AppDto;
@@ -55,7 +58,7 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AppVo> page(Page<App> page, AppQuery query) {
+    public Page<AppVo> pageByRoleTemplateId(Page<App> page, AppQuery query) {
         Map<String, Object> otherParams = new HashMap<>();
         otherParams.put("state", query.getState());
         otherParams.put("name", query.getName());
@@ -65,10 +68,30 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
         otherParams.put("roleId", query.getRoleId());
         otherParams.put("hasApp", query.getHasApp() != null && query.getHasApp());
 
-
         Page<App> pageResult = mapper.xmlPaginate("pageByRoleId", page, otherParams);
         return BeanPageUtil.toBeanPage(pageResult, AppVo.class);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AppVo> pageByRoleId(Page<App> page, AppQuery query) {
+        Map<String, Object> otherParams = new HashMap<>();
+        otherParams.put("state", query.getState());
+        otherParams.put("name", query.getName());
+        otherParams.put("appKey", query.getAppKey());
+        otherParams.put("loginType", query.getLoginType());
+        otherParams.put("type", query.getType());
+        otherParams.put("roleId", query.getRoleId());
+        // 当前组织性质下的、权限集合角色
+        otherParams.put("roleCategory", RoleCategoryEnum.PERM_SET.getCode());
+        otherParams.put("orgNature", ContextUtil.getCurrentCompanyNature());
+        otherParams.put("templateRole", 1);
+        otherParams.put("hasAppByRole", query.getHasApp() != null && query.getHasApp());
+
+        Page<App> pageResult = mapper.xmlPaginate("pageByRoleId", page, otherParams);
+
+        return BeanPageUtil.toBeanPage(pageResult, AppVo.class);
+    }
+
 
     @Override
     @Transactional(readOnly = true)

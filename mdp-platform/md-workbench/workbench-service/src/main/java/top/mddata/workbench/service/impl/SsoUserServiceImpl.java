@@ -264,6 +264,12 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         return sysOrgTypes.stream().anyMatch(item -> OrgNatureEnum.OPERATIONS.eq(item.getNature()));
     }
 
+    @Override
+    public OrgNature getOrgNatureByOrgId(Long id) {
+        List<OrgNature> sysOrgTypes = orgNatureMapper.selectListByQuery(QueryWrapper.create().eq(OrgNature::getOrgId, id));
+        return CollUtil.isNotEmpty(sysOrgTypes) ? sysOrgTypes.get(0) : null;
+    }
+
     private void initSsoUser(User defUser) {
         defUser.setSalt(RandomUtil.randomString(20));
         defUser.setPassword(SecureUtil.sha256(defUser.getPassword() + defUser.getSalt()));

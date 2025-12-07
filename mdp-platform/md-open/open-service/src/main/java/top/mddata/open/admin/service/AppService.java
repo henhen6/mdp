@@ -26,7 +26,8 @@ public interface AppService extends SuperService<App> {
      * @param query 查询参数
      * @return 分页信息
      */
-    Page<AppVo> page(Page<App> page, AppQuery query);
+    Page<AppVo> pageByRoleTemplateId(Page<App> page, AppQuery query);
+    Page<AppVo> pageByRoleId(Page<App> page, AppQuery query);
 
     /**
      * 查询需要 接收事件推送的应用

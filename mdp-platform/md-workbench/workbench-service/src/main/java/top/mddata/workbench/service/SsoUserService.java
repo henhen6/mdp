@@ -2,6 +2,7 @@ package top.mddata.workbench.service;
 
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.Org;
+import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
 
 import java.util.List;
@@ -120,4 +121,11 @@ public interface SsoUserService extends SuperService<User> {
      * @return 是否
      */
     boolean getTopCompanyIsAdminById(Long id);
+
+    /**
+     * 根据组织id查询默认的组织性质
+     * @param id 组织id
+     * @return
+     */
+    OrgNature getOrgNatureByOrgId(Long id);
 }

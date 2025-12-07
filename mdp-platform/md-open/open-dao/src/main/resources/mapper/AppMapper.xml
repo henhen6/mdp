@@ -42,12 +42,6 @@
     </sql>
 
 
-    <select id="pageByRoleId_COUNT" resultType="long">
-        select count(id) from `mdo_app`
-        <where>
-            <include refid="pageByRoleIdWhere"/>
-        </where>
-    </select>
 
     <sql id="pageByRoleIdWhere">
         <if test="appKey != null and appKey != ''">
@@ -65,13 +59,51 @@
         <if test="state != null  ">
             and state = #{state}
         </if>
-        <if test="hasApp">
-            and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
-        </if>
-        <if test="!hasApp">
-            and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
-        </if>
+
+        <choose>
+            <!-- 根据角色模板ID查询-->
+            <when test="hasApp != null">
+                <choose>
+                    <!-- 方法1：hasApp=true → 执行exists -->
+                    <when test="hasApp">
+                        and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+                    </when>
+                    <!-- 方法1：hasApp=false → 执行not exists -->
+                    <otherwise>
+                        and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+                    </otherwise>
+                </choose>
+            </when>
+
+            <!-- 根据角色ID查询 -->
+            <when test="hasAppByRole != null">
+                <choose>
+                    <!-- 方法2：hasAppByRole=true → 执行exists -->
+                    <when test="hasAppByRole">
+                        and exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
+                    </when>
+                    <!-- 方法2：hasAppByRole=false → 执行id in -->
+                    <otherwise>
+                        and id in (
+                        select rar.app_id  from mdc_role_app_rel rar
+                        inner join mdc_role r on r.id = rar.role_id
+                        where r.role_category  = #{roleCategory} and r.org_nature = #{orgNature} and r.template_role = #{templateRole} and r.state = 1
+                        )
+
+                    </otherwise>
+                </choose>
+            </when>
+
+        </choose>
+
     </sql>
+
+    <select id="pageByRoleId_COUNT" resultType="long">
+        select count(id) from `mdo_app`
+        <where>
+            <include refid="pageByRoleIdWhere"/>
+        </where>
+    </select>
     <select id="pageByRoleId" resultType="top.mddata.open.admin.entity.App">
         select
         <include refid="Base_Column_List"/>
