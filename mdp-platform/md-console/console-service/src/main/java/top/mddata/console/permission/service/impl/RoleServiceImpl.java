@@ -41,21 +41,21 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
     @Override
     protected Role saveBefore(Object save) {
         Role entity = BeanUtil.toBean(save, getEntityClass());
+        ArgumentAssert.isFalse(checkCode(entity.getCode(), null), "角色编码重复");
         entity.setId(null);
         entity.setOrgNature(OrgNatureEnum.DEFAULT.getCode());
         entity.setTemplateRole(false);
         entity.setRoleCategory(RoleCategoryEnum.NORMAL_ROLE.getCode());
-        ArgumentAssert.isFalse(checkCode(entity.getCode(), null), "角色编码重复");
         return entity;
     }
 
     @Override
     protected Role updateBefore(Object updateDto) {
         Role entity = BeanUtil.toBean(updateDto, getEntityClass());
+        ArgumentAssert.isFalse(checkCode(entity.getCode(), entity.getId()), "角色编码重复");
         entity.setOrgNature(OrgNatureEnum.DEFAULT.getCode());
         entity.setTemplateRole(false);
         entity.setRoleCategory(RoleCategoryEnum.NORMAL_ROLE.getCode());
-        ArgumentAssert.isFalse(checkCode(entity.getCode(), entity.getId()), "角色编码重复");
         return entity;
     }
 }

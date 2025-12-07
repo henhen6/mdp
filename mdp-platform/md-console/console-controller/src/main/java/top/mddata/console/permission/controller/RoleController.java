@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.permission.dto.RoleDto;
 import top.mddata.console.permission.dto.RoleResourceRelDto;
 import top.mddata.console.permission.entity.Role;
@@ -49,6 +51,7 @@ import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 @RequiredArgsConstructor
 public class RoleController extends SuperController<RoleService, Role> {
     private final RoleResourceRelService roleResourceRelService;
+    private final EchoService echoService;
 
     /**
      * 添加角色。
@@ -114,8 +117,9 @@ public class RoleController extends SuperController<RoleService, Role> {
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        wrapper.eq(Role::getTemplateRole, false);
+        wrapper.eq(Role::getTemplateRole, false).eq(Role::getRoleCategory, RoleCategoryEnum.NORMAL_ROLE.getCode());
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
+        echoService.action(listVo);
         return R.success(listVo);
     }
 

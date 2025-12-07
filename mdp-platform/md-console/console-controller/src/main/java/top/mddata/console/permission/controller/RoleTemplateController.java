@@ -18,6 +18,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.permission.dto.RoleTemploateDto;
 import top.mddata.console.permission.entity.Role;
 import top.mddata.console.permission.query.RoleQuery;
@@ -105,7 +106,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        wrapper.eq(Role::getTemplateRole, true);
+        wrapper.eq(Role::getTemplateRole, true).in(Role::getRoleCategory, RoleCategoryEnum.ADMIN_ROLE.getCode(), RoleCategoryEnum.PERM_SET.getCode());
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         echoService.action(listVo);
         return R.success(listVo);

@@ -39,7 +39,7 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
         Role entity = BeanUtil.toBean(save, getEntityClass());
         entity.setId(null);
         entity.setTemplateRole(true);
-        ArgumentAssert.isFalse(roleService.checkCode(entity.getCode(), null), "角色编码重复");
+//        ArgumentAssert.isFalse(roleService.checkCode(entity.getCode(), null), "角色编码重复");
         return entity;
     }
 
@@ -47,7 +47,7 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
     protected Role updateBefore(Object updateDto) {
         Role entity = BeanUtil.toBean(updateDto, getEntityClass());
         entity.setTemplateRole(true);
-        ArgumentAssert.isFalse(roleService.checkCode(entity.getCode(), entity.getId()), "角色编码重复");
+//        ArgumentAssert.isFalse(roleService.checkCode(entity.getCode(), entity.getId()), "角色编码重复");
         return entity;
     }
 
