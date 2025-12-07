@@ -47,38 +47,10 @@ public final class ContextConstants {
      * 请求头中携带的 当前所属的顶级公司是否是管理员
      */
     public static final String TOP_COMPANY_IS_ADMIN = "CurrentTopCompanyIsAdmin";
-//    /**
-//     * 请求头和线程变量中的 用户ID
-//     */
-//    public static final String USER_ID_HEADER = JWT_KEY_USER_ID;
-//    /**
-//     * 请求头和线程变量中的 当前单位ID
-//     */
-//    public static final String CURRENT_COMPANY_ID_HEADER = JWT_KEY_COMPANY_ID;
-//    /**
-//     * 请求头和线程变量中的 当前所属的顶级公司ID
-//     */
-//    public static final String CURRENT_TOP_COMPANY_ID_HEADER = JWT_KEY_TOP_COMPANY_ID;
-//    /**
-//     * 请求头和线程变量中的 当前所属的部门ID
-//     */
-//    public static final String CURRENT_DEPT_ID_HEADER = JWT_KEY_DEPT_ID;
-//    /**
-//     * 线程变量和请求头中的 当前所属的顶级公司是否是管理员
-//     */
-//    public static final String CURRENT_TOP_COMPANY_IS_ADMIN_HEADER = JWT_KEY_TOP_COMPANY_IS_ADMIN;
-//    /**
-//     * 请求头和线程变量中的 应用ID
-//     */
-//    public static final String APP_ID_HEADER = APP_ID_KEY;
     /**
      * 请求头和线程变量中的 前端页面地址栏#号后的路径
      */
     public static final String PATH = "Path";
-//    /**
-//     * 请求头和线程变量中的 token
-//     */
-//    public static final String TOKEN_HEADER = TOKEN_KEY;
     /**
      * 日志链路追踪id信息头
      */
