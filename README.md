@@ -24,6 +24,10 @@ MDP支持SSO、Oauth2等多种主流的单点登录协议。
 | [控制台](http://console.mddata.top) | md-console，简称mdc   | web-console   | 可以理解为后台管理项目，通常提供给管理员使用。               |
 | [开放平台](http://open.mddata.top)   | md-open，简称mdo      | web-open      | 可以理解为开发者中心，通常提供给想要将应用接入本平台的第三方开发者使用。 |
 
+- 工作台：http://workbench.mddata.top
+- 控制台：http://console.mddata.top
+- 演示环境，账号密码：ops_admin/admin
+
 ## 主要功能
 
 - 工作台
