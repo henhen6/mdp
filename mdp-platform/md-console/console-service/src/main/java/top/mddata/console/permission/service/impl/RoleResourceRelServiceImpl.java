@@ -55,6 +55,21 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void removeByRoleIdAndAppIds(Long roleId, List<Long> appIdList) {
+        if (roleId == null || CollUtil.isEmpty(appIdList)) {
+            return;
+        }
+
+        super.remove(QueryWrapper.create().eq(RoleResourceRel::getRoleId, roleId).in(RoleResourceRel::getAppId, appIdList));
+
+        List<CacheKey> keys = new ArrayList<>();
+        appIdList.forEach(appId -> keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), appId)));
+        keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), null));
+        cacheOps.del(keys);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean saveRoleResource(RoleResourceRelDto dto) {
         Long roleId = dto.getRoleId();
         Boolean batch = dto.getBatch() != null && dto.getBatch();

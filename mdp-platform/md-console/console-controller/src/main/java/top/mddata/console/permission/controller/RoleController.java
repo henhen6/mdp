@@ -117,7 +117,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        wrapper.eq(Role::getTemplateRole, false).eq(Role::getRoleCategory, RoleCategoryEnum.NORMAL_ROLE.getCode());
+        wrapper.eq(Role::getTemplateRole, false).eq(Role::getRoleCategory, RoleCategoryEnum.NORMAL_ROLE.getCode()).orderBy(Role::getCreatedAt, false);
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         echoService.action(listVo);
         return R.success(listVo);
@@ -126,13 +126,14 @@ public class RoleController extends SuperController<RoleService, Role> {
 
     @Parameters({
             @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "roleCategory", description = "角色类别", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
             @Parameter(name = "code", description = "编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
     })
     @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
     @GetMapping("/checkCode")
     @RequestLog(value = "检测编码是否存在")
-    public R<Boolean> checkCode(@RequestParam String code, @RequestParam(required = false) Long id) {
-        return R.success(superService.checkCode(code, id));
+    public R<Boolean> checkCode(@RequestParam String roleCategory, @RequestParam String code, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkCode(roleCategory, code, id));
     }
 
     /**

@@ -11,6 +11,7 @@ import top.mddata.console.permission.dto.RoleAppRelDto;
 import top.mddata.console.permission.entity.RoleAppRel;
 import top.mddata.console.permission.mapper.RoleAppRelMapper;
 import top.mddata.console.permission.service.RoleAppRelService;
+import top.mddata.console.permission.service.RoleResourceRelService;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -27,11 +28,22 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class RoleAppRelServiceImpl extends SuperServiceImpl<RoleAppRelMapper, RoleAppRel> implements RoleAppRelService {
+    private final RoleResourceRelService roleResourceRelService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean delete(RoleAppRelDto dto) {
-        return super.remove(QueryWrapper.create()
-                .eq(RoleAppRel::getRoleId, dto.getRoleId()).in(RoleAppRel::getAppId, dto.getAppIdList()));
+        roleResourceRelService.removeByRoleIdAndAppIds(dto.getRoleId(), dto.getAppIdList());
+        return super.remove(QueryWrapper.create().eq(RoleAppRel::getRoleId, dto.getRoleId()).in(RoleAppRel::getAppId, dto.getAppIdList()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByRoleIds(Collection<? extends Serializable> roleIdList) {
+        if (CollUtil.isEmpty(roleIdList)) {
+            return;
+        }
+        super.remove(QueryWrapper.create().in(RoleAppRel::getRoleId, roleIdList));
     }
 
     @Override
@@ -54,12 +66,5 @@ public class RoleAppRelServiceImpl extends SuperServiceImpl<RoleAppRelMapper, Ro
         return super.saveBatch(saveList);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void removeByRoleIds(Collection<? extends Serializable> roleIdList) {
-        if (CollUtil.isEmpty(roleIdList)) {
-            return;
-        }
-        super.remove(QueryWrapper.create().in(RoleAppRel::getRoleId, roleIdList));
-    }
+
 }

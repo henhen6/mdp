@@ -1,6 +1,7 @@
 package top.mddata.console.permission.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -149,5 +150,15 @@ public class ResourceMenuQuery extends ExtraParams implements Serializable {
 
     @Schema(description = "默认排序 true=按weight升序， false=按菜单类型升序后，在按weight升序", name="name", title="title")
     private Boolean defSort;
+
+
+    @NotNull(message = "角色ID不能为空", groups = TreeByRoleId.class)
+    @Schema(description = "角色ID")
+    private Long roleId;
+
+    public interface TreeByRoleId {
+
+    }
+
 
 }

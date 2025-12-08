@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.organization.service.UserRoleRelService;
 import top.mddata.console.permission.entity.Role;
 import top.mddata.console.permission.mapper.RoleMapper;
@@ -39,7 +40,10 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
         Role entity = BeanUtil.toBean(save, getEntityClass());
         entity.setId(null);
         entity.setTemplateRole(true);
-//        ArgumentAssert.isFalse(roleService.checkCode(entity.getCode(), null), "角色编码重复");
+        ArgumentAssert.isFalse(roleService.checkCode(entity.getRoleCategory(), entity.getCode(), null), "角色编码重复");
+        if (RoleCategoryEnum.PERM_SET.eq(entity.getRoleCategory())) {
+            ArgumentAssert.isFalse(roleService.checkCategoryAndOrgNature(entity.getRoleCategory(), entity.getOrgNature(), null), "当前组织性质下，已存在权限集合");
+        }
         return entity;
     }
 
@@ -47,7 +51,10 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
     protected Role updateBefore(Object updateDto) {
         Role entity = BeanUtil.toBean(updateDto, getEntityClass());
         entity.setTemplateRole(true);
-//        ArgumentAssert.isFalse(roleService.checkCode(entity.getCode(), entity.getId()), "角色编码重复");
+        ArgumentAssert.isFalse(roleService.checkCode(entity.getRoleCategory(), entity.getCode(), entity.getId()), "角色编码重复");
+        if (RoleCategoryEnum.PERM_SET.eq(entity.getRoleCategory())) {
+            ArgumentAssert.isFalse(roleService.checkCategoryAndOrgNature(entity.getRoleCategory(), entity.getOrgNature(), entity.getId()), "当前组织性质下，已存在权限集合");
+        }
         return entity;
     }
 

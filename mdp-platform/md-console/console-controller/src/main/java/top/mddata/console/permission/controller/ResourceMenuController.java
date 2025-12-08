@@ -1,6 +1,7 @@
 package top.mddata.console.permission.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,8 +23,13 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.tree.MyTreeBuilder;
+import top.mddata.base.utils.ContextUtil;
+import top.mddata.common.enumeration.BooleanEnum;
+import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.permission.dto.ResourceMenuDto;
 import top.mddata.console.permission.entity.ResourceMenu;
+import top.mddata.console.permission.entity.Role;
+import top.mddata.console.permission.entity.RoleResourceRel;
 import top.mddata.console.permission.query.ResourceMenuQuery;
 import top.mddata.console.permission.service.ResourceMenuService;
 import top.mddata.console.permission.vo.ResourceMenuVo;
@@ -118,8 +124,57 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
         echoService.action(resultList);
 
         // 优先按：menuType（字符串字典序升序）, 然后在按：weight（数值升序）
+        MyTreeBuilder<Long, ResourceMenuVo> builder = MyTreeBuilder.of(DEF_PARENT_ID, ResourceMenuVo::new).append(resultList);
+        if (query.getDefSort() != null && !query.getDefSort()) {
+            builder.setSortComparator(
+                    Comparator.comparing((Map.Entry<Long, ResourceMenuVo> entry) -> entry.getValue().getMenuType())
+                            .thenComparing(entry -> entry.getValue().getWeight())
+            );
+        }
+        ResourceMenuVo root = builder.build();
 
+        return R.success(root.getChildren());
+    }
 
+    /**
+     * 查询该角色能授权的可用资源 （即 同组织性质下的权限集合角色）
+     * 并将结果构建为树结构返回
+     */
+    @Operation(summary = "按照树结构查询系统的所有资源", description = "按照树结构查询系统的所有资源")
+    @PostMapping("/treeByRoleId")
+    @RequestLog("按照树结构查询系统的所有资源")
+    public R<List<ResourceMenuVo>> treeByRoleId(@Validated(ResourceMenuQuery.TreeByRoleId.class) @RequestBody ResourceMenuQuery query) {
+
+        QueryWrapper queryWrapper = QueryWrapper.create().eq(ResourceMenu::getAppId, query.getAppId());
+
+        /*
+        QueryWrapper inWrapper = QueryWrapper.create().select(RoleResourceRel::getResourceId).from(RoleResourceRel.class)
+                .innerJoin(Role.class).on(RoleResourceRel::getRoleId, Role::getId)
+                .eq(RoleResourceRel::getAppId, query.getAppId())
+                .eq(Role::getRoleCategory, RoleCategoryEnum.PERM_SET.getCode())
+                .eq(Role::getOrgNature, ContextUtil.getCurrentCompanyNature())
+                .eq(Role::getTemplateRole, BooleanEnum.TRUE.getInteger())
+                .eq(Role::getState, BooleanEnum.TRUE.getInteger());
+        queryWrapper.in(ResourceMenu::getId, inWrapper);
+        */
+
+        QueryWrapper existsWrapper = QueryWrapper.create().select("1").from(RoleResourceRel.class)
+                .innerJoin(Role.class).on(RoleResourceRel::getRoleId, Role::getId)
+                .where(ResourceMenu::getId).eq(RoleResourceRel::getResourceId)  // 关联外层表（ResourceMenu）的 id 与子查询的 resource_id
+                .eq(RoleResourceRel::getAppId, query.getAppId())
+                .eq(Role::getRoleCategory, RoleCategoryEnum.PERM_SET.getCode())
+                .eq(Role::getOrgNature, ContextUtil.getCurrentCompanyNature())
+                .eq(Role::getTemplateRole, BooleanEnum.TRUE.getInteger())
+                .eq(Role::getState, BooleanEnum.TRUE.getInteger());
+        queryWrapper.where(QueryMethods.exists(existsWrapper));
+
+        queryWrapper.orderBy(ResourceMenu::getWeight, true);
+        List<ResourceMenu> list = superService.list(queryWrapper);
+        List<ResourceMenuVo> resultList = BeanUtil.copyToList(list, ResourceMenuVo.class);
+        // 回显 @Echo 标记的字段
+        echoService.action(resultList);
+
+        // 优先按：menuType（字符串字典序升序）, 然后在按：weight（数值升序）
         MyTreeBuilder<Long, ResourceMenuVo> builder = MyTreeBuilder.of(DEF_PARENT_ID, ResourceMenuVo::new).append(resultList);
         if (query.getDefSort() != null && !query.getDefSort()) {
             builder.setSortComparator(

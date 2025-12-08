@@ -89,7 +89,7 @@
                         inner join mdc_role r on r.id = rar.role_id
                         where r.role_category  = #{roleCategory} and r.org_nature = #{orgNature} and r.template_role = #{templateRole} and r.state = 1
                         )
-
+                        and not exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId} )
                     </otherwise>
                 </choose>
             </when>

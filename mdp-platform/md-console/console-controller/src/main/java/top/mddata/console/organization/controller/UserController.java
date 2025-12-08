@@ -192,39 +192,19 @@ public class UserController extends SuperController<UserService, User> {
         User entity = BeanUtil.toBean(params.getModel(), User.class);
         UserQuery query = params.getModel();
         QueryWrapper wrapper;
-        if (query.getHasUser() == null || !query.getHasUser()) {
-            // 相当于 not exists 查询
-            /*
-            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
-                    .leftJoin(UserRoleRel.class)
-                    .on(wrap -> wrap.where(User::getId).eq(UserRoleRel::getUserId).and(UserRoleRel::getRoleId).eq(query.getRoleId()))
-                    .isNull(UserRoleRel::getUserId);
-            */
-            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-            QueryWrapper userRoleWrapper = QueryWrapper.create().select("1").from(UserRoleRel.class).where(UserRoleRel::getUserId).eq(User::getId).eq(UserRoleRel::getRoleId, query.getRoleId());
-            wrapper.where(QueryMethods.notExists(userRoleWrapper));
-        } else {
-            // 相当于 exists 查询
-            /*
-            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
-                    .innerJoin(UserRoleRel.class)
-                    .on(UserRoleRel::getUserId, User::getId)
-                    .eq(UserRoleRel::getRoleId, query.getRoleId());
-             */
-            /*
-            select * from mdc_user u
-            where EXISTS ( select 1 from mdc_user_role_rel ur where ur.user_id = u.id and ur.role_id = 1)
-            */
+        if (query.getHasUser() != null && query.getHasUser()) {
             wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
             QueryWrapper userRoleWrapper = QueryWrapper.create().select("1").from(UserRoleRel.class).where(UserRoleRel::getUserId).eq(User::getId).eq(UserRoleRel::getRoleId, query.getRoleId());
             wrapper.where(QueryMethods.exists(userRoleWrapper));
+        } else {
+            wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+            QueryWrapper userRoleWrapper = QueryWrapper.create().select("1").from(UserRoleRel.class).where(UserRoleRel::getUserId).eq(User::getId).eq(UserRoleRel::getRoleId, query.getRoleId());
+            wrapper.where(QueryMethods.notExists(userRoleWrapper));
         }
-
 
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, UserVo.class);
         return R.success(page);
-
     }
 }

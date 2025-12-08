@@ -6,6 +6,7 @@ import top.mddata.console.permission.entity.RoleResourceRel;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,4 +36,11 @@ public interface RoleResourceRelService extends SuperService<RoleResourceRel> {
      * @param roleIdList 角色ID
      */
     void removeByRoleIds(Collection<? extends Serializable> roleIdList);
+
+    /**
+     * 根据角色ID和应用ID 批量删除角色资源关系
+     * @param roleId 角色ID
+     * @param appIdList 应用ID
+     */
+    void removeByRoleIdAndAppIds(Long roleId, List<Long> appIdList);
 }

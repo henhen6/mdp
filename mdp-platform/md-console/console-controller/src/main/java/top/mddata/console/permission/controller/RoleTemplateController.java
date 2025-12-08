@@ -106,7 +106,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        wrapper.eq(Role::getTemplateRole, true).in(Role::getRoleCategory, RoleCategoryEnum.ADMIN_ROLE.getCode(), RoleCategoryEnum.PERM_SET.getCode());
+        wrapper.eq(Role::getTemplateRole, true).in(Role::getRoleCategory, RoleCategoryEnum.ADMIN_ROLE.getCode(), RoleCategoryEnum.PERM_SET.getCode()).orderBy(Role::getCreatedAt, false);
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         echoService.action(listVo);
         return R.success(listVo);
