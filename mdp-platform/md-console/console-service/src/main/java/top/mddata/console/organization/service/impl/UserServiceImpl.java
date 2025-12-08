@@ -215,9 +215,6 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         return flag;
     }
 
-    public static void main(String[] args) {
-        System.out.println(SecureUtil.sha256("admin" + "s8x2k9d3"));
-    }
 
     @Override
     @Transactional(readOnly = true)

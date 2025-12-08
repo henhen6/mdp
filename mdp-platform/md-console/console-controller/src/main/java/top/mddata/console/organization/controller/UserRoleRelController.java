@@ -15,8 +15,6 @@ import top.mddata.common.entity.UserRoleRel;
 import top.mddata.console.organization.dto.UserRoleRelDto;
 import top.mddata.console.organization.service.UserRoleRelService;
 
-import java.util.List;
-
 /**
  * 用户角色关联 控制层。
  *

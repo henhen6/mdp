@@ -1,7 +1,6 @@
 package top.mddata.console.permission.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

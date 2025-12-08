@@ -18,7 +18,6 @@ import top.mddata.base.mybatisflex.utils.BeanPageUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.ContextUtil;
 import top.mddata.common.constant.FileObjectType;
-import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.facade.FileFacade;
