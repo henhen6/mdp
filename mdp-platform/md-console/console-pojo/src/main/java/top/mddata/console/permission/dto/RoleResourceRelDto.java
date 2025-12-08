@@ -41,7 +41,7 @@ public class RoleResourceRelDto implements Serializable {
      * 编码
      */
     @Schema(description = "应用-资源集合")
-    @NotNull
+    @NotNull(message = "应用资源集合不能为空")
     private Map<Long, List<Long>> appResourceMap;
 
     @Schema(description = "批量操作")

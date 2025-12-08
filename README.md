@@ -28,6 +28,9 @@ MDP支持SSO、Oauth2等多种主流的单点登录协议。
 - 控制台：http://console.mddata.top
 - 演示环境，账号密码：ops_admin/admin
 
+## 联系作者
+- 微信：hhenhen
+
 ## 主要功能
 
 - 工作台
