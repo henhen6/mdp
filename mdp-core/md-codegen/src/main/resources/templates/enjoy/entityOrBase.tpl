@@ -29,10 +29,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 #else
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 #if(entityConfig.getSuperClass())
 import lombok.EqualsAndHashCode;
@@ -52,11 +49,7 @@ import lombok.EqualsAndHashCode;
 @Data(staticConstructor = "create")
 @EqualsAndHashCode(callSuper = true)
 #else
-@Data
-@Builder
 @Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
 #if(entityConfig.getSuperClass())
 @EqualsAndHashCode(callSuper = true)
 #end
@@ -66,7 +59,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel("#(table.getSwaggerComment())")
 #end
 #if(withSwagger && swaggerVersion.getName() == "DOC")
-@Schema(description = "#(table.getSwaggerComment())")
+@Schema(description = "#(table.getSwaggerComment())Entity")
 #end
 #if(!isBase)
 #(table.buildTableAnnotation())

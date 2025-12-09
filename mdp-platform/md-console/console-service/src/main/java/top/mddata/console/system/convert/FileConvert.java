@@ -1,4 +1,4 @@
-package top.mddata.console.system.utils;
+package top.mddata.console.system.convert;
 
 import org.dromara.x.file.storage.core.FileInfo;
 import org.mapstruct.Mapper;
@@ -35,7 +35,7 @@ public interface FileConvert extends MapStructMethod {
         return FileTypeEnum.getByExtension(ext).getCode();
     }
 
-    @Mapping(target = "metadata", qualifiedBy = ParseMap.class)
+    @Mapping(target = "", qualifiedBy = ParseMap.class)
     @Mapping(target = "userMetadata", qualifiedBy = ParseMap.class)
     @Mapping(target = "thMetadata", qualifiedBy = ParseMap.class)
     @Mapping(target = "thUserMetadata", qualifiedBy = ParseMap.class)
@@ -48,6 +48,7 @@ public interface FileConvert extends MapStructMethod {
 
 
     @Mapping(source = "ext", target = "fileType", qualifiedBy = ExtToFileType.class)
+//    @Mapping(source = File.Fields.ext, target = "fileType", qualifiedBy = ExtToFileType.class)
     @Mapping(target = "metadata", qualifiedBy = ToJson.class)
     @Mapping(target = "userMetadata", qualifiedBy = ToJson.class)
     @Mapping(target = "thMetadata", qualifiedBy = ToJson.class)

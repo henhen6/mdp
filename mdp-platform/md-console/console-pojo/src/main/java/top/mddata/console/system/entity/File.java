@@ -4,6 +4,7 @@ import com.mybatisflex.annotation.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.console.system.entity.base.FileBase;
 
 /**
@@ -17,6 +18,7 @@ import top.mddata.console.system.entity.base.FileBase;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Table(FileBase.TABLE_NAME)
+@FieldNameConstants
 public class File extends FileBase {
 
 }

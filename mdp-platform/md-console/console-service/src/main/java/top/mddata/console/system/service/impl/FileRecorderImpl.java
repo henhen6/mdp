@@ -14,7 +14,7 @@ import top.mddata.base.utils.StrPool;
 import top.mddata.console.system.entity.File;
 import top.mddata.console.system.mapper.FileMapper;
 import top.mddata.console.system.service.FilePartService;
-import top.mddata.console.system.utils.FileConvert;
+import top.mddata.console.system.convert.FileConvert;
 
 import java.util.List;
 

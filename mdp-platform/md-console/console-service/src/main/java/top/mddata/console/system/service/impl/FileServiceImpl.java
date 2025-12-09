@@ -29,7 +29,7 @@ import top.mddata.console.system.enumeration.FileTypeEnum;
 import top.mddata.console.system.mapper.FileMapper;
 import top.mddata.console.system.properties.FileProperties;
 import top.mddata.console.system.service.FileService;
-import top.mddata.console.system.utils.FileConvert;
+import top.mddata.console.system.convert.FileConvert;
 import top.mddata.console.system.vo.FileVo;
 
 import java.time.LocalDate;

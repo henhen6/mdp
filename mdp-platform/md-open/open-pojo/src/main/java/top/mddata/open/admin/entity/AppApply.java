@@ -1,11 +1,12 @@
 package top.mddata.open.admin.entity;
 
 import com.mybatisflex.annotation.Table;
-import top.mddata.open.admin.entity.base.AppApplyBase;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
+import top.mddata.open.admin.entity.base.AppApplyBase;
 
 /**
  * 应用申请实体类。
@@ -19,5 +20,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(AppApplyBase.TABLE_NAME)
+@FieldNameConstants
 public class AppApply extends AppApplyBase {
 }

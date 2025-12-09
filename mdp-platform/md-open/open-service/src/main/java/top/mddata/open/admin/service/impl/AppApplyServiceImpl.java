@@ -84,4 +84,25 @@ public class AppApplyServiceImpl extends SuperServiceImpl<AppApplyMapper, AppApp
         }
         return true;
     }
+
+
+    @Override
+    protected AppApply saveBefore(Object save) {
+        return super.saveBefore(save);
+    }
+
+    @Override
+    protected void saveAfter(Object save, AppApply entity) {
+        super.saveAfter(save, entity);
+    }
+
+    @Override
+    protected AppApply updateBefore(Object updateDto) {
+        return super.updateBefore(updateDto);
+    }
+
+    @Override
+    protected void updateAfter(Object updateDto, AppApply entity) {
+        super.updateAfter(updateDto, entity);
+    }
 }

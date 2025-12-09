@@ -50,7 +50,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel("#(table.getSwaggerComment())")
 #end
 #if(withSwagger && swaggerVersion.getName() == "DOC")
-@Schema(description = "#(table.getSwaggerComment())")
+@Schema(description = "#(table.getSwaggerComment())Vo")
 #end
 #(table.buildTableAnnotation())
 public class #(voClassName)#(voConfig.buildExtends(globalConfig, table))#(voConfig.buildImplements(globalConfig)) {

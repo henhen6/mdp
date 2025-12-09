@@ -3,7 +3,7 @@ package top.mddata;
 import org.dromara.x.file.storage.core.FileInfo;
 import org.junit.jupiter.api.Test;
 import top.mddata.console.system.entity.File;
-import top.mddata.console.system.utils.FileConvert;
+import top.mddata.console.system.convert.FileConvert;
 
 import java.util.HashMap;
 import java.util.Map;

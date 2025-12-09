@@ -50,7 +50,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel("#(table.getSwaggerComment())")
 #end
 #if(withSwagger && swaggerVersion.getName() == "DOC")
-@Schema(description = "#(table.getSwaggerComment())")
+@Schema(description = "#(table.getSwaggerComment())Query")
 #end
 public class #(queryClassName)#(queryConfig.buildExtends(globalConfig))#(queryConfig.buildImplements(globalConfig)) {
 

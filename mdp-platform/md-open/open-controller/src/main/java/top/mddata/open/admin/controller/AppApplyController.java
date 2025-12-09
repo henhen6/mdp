@@ -36,7 +36,7 @@ import java.util.List;
  */
 @RestController
 @Validated
-@Tag(name = "应用申请")
+@Tag(name = "应用审核")
 @RequestMapping("/admin/appApply")
 @RequiredArgsConstructor
 public class AppApplyController extends SuperController<AppApplyService, AppApply> {

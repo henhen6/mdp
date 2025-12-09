@@ -9,11 +9,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 应用申请 DTO（写入方法入参）。
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "应用申请")
+@FieldNameConstants
 public class AppApplyDto implements Serializable {
 
     @Serial
@@ -78,36 +80,7 @@ public class AppApplyDto implements Serializable {
     /**
      * 资质文件
      */
-    @Size(max = 255, message = "资质文件长度不能超过{max}")
     @Schema(description = "资质文件")
-    private String credentialFile;
-
-    /**
-     * 审核状态
-     * [0-待提交 1-待审批 2-通过 99-退回]
-     * 
-     */
-    @NotNull(message = "请填写审核状态")
-    @Schema(description = "审核状态")
-    private Integer auditStatus;
-
-    /**
-     * 审核时间
-     */
-    @Schema(description = "审核时间")
-    private LocalDateTime auditAt;
-
-    /**
-     * 提交时间
-     */
-    @Schema(description = "提交时间")
-    private LocalDateTime submissionAt;
-
-    /**
-     * 审核意见
-     */
-    @Size(max = 255, message = "审核意见长度不能超过{max}")
-    @Schema(description = "审核意见")
-    private String reviewComments;
+    private List<Long> credentialFile;
 
 }

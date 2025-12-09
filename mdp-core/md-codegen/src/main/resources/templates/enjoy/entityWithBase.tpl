@@ -57,7 +57,7 @@ import lombok.experimental.Accessors;
 @ApiModel("#(table.getSwaggerComment())")
 #end
 #if(withSwagger && swaggerVersion.getName() == "DOC")
-@Schema(description = "#(table.getSwaggerComment())")
+@Schema(description = "#(table.getSwaggerComment())EntityBase")
 #end
 #if(!isBase)
 #(table.buildTableAnnotation())
