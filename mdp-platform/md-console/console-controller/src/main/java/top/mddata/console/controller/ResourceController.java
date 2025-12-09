@@ -15,11 +15,11 @@ import top.mddata.common.entity.User;
 import top.mddata.common.properties.IgnoreProperties;
 import top.mddata.console.organization.service.UserService;
 import top.mddata.console.permission.service.ResourceMenuService;
+import top.mddata.console.permission.service.RoleService;
 import top.mddata.console.permission.vo.ResourceMenuVo;
+import top.mddata.console.permission.vo.UserAccessInfoVo;
 import top.mddata.console.permission.vo.UserinfoVo;
-import top.mddata.console.permission.vo.VisibleResourceVO;
 
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -29,11 +29,13 @@ import java.util.List;
 @Tag(name = "资源-菜单-应用")
 public class ResourceController {
     private final ResourceMenuService resourceMenuService;
+    private final RoleService roleService;
     private final UserService userService;
     private final IgnoreProperties ignoreProperties;
 
     /**
      * 查询指定应用所有的菜单
+     * 无需登录
      */
     @Operation(summary = "查询指定应用所有的菜单", description = "查询指定应用所有的菜单")
     @GetMapping("/anyUser/findAllMenu")
@@ -42,21 +44,35 @@ public class ResourceController {
     }
 
     /**
+     * 查询指定应用所有的菜单
+     * 需要登录
+     */
+    @Operation(summary = "查询用户可用的所有菜单路由", description = "查询用户可用的所有菜单路由")
+    @GetMapping("/anyone/findUserRouter")
+    public R<List<ResourceMenuVo>> findUserRouter(@RequestParam(value = "appId") Long appId) {
+        long userId = StpUtil.getLoginIdAsLong();
+        return R.success(resourceMenuService.findUserRouter(appId, userId));
+    }
+
+    /**
      * 查询用户可用的所有资源
+     * 需要登录
      */
     @Operation(summary = "查询用户可用的所有资源", description = "根据员工ID查询员工在某个应用下可用的资源")
-    @GetMapping("/anyone/visible/resource")
-    public R<VisibleResourceVO> visible(@RequestParam(value = "appId") Long appId) {
-        return R.success(VisibleResourceVO.builder()
+    @GetMapping("/anyone/findUserResource")
+    public R<UserAccessInfoVo> findUserResource(@RequestParam(value = "appId") Long appId) {
+        long userId = StpUtil.getLoginIdAsLong();
+        return R.success(UserAccessInfoVo.builder()
                 .enabled(ignoreProperties.getAuthEnabled())
                 .caseSensitive(ignoreProperties.getCaseSensitive())
-                .roleList(Collections.singletonList("*"))
-                .resourceList(Collections.singletonList("*"))
+                .roleList(roleService.findUserRoleCodes(userId))
+                .resourceList(resourceMenuService.findUserResourceCode(appId, userId))
                 .build());
     }
 
     /**
      * 查询当前请求中的用户信息
+     * 需要登录
      */
     @Operation(summary = "查询当前请求中的用户信息", description = "查询当前请求中的用户信息")
     @GetMapping("/anyone/getUserinfo")

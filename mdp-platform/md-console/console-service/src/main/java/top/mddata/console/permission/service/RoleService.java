@@ -3,6 +3,8 @@ package top.mddata.console.permission.service;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.permission.entity.Role;
 
+import java.util.List;
+
 /**
  * 角色 服务层。
  *
@@ -10,6 +12,13 @@ import top.mddata.console.permission.entity.Role;
  * @since 2025-11-12 16:27:16
  */
 public interface RoleService extends SuperService<Role> {
+    /**
+     * 获取用户角色编码
+     * @param userId 用户ID
+     * @return 角色编码
+     */
+    List<String> findUserRoleCodes(Long userId);
+
     /**
      * 检测角色编码是否已存在
      * @param roleCategory 角色类别

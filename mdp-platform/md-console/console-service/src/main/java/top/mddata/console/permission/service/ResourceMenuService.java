@@ -28,6 +28,21 @@ public interface ResourceMenuService extends SuperService<ResourceMenu> {
     List<ResourceMenuVo> findAllMenu(Long appId);
 
     /**
+     * 查询用户在指定应用下 拥有的资源编码
+     * @param appId 应用ID
+     * @param userId 用户ID
+     * @return 资源编码
+     */
+    List<String> findUserResourceCode(Long appId, Long userId);
+    /**
+     * 获取用户在指定应用下 拥有的路由
+     * @param appId 应用ID
+     * @param userId 用户ID
+     * @return 路由
+     */
+    List<ResourceMenuVo> findUserRouter(Long appId, Long userId);
+
+    /**
      * 检查菜单编码是否重复
      *
      * @param appId 应用ID

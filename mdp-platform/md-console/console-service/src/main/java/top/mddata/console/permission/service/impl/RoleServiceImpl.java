@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.organization.service.UserRoleRelService;
@@ -20,6 +21,7 @@ import top.mddata.console.permission.service.RoleService;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 角色 服务层实现。
@@ -35,6 +37,16 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
     private final RoleResourceRelService roleResourceRelService;
     private final RoleAppRelService roleAppRelService;
     private final UserRoleRelService userRoleRelService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> findUserRoleCodes(Long userId) {
+        QueryWrapper wrapper = QueryWrapper.create().select().from(Role.class)
+                .innerJoin(UserRoleRel.class).on(Role::getId, UserRoleRel::getRoleId).eq(Role::getState, true)
+                .where(UserRoleRel::getUserId).eq(userId);
+        List<Role> list = list(wrapper);
+        return list.stream().map(Role::getCode).toList();
+    }
 
     @Override
     @Transactional(readOnly = true)

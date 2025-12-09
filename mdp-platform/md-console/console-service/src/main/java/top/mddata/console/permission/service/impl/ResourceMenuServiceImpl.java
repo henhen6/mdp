@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.baidu.fsg.uid.UidGenerator;
+import com.mybatisflex.core.query.QueryColumn;
 import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,12 @@ import top.mddata.base.utils.BeanPlusUtil;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.base.utils.StrPool;
 import top.mddata.common.constant.console.AdminConstant;
+import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.permission.MenuTypeEnum;
 import top.mddata.console.permission.dto.ResourceMenuDto;
 import top.mddata.console.permission.entity.ResourceMenu;
+import top.mddata.console.permission.entity.Role;
+import top.mddata.console.permission.entity.RoleResourceRel;
 import top.mddata.console.permission.mapper.ResourceMenuMapper;
 import top.mddata.console.permission.service.ResourceMenuService;
 import top.mddata.console.permission.vo.ResourceMenuVo;
@@ -66,6 +70,52 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
         });
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> findUserResourceCode(Long appId, Long userId) {
+        Iterable<QueryColumn> queryColumns = QueryMethods.defaultColumns(ResourceMenu.class);
+        // 将过滤条件移到 on 中，可以减少 join 数据量，提高查询效率
+        QueryWrapper queryWrapper = QueryWrapper.create().select(queryColumns).from(ResourceMenu.class)
+                .innerJoin(RoleResourceRel.class).on(ResourceMenu::getId, RoleResourceRel::getResourceId).eq(RoleResourceRel::getAppId, appId)
+                .innerJoin(Role.class).on(RoleResourceRel::getRoleId, Role::getId).eq(Role::getState, true)
+                .innerJoin(UserRoleRel.class).on(Role::getId, UserRoleRel::getRoleId).eq(UserRoleRel::getUserId, userId)
+                .where(ResourceMenu::getAppId).eq(appId)
+                .eq(ResourceMenu::getState, true)
+                .orderBy(ResourceMenu::getWeight, true);
+
+        List<ResourceMenu> resourceList = list(queryWrapper);
+
+        return resourceList.stream().map(ResourceMenu::getCode).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResourceMenuVo> findUserRouter(Long appId, Long userId) {
+        Iterable<QueryColumn> queryColumns = QueryMethods.defaultColumns(ResourceMenu.class);
+        // 将过滤条件移到 on 中，可以减少 join 数据量，提高查询效率
+        QueryWrapper queryWrapper = QueryWrapper.create().select(queryColumns).from(ResourceMenu.class)
+                .innerJoin(RoleResourceRel.class).on(ResourceMenu::getId, RoleResourceRel::getResourceId).eq(RoleResourceRel::getAppId, appId)
+                .innerJoin(Role.class).on(RoleResourceRel::getRoleId, Role::getId).eq(Role::getState, true)
+                .innerJoin(UserRoleRel.class).on(Role::getId, UserRoleRel::getRoleId).eq(UserRoleRel::getUserId, userId)
+                .where(ResourceMenu::getAppId).eq(appId)
+                .in(ResourceMenu::getMenuType, MenuTypeEnum.DIR.getCode(), MenuTypeEnum.MENU.getCode(), MenuTypeEnum.INNER_HREF.getCode(), MenuTypeEnum.OUTER_HREF.getCode())
+                .eq(ResourceMenu::getState, true)
+                .orderBy(ResourceMenu::getWeight, true);
+
+        List<ResourceMenu> menuList = list(queryWrapper);
+        List<ResourceMenuVo> resultList = BeanUtil.copyToList(menuList, ResourceMenuVo.class);
+
+        if (CollUtil.isEmpty(resultList)) {
+            return Collections.emptyList();
+        }
+        // 2 转换树结构
+        List<ResourceMenuVo> menuTreeList = MyTreeUtil.buildTreeEntity(resultList, ResourceMenuVo::new);
+
+        // 3 构造前端需要的vueRouter数据，此方法可以考虑在前端做
+        forEachTree(menuTreeList, 1, null);
+        return menuTreeList;
+    }
+
     /**
      * 1. 管理员拥有全部菜单；普通用户根据角色进行查询；
      * 2. 构造树结构
@@ -88,7 +138,7 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
         if (CollUtil.isEmpty(resultList)) {
             return Collections.emptyList();
         }
-        // 2 转换树结构， hutool的工具类性能好一些
+        // 2 转换树结构
         List<ResourceMenuVo> menuTreeList = MyTreeUtil.buildTreeEntity(resultList, ResourceMenuVo::new);
 
         // 3 构造前端需要的vueRouter数据，此方法可以考虑在前端做

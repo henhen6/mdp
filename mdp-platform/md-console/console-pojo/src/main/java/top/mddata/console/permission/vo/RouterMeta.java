@@ -71,6 +71,7 @@ public class RouterMeta implements Serializable {
     /** 用于配置当前激活的菜单，有时候页面没有显示在菜单内，需要激活父级菜单时使用。 */
     private String activePath;
     /**  用于配置页面是否固定标签页，固定后页面不可关闭。 */
+    @Deprecated
     private Boolean affixTab;
     /**
      * 用于配置内嵌页面的 iframe 地址，设置后会在当前页面内嵌对应的页面。

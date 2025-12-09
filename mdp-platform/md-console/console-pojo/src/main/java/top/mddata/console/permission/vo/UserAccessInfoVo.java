@@ -13,12 +13,11 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 拥有拥有的权限资源
+ * 用户访问信息类
  *
  * @author henhen6
  * @date 2020/11/28 12:15 下午
  */
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,8 +25,8 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
 @Builder
-@Schema(title = "VisibleResourceVO", description = "权限资源")
-public class VisibleResourceVO implements Serializable {
+@Schema(title = "UserAccessInfoVo", description = "用户访问信息类")
+public class UserAccessInfoVo implements Serializable {
     @Schema(description = "是否启用接口/按钮权限")
     private Boolean enabled;
     @Schema(description = "按钮权限是否区分大小写")
