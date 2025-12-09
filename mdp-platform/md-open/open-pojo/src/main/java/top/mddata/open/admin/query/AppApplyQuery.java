@@ -71,7 +71,7 @@ public class AppApplyQuery extends ExtraParams implements Serializable {
      * 资质文件
      */
     @Schema(description = "资质文件")
-    private String credentialFile;
+    private Long credentialFile;
 
     /**
      * 审核状态

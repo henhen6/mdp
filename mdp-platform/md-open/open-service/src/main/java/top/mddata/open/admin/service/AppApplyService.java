@@ -1,6 +1,8 @@
 package top.mddata.open.admin.service;
 
 import top.mddata.base.mvcflex.service.SuperService;
+import top.mddata.common.dto.IdDto;
+import top.mddata.open.admin.dto.AppApplyDto;
 import top.mddata.open.admin.dto.AppApplyReviewDto;
 import top.mddata.open.admin.entity.AppApply;
 
@@ -18,4 +20,18 @@ public interface AppApplyService extends SuperService<AppApply> {
      * @return 是否成功
      */
     Boolean review(AppApplyReviewDto dto);
+
+    /**
+     * 提交申请
+     * @param dto 申请参数
+     * @return 申请ID
+     */
+    Long submit(AppApplyDto dto);
+
+    /**
+     * 撤回申请
+     * @param dto 撤回参数
+     * @return  申请ID
+     */
+    Long withdraw(IdDto dto);
 }

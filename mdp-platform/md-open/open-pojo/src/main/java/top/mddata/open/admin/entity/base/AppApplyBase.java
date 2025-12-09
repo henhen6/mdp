@@ -1,17 +1,14 @@
 package top.mddata.open.admin.entity.base;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.entity.SuperEntity;
 
 import java.io.Serial;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-import lombok.EqualsAndHashCode;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 应用申请实体类。
@@ -20,11 +17,9 @@ import lombok.EqualsAndHashCode;
  * @since 2025-11-27 03:31:55
  */
 @Data
-@Builder
 @Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@FieldNameConstants
 public class AppApplyBase extends SuperEntity<Long> implements Serializable {
     /** 表名称 */
     public static final String TABLE_NAME = "mdo_app_apply";
@@ -60,12 +55,12 @@ public class AppApplyBase extends SuperEntity<Long> implements Serializable {
     /**
      * 资质文件
      */
-    private String credentialFile;
+    private Long credentialFile;
 
     /**
      * 审核状态
      * [0-待提交 1-待审批 2-通过 99-退回]
-     * 
+     *
      */
     private Integer auditStatus;
 

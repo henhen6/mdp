@@ -46,19 +46,12 @@ public class AppDevInfoDto implements Serializable {
     private String homeUrl;
 
     /**
-     * 是否接收消息推送
-     */
-    @NotNull(message = "请填写是否接收消息推送")
-    @Schema(description = "是否接收消息推送")
-    private Boolean isPush;
-
-    /**
      * 是否显示
      * 是否在我的应用显示该应用，若设置为false，就算有权限访问，该应用也不会出现在我的应用列表
      */
     @NotNull(message = "请填写是否显示")
     @Schema(description = "是否显示")
-    private Boolean isShow;
+    private Boolean show;
 
     /**
      * 是否公开
@@ -68,22 +61,6 @@ public class AppDevInfoDto implements Serializable {
     @Schema(description = "是否公开")
     private Boolean isPublic;
 
-
-    /**
-     * 是否接收单点注销消息推送
-     */
-    @NotNull(message = "请填写是否接收单点注销消息推送")
-    @Schema(description = "是否接收单点注销消息推送")
-    private Boolean isSlo;
-
-    /**
-     * 允许授权的URL
-     * 多个用逗号分割
-     */
-    @Size(max = 5120, message = "允许授权的URL长度不能超过{max}")
-    @Schema(description = "允许授权的URL")
-    private String allowUrl;
-
     /**
      * 允许的IP
      */
@@ -92,11 +69,34 @@ public class AppDevInfoDto implements Serializable {
     private String allowIp;
 
     /**
+     * 是否接收消息推送
+     */
+    @NotNull(message = "请填写是否接收消息推送")
+    @Schema(description = "是否接收消息推送")
+    private Boolean ssoPush;
+
+    /**
+     * 是否接收单点注销消息推送
+     */
+    @NotNull(message = "请填写是否接收单点注销消息推送")
+    @Schema(description = "是否接收单点注销消息推送")
+    private Boolean ssoSlo;
+
+
+    /**
      * 接收消息推送的地址
      */
     @Size(max = 512, message = "接收消息推送的地址长度不能超过{max}")
     @Schema(description = "接收消息推送的地址")
-    private String pushUrl;
+    private String ssoPushUrl;
+
+    /**
+     * 允许授权的URL
+     * 多个用逗号分割
+     */
+    @Size(max = 5120, message = "允许授权的URL长度不能超过{max}")
+    @Schema(description = "允许授权的URL")
+    private String ssoAllowUrl;
 
     /**
      * 允许的重定向uri

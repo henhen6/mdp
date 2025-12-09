@@ -3,6 +3,7 @@ package top.mddata.open.admin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baidu.fsg.uid.UidGenerator;
+import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,15 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.constant.FileObjectType;
+import top.mddata.common.dto.IdDto;
 import top.mddata.common.enumeration.AuditStatusEnum;
 import top.mddata.console.system.dto.CopyFilesDto;
+import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.facade.FileFacade;
+import top.mddata.open.admin.dto.AppApplyDto;
 import top.mddata.open.admin.dto.AppApplyReviewDto;
 import top.mddata.open.admin.entity.App;
 import top.mddata.open.admin.entity.AppApply;
 import top.mddata.open.admin.mapper.AppApplyMapper;
 import top.mddata.open.admin.service.AppApplyService;
 import top.mddata.open.admin.service.AppService;
+import top.mddata.open.convert.AppApplyConvert;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -37,6 +42,55 @@ public class AppApplyServiceImpl extends SuperServiceImpl<AppApplyMapper, AppApp
     private final AppService appService;
     private final FileFacade fileFacade;
     private final UidGenerator uidGenerator;
+    private final AppApplyConvert appApplyConvert;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long submit(AppApplyDto dto) {
+        AppApply entity = null;
+        boolean isSave = false;
+        if (dto.getId() != null) {
+            entity = UpdateEntity.of(getEntityClass());
+            appApplyConvert.copyTargetProperties(dto, entity);
+        } else {
+            entity = appApplyConvert.toSource(dto);
+            entity.setId(uidGenerator.getUid());
+            isSave = true;
+        }
+        entity.setAuditStatus(AuditStatusEnum.PENDING.getCode());
+        entity.setSubmissionAt(LocalDateTime.now());
+        // 这里可以直接用当前数据ID，也可以重新生成一个唯一id
+        entity.setLogo(entity.getId());
+        entity.setCredentialFile(entity.getId());
+
+        if (isSave) {
+            save(entity);
+        } else {
+            updateById(entity);
+        }
+
+        // 关联附件
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getLogo())
+                .objectType(FileObjectType.Open.APP_APPLY_LOGO)
+                .build().setKeepFileIds(dto.getLogo()));
+
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getCredentialFile())
+                .objectType(FileObjectType.Open.APP_APPLY_CREDENTIAL_FILE)
+                .build().addKeepFileIds(dto.getCredentialFile()));
+        return entity.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long withdraw(IdDto dto) {
+        AppApply appApply = new AppApply();
+        appApply.setId(dto.getId());
+        appApply.setAuditStatus(AuditStatusEnum.INITIALIZED.getCode());
+        updateById(appApply);
+        return dto.getId();
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -88,21 +142,58 @@ public class AppApplyServiceImpl extends SuperServiceImpl<AppApplyMapper, AppApp
 
     @Override
     protected AppApply saveBefore(Object save) {
-        return super.saveBefore(save);
+        AppApply entity = appApplyConvert.toSource((AppApplyDto) save);
+        entity.setId(uidGenerator.getUid());
+        entity.setAuditStatus(AuditStatusEnum.INITIALIZED.getCode());
+
+        // 这里可以直接用当前数据ID，也可以重新生成一个唯一id
+        entity.setLogo(entity.getId());
+        entity.setCredentialFile(entity.getId());
+        return entity;
     }
 
     @Override
     protected void saveAfter(Object save, AppApply entity) {
-        super.saveAfter(save, entity);
+        AppApplyDto dto = (AppApplyDto) save;
+
+        // 关联附件
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getLogo())
+                .objectType(FileObjectType.Open.APP_APPLY_LOGO)
+                .build()
+                .setKeepFileIds(dto.getLogo()));
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getCredentialFile())
+                .objectType(FileObjectType.Open.APP_APPLY_CREDENTIAL_FILE)
+                .build().addKeepFileIds(dto.getCredentialFile()));
     }
 
     @Override
     protected AppApply updateBefore(Object updateDto) {
-        return super.updateBefore(updateDto);
+        AppApply entity = UpdateEntity.of(getEntityClass());
+        appApplyConvert.copyTargetProperties((AppApplyDto) updateDto, entity);
+        entity.setAuditStatus(AuditStatusEnum.INITIALIZED.getCode());
+
+        // 这里可以直接用当前数据ID，也可以重新生成一个唯一id
+        entity.setLogo(entity.getId());
+        entity.setCredentialFile(entity.getId());
+        return entity;
     }
 
     @Override
     protected void updateAfter(Object updateDto, AppApply entity) {
-        super.updateAfter(updateDto, entity);
+        AppApplyDto dto = (AppApplyDto) updateDto;
+        // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 即可生成新的唯一id）
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getLogo())
+                .objectType(FileObjectType.Open.APP_APPLY_LOGO)
+                .build()
+                .setKeepFileIds(dto.getLogo())
+        );
+
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getCredentialFile())
+                .objectType(FileObjectType.Open.APP_APPLY_CREDENTIAL_FILE)
+                .build().addKeepFileIds(dto.getCredentialFile()));
     }
 }
