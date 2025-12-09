@@ -35,30 +35,29 @@ public interface FileConvert extends MapStructMethod {
         return FileTypeEnum.getByExtension(ext).getCode();
     }
 
-    @Mapping(target = "", qualifiedBy = ParseMap.class)
-    @Mapping(target = "userMetadata", qualifiedBy = ParseMap.class)
-    @Mapping(target = "thMetadata", qualifiedBy = ParseMap.class)
-    @Mapping(target = "thUserMetadata", qualifiedBy = ParseMap.class)
-    @Mapping(target = "hashInfo", expression = "java(parseObject(file.getHashInfo(), org.dromara.x.file.storage.core.hash.HashInfo.class))")
-    @Mapping(target = "attr", expression = "java(parseObject(file.getAttr(), cn.hutool.core.lang.Dict.class))")
-    @Mapping(source = "fileSize", target = "size")
-    @Mapping(target = "fileAcl", ignore = true)
-    @Mapping(target = "thFileAcl", ignore = true)
+    @Mapping(target = File.Fields.metadata, qualifiedBy = ParseMap.class)
+    @Mapping(target = File.Fields.userMetadata, qualifiedBy = ParseMap.class)
+    @Mapping(target = File.Fields.thMetadata, qualifiedBy = ParseMap.class)
+    @Mapping(target = File.Fields.thUserMetadata, qualifiedBy = ParseMap.class)
+    @Mapping(target = File.Fields.hashInfo, expression = "java(parseObject(file.getHashInfo(), org.dromara.x.file.storage.core.hash.HashInfo.class))")
+    @Mapping(target = File.Fields.attr, expression = "java(parseObject(file.getAttr(), cn.hutool.core.lang.Dict.class))")
+    @Mapping(source = File.Fields.fileSize, target = "size")
+    @Mapping(target = File.Fields.fileAcl, ignore = true)
+    @Mapping(target = File.Fields.thFileAcl, ignore = true)
     FileInfo toTarget(File file);
 
 
-    @Mapping(source = "ext", target = "fileType", qualifiedBy = ExtToFileType.class)
-//    @Mapping(source = File.Fields.ext, target = "fileType", qualifiedBy = ExtToFileType.class)
-    @Mapping(target = "metadata", qualifiedBy = ToJson.class)
-    @Mapping(target = "userMetadata", qualifiedBy = ToJson.class)
-    @Mapping(target = "thMetadata", qualifiedBy = ToJson.class)
-    @Mapping(target = "thUserMetadata", qualifiedBy = ToJson.class)
-    @Mapping(target = "hashInfo", qualifiedBy = ToJson.class)
-    @Mapping(target = "attr", qualifiedBy = ToJson.class)
-    @Mapping(source = "size", target = "fileSize")
-    @Mapping(target = "fileAcl", ignore = true)
-    @Mapping(target = "thFileAcl", ignore = true)
-    @Mapping(target = "id", ignore = true)
+    @Mapping(source = File.Fields.ext, target = "fileType", qualifiedBy = ExtToFileType.class)
+    @Mapping(target = File.Fields.metadata, qualifiedBy = ToJson.class)
+    @Mapping(target = File.Fields.userMetadata, qualifiedBy = ToJson.class)
+    @Mapping(target = File.Fields.thMetadata, qualifiedBy = ToJson.class)
+    @Mapping(target = File.Fields.thUserMetadata, qualifiedBy = ToJson.class)
+    @Mapping(target = File.Fields.hashInfo, qualifiedBy = ToJson.class)
+    @Mapping(target = File.Fields.attr, qualifiedBy = ToJson.class)
+    @Mapping(source = "size", target = File.Fields.fileSize)
+    @Mapping(target = File.Fields.fileAcl, ignore = true)
+    @Mapping(target = File.Fields.thFileAcl, ignore = true)
+    @Mapping(target = File.ID_FIELD, ignore = true)
     File toSource(FileInfo fileInfo);
 
 
