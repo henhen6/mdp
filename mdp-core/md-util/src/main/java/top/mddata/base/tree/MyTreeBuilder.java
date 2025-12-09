@@ -110,7 +110,7 @@ public class MyTreeBuilder<E, F extends TreeEntity<E, F>> implements Builder<Tre
      * 新增：设置节点排序规则（可选）
      * 未设置时，默认按节点 value（F 实体）升序排序（保持原有逻辑）
      *
-     * @param sortComparator 排序比较器（基于 Map.Entry<E, F>，可自定义多字段排序）
+     * @param sortComparator 排序比较器（基于 {@code Map.Entry<E, F>}，可自定义多字段排序）
      * @return this（支持链式调用）
      */
     public MyTreeBuilder<E, F> setSortComparator(Comparator<Map.Entry<E, F>> sortComparator) {

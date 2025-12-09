@@ -24,12 +24,12 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 #end
 #if(withLombok)
-#if(withActiveRecord)
+import lombok.experimental.FieldNameConstants;
 import lombok.Data;
+#if(withActiveRecord)
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 #else
-import lombok.Data;
 import lombok.experimental.Accessors;
 #if(entityConfig.getSuperClass())
 import lombok.EqualsAndHashCode;
@@ -44,6 +44,7 @@ import lombok.EqualsAndHashCode;
  * @since #(javadocConfig.getSince())
  */
 #if(withLombok)
+@FieldNameConstants
 #if(withActiveRecord)
 @Accessors(chain = true)
 @Data(staticConstructor = "create")

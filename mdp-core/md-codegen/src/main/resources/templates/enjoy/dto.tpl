@@ -20,11 +20,10 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 #end
 #if(withLombok)
-import lombok.AllArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import lombok.NoArgsConstructor;
 #if(dtoConfig.getSuperClass())
 import lombok.EqualsAndHashCode;
 #end
@@ -39,9 +38,7 @@ import lombok.EqualsAndHashCode;
 #if(withLombok)
 @Accessors(chain = true)
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@FieldNameConstants
 #if(dtoConfig.getSuperClass())
 @EqualsAndHashCode(callSuper = true)
 #end
