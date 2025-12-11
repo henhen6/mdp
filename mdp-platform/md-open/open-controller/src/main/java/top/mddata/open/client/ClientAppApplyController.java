@@ -123,8 +123,8 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
     public R<Page<AppApplyVo>> page(@RequestBody @Validated PageParams<AppApplyQuery> params) {
         Page<AppApplyVo> page = Page.of(params.getCurrent(), params.getSize());
         AppApply entity = BeanUtil.toBean(params.getModel(), AppApply.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         entity.setCreatedBy(ContextUtil.getUserId());
+        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, AppApplyVo.class);

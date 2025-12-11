@@ -127,8 +127,8 @@ public class ClientAppController extends SuperController<AppService, App> {
     public R<Page<AppVo>> page(@RequestBody @Validated PageParams<AppQuery> params) {
         Page<AppVo> page = Page.of(params.getCurrent(), params.getSize());
         App entity = BeanUtil.toBean(params.getModel(), App.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         entity.setCreatedBy(ContextUtil.getUserId());
+        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, AppVo.class);
