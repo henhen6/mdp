@@ -36,9 +36,9 @@ public @interface RequestLog {
     String modular() default "";
 
     /**
-     * 是否拼接Controller类上@Api注解的描述值
+     * 是否拼接Controller类上 /@Tag 注解的name
      *
-     * @return 是否拼接Controller类上的描述值
+     * @return 是否拼接Controller类上的 Tag.name
      */
     boolean controllerApiValue() default true;
 

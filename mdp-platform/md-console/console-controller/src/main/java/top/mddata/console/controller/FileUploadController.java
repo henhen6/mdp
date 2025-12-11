@@ -51,7 +51,7 @@ public class FileUploadController {
             @Parameter(name = "file", description = "附件", schema = @Schema(name = "file", format = "binary"), in = ParameterIn.DEFAULT, required = true),
     })
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @RequestLog("上传文件")
+    @RequestLog(value = "上传文件", request = false)
     public R<FileVo> upload(@RequestParam(value = "file") MultipartFile file, @Validated FileUploadDto fileUploadDto) {
         return R.success(fileService.upload(file, fileUploadDto));
     }
