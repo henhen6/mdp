@@ -18,7 +18,7 @@
     <url>https://github.com/henhen6/mdp</url>
 
     <properties>
-        <revision>0.0.4</revision>
+        <revision>0.0.5</revision>
         <project-prefix>md</project-prefix>
 
         <springdoc.version>2.8.5</springdoc.version>
