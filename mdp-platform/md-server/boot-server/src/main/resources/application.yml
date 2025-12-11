@@ -313,7 +313,7 @@ dromara:
         domain: http://127.0.0.1:${server.port}/preview/ # 访问域名，例如：“http://127.0.0.1:8030/file/”，注意后面要和 path-patterns 保持一致，“/”结尾，本地存储建议使用相对路径，方便后期更换域名
         base-path: local-plus/ # 基础路径
         path-patterns: /preview/** # 访问路径
-        storage-path: /Users/aaa/data/mdp/
+        storage-path: /Users/tangyh/data/mdp/
         enableStorage: true
         enableAccess: true
 

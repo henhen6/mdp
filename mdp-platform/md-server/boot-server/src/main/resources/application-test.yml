@@ -25,3 +25,14 @@ sa-token:
 logging:
   file:
     path: /data_mdp/logs
+
+dromara:
+  x-file-storage: #文件存储配置
+    local-plus:
+      - platform: localPlus
+        domain: http://open.mddata.top/preview/ # 访问域名
+        base-path: local-plus/ # 基础路径
+        path-patterns: /preview/** # 访问路径
+        storage-path: /data_mdp/upload-file/
+        enableStorage: true
+        enableAccess: true
