@@ -294,7 +294,7 @@ springdoc:
       paths-to-match: '/**'
       packages-to-scan: top.mddata.console
     - group: 'open'
-      displayName: '开放平台'
+      displayName: '开发者平台'
       paths-to-match: '/**'
       packages-to-scan: top.mddata.open
     - group: 'api'

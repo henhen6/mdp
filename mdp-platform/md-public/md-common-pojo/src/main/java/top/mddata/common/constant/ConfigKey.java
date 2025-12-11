@@ -61,11 +61,11 @@ public interface ConfigKey {
          */
         String TORNA_SERVER_ADDR = "TornaServerAddr";
         /**
-         * 开放平台生产地址
+         * 开发者平台生产地址
          */
         String OPEN_PROD_URL = "OpenProdUrl";
         /**
-         * 开放平台测试地址
+         * 开发者平台测试地址
          */
         String OPEN_SANDBOX_URL = "OpenSandboxUrl";
         /**

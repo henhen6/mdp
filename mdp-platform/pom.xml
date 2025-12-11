@@ -27,7 +27,7 @@
         <module>md-workbench</module>
         <!-- 后台管理 -->
         <module>md-console</module>
-        <!-- 开放平台 -->
+        <!-- 开发者平台 -->
         <module>md-open</module>
         <!-- 对外接口服务 -->
         <module>md-api</module>

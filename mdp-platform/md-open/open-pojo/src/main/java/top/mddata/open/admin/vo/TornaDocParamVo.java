@@ -71,12 +71,12 @@ public class TornaDocParamVo implements TreeNode<TornaDocParamVo, Long> {
     private Byte style;
 
     /**
-     * 新增操作方式，0：人工操作，1：开放平台推送
+     * 新增操作方式，0：人工操作，1：开发者平台推送
      */
     private Byte createMode;
 
     /**
-     * 修改操作方式，0：人工操作，1：开放平台推送
+     * 修改操作方式，0：人工操作，1：开发者平台推送
      */
     private Byte modifyMode;
 

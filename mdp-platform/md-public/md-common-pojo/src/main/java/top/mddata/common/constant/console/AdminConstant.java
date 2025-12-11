@@ -15,7 +15,7 @@ public interface AdminConstant {
      */
     String LAYOUT = "LAYOUT";
     /**
-     * 默认开放平台菜单布局
+     * 默认开发者平台菜单布局
      */
     String OPEN_LAYOUT = "OPEN_LAYOUT";
 
