@@ -4,6 +4,7 @@ import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
+import top.mddata.workbench.dto.ProfileUserDto;
 
 import java.util.List;
 
@@ -128,4 +129,11 @@ public interface SsoUserService extends SuperService<User> {
      * @return
      */
     OrgNature getOrgNatureByOrgId(Long id);
+
+    /**
+     * 更新用户信息
+     * @param dto 用户信息
+     * @return 用户id
+     */
+    Long updateProfile(ProfileUserDto dto);
 }

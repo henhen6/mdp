@@ -1,5 +1,6 @@
 package top.mddata.workbench.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
@@ -8,6 +9,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.LambdaGetter;
+import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.base.utils.ContextUtil;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.organization.OrgCacheKeyBuilder;
 import top.mddata.common.cache.console.organization.UserCacheKeyBuilder;
@@ -24,6 +27,7 @@ import top.mddata.common.cache.console.organization.UserOrgCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserEmailCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserPhoneCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserUserNameCacheKeyBuilder;
+import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
@@ -33,6 +37,9 @@ import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.OrgNatureMapper;
 import top.mddata.common.mapper.UserMapper;
+import top.mddata.console.system.dto.RelateFilesToBizDto;
+import top.mddata.console.system.facade.FileFacade;
+import top.mddata.workbench.dto.ProfileUserDto;
 import top.mddata.workbench.service.SsoUserService;
 
 import java.time.LocalDateTime;
@@ -55,10 +62,30 @@ import java.util.Set;
 public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> implements SsoUserService {
     private final OrgMapper orgMapper;
     private final OrgNatureMapper orgNatureMapper;
+    private final FileFacade fileFacade;
 
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
         return new UserCacheKeyBuilder();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long updateProfile(ProfileUserDto dto) {
+        ArgumentAssert.isTrue(dto.getId().equals(ContextUtil.getUserId()), "只能修改个人信息");
+        User entity = UpdateEntity.of(User.class, dto.getId());
+        BeanUtil.copyProperties(dto, entity);
+        entity.setAvatar(entity.getId());
+
+        updateById(entity);
+        delCache(entity.getId());
+
+        // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getAvatar())
+                .objectType(FileObjectType.Console.USER_AVATAR)
+                .build().setKeepFileIds(dto.getAvatar()));
+        return entity.getId();
     }
 
     @Override
