@@ -1,11 +1,9 @@
 package top.mddata.workbench.entity.base;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
@@ -15,13 +13,12 @@ import java.io.Serializable;
  * 登录日志实体类。
  *
  * @author henhen6
- * @since 2025-11-12 23:46:53
+ * @since 2025-12-14 00:53:23
  */
+@FieldNameConstants
+
 @Data
-@Builder
 @Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     /** 表名称 */
@@ -34,11 +31,6 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
      * 登录用户
      */
     private Long userId;
-
-    /**
-     * 登录IP
-     */
-    private String requestIp;
 
     /**
      * 姓名
@@ -66,6 +58,16 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     private String loginDate;
 
     /**
+     * 登录IP
+     */
+    private String loginIp;
+
+    /**
+     * IP 归属地
+     */
+    private String ipLocation;
+
+    /**
      * 浏览器请求头
      */
     private String ua;
@@ -73,7 +75,7 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     /**
      * 浏览器名称
      */
-    private String browser;
+    private String browserName;
 
     /**
      * 浏览器版本
@@ -83,11 +85,49 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     /**
      * 操作系统
      */
-    private String operatingSystem;
+    private String os;
 
     /**
-     * 登录地点
+     * 设备信息
      */
-    private String location;
+    private String deviceInfo;
+
+    /**
+     * 登录终端类型
+     * PC / 移动端 / 平板 / 接口调用等
+     */
+    private String loginType;
+
+    /**
+     * 认证方式
+     * [01-密码 02-手机短信验证码 03-邮箱验证码登录]
+     */
+    private String authType;
+
+    /**
+     * 应用Key
+     */
+    private String appKey;
+
+    /**
+     * 应用名称
+     */
+    private String appName;
+
+    /**
+     * 登录渠道
+     * [01-系统登录页 02-移动端]
+     */
+    private String loginChannel;
+
+    /**
+     * 登录失败原因
+     */
+    private String failReason;
+
+    /**
+     * 登录令牌
+     */
+    private String tokenInfo;
 
 }

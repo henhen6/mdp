@@ -22,6 +22,8 @@ public enum LoginStatusEnum implements BaseEnum<String> {
      * 登录成功
      */
     SUCCESS("01", "登录成功"),
+    // TODO zheli
+    LOGIN_SUCCESS("90", "退出成功"),
     /**
      * 切换组织
      */

@@ -30,12 +30,12 @@ import java.util.List;
  * 登录日志 控制层。
  *
  * @author henhen6
- * @since 2025-11-12 23:46:53
+ * @since 2025-12-14 00:53:23
  */
 @RestController
 @Validated
 @Tag(name = "登录日志")
-@RequestMapping("/loginLog")
+@RequestMapping("//loginLog")
 @RequiredArgsConstructor
 public class LoginLogController extends SuperController<LoginLogService, LoginLog> {
 

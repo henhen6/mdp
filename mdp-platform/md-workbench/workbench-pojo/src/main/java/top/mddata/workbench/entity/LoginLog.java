@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.workbench.entity.base.LoginLogBase;
 
 /**
@@ -12,8 +13,9 @@ import top.mddata.workbench.entity.base.LoginLogBase;
  * DO类：数据对象，可以在关联查询时，再次添加字段，重新生成代码时，忽略此文件。
  *
  * @author henhen6
- * @since 2025-11-12 23:46:53
+ * @since 2025-12-14 00:53:23
  */
+@FieldNameConstants
 @Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
