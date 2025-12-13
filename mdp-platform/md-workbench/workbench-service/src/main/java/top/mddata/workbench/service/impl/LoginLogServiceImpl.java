@@ -64,13 +64,13 @@ public class LoginLogServiceImpl extends SuperServiceImpl<LoginLogMapper, LoginL
         OS os = userAgent.getOs();
         String browserVersion = userAgent.getVersion();
         if (browser != null) {
-            sysLoginLog.setBrowser(simplifyBrowser(browser.getName()));
+            sysLoginLog.setBrowserName(simplifyBrowser(browser.getName()));
         }
         if (browserVersion != null) {
             sysLoginLog.setBrowserVersion(browserVersion);
         }
         if (os != null) {
-            sysLoginLog.setOperatingSystem(simplifyOperatingSystem(os.getName()));
+            sysLoginLog.setOs(simplifyOperatingSystem(os.getName()));
         }
         sysLoginLog.setCreatedBy(sysLoginLog.getUserId());
 
