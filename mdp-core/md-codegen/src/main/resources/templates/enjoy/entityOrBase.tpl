@@ -50,6 +50,7 @@ import lombok.EqualsAndHashCode;
 @Data(staticConstructor = "create")
 @EqualsAndHashCode(callSuper = true)
 #else
+@Data
 @Accessors(chain = true)
 #if(entityConfig.getSuperClass())
 @EqualsAndHashCode(callSuper = true)
