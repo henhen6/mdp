@@ -66,9 +66,9 @@ public class LoginLogQuery extends ExtraParams implements Serializable {
     private String status;
 
     /**
-     * 登录失败原因
+     * 日志描述
      */
-    @Schema(description = "登录失败原因")
+    @Schema(description = "日志描述")
     private String statusReason;
 
     /**
