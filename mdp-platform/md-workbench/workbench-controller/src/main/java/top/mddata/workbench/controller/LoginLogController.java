@@ -35,7 +35,7 @@ import java.util.List;
 @RestController
 @Validated
 @Tag(name = "登录日志")
-@RequestMapping("//loginLog")
+@RequestMapping("/loginLog")
 @RequiredArgsConstructor
 public class LoginLogController extends SuperController<LoginLogService, LoginLog> {
 

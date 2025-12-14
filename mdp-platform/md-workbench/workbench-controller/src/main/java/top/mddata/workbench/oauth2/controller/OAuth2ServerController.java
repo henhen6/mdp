@@ -33,7 +33,7 @@ import top.mddata.open.manage.facade.AppFacade;
 import top.mddata.open.admin.vo.AppVo;
 import top.mddata.open.admin.vo.OauthScopeVo;
 import top.mddata.workbench.dto.LoginDto;
-import top.mddata.workbench.enumeration.LoginType;
+import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.oauth2.dto.ConfirmDto;
 import top.mddata.workbench.oauth2.dto.RedirectUriDto;
 import top.mddata.workbench.oauth2.vo.ConfirmInfoVo;
@@ -302,7 +302,7 @@ public class OAuth2ServerController {
             LoginDto loginDto = new LoginDto();
             loginDto.setUsername(name);
             loginDto.setPassword(pwd);
-            loginDto.setLoginType(LoginType.USERNAME);
+            loginDto.setLoginType(AuthTypeEnum.USERNAME);
             return authService.login(loginDto);
         };
 
