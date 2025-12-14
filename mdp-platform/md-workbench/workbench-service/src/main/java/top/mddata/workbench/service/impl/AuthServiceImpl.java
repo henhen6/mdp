@@ -7,6 +7,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.AllArgsConstructor;
@@ -29,11 +30,11 @@ import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.workbench.dto.LoginDto;
+import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.enumeration.MsgTemplateCodeEnum;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.event.model.LoginStatusDto;
 import top.mddata.workbench.service.AuthService;
 import top.mddata.workbench.service.LoginStrategy;
 import top.mddata.workbench.service.SsoUserService;
@@ -71,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public R<LoginVo> login(LoginDto login) {
         // 校验参数
-        LoginStrategy strategy = loginStrategy.get(login.getLoginType().name());
+        LoginStrategy strategy = loginStrategy.get(login.getAuthType().name());
         strategy.checkParam(login);
 
         // 查找用户
@@ -81,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
         strategy.checkUserPassword(login, ssoUser);
 
         // 5. 检查用户状态
-        strategy.checkUserState(ssoUser);
+        strategy.checkUserState(login, ssoUser);
 
         //        TODO 判断用户是否可以登录该应用
 
@@ -123,9 +124,6 @@ public class AuthServiceImpl implements AuthService {
 
         session.set(TOP_COMPANY_IS_ADMIN, org.isCurrentTopCompanyIsAdmin());
 
-        // 发送登录成功事件
-        LoginStatusDto loginStatus = LoginStatusDto.success(ssoUser.getId());
-        SpringUtils.publishEvent(new LoginEvent(loginStatus));
 
         // 封装返回值
         JSONObject obj = new JSONObject();
@@ -135,6 +133,11 @@ public class AuthServiceImpl implements AuthService {
         loginVO.setExpire(tokenInfo.getTokenTimeout());
         loginVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
         loginVO.setId(userId);
+
+        // 发送登录成功事件
+        LoginLogDto dto = LoginLogDto.success(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), "登录成功", JSON.toJSONString(tokenInfo));
+        SpringUtils.publishEvent(new LoginEvent(dto));
+
         return R.success(loginVO);
     }
 
@@ -229,7 +232,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         ssoUserService.updateById(updateUser);
-
 
         // 组织性质拥有 99，就视为组织是超级管理员
         if (rootCompany != null) {

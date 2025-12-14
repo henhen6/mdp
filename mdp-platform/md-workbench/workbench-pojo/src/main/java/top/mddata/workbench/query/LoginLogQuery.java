@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 登录日志 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-12-14 00:53:23
+ * @since 2025-12-14 14:15:09
  */
 @Accessors(chain = true)
 @Data
@@ -52,16 +52,38 @@ public class LoginLogQuery extends ExtraParams implements Serializable {
     private String username;
 
     /**
+     * 事件类型
+     * [01-登录 02-退出 03-注销 04-切换 05-扮演]
+     */
+    @Schema(description = "事件类型")
+    private String eventType;
+
+    /**
      * 登录状态
+     * [01-成功 02-失败]
      */
     @Schema(description = "登录状态")
     private String status;
 
     /**
-     * 登录描述
+     * 登录失败原因
      */
-    @Schema(description = "登录描述")
-    private String description;
+    @Schema(description = "登录失败原因")
+    private String statusReason;
+
+    /**
+     * 认证方式
+     * [01-用户名密码验证码登录 02-用户名密码登录 03-手机短信验证码 04-邮箱验证码登录]
+     */
+    @Schema(description = "认证方式")
+    private String authType;
+
+    /**
+     * 登录渠道
+     * [01-系统登录页 02-移动端]
+     */
+    @Schema(description = "登录渠道")
+    private String loginChannel;
 
     /**
      * 登录时间
@@ -112,20 +134,6 @@ public class LoginLogQuery extends ExtraParams implements Serializable {
     private String deviceInfo;
 
     /**
-     * 登录终端类型
-     * PC / 移动端 / 平板 / 接口调用等
-     */
-    @Schema(description = "登录终端类型")
-    private String loginType;
-
-    /**
-     * 认证方式
-     * [01-密码 02-手机短信验证码 03-邮箱验证码登录]
-     */
-    @Schema(description = "认证方式")
-    private String authType;
-
-    /**
      * 应用Key
      */
     @Schema(description = "应用Key")
@@ -138,17 +146,10 @@ public class LoginLogQuery extends ExtraParams implements Serializable {
     private String appName;
 
     /**
-     * 登录渠道
-     * [01-系统登录页 02-移动端]
+     * 应用地址
      */
-    @Schema(description = "登录渠道")
-    private String loginChannel;
-
-    /**
-     * 登录失败原因
-     */
-    @Schema(description = "登录失败原因")
-    private String failReason;
+    @Schema(description = "应用地址")
+    private String appRedirect;
 
     /**
      * 登录令牌

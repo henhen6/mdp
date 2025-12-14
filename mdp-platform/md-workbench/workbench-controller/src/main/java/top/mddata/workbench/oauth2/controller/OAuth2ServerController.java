@@ -302,7 +302,7 @@ public class OAuth2ServerController {
             LoginDto loginDto = new LoginDto();
             loginDto.setUsername(name);
             loginDto.setPassword(pwd);
-            loginDto.setLoginType(AuthTypeEnum.USERNAME);
+            loginDto.setAuthType(AuthTypeEnum.USERNAME);
             return authService.login(loginDto);
         };
 

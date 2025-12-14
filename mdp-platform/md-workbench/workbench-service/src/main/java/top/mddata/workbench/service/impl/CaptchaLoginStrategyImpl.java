@@ -13,9 +13,8 @@ import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
-import top.mddata.workbench.enumeration.LoginStatusEnum;
+import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.event.model.LoginStatusDto;
 import top.mddata.workbench.service.SsoUserService;
 
 /**
@@ -45,15 +44,19 @@ public class CaptchaLoginStrategyImpl extends UsernameLoginStrategyImpl {
             CacheResult<String> code = cacheOps.get(cacheKey);
             if (StrUtil.isEmpty(code.getValue())) {
                 String msg = "验证码已过期";
-                SpringUtils.publishEvent(new LoginEvent(LoginStatusDto.fail(login.getUsername(), LoginStatusEnum.CAPTCHA_ERROR, msg)));
+                SpringUtils.publishEvent(new LoginEvent(LoginLogDto.failByCheck(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), msg)));
                 throw new BizException(msg);
             }
             if (!StrUtil.equalsIgnoreCase(code.getValue(), login.getCode())) {
                 String msg = "验证码不正确";
-                SpringUtils.publishEvent(new LoginEvent(LoginStatusDto.fail(login.getUsername(), LoginStatusEnum.CAPTCHA_ERROR, msg)));
+                SpringUtils.publishEvent(new LoginEvent(LoginLogDto.failByCheck(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), msg)));
                 throw new BizException(msg);
             }
             cacheOps.del(cacheKey);
         }
+    }
+
+    private LoginLogDto builder() {
+        return null;
     }
 }

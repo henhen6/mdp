@@ -33,7 +33,8 @@ public interface LoginStrategy {
 
     /**
      * 检测用户状态是否正常
+     * @param login 登录参数
      * @param user 用户
      */
-    void checkUserState(User user);
+    void checkUserState(LoginDto login, User user);
 }

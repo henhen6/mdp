@@ -13,10 +13,9 @@ import java.io.Serializable;
  * 登录日志实体类。
  *
  * @author henhen6
- * @since 2025-12-14 00:53:23
+ * @since 2025-12-14 14:15:09
  */
 @FieldNameConstants
-
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
@@ -40,17 +39,36 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     /**
      * 登录人账号
      */
-    private String username;
+    private String account;
+
+    /**
+     * 事件类型
+     * [01-登录 02-退出 03-注销 04-切换 05-扮演]
+     */
+    private String eventType;
 
     /**
      * 登录状态
+     * [01-成功 02-失败]
      */
     private String status;
 
     /**
-     * 登录描述
+     * 登录失败原因
      */
-    private String description;
+    private String statusReason;
+
+    /**
+     * 认证方式
+     * [01-用户名密码验证码登录 02-用户名密码登录 03-手机短信验证码 04-邮箱验证码登录]
+     */
+    private String authType;
+
+    /**
+     * 登录渠道
+     * [01-系统登录页 02-移动端]
+     */
+    private String loginChannel;
 
     /**
      * 登录时间
@@ -93,18 +111,6 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     private String deviceInfo;
 
     /**
-     * 登录终端类型
-     * PC / 移动端 / 平板 / 接口调用等
-     */
-    private String loginType;
-
-    /**
-     * 认证方式
-     * [01-密码 02-手机短信验证码 03-邮箱验证码登录]
-     */
-    private String authType;
-
-    /**
      * 应用Key
      */
     private String appKey;
@@ -115,15 +121,9 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     private String appName;
 
     /**
-     * 登录渠道
-     * [01-系统登录页 02-移动端]
+     * 应用地址
      */
-    private String loginChannel;
-
-    /**
-     * 登录失败原因
-     */
-    private String failReason;
+    private String appRedirect;
 
     /**
      * 登录令牌

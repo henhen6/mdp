@@ -13,7 +13,7 @@ import top.mddata.workbench.entity.base.LoginLogBase;
  * DO类：数据对象，可以在关联查询时，再次添加字段，重新生成代码时，忽略此文件。
  *
  * @author henhen6
- * @since 2025-12-14 00:53:23
+ * @since 2025-12-14 14:15:09
  */
 @FieldNameConstants
 @Accessors(chain = true)

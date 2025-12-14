@@ -21,34 +21,8 @@ public enum LoginStatusEnum implements BaseEnum<String> {
     /**
      * 登录成功
      */
-    SUCCESS("01", "登录成功"),
-    // TODO zheli
-    LOGIN_SUCCESS("90", "退出成功"),
-    /**
-     * 切换组织
-     */
-    SWITCH("02", "切换组织"),
-
-    /**
-     * 验证码错误
-     */
-    CAPTCHA_ERROR("10", "验证码错误"),
-    /**
-     * 短信验证码错误
-     */
-    SMS_CODE_ERROR("11", "短信验证码错误"),
-    /**
-     * 邮箱验证码错误
-     */
-    EMAIL_CODE_ERROR("12", "邮箱验证码错误"),
-    /**
-     * 账号密码错误
-     */
-    PASSWORD_ERROR("13", "账号密码错误"),
-    /**
-     * 账号异常
-     */
-    USER_ERROR("14", "账号异常");
+    SUCCESS("01", "成功"),
+    FAIL("02", "失败");
 
 
     @Schema(description = "code")

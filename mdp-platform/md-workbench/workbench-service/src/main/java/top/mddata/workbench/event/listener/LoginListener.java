@@ -1,15 +1,14 @@
 package top.mddata.workbench.event.listener;
 
-import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.mddata.common.entity.User;
+import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.enumeration.LoginStatusEnum;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.event.model.LoginStatusDto;
 import top.mddata.workbench.service.LoginLogService;
 import top.mddata.workbench.service.SsoUserService;
 
@@ -29,30 +28,39 @@ public class LoginListener {
     @Async
     @EventListener({LoginEvent.class})
     public void saveSysLog(LoginEvent event) {
-        LoginStatusDto loginStatus = (LoginStatusDto) event.getSource();
-        log.debug("loginStatus:{}", loginStatus);
+        LoginLogDto loginLogDto = (LoginLogDto) event.getSource();
+        log.debug("loginStatus:{}", loginLogDto);
 
         User user = null;
-        if (loginStatus.getUserId() != null) {
-            user = ssoUserService.getByIdCache(loginStatus.getUserId());
-        } else if (StrUtil.isNotBlank(loginStatus.getUsername())) {
-            user = ssoUserService.getByUsername(loginStatus.getUsername());
+        switch (loginLogDto.getAuthType()) {
+            case USERNAME:
+            case CAPTCHA:
+                user = ssoUserService.getByUsername(loginLogDto.getAccount());
+                break;
+            case PHONE:
+                user = ssoUserService.getByPhone(loginLogDto.getAccount());
+                break;
+            case EMAIL:
+                user = ssoUserService.getByEmail(loginLogDto.getAccount());
+                break;
+            default:
+                break;
         }
 
         if (user == null) {
-            log.debug("用户 {} 不存在", loginStatus.getUserId());
+            log.debug("用户 {} 不存在", loginLogDto.getAccount());
             return;
         }
 
-        if (LoginStatusEnum.SUCCESS.eq(loginStatus.getStatus())) {
+        if (LoginStatusEnum.SUCCESS.eq(loginLogDto.getStatus())) {
             // 重置错误次数 和 最后登录时间
-            this.ssoUserService.resetPwErrorNum(loginStatus.getUserId());
-        } else if (LoginStatusEnum.PASSWORD_ERROR.eq(loginStatus.getStatus())) {
+            this.ssoUserService.resetPwErrorNum(user.getId());
+        } else if (loginLogDto.isPasswordError()) {
             // 密码错误
-            this.ssoUserService.incrPwErrorNumById(loginStatus.getUserId());
+            this.ssoUserService.incrPwErrorNumById(user.getId());
         }
 
-        loginLogService.save(loginStatus, user);
+        loginLogService.save(loginLogDto, user);
     }
 
 }

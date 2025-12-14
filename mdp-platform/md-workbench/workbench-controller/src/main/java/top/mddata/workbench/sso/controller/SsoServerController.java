@@ -3,9 +3,11 @@ package top.mddata.workbench.sso.controller;
 import cn.dev33.satoken.sso.processor.SaSsoServerProcessor;
 import cn.dev33.satoken.sso.template.SaSsoServerUtil;
 import cn.dev33.satoken.sso.util.SaSsoConsts;
+import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaFoxUtil;
 import cn.dev33.satoken.util.SaResult;
+import com.alibaba.fastjson2.JSON;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -16,8 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.base.R;
-import top.mddata.open.manage.facade.AppFacade;
+import top.mddata.base.utils.SpringUtils;
 import top.mddata.open.admin.vo.AppVo;
+import top.mddata.open.manage.facade.AppFacade;
+import top.mddata.workbench.dto.LoginLogDto;
+import top.mddata.workbench.dto.LoginRedirectUrlDto;
+import top.mddata.workbench.event.LoginEvent;
 
 import static top.mddata.base.exception.code.ExceptionCode.JWT_TOKEN_EXPIRED;
 
@@ -41,7 +47,10 @@ public class SsoServerController {
 
     @Operation(summary = "根据客户端编码获取客户端的重定向地址", description = "根据客户端编码获取客户端的重定向地址")
     @PostMapping("/anyUser/sso/getRedirectUrl")
-    public R<String> getRedirectUrl(String client, String mode, String redirect) {
+    public R<String> getRedirectUrl(LoginRedirectUrlDto param) {
+        String client = param.getClient();
+        String mode = param.getMode();
+        String redirect = param.getRedirect();
         // 前判断用户是否登录，没有登录时，前端根据401状态码强制用户登录
         if (!StpUtil.isLogin()) {
             return R.fail(401, JWT_TOKEN_EXPIRED.getMsg());
@@ -50,19 +59,20 @@ public class SsoServerController {
         // 判断应用状态
         long loginId = StpUtil.getLoginIdAsLong();
         R<AppVo> appResult = appFacade.getAppByAppKey(client);
+        AppVo app = null;
         if (appResult.getIsSuccess()) {
-            AppVo opApplication = appResult.getData();
+            app = appResult.getData();
 
-            if (opApplication == null) {
+            if (app == null) {
                 return R.fail("无效的AppId：" + client);
             }
 //             判断应用状态
-            if (!opApplication.getState()) {
-                return R.fail("当前应用 [" + opApplication.getName() + "] 已被禁用，无法使用");
+            if (!app.getState()) {
+                return R.fail("当前应用 [" + app.getName() + "] 已被禁用，无法使用");
             }
 
-//             // 检查用户是否拥有此应用
-//            if (!check(loginId, opApplication.getId())) {
+//             // TODO 检查用户是否拥有此应用
+//            if (!check(loginId, app.getId())) {
 //                return R.fail("当前账号暂无权限登入此应用，请联系管理员授权");
 //            }
         }
@@ -81,7 +91,22 @@ public class SsoServerController {
         }
 
         // 记录登录日志
-//        log.save(loginId, sysClient.getId(), redirect);
+
+        if (SaFoxUtil.isNotEmpty(redirect) && redirect.contains("?")) {
+            int index = redirect.indexOf("?");
+            redirect = redirect.substring(0, index);
+        }
+
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        // 发送登录成功事件
+        LoginLogDto dto = LoginLogDto.success(param.getAuthType(), param.getDeviceInfo(), param.getUsername(), "登录成功", JSON.toJSONString(tokenInfo));
+        if (app != null) {
+            dto.setAppKey(app.getAppKey());
+            dto.setAppName(app.getName());
+        }
+        dto.setAppRedirect(redirect);
+        SpringUtils.publishEvent(new LoginEvent(dto));
+
 
         return result;
     }
