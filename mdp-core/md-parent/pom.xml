@@ -57,9 +57,7 @@
         <mybatis-spring.version>3.0.4</mybatis-spring.version>
         <mybatis.typehandlers.version>1.0.2</mybatis.typehandlers.version>
         <mybatis-flex.version>1.11.3</mybatis-flex.version>
-        <fastmybatis.version>3.0.17</fastmybatis.version>
         <jasypt.version>3.0.5</jasypt.version>
-        <p6spy.version>3.9.1</p6spy.version>
         <fastjson2.version>2.0.59</fastjson2.version>
         <fastexcel.version>1.3.0</fastexcel.version>
         <poi.version>5.3.0</poi.version>
@@ -77,11 +75,9 @@
         <commons-lang3.version>3.19.0</commons-lang3.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <asm.version>5.0.4</asm.version>
-        <tobato-fastdmd-client.version>1.27.3-SNAPSHOT</tobato-fastdmd-client.version>
         <tencentcloud-sdk-java.version>4.0.11</tencentcloud-sdk-java.version>
-        <aliyun-dysmsapi.version>3.0.0</aliyun-dysmsapi.version>
+        <sms4j.version>3.3.5</sms4j.version>
         <aliyun-sdk-oss.version>3.18.1</aliyun-sdk-oss.version>
-        <bce-java-sdk.version>0.10.336</bce-java-sdk.version>
         <esdk-obs-java.version>3.24.3</esdk-obs-java.version>
         <qiniu-java-sdk.version>7.15.1</qiniu-java-sdk.version>
         <minio.version>8.5.12</minio.version>
@@ -159,6 +155,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- 文档 -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi</artifactId>
@@ -166,8 +163,8 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <!-- 以上几个配置的顺序不能错，否则会导致 spring、springdoc 的版本不正确 -->
+            <!-- 持久层 -->
             <dependency>
                 <groupId>com.mybatis-flex</groupId>
                 <artifactId>mybatis-flex-dependencies</artifactId>
@@ -176,24 +173,12 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.gitee.durcframework</groupId>
-                <artifactId>fastmybatis-spring-boot-starter</artifactId>
-                <version>${fastmybatis.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba.nacos</groupId>
-                <artifactId>nacos-client</artifactId>
-                <version>${nacos.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-bom</artifactId>
                 <version>${sa-token.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-dependencies</artifactId>
@@ -201,6 +186,21 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-bom</artifactId>
+                <version>${dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos.version}</version>
+            </dependency>
+
+            <!-- Swagger文档 -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations-jakarta</artifactId>
@@ -211,15 +211,6 @@
                 <artifactId>swagger-models-jakarta</artifactId>
                 <version>${knife4j-swagger-models-v3.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.apache.dubbo</groupId>
-                <artifactId>dubbo-bom</artifactId>
-                <version>${dubbo.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
             <!-- 文档生成 -->
             <dependency>
                 <groupId>com.ly.smart-doc</groupId>
@@ -241,27 +232,10 @@
                 <artifactId>org.eclipse.jgit</artifactId>
                 <version>7.4.0.202509020913-r</version>
             </dependency>
-
             <dependency>
                 <groupId>cn.torna</groupId>
                 <artifactId>torna-sdk</artifactId>
                 <version>${torna-sdk.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons-logging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-fileupload</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-fileupload</groupId>
-                <artifactId>commons-fileupload</artifactId>
-                <version>${commons-fileupload.version}</version>
             </dependency>
 
             <dependency>
@@ -321,17 +295,7 @@
                 <version>${jasypt.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.dromara.x-file-storage</groupId>
-                <artifactId>x-file-storage-spring</artifactId>
-                <version>${x-file-storage.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dromara.x-file-storage</groupId>
-                <artifactId>x-file-storage-core</artifactId>
-                <version>${x-file-storage.version}</version>
-            </dependency>
-
+            <!-- 持久层 -->
             <dependency>
                 <groupId>org.mybatis</groupId>
                 <artifactId>mybatis</artifactId>
@@ -352,36 +316,66 @@
                 <artifactId>druid</artifactId>
                 <version>${druid.version}</version>
             </dependency>
-            <dependency>
-                <groupId>p6spy</groupId>
-                <artifactId>p6spy</artifactId>
-                <version>${p6spy.version}</version>
-            </dependency>
 
+            <!-- mysql -->
             <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
-            <!-- 默认适配 jdk8，其他jdk版本请更换对应的jar版本 -->
+            <!-- sqlServer 默认适配 jdk8，其他jdk版本请更换对应的jar版本 -->
             <dependency>
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
                 <version>${mssql-jdbc.version}</version>
             </dependency>
+            <!-- 达梦 -->
             <dependency>
                 <groupId>com.dameng</groupId>
                 <artifactId>DmJdbcDriver18</artifactId>
                 <version>${dm.version}</version>
             </dependency>
 
-            <!-- 阿里云短信 -->
+            <!-- 短信 -->
             <dependency>
-                <groupId>com.aliyun</groupId>
-                <artifactId>dysmsapi20170525</artifactId>
-                <version>${aliyun-dysmsapi.version}</version>
+                <groupId>org.dromara.sms4j</groupId>
+                <artifactId>sms4j-spring-boot-starter</artifactId>
+                <version>${sms4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara.sms4j</groupId>
+                <artifactId>sms4j-core</artifactId>
+                <version>${sms4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara.sms4j</groupId>
+                <artifactId>sms4j-provider</artifactId>
+                <version>${sms4j.version}</version>
             </dependency>
 
+            <!-- 邮件 -->
+            <dependency>
+                <groupId>org.dromara.sms4j</groupId>
+                <artifactId>sms4j-email-jakarta-core</artifactId>
+                <version>${sms4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara.sms4j</groupId>
+                <artifactId>sms4j-email-jakarta-api</artifactId>
+                <version>${sms4j.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.dromara.x-file-storage</groupId>
+                <artifactId>x-file-storage-spring</artifactId>
+                <version>${x-file-storage.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara.x-file-storage</groupId>
+                <artifactId>x-file-storage-core</artifactId>
+                <version>${x-file-storage.version}</version>
+            </dependency>
             <!-- 阿里云OSS -->
             <dependency>
                 <groupId>com.aliyun.oss</groupId>
@@ -406,18 +400,11 @@
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
             </dependency>
-
+            <!--腾讯云 -->
             <dependency>
                 <groupId>com.tencentcloudapi</groupId>
                 <artifactId>tencentcloud-sdk-java</artifactId>
                 <version>${tencentcloud-sdk-java.version}</version>
-            </dependency>
-
-            <!-- 百度短信 -->
-            <dependency>
-                <groupId>com.baidubce</groupId>
-                <artifactId>bce-java-sdk</artifactId>
-                <version>${bce-java-sdk.version}</version>
             </dependency>
 
             <dependency>
@@ -465,7 +452,7 @@
                 <version>${caffeine.version}</version>
             </dependency>
 
-            <!-- protostuff -->
+            <!-- 序列化 -->
             <dependency>
                 <groupId>io.protostuff</groupId>
                 <artifactId>protostuff-core</artifactId>
@@ -477,6 +464,32 @@
                 <version>${protostuff.version}</version>
             </dependency>
 
+            <!-- 工具类 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
@@ -493,14 +506,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <!-- commons-exec -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-exec</artifactId>
                 <version>${commons-exec.version}</version>
             </dependency>
-
             <!-- commons-email -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -508,66 +519,15 @@
                 <version>${commons-email.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>${jsoup.version}</version>
-            </dependency>
 
+            <!-- 三方登录 -->
             <dependency>
                 <groupId>me.zhyd.oauth</groupId>
                 <artifactId>JustAuth</artifactId>
                 <version>${JustAuth.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${sun-jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${sun-jaxb.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.oshi</groupId>
-                <artifactId>oshi-core</artifactId>
-                <version>${oshi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>${fastjson2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>transmittable-thread-local</artifactId>
-                <version>${transmittable-thread-local.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-            </dependency>
-
+            <!-- 对象转换 -->
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
@@ -584,12 +544,57 @@
                 <version>${mapstruct-plus.version}</version>
             </dependency>
 
+            <!-- json -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+
+            <!-- Java 操作系统和硬件信息库-->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${sun-jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${sun-jaxb.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>${javassist.version}</version>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/com.squareup.okio/okio -->
             <dependency>
                 <groupId>com.squareup.okio</groupId>
