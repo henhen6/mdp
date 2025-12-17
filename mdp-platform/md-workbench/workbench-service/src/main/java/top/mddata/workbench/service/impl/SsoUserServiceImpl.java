@@ -12,21 +12,30 @@ import com.mybatisflex.core.util.LambdaGetter;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.email.jakarta.api.MailClient;
+import org.dromara.email.jakarta.comm.entity.MailMessage;
+import org.dromara.sms4j.api.SmsBlend;
+import org.dromara.sms4j.chuanglan.config.ChuangLanConfig;
+import org.dromara.sms4j.core.factory.SmsFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.cache.redis.CacheResult;
+import top.mddata.base.cache.repository.CacheOps;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.ContextUtil;
+import top.mddata.base.utils.DateUtils;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.organization.OrgCacheKeyBuilder;
 import top.mddata.common.cache.console.organization.UserCacheKeyBuilder;
 import top.mddata.common.cache.console.organization.UserOrgCacheKeyBuilder;
+import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserEmailCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserPhoneCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserUserNameCacheKeyBuilder;
+import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.OrgNature;
@@ -38,8 +47,13 @@ import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.OrgNatureMapper;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
+import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.console.system.facade.FileFacade;
+import top.mddata.workbench.dto.ProfileEmailDto;
+import top.mddata.workbench.dto.ProfilePasswordDto;
+import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
+import top.mddata.workbench.enumeration.MsgTemplateCodeEnum;
 import top.mddata.workbench.service.SsoUserService;
 
 import java.time.LocalDateTime;
@@ -47,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -63,6 +78,10 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     private final OrgMapper orgMapper;
     private final OrgNatureMapper orgNatureMapper;
     private final FileFacade fileFacade;
+    private final CacheOps cacheOps;
+    private final ConfigFacade configFacade;
+    private final ChuangLanConfig chuangLanConfig;
+    private final MailClient mailClient;
 
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
@@ -295,6 +314,127 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     public OrgNature getOrgNatureByOrgId(Long id) {
         List<OrgNature> sysOrgTypes = orgNatureMapper.selectListByQuery(QueryWrapper.create().eq(OrgNature::getOrgId, id));
         return CollUtil.isNotEmpty(sysOrgTypes) ? sysOrgTypes.get(0) : null;
+    }
+
+    @Override
+    public String sendPhoneCode(String oldPhone, String phone) {
+        User current = getById(ContextUtil.getUserId());
+        ArgumentAssert.notNull(current, "用户不存在");
+        ArgumentAssert.isTrue(StrUtil.equals(current.getPhone(), oldPhone), "原手机号不一致");
+        ArgumentAssert.isFalse(checkPhone(phone, null), "该手机号已经被他人使用");
+
+        String code = RandomUtil.randomNumbers(6);
+        String key = RandomUtil.randomNumbers(10);
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateCodeEnum.PHONE_EDIT.name());
+        cacheOps.set(cacheKey, code);
+
+        log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
+
+        SmsBlend smsBlend = SmsFactory.getSmsBlend("chuanglan");
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("s", code);
+        String template = "【" + chuangLanConfig.getSignature() + "】您的验证码为：{$var}";
+//        TODO 调用消息中心接口
+        smsBlend.sendMessage(phone, template, params);
+        return (key);
+    }
+
+    @Override
+    public String sendEmailCode(String oldEmail, String email) {
+        User current = getById(ContextUtil.getUserId());
+        ArgumentAssert.notNull(current, "用户不存在");
+        ArgumentAssert.isTrue(StrUtil.equals(current.getEmail(), oldEmail), "原邮箱不一致");
+        ArgumentAssert.isFalse(checkEmail(email, null), "该邮箱已经被他人使用");
+
+        String code = RandomUtil.randomNumbers(6);
+        String key = RandomUtil.randomNumbers(10);
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateCodeEnum.EMAIL_EDIT.name());
+        cacheOps.set(cacheKey, code);
+
+        log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
+
+        String template = "您的验证码为：" + code;
+
+//        TODO 调用消息中心接口
+        MailMessage message = MailMessage.Builder()
+                .mailAddress(email) // 收件人地址
+                .title("修改个人邮箱")
+                .body(template)
+                .build();
+        mailClient.send(message);
+
+        return (key);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long updatePhone(ProfilePhoneDto dto) {
+        Long userId = ContextUtil.getUserId();
+        ArgumentAssert.notNull(userId, "用户不存在");
+        User current = getById(userId);
+        ArgumentAssert.notNull(current, "用户不存在");
+        ArgumentAssert.isTrue(StrUtil.equals(current.getPhone(), dto.getOldPhone()), "原手机号不一致");
+        ArgumentAssert.isFalse(checkPhone(dto.getPhone(), null), "该手机号已经被他人使用");
+
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateCodeEnum.PHONE_EDIT.name());
+        CacheResult<String> result = cacheOps.get(cacheKey);
+        ArgumentAssert.isTrue(StrUtil.equals(result.getValue(), dto.getCode()), "验证码错误");
+
+        User user = UpdateEntity.of(User.class, userId);
+        user.setPhone(dto.getPhone());
+        updateById(user);
+
+        cacheOps.del(cacheKey);
+        // TODO 广播修改用户信息 & 修改session 中的user
+
+        return userId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long updateEmail(ProfileEmailDto dto) {
+        Long userId = ContextUtil.getUserId();
+        ArgumentAssert.notNull(userId, "用户不存在");
+        User current = getById(userId);
+        ArgumentAssert.notNull(current, "用户不存在");
+        ArgumentAssert.isTrue(StrUtil.equals(current.getEmail(), dto.getOldEmail()), "原邮箱不一致");
+        ArgumentAssert.isFalse(checkPhone(dto.getEmail(), null), "该邮箱已经被他人使用");
+
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateCodeEnum.EMAIL_EDIT.name());
+        CacheResult<String> result = cacheOps.get(cacheKey);
+        ArgumentAssert.isTrue(StrUtil.equals(result.getValue(), dto.getCode()), "验证码错误");
+
+        User user = UpdateEntity.of(User.class, userId);
+        user.setEmail(dto.getEmail());
+        updateById(user);
+
+        cacheOps.del(cacheKey);
+        // TODO 广播修改用户信息 & 修改session 中的user
+        return userId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long updatePassword(ProfilePasswordDto dto) {
+        Long userId = ContextUtil.getUserId();
+        ArgumentAssert.notNull(userId, "用户不存在");
+        User current = getById(userId);
+        ArgumentAssert.notNull(current, "用户不存在");
+        String oldPasswordMd5 = SecureUtil.sha256(dto.getOldPassword() + current.getSalt());
+        ArgumentAssert.isTrue(StrUtil.equals(oldPasswordMd5, current.getPassword()), "原密码不正确");
+        ArgumentAssert.isTrue(StrUtil.equals(dto.getPassword(), dto.getConfirmPassword()), "密码不一致");
+
+        User user = UpdateEntity.of(User.class, userId);
+        user.setSalt(RandomUtil.randomString(20));
+        user.setPassword(SecureUtil.sha256(dto.getPassword() + user.getSalt()));
+        user.setPwErrorNum(0);
+        user.setPwErrorLastTime(null);
+        String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
+        user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
+
+        updateById(user);
+        // TODO 广播修改用户信息 & 修改session 中的user
+        return userId;
     }
 
     private void initSsoUser(User defUser) {

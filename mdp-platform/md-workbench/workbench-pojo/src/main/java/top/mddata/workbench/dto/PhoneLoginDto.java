@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @Schema(title = "MobileLoginDTO", description = "手机验证码登录")
-public class MobileLoginDto {
+public class PhoneLoginDto {
     @Schema(description = "验证码KEY")
     @NotEmpty(message = "请填写验证码")
     private String key;

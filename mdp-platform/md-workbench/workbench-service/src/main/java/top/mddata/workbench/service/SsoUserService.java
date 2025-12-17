@@ -4,6 +4,9 @@ import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
+import top.mddata.workbench.dto.ProfileEmailDto;
+import top.mddata.workbench.dto.ProfilePasswordDto;
+import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
 
 import java.util.List;
@@ -136,4 +139,46 @@ public interface SsoUserService extends SuperService<User> {
      * @return 用户id
      */
     Long updateProfile(ProfileUserDto dto);
+
+
+    /**
+     * 发送手机验证码
+     *
+     * @param oldPhone 原手机号
+     * @param phone    新手机号
+     * @return 发送序号
+     */
+    String sendPhoneCode(String oldPhone, String phone);
+
+    /**
+     * 发送邮箱验证码
+     *
+     * @param oldEmail 原邮箱
+     * @param email    新邮箱
+     * @return 发送序号
+     */
+    String sendEmailCode(String oldEmail, String email);
+
+    /**
+     * 修改手机号
+     *
+     * @param dto 修改信息
+     * @return 用户id
+     */
+    Long updatePhone(ProfilePhoneDto dto);
+
+    /**
+     * 修改邮箱
+     *
+     * @param dto 邮箱信息
+     * @return 用户id
+     */
+    Long updateEmail(ProfileEmailDto dto);
+    /**
+     * 修改个人密码
+     *
+     * @param dto 密码信息
+     * @return 用户id
+     */
+    Long updatePassword(ProfilePasswordDto dto);
 }

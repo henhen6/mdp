@@ -358,6 +358,18 @@ sa-token:
     is-http: false
     # API 接口调用秘钥
     secret-key: SSO-C3-kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
+sms:
+  config-type: yaml
+  blends:
+    chuanglan:
+      supplier: chuanglan
+      #您的accessKey
+      access-key-id: 'ddddd'
+      #您的accessKeySecret
+      access-key-secret: 'xxxx'
+      #您的短信签名
+      signature: '主数据平台'
+
 
 logging:
   file:

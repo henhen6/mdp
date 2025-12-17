@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 个人中心用户信息
+ * 个人中心-用户信息
  * @author henhen6
  */
 @Accessors(chain = true)
@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "个人中心用户信息")
+@Schema(description = "个人中心-用户信息")
 public class ProfileUserDto {
 
     /**

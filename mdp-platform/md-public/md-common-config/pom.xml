@@ -34,6 +34,15 @@
         </dependency>
 
         <dependency>
+            <groupId>org.dromara.sms4j</groupId>
+            <artifactId>sms4j-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.dromara.sms4j</groupId>
+            <artifactId>sms4j-email-jakarta-core</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>top.mddata.base</groupId>
             <artifactId>md-db-mybatis-flex</artifactId>
         </dependency>
