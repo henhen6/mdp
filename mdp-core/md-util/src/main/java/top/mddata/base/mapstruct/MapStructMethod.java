@@ -19,33 +19,6 @@ import java.util.Map;
  */
 public interface MapStructMethod {
     /**
-     * 任意对象 转为json字符串
-     */
-    @Qualifier
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.CLASS)
-    @interface ToJson {
-    }
-
-    /**
-     * json字符串 解析为Map
-     */
-    @Qualifier
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.CLASS)
-    @interface ParseMap {
-    }
-
-    /**
-     * 获取类
-     */
-    @Qualifier
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.CLASS)
-    @interface NameToClass {
-    }
-
-    /**
      * 获取类
      *
      * @param name 类名
@@ -94,6 +67,33 @@ public interface MapStructMethod {
     default Map<String, String> parseMap(String str) {
         return JsonUtil.parse(str, new TypeReference<>() {
         });
+    }
+
+    /**
+     * 任意对象 转为json字符串
+     */
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.CLASS)
+    @interface ToJson {
+    }
+
+    /**
+     * json字符串 解析为Map
+     */
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.CLASS)
+    @interface ParseMap {
+    }
+
+    /**
+     * 获取类
+     */
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.CLASS)
+    @interface NameToClass {
     }
 
 }
