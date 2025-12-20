@@ -45,6 +45,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PositionController extends SuperController<PositionService, Position> {
     private final EchoService echoService;
+
     /**
      * 添加岗位。
      *

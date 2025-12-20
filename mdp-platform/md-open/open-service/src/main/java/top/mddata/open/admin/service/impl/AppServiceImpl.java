@@ -70,6 +70,7 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
         Page<App> pageResult = mapper.xmlPaginate("pageByRoleId", page, otherParams);
         return BeanPageUtil.toBeanPage(pageResult, AppVo.class);
     }
+
     @Override
     @Transactional(readOnly = true)
     public Page<AppVo> pageByRoleId(Page<App> page, AppQuery query) {

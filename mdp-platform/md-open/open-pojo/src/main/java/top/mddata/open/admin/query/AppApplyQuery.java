@@ -76,7 +76,7 @@ public class AppApplyQuery extends ExtraParams implements Serializable {
     /**
      * 审核状态
      * [0-待提交 1-待审批 2-通过 99-退回]
-     * 
+     *
      */
     @Schema(description = "审核状态")
     private Integer auditStatus;

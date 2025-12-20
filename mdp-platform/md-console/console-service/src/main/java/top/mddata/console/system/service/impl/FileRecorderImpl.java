@@ -11,10 +11,10 @@ import org.dromara.x.file.storage.core.recorder.FileRecorder;
 import org.dromara.x.file.storage.core.upload.FilePartInfo;
 import org.springframework.stereotype.Component;
 import top.mddata.base.utils.StrPool;
+import top.mddata.console.system.convert.FileConvert;
 import top.mddata.console.system.entity.File;
 import top.mddata.console.system.mapper.FileMapper;
 import top.mddata.console.system.service.FilePartService;
-import top.mddata.console.system.convert.FileConvert;
 
 import java.util.List;
 

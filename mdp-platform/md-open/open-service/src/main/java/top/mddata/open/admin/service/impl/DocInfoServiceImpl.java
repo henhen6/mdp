@@ -66,6 +66,7 @@ public class DocInfoServiceImpl extends SuperServiceImpl<DocInfoMapper, DocInfo>
 
         return MyTreeUtil.buildTreeEntity(voList, 0L, DocInfoVo::new);
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updatePublish(Long id, Integer publish) {

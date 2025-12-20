@@ -34,6 +34,7 @@ public interface ResourceMenuService extends SuperService<ResourceMenu> {
      * @return 资源编码
      */
     List<String> findUserResourceCode(Long appId, Long userId);
+
     /**
      * 获取用户在指定应用下 拥有的路由
      * @param appId 应用ID

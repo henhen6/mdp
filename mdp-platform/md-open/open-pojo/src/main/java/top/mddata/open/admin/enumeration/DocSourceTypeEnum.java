@@ -1,9 +1,9 @@
 package top.mddata.open.admin.enumeration;
 
-import top.mddata.base.interfaces.BaseEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 来源类型

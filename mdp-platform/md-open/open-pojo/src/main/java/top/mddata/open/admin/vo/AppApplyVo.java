@@ -2,18 +2,17 @@ package top.mddata.open.admin.vo;
 
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import top.mddata.open.admin.entity.base.AppApplyBase;
-
-import java.io.Serial;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.Accessors;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import top.mddata.open.admin.entity.base.AppApplyBase;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 应用申请 VO类（通常用作Controller出参）。
@@ -32,7 +31,6 @@ public class AppApplyVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
 
 
     /**
@@ -81,7 +79,7 @@ public class AppApplyVo implements Serializable {
     /**
      * 审核状态
      * [0-待提交 1-待审批 2-通过 99-退回]
-     * 
+     *
      */
     @Schema(description = "审核状态")
     private Integer auditStatus;

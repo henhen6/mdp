@@ -21,6 +21,7 @@ import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.base.utils.JsonUtil;
+import top.mddata.console.system.convert.FileConvert;
 import top.mddata.console.system.dto.CopyFilesDto;
 import top.mddata.console.system.dto.FileUploadDto;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
@@ -29,7 +30,6 @@ import top.mddata.console.system.enumeration.FileTypeEnum;
 import top.mddata.console.system.mapper.FileMapper;
 import top.mddata.console.system.properties.FileProperties;
 import top.mddata.console.system.service.FileService;
-import top.mddata.console.system.convert.FileConvert;
 import top.mddata.console.system.vo.FileVo;
 
 import java.time.LocalDate;

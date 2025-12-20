@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
 import top.mddata.base.utils.DateUtils;
 import top.mddata.open.admin.dto.OauthLogDto;
+import top.mddata.open.admin.vo.AppVo;
 import top.mddata.open.manage.facade.AppFacade;
 import top.mddata.open.manage.facade.OauthLogFacade;
-import top.mddata.open.admin.vo.AppVo;
 
 /**
  * 最终权限处理器：在所有权限处理器工作完成之后，执行此权限处理器：

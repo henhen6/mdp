@@ -24,12 +24,6 @@ import java.lang.annotation.Target;
 public interface FileConvert extends MapStructMethod {
     FileConvert INSTANCE = Mappers.getMapper(FileConvert.class);
 
-    @Qualifier
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.CLASS)
-    @interface ExtToFileType {
-    }
-
     @ExtToFileType
     default Integer extToFileType(String ext) {
         return FileTypeEnum.getByExtension(ext).getCode();
@@ -46,7 +40,6 @@ public interface FileConvert extends MapStructMethod {
     @Mapping(target = File.Fields.thFileAcl, ignore = true)
     FileInfo toTarget(File file);
 
-
     @Mapping(source = File.Fields.ext, target = "fileType", qualifiedBy = ExtToFileType.class)
     @Mapping(target = File.Fields.metadata, qualifiedBy = ToJson.class)
     @Mapping(target = File.Fields.userMetadata, qualifiedBy = ToJson.class)
@@ -59,6 +52,13 @@ public interface FileConvert extends MapStructMethod {
     @Mapping(target = File.Fields.thFileAcl, ignore = true)
     @Mapping(target = File.ID_FIELD, ignore = true)
     File toSource(FileInfo fileInfo);
+
+
+    @Qualifier
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.CLASS)
+    @interface ExtToFileType {
+    }
 
 
 }

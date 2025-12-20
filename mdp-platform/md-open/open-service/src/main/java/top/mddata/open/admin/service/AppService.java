@@ -27,6 +27,7 @@ public interface AppService extends SuperService<App> {
      * @return 分页信息
      */
     Page<AppVo> pageByRoleTemplateId(Page<App> page, AppQuery query);
+
     Page<AppVo> pageByRoleId(Page<App> page, AppQuery query);
 
     /**

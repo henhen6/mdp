@@ -20,7 +20,7 @@ import top.mddata.base.interfaces.BaseEnum;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(title = "AuthTypeEnum", description = "认证方式-枚举")
-public enum AuthTypeEnum  implements BaseEnum<String> {
+public enum AuthTypeEnum implements BaseEnum<String> {
     /**
      * 用户名密码 + 验证码登录
      */

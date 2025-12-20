@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
 import top.mddata.base.exception.BizException;
-import top.mddata.open.manage.facade.AppFacade;
 import top.mddata.open.admin.vo.AppVo;
+import top.mddata.open.manage.facade.AppFacade;
 
 import java.util.List;
 

@@ -174,6 +174,7 @@ public interface SsoUserService extends SuperService<User> {
      * @return 用户id
      */
     Long updateEmail(ProfileEmailDto dto);
+
     /**
      * 修改个人密码
      *

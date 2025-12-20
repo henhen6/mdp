@@ -15,6 +15,7 @@ import top.mddata.open.manage.facade.OauthLogFacade;
 @RequiredArgsConstructor
 public class OpOauthLogFacadeImpl implements OauthLogFacade {
     private final OauthLogService oauthLogService;
+
     @Override
     public void save(OauthLogDto ool) {
         oauthLogService.saveDto(ool);

@@ -9,10 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
-import top.mddata.open.manage.facade.AppFacade;
-import top.mddata.open.manage.facade.OauthUnionidFacade;
 import top.mddata.open.admin.vo.AppVo;
 import top.mddata.open.admin.vo.OauthUnionidVo;
+import top.mddata.open.manage.facade.AppFacade;
+import top.mddata.open.manage.facade.OauthUnionidFacade;
 
 /**
  * UnionId Scope 处理器，在返回的 AccessToken 中增加 unionid 字段
