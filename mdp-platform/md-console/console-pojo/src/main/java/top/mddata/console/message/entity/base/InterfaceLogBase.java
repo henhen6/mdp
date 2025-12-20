@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * 接口执行日志记录实体类。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:47
+ * @since 2025-12-21 00:30:09
  */
 @FieldNameConstants
 @Data
@@ -28,8 +28,7 @@ public class InterfaceLogBase extends SuperEntity<Long> implements Serializable 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 接口日志ID;
-     * #extend_interface_log
+     * 接口ID
      */
     private Long interfaceStatId;
 

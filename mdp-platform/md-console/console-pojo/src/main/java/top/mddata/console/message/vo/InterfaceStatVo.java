@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * 接口统计 VO类（通常用作Controller出参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -29,16 +29,12 @@ public class InterfaceStatVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    @Id
-    @Schema(description = "")
-    private Long id;
-
     /**
-     * 接口ID;
-     * #extend_interface
+     * ID
      */
-    @Schema(description = "接口ID;")
-    private Long interfaceConfigId;
+    @Id
+    @Schema(description = "ID")
+    private Long id;
 
     /**
      * 接口名称

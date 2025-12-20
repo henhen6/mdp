@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 消息模板 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data

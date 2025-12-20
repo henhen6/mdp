@@ -16,7 +16,7 @@ import java.io.Serializable;
  * 接口 DTO（写入方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:47
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -27,8 +27,11 @@ public class InterfaceConfigDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotNull(message = "请填写", groups = BaseEntity.Update.class)
-    @Schema(description = "")
+    /**
+     * ID
+     */
+    @NotNull(message = "请填写ID", groups = BaseEntity.Update.class)
+    @Schema(description = "ID")
     private Long id;
 
     /**
@@ -43,6 +46,7 @@ public class InterfaceConfigDto implements Serializable {
      * 执行方式
      * [1-实现类 2-脚本 3-magic-api]
      */
+    @NotNull(message = "请填写执行方式")
     @Schema(description = "执行方式")
     private Integer execMode;
 
@@ -73,13 +77,5 @@ public class InterfaceConfigDto implements Serializable {
     @NotNull(message = "请填写状态")
     @Schema(description = "状态")
     private Boolean state;
-
-    /**
-     * 配置参数
-     * (JSON存储：AppId, SecretKey等)
-     */
-    @Size(max = 536870911, message = "配置参数长度不能超过{max}")
-    @Schema(description = "配置参数")
-    private String configJson;
 
 }

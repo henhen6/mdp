@@ -1,7 +1,6 @@
 package top.mddata.console.message.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 任务接收人 DTO（写入方法入参）。
+ * 接口 DTO（写入方法入参）。
  *
  * @author henhen6
  * @since 2025-12-21 00:30:09
@@ -21,8 +20,8 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "任务接收人Dto")
-public class MsgTaskRecipientDto implements Serializable {
+@Schema(description = "接口Dto")
+public class InterfaceConfigConfigDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -35,19 +34,11 @@ public class MsgTaskRecipientDto implements Serializable {
     private Long id;
 
     /**
-     * 消息ID
+     * 配置参数
+     * (JSON存储：AppId, SecretKey等)
      */
-    @NotNull(message = "请填写消息ID")
-    @Schema(description = "消息ID")
-    private Long msgTaskId;
-
-    /**
-     * 接收人
-     * 站内信-id 短信-手机号 邮件-邮箱
-     */
-    @NotEmpty(message = "请填写接收人")
-    @Size(max = 255, message = "接收人长度不能超过{max}")
-    @Schema(description = "接收人")
-    private String recipient;
+    @Size(max = 536870911, message = "配置参数长度不能超过{max}")
+    @Schema(description = "配置参数")
+    private String configJson;
 
 }

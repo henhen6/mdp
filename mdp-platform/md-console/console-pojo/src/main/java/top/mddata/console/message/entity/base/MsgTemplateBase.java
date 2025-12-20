@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 消息模板实体类。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @FieldNameConstants
 @Data

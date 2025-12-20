@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * 消息任务 VO类（通常用作Controller出参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data

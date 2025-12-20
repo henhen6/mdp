@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * 接口执行日志记录 VO类（通常用作Controller出参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -29,15 +29,17 @@ public class InterfaceLogVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    /**
+     * id
+     */
     @Id
-    @Schema(description = "")
+    @Schema(description = "id")
     private Long id;
 
     /**
-     * 接口日志ID;
-     * #extend_interface_log
+     * 接口ID
      */
-    @Schema(description = "接口日志ID;")
+    @Schema(description = "接口ID")
     private Long interfaceStatId;
 
     /**

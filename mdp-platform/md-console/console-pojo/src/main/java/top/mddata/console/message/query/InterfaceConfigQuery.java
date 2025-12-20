@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 接口 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:47
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -27,7 +27,10 @@ public class InterfaceConfigQuery extends ExtraParams implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "")
+    /**
+     * ID
+     */
+    @Schema(description = "ID")
     private Long id;
 
     /**
@@ -62,6 +65,13 @@ public class InterfaceConfigQuery extends ExtraParams implements Serializable {
     private String magicApiId;
 
     /**
+     * 配置参数
+     * (JSON存储：AppId, SecretKey等)
+     */
+    @Schema(description = "配置参数")
+    private String configJson;
+
+    /**
      * 状态
      */
     @Schema(description = "状态")
@@ -90,12 +100,5 @@ public class InterfaceConfigQuery extends ExtraParams implements Serializable {
      */
     @Schema(description = "修改人")
     private Long updatedBy;
-
-    /**
-     * 配置参数
-     * (JSON存储：AppId, SecretKey等)
-     */
-    @Schema(description = "配置参数")
-    private String configJson;
 
 }

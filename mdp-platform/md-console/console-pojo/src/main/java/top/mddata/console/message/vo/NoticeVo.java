@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * 站内通知 VO类（通常用作Controller出参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -30,10 +30,10 @@ public class NoticeVo implements Serializable {
 
 
     /**
-     * 短信记录ID
+     * ID
      */
     @Id
-    @Schema(description = "短信记录ID")
+    @Schema(description = "ID")
     private Long id;
 
     /**

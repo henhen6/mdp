@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 站内通知 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -28,9 +28,9 @@ public class NoticeQuery extends ExtraParams implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 短信记录ID
+     * ID
      */
-    @Schema(description = "短信记录ID")
+    @Schema(description = "ID")
     private Long id;
 
     /**

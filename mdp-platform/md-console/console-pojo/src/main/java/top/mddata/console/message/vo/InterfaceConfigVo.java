@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * 接口 VO类（通常用作Controller出参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:47
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -29,8 +29,11 @@ public class InterfaceConfigVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    /**
+     * ID
+     */
     @Id
-    @Schema(description = "")
+    @Schema(description = "ID")
     private Long id;
 
     /**
@@ -65,6 +68,13 @@ public class InterfaceConfigVo implements Serializable {
     private String magicApiId;
 
     /**
+     * 配置参数
+     * (JSON存储：AppId, SecretKey等)
+     */
+    @Schema(description = "配置参数")
+    private String configJson;
+
+    /**
      * 状态
      */
     @Schema(description = "状态")
@@ -93,12 +103,5 @@ public class InterfaceConfigVo implements Serializable {
      */
     @Schema(description = "修改人")
     private Long updatedBy;
-
-    /**
-     * 配置参数
-     * (JSON存储：AppId, SecretKey等)
-     */
-    @Schema(description = "配置参数")
-    private String configJson;
 
 }

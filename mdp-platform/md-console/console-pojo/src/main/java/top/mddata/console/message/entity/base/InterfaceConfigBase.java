@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 接口实体类。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:47
+ * @since 2025-12-21 00:30:09
  */
 @FieldNameConstants
 @Data
@@ -53,14 +53,14 @@ public class InterfaceConfigBase extends SuperEntity<Long> implements Serializab
     private String magicApiId;
 
     /**
-     * 状态
-     */
-    private Boolean state;
-
-    /**
      * 配置参数
      * (JSON存储：AppId, SecretKey等)
      */
     private String configJson;
+
+    /**
+     * 状态
+     */
+    private Boolean state;
 
 }

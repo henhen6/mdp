@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * 接口统计 DTO（写入方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -28,17 +28,12 @@ public class InterfaceStatDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotNull(message = "请填写", groups = BaseEntity.Update.class)
-    @Schema(description = "")
-    private Long id;
-
     /**
-     * 接口ID;
-     * #extend_interface
+     * ID
      */
-    @NotNull(message = "请填写接口ID;")
-    @Schema(description = "接口ID;")
-    private Long interfaceConfigId;
+    @NotNull(message = "请填写ID", groups = BaseEntity.Update.class)
+    @Schema(description = "ID")
+    private Long id;
 
     /**
      * 接口名称

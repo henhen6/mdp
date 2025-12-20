@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 接口执行日志记录 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -27,14 +27,16 @@ public class InterfaceLogQuery extends ExtraParams implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "")
+    /**
+     * id
+     */
+    @Schema(description = "id")
     private Long id;
 
     /**
-     * 接口日志ID;
-     * #extend_interface_log
+     * 接口ID
      */
-    @Schema(description = "接口日志ID;")
+    @Schema(description = "接口ID")
     private Long interfaceStatId;
 
     /**

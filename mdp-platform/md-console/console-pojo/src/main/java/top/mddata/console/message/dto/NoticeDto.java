@@ -16,7 +16,7 @@ import java.io.Serializable;
  * 站内通知 DTO（写入方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data
@@ -28,10 +28,10 @@ public class NoticeDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 短信记录ID
+     * ID
      */
-    @NotNull(message = "请填写短信记录ID", groups = BaseEntity.Update.class)
-    @Schema(description = "短信记录ID")
+    @NotNull(message = "请填写ID", groups = BaseEntity.Update.class)
+    @Schema(description = "ID")
     private Long id;
 
     /**

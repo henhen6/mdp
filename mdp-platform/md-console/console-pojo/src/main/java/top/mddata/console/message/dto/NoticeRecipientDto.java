@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 通知接收人 DTO（写入方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @Accessors(chain = true)
 @Data

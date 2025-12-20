@@ -13,7 +13,7 @@ import top.mddata.console.message.entity.base.NoticeBase;
  * DO类：数据对象，可以在关联查询时，再次添加字段，重新生成代码时，忽略此文件。
  *
  * @author henhen6
- * @since 2025-12-21 00:12:48
+ * @since 2025-12-21 00:30:09
  */
 @FieldNameConstants
 @Accessors(chain = true)
