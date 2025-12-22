@@ -106,32 +106,32 @@ public abstract class SuperServiceImpl<M extends BaseMapper<Entity>, Entity exte
     /**
      * 修改之前处理参数等操作
      *
-     * @param updateDto 修改对象
+     * @param update 修改对象
      */
-    protected Entity updateBefore(Object updateDto) {
+    protected Entity updateBefore(Object update) {
         // 这个方法可以让你在调用updateById时，将手动设置过的所有字段，就修改到数据库。 没有手动调用过set的字段，不会更新
         Entity entity = UpdateEntity.of(getEntityClass());
-        BeanUtil.copyProperties(updateDto, entity);
+        BeanUtil.copyProperties(update, entity);
         return entity;
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Entity updateDtoById(Object updateDto) {
-        Entity entity = updateBefore(updateDto);
+    public Entity updateDtoById(Object update) {
+        Entity entity = updateBefore(update);
         updateById(entity);
-        updateAfter(updateDto, entity);
+        updateAfter(update, entity);
         return entity;
     }
 
     /**
      * 修改之后设置参数值，淘汰缓存等操作
      *
-     * @param updateDto 修改对象
+     * @param update 修改对象
      * @param entity   实体
      */
-    protected void updateAfter(Object updateDto, Entity entity) {
+    protected void updateAfter(Object update, Entity entity) {
     }
 
     @Override
