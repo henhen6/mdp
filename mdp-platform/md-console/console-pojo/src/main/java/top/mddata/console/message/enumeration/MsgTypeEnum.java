@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(title = "MsgTemplateTypeEnum", description = "消息类型-枚举")
-public enum MsgTemplateTypeEnum implements BaseEnum<Integer> {
+@Schema(title = "MsgTypeEnum", description = "消息类型-枚举")
+public enum MsgTypeEnum implements BaseEnum<Integer> {
     /**
      * NOTIFY="站内信"
      */
@@ -41,11 +41,11 @@ public enum MsgTemplateTypeEnum implements BaseEnum<Integer> {
     /**
      * 根据当前枚举的name匹配
      */
-    public static MsgTemplateTypeEnum match(String val, MsgTemplateTypeEnum def) {
+    public static MsgTypeEnum match(String val, MsgTypeEnum def) {
         return Stream.of(values()).parallel().filter(item -> item.name().equalsIgnoreCase(val)).findAny().orElse(def);
     }
 
-    public static MsgTemplateTypeEnum get(String val) {
+    public static MsgTypeEnum get(String val) {
         return match(val, null);
     }
 

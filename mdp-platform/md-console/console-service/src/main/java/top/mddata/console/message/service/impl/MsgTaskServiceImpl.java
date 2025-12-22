@@ -13,6 +13,7 @@ import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.ContextUtil;
 import top.mddata.base.utils.SpringUtils;
+import top.mddata.common.constant.ConfigKey;
 import top.mddata.console.message.dto.MsgSendDto;
 import top.mddata.console.message.dto.MsgSendMailDto;
 import top.mddata.console.message.dto.MsgSendNoticeDto;
@@ -24,13 +25,14 @@ import top.mddata.console.message.entity.MsgTemplate;
 import top.mddata.console.message.enumeration.MsgChannelEnum;
 import top.mddata.console.message.enumeration.MsgRecipientScopeEnum;
 import top.mddata.console.message.enumeration.MsgTaskStatusEnum;
-import top.mddata.console.message.enumeration.MsgTemplateTypeEnum;
+import top.mddata.console.message.enumeration.MsgTypeEnum;
 import top.mddata.console.message.event.MsgSendEvent;
 import top.mddata.console.message.event.dto.MsgSendEventDto;
 import top.mddata.console.message.mapper.MsgTaskMapper;
 import top.mddata.console.message.service.MsgTaskRecipientService;
 import top.mddata.console.message.service.MsgTaskService;
 import top.mddata.console.message.service.MsgTemplateService;
+import top.mddata.console.system.facade.ConfigFacade;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,13 +51,14 @@ import java.util.List;
 public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask> implements MsgTaskService {
     private final MsgTaskRecipientService msgTaskRecipientService;
     private final MsgTemplateService msgTemplateService;
+    private final ConfigFacade configFacade;
 
     @Override
     protected MsgTask saveBefore(Object save) {
 
         MsgTask entity = BeanUtil.toBean(save, MsgTask.class);
         entity.setId(null);
-        entity.setType(MsgTemplateTypeEnum.NOTICE.getCode());
+        entity.setType(MsgTypeEnum.NOTICE.getCode());
         entity.setStatus(MsgTaskStatusEnum.DRAFT.getCode());
         entity.setChannel(MsgChannelEnum.WEB.getCode());
         entity.setSenderId(ContextUtil.getUserId());
@@ -82,7 +85,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
     protected MsgTask updateBefore(Object update) {
         MsgTask entity = UpdateEntity.of(MsgTask.class);
         BeanUtil.copyProperties(update, entity);
-        entity.setType(MsgTemplateTypeEnum.NOTICE.getCode());
+        entity.setType(MsgTypeEnum.NOTICE.getCode());
         entity.setStatus(MsgTaskStatusEnum.DRAFT.getCode());
         entity.setChannel(MsgChannelEnum.WEB.getCode());
         entity.setSenderId(ContextUtil.getUserId());
@@ -108,6 +111,11 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean publish(MsgTaskDto data) {
+        String msgTemplateKey = configFacade.getString(ConfigKey.Console.MESSAGE_NOTICE, null);  // 在【系统配置】获取站内信的模板标识  虽然多了一次查询，但方便系统运行过程中切换模版
+        ArgumentAssert.notEmpty(msgTemplateKey, "请联系管理员在【系统配置】页面配置【站内信】的模板标识");
+        MsgTemplate defNoticeTemplate = msgTemplateService.getByTemplateKey(msgTemplateKey);   // 在【消息模板】获取站内信的模板id
+        ArgumentAssert.notNull(defNoticeTemplate, "请联系管理员在【消息模板】页面配置【站内信】的消息模板");
+
         MsgTask entity;
         if (data.getId() == null) {
             entity = BeanUtil.toBean(data, MsgTask.class);
@@ -116,12 +124,11 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
             entity = UpdateEntity.of(MsgTask.class);
             BeanUtil.copyProperties(data, entity);
         }
-        entity.setType(MsgTemplateTypeEnum.NOTICE.getCode());
+        entity.setType(MsgTypeEnum.NOTICE.getCode());
         entity.setStatus(MsgTaskStatusEnum.WAITING.getCode());
         entity.setChannel(MsgChannelEnum.WEB.getCode());
         entity.setSenderId(ContextUtil.getUserId());
-
-        entity.setTemplateId();
+        entity.setTemplateId(defNoticeTemplate.getId());
 
         if (data.getId() == null) {
             this.save(entity);

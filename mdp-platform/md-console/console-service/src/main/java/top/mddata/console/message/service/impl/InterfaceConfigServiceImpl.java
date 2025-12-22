@@ -58,12 +58,15 @@ public class InterfaceConfigServiceImpl extends SuperServiceImpl<InterfaceConfig
         } else {
             ArgumentAssert.notEmpty(dto.getScript(), "请填写实现脚本");
         }
-        return super.saveBefore(save);
+
+        InterfaceConfig entity = BeanUtil.toBean(save, InterfaceConfig.class);
+        entity.setId(null);
+        entity.setConfigJson(JSON.toJSONString(Collections.emptyList()));
+        return entity;
     }
 
     @Override
     protected void saveAfter(Object save, InterfaceConfig entity) {
-
 
         // ID一致
         InterfaceStat stat = BeanUtil.toBean(entity, InterfaceStat.class);

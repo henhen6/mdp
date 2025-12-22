@@ -207,7 +207,7 @@ public class WrapperUtil {
             String order = orderArr.get(i);
 
             String beanColumn = getColumnByProperty(humpSort, entity);
-            wrapper.orderBy(new QueryColumn(beanColumn), StrUtil.equalsAny(order, "ascending", "ascend"));
+            wrapper.orderBy(new QueryColumn(beanColumn), StrUtil.equalsAny(order, "ascending", "ascend", "asc"));
         }
     }
 

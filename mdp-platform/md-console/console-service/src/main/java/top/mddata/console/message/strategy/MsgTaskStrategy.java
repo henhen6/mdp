@@ -6,6 +6,8 @@ import top.mddata.base.model.Kv;
 import top.mddata.base.utils.FreeMarkerUtil;
 import top.mddata.console.message.entity.MsgTask;
 import top.mddata.console.message.entity.MsgTemplate;
+import top.mddata.console.message.enumeration.MsgChannelEnum;
+import top.mddata.console.message.enumeration.MsgTypeEnum;
 import top.mddata.console.message.glue.GlueFactory;
 import top.mddata.console.message.strategy.dto.MsgResult;
 import top.mddata.console.message.strategy.dto.MsgTaskParam;
@@ -44,6 +46,9 @@ public interface MsgTaskStrategy {
      * @param msgTemplate 消息模板
      */
     default MsgResult replaceVariable(MsgTask msgTask, MsgTemplate msgTemplate) {
+        if (MsgChannelEnum.WEB.eq(msgTask.getChannel()) && MsgTypeEnum.NOTICE.eq(msgTask.getType())) {
+            return MsgResult.builder().title(msgTask.getTitle()).content(msgTask.getContent()).build();
+        }
         String script = msgTemplate.getScript();
         String templateContent = msgTemplate.getContent();
         String templateTitle = msgTemplate.getTitle();

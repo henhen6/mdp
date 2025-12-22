@@ -86,6 +86,18 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
     }
 
     @Override
+    protected void saveAfter(Object save, Config entity) {
+        CacheKey key = ConfigUniqKeyCacheKeyBuilder.builder(entity.getUniqKey());
+        cacheOps.del(key);
+    }
+
+    @Override
+    protected void updateAfter(Object update, Config entity) {
+        CacheKey key = ConfigUniqKeyCacheKeyBuilder.builder(entity.getUniqKey());
+        cacheOps.del(key);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Boolean check(String uniqKey, Long orgId, Long id) {
         QueryWrapper wrapper = QueryWrapper.create();

@@ -93,7 +93,8 @@ public class NoticeMsgTaskStrategyImpl implements MsgTaskStrategy {
             noticeRecipientService.saveBatch(recipientList);
         }
 
-        return MsgResult.builder().result(true).build();
+        msgResult.setResult(true);
+        return msgResult;
     }
 
     @Override

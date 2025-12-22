@@ -13,6 +13,8 @@ public interface ConfigKey {
     String NOT_ALLOW_WRITE = "NOT_ALLOW_WRITE";
 
     interface Console {
+        /** 消息管理页发送消息使用的内置模版 */
+        String MESSAGE_NOTICE = "NOTICE";
     }
 
     interface Workbench {
