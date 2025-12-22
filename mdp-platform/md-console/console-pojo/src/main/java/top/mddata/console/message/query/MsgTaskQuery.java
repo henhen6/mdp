@@ -28,9 +28,9 @@ public class MsgTaskQuery extends ExtraParams implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 短信记录ID
+     * ID
      */
-    @Schema(description = "短信记录ID")
+    @Schema(description = "ID")
     private Long id;
 
     /**

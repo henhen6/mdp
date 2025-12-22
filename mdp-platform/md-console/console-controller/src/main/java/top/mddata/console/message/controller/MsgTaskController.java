@@ -111,18 +111,11 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
         return R.success(page);
     }
 
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<MsgTaskVo>> list(@RequestBody @Validated MsgTaskQuery params) {
-        MsgTask entity = BeanUtil.toBean(params, MsgTask.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<MsgTaskVo> listVo = superService.listAs(wrapper, MsgTaskVo.class);
-        return R.success(listVo);
+
+    @Operation(summary = "发布站内信", description = "发布站内信")
+    @PostMapping("/publish")
+    @RequestLog("发布站内信")
+    public R<Boolean> publish(@RequestBody @Validated MsgTaskDto data) {
+        return R.success(superService.publish(data));
     }
 }

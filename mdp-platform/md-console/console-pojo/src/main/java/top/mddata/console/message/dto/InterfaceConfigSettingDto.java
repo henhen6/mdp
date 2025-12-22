@@ -2,7 +2,6 @@ package top.mddata.console.message.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
@@ -10,6 +9,7 @@ import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 接口 DTO（写入方法入参）。
@@ -20,8 +20,8 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "接口Dto")
-public class InterfaceConfigConfigDto implements Serializable {
+@Schema(description = "接口设置Dto")
+public class InterfaceConfigSettingDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -37,8 +37,7 @@ public class InterfaceConfigConfigDto implements Serializable {
      * 配置参数
      * (JSON存储：AppId, SecretKey等)
      */
-    @Size(max = 536870911, message = "配置参数长度不能超过{max}")
     @Schema(description = "配置参数")
-    private String configJson;
+    private List<InterfaceConfigJsonDto> configJsonList;
 
 }

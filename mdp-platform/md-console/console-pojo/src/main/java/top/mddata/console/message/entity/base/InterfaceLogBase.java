@@ -33,9 +33,13 @@ public class InterfaceLogBase extends SuperEntity<Long> implements Serializable 
     private Long interfaceStatId;
 
     /**
-     * 执行时间
+     * 执行开始时间
      */
-    private LocalDateTime execTime;
+    private LocalDateTime execStartTime;
+    /**
+     * 执行结束时间
+     */
+    private LocalDateTime execEndTime;
 
     /**
      * 执行状态
@@ -46,7 +50,7 @@ public class InterfaceLogBase extends SuperEntity<Long> implements Serializable 
     /**
      * 请求参数
      */
-    private String params;
+    private String param;
 
     /**
      * 接口返回

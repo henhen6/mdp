@@ -59,7 +59,7 @@ public class InterfaceLogVo implements Serializable {
      * 请求参数
      */
     @Schema(description = "请求参数")
-    private String params;
+    private String param;
 
     /**
      * 接口返回

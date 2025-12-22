@@ -12,6 +12,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 消息任务 DTO（写入方法入参）。
@@ -29,41 +30,12 @@ public class MsgTaskDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 短信记录ID
+     * ID
      */
-    @NotNull(message = "请填写短信记录ID", groups = BaseEntity.Update.class)
-    @Schema(description = "短信记录ID")
+    @NotNull(message = "请填写ID", groups = BaseEntity.Update.class)
+    @Schema(description = "ID")
     private Long id;
 
-    /**
-     * 消息模板
-     */
-    @Schema(description = "消息模板")
-    private Long templateId;
-
-    /**
-     * 消息类型
-     * [1-站内信 2-短信 3-邮件]
-     */
-    @NotNull(message = "请填写消息类型")
-    @Schema(description = "消息类型")
-    private Integer type;
-
-    /**
-     * 执行状态
-     * [0-草稿 1-待执行 2-执行成功 3-执行失败]
-     */
-    @NotNull(message = "请填写执行状态")
-    @Schema(description = "执行状态")
-    private Integer status;
-
-    /**
-     * 发送渠道
-     * [1-后台发送 2-API发送 3-JOB发送]
-     */
-    @NotNull(message = "请填写发送渠道")
-    @Schema(description = "发送渠道")
-    private Integer channel;
 
     /**
      * 消息分类
@@ -72,27 +44,13 @@ public class MsgTaskDto implements Serializable {
     @Schema(description = "消息分类")
     private Integer msgCategory;
 
-    /**
-     * 接收范围
-     * [0-所有人 1-指定用户 2-指定角色 3-指定部门]
-     */
-    @NotNull(message = "请填写接收范围")
-    @Schema(description = "接收范围")
-    private Integer recipientScope;
-
-    /**
-     * 参数
-     * 需要封装为[{‘key’:‘‘,;’value’:‘‘}, {’key2’:‘‘, ’value2’:‘‘}]格式
-     */
-    @Size(max = 16383, message = "参数长度不能超过{max}")
-    @Schema(description = "参数")
-    private String param;
 
     /**
      * 标题
      */
     @Size(max = 255, message = "标题长度不能超过{max}")
     @Schema(description = "标题")
+    @NotEmpty(message = "请填写标题")
     private String title;
 
     /**
@@ -102,13 +60,6 @@ public class MsgTaskDto implements Serializable {
     @Size(max = 536870911, message = "发送内容长度不能超过{max}")
     @Schema(description = "发送内容")
     private String content;
-
-    /**
-     * 跳转地址
-     */
-    @Size(max = 255, message = "跳转地址长度不能超过{max}")
-    @Schema(description = "跳转地址")
-    private String url;
 
     /**
      * 是否定时发送
@@ -123,21 +74,6 @@ public class MsgTaskDto implements Serializable {
     private LocalDateTime scheduledSendTime;
 
     /**
-     * 业务ID
-     * Api发送和job发送时指定，用于业务追踪
-     */
-    @Schema(description = "业务ID")
-    private Long bizId;
-
-    /**
-     * 业务类型
-     * Api发送和job发送时指定，用于业务追踪
-     */
-    @Size(max = 255, message = "业务类型长度不能超过{max}")
-    @Schema(description = "业务类型")
-    private String bizType;
-
-    /**
      * 发送人
      */
     @Size(max = 255, message = "发送人长度不能超过{max}")
@@ -145,9 +81,14 @@ public class MsgTaskDto implements Serializable {
     private String author;
 
     /**
-     * 发送人ID
+     * 接收范围
+     * [0-所有人 1-指定用户 2-指定角色 3-指定部门]
      */
-    @Schema(description = "发送人ID")
-    private Long senderId;
+    @NotNull(message = "请填写接收范围")
+    @Schema(description = "接收范围")
+    private Integer recipientScope;
+
+    @Schema(description = "接收人列表")
+    private List<Long> recipientList;
 
 }

@@ -8,6 +8,8 @@ import top.mddata.console.organization.dto.UserResetPasswordDto;
 import top.mddata.console.organization.query.UserQuery;
 import top.mddata.console.organization.vo.UserVo;
 
+import java.util.List;
+
 /**
  * 用户 服务层。
  *
@@ -60,4 +62,17 @@ public interface UserService extends SuperService<User> {
      */
     Boolean checkEmail(String email, Long id);
 
+    /**
+     * 根据角色id列表查询用户
+     * @param roleIds 角色id列表
+     * @return 用户列表
+     */
+    List<User> listByRoleIds(List<Long> roleIds);
+
+    /**
+     * 根据部门id列表查询用户
+     * @param deptIds 部门id列表
+     * @return 用户列表
+     */
+    List<User> listByDeptIds(List<Long> deptIds);
 }

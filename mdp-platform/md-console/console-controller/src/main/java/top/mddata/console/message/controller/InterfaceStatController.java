@@ -15,17 +15,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
-import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.console.message.dto.InterfaceStatDto;
 import top.mddata.console.message.entity.InterfaceStat;
 import top.mddata.console.message.query.InterfaceStatQuery;
 import top.mddata.console.message.service.InterfaceStatService;
 import top.mddata.console.message.vo.InterfaceStatVo;
-
-import java.util.List;
 
 /**
  * 接口统计 控制层。
@@ -39,44 +35,6 @@ import java.util.List;
 @RequestMapping("/message/interfaceStat")
 @RequiredArgsConstructor
 public class InterfaceStatController extends SuperController<InterfaceStatService, InterfaceStat> {
-    /**
-     * 添加接口统计。
-     *
-     * @param dto 接口统计
-     * @return {@code true} 添加成功，{@code false} 添加失败
-     */
-    @PostMapping("/save")
-    @Operation(summary = "新增", description = "保存接口统计")
-    @RequestLog(value = "新增", request = false)
-    public R<Long> save(@Validated @RequestBody InterfaceStatDto dto) {
-        return R.success(superService.saveDto(dto).getId());
-    }
-
-    /**
-     * 根据主键删除接口统计。
-     *
-     * @param ids 主键
-     * @return {@code true} 删除成功，{@code false} 删除失败
-     */
-    @PostMapping("/delete")
-    @Operation(summary = "删除", description = "根据主键删除接口统计")
-    @RequestLog("'删除:' + #ids")
-    public R<Boolean> delete(@RequestBody List<Long> ids) {
-        return R.success(superService.removeByIds(ids));
-    }
-
-    /**
-     * 根据主键更新接口统计。
-     *
-     * @param dto 接口统计
-     * @return {@code true} 更新成功，{@code false} 更新失败
-     */
-    @PostMapping("/update")
-    @Operation(summary = "修改", description = "根据主键更新接口统计")
-    @RequestLog(value = "修改", request = false)
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody InterfaceStatDto dto) {
-        return R.success(superService.updateDtoById(dto).getId());
-    }
 
     /**
      * 根据接口统计主键获取详细信息。
@@ -111,18 +69,4 @@ public class InterfaceStatController extends SuperController<InterfaceStatServic
         return R.success(page);
     }
 
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<InterfaceStatVo>> list(@RequestBody @Validated InterfaceStatQuery params) {
-        InterfaceStat entity = BeanUtil.toBean(params, InterfaceStat.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<InterfaceStatVo> listVo = superService.listAs(wrapper, InterfaceStatVo.class);
-        return R.success(listVo);
-    }
 }

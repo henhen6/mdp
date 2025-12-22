@@ -30,10 +30,10 @@ public class MsgTaskVo implements Serializable {
 
 
     /**
-     * 短信记录ID
+     * ID
      */
     @Id
-    @Schema(description = "短信记录ID")
+    @Schema(description = "ID")
     private Long id;
 
     /**

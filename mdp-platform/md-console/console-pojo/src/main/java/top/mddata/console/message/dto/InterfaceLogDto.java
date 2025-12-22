@@ -60,7 +60,7 @@ public class InterfaceLogDto implements Serializable {
      */
     @Size(max = 536870911, message = "请求参数长度不能超过{max}")
     @Schema(description = "请求参数")
-    private String params;
+    private String param;
 
     /**
      * 接口返回

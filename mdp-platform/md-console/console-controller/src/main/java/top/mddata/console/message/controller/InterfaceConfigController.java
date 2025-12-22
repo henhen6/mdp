@@ -19,6 +19,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.console.message.dto.InterfaceConfigSettingDto;
 import top.mddata.console.message.dto.InterfaceConfigDto;
 import top.mddata.console.message.entity.InterfaceConfig;
 import top.mddata.console.message.query.InterfaceConfigQuery;
@@ -76,6 +77,19 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
     @RequestLog(value = "修改", request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody InterfaceConfigDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
+    }
+
+    /**
+     * 修改配置。
+     *
+     * @param dto 接口
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/updateConfig")
+    @Operation(summary = "修改配置", description = "根据主键修改配置")
+    @RequestLog(value = "修改配置", request = false)
+    public R<Long> updateConfig(@RequestBody InterfaceConfigSettingDto dto) {
+        return R.success(superService.updateConfigById(dto));
     }
 
     /**

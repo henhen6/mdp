@@ -108,19 +108,12 @@ public class MsgTemplateDto implements Serializable {
     private String script;
 
     /**
-     * 标题参数
+     * 参数
      */
-    @Size(max = 16383, message = "标题参数长度不能超过{max}")
-    @Schema(description = "标题参数")
-    private String titleParam;
+    @Size(max = 16383, message = "参数长度不能超过{max}")
+    @Schema(description = "参数")
+    private String param;
 
-    /**
-     * 模板参数
-     * 从模板内容中自动解析出来的参数
-     */
-    @Size(max = 16383, message = "模板参数长度不能超过{max}")
-    @Schema(description = "模板参数")
-    private String contentParam;
 
     /**
      * 备注

@@ -11,4 +11,18 @@ import top.mddata.console.message.entity.MsgTemplate;
  */
 public interface MsgTemplateService extends SuperService<MsgTemplate> {
 
+    /**
+     * 检查key是否可用
+     * @param key 模板标识
+     * @param id id
+     * @return true 存在， false 不存在
+     */
+    Boolean check(String key, Long id);
+
+    /**
+     * 根据模板标识获取模板
+     * @param templateKey 模板标识
+     * @return 模板
+     */
+    MsgTemplate getByTemplateKey(String templateKey);
 }

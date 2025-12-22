@@ -1,6 +1,7 @@
 package top.mddata.console.message.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -37,6 +38,7 @@ public class InterfaceLogQuery extends ExtraParams implements Serializable {
      * 接口ID
      */
     @Schema(description = "接口ID")
+    @NotNull(message = "接口ID不能为空")
     private Long interfaceStatId;
 
     /**
@@ -56,7 +58,7 @@ public class InterfaceLogQuery extends ExtraParams implements Serializable {
      * 请求参数
      */
     @Schema(description = "请求参数")
-    private String params;
+    private String param;
 
     /**
      * 接口返回
@@ -70,28 +72,5 @@ public class InterfaceLogQuery extends ExtraParams implements Serializable {
     @Schema(description = "异常信息")
     private String errorMsg;
 
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private LocalDateTime createdAt;
-
-    /**
-     * 创建人
-     */
-    @Schema(description = "创建人")
-    private Long createdBy;
-
-    /**
-     * 修改时间
-     */
-    @Schema(description = "修改时间")
-    private LocalDateTime updatedAt;
-
-    /**
-     * 修改人
-     */
-    @Schema(description = "修改人")
-    private Long updatedBy;
 
 }

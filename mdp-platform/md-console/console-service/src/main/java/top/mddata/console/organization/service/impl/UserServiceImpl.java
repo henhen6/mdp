@@ -27,6 +27,7 @@ import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.entity.User;
 import top.mddata.common.entity.UserOrgRel;
+import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.organization.UserSourceEnum;
 import top.mddata.common.enumeration.organization.UserTypeEnum;
 import top.mddata.common.mapper.UserMapper;
@@ -232,5 +233,21 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Transactional(readOnly = true)
     public Boolean checkEmail(String email, Long id) {
         return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getEmail, email).ne(User::getId, id)) > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> listByRoleIds(List<Long> roleIds) {
+        QueryWrapper wrapper = QueryWrapper.create().select().from(User.class).innerJoin(UserRoleRel.class).on(UserRoleRel::getUserId, User::getId)
+                .where(UserRoleRel::getRoleId).in(roleIds).and(User::getState).eq(true);
+        return list(wrapper);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> listByDeptIds(List<Long> deptIds) {
+        QueryWrapper wrapper = QueryWrapper.create().select().from(User.class).innerJoin(UserOrgRel.class).on(UserOrgRel::getUserId, User::getId)
+                .where(UserOrgRel::getOrgId).in(deptIds).and(User::getState).eq(true);
+        return list(wrapper);
     }
 }

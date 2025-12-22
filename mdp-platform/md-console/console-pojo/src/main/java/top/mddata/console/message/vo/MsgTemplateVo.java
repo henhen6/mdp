@@ -99,17 +99,10 @@ public class MsgTemplateVo implements Serializable {
     private String script;
 
     /**
-     * 标题参数
+     * 参数
      */
-    @Schema(description = "标题参数")
-    private String titleParam;
-
-    /**
-     * 模板参数
-     * 从模板内容中自动解析出来的参数
-     */
-    @Schema(description = "模板参数")
-    private String contentParam;
+    @Schema(description = "参数")
+    private String param;
 
     /**
      * 备注

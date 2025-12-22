@@ -1,6 +1,7 @@
 package top.mddata.console.message.service;
 
 import top.mddata.base.mvcflex.service.SuperService;
+import top.mddata.console.message.dto.InterfaceConfigSettingDto;
 import top.mddata.console.message.entity.InterfaceConfig;
 
 /**
@@ -11,4 +12,11 @@ import top.mddata.console.message.entity.InterfaceConfig;
  */
 public interface InterfaceConfigService extends SuperService<InterfaceConfig> {
 
+    /**
+     * 更新接口配置。
+     *
+     * @param dto 接口配置
+     * @return 主键ID
+     */
+    Long updateConfigById(InterfaceConfigSettingDto dto);
 }

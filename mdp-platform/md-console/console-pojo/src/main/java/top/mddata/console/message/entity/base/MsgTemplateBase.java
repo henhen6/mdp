@@ -79,15 +79,10 @@ public class MsgTemplateBase extends SuperEntity<Long> implements Serializable {
     private String script;
 
     /**
-     * 标题参数
+     * 参数
      */
-    private String titleParam;
+    private String param;
 
-    /**
-     * 模板参数
-     * 从模板内容中自动解析出来的参数
-     */
-    private String contentParam;
 
     /**
      * 备注

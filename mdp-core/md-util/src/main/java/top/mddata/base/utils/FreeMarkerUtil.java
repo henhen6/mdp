@@ -19,10 +19,9 @@ import java.util.Map;
 /**
  * 模板引擎工具类
  *
- * @author tangyh
+ * @author henhen
  * @version v1.0
  * @date 2022/7/25 12:24 PM
- * @create [2022/7/25 12:24 PM ] [tangyh] [初始创建]
  */
 @Slf4j
 public class FreeMarkerUtil {

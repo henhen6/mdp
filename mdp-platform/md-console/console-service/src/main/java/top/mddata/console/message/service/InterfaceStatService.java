@@ -11,4 +11,17 @@ import top.mddata.console.message.entity.InterfaceStat;
  */
 public interface InterfaceStatService extends SuperService<InterfaceStat> {
 
+    /**
+     * 递增失败次数
+     *
+     * @param id 接口统计ID
+     */
+    void incrFailCount(Long id);
+
+    /**
+     * 递增成功次数
+     *
+     * @param id 接口统计ID
+     */
+    void incrSuccessCount(Long id);
 }

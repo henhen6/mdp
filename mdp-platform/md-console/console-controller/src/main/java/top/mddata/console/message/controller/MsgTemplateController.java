@@ -4,6 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +30,9 @@ import top.mddata.console.message.service.MsgTemplateService;
 import top.mddata.console.message.vo.MsgTemplateVo;
 
 import java.util.List;
+
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
 /**
  * 消息模板 控制层。
@@ -124,5 +131,15 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<MsgTemplateVo> listVo = superService.listAs(wrapper, MsgTemplateVo.class);
         return R.success(listVo);
+    }
+
+    @Parameters({
+            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
+            @Parameter(name = "key", description = "模板标识", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "检测模板标识是否可用", description = "检测模板标识是否可用")
+    @GetMapping("/check")
+    public R<Boolean> check(@RequestParam String key, @RequestParam(required = false) Long id) {
+        return R.success(superService.check(key, id));
     }
 }

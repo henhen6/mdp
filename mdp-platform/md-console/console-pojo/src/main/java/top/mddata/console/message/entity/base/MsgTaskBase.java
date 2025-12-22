@@ -33,12 +33,6 @@ public class MsgTaskBase extends SuperEntity<Long> implements Serializable {
     private Long templateId;
 
     /**
-     * 消息类型
-     * [1-站内信 2-短信 3-邮件]
-     */
-    private Integer type;
-
-    /**
      * 执行状态
      * [0-草稿 1-待执行 2-执行成功 3-执行失败]
      */
@@ -51,17 +45,30 @@ public class MsgTaskBase extends SuperEntity<Long> implements Serializable {
     private Integer channel;
 
     /**
+     * 消息类型
+     * [1-站内信 2-短信 3-邮件]
+     */
+    private Integer type;
+
+    /**
      * 消息分类
+     * 站内信专属
      * [1-待办 2-公告 3-预警]
      */
     private Integer msgCategory;
 
     /**
      * 接收范围
+     * 站内信专属
      * [0-所有人 1-指定用户 2-指定角色 3-指定部门]
      */
     private Integer recipientScope;
 
+    /**
+     * 跳转地址
+     * 站内信专属
+     */
+    private String url;
     /**
      * 参数
      * 需要封装为[{‘key’:‘‘,;’value’:‘‘}, {’key2’:‘‘, ’value2’:‘‘}]格式
@@ -78,10 +85,6 @@ public class MsgTaskBase extends SuperEntity<Long> implements Serializable {
      */
     private String content;
 
-    /**
-     * 跳转地址
-     */
-    private String url;
 
     /**
      * 是否定时发送

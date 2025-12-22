@@ -12,7 +12,6 @@ import java.util.Map;
  * @author henhen6
  * @version v1.0
  * @date 2022/7/29 10:04 PM
- * @create [2022/7/29 10:04 PM ] [henhen6] [初始创建]
  */
 @Data
 @Accessors(chain = true)
@@ -25,7 +24,6 @@ public class BaseEventVO {
      *
      * @author henhen6
      * @date 2022/7/29 11:12 PM
-     * @create [2022/7/29 11:12 PM ] [henhen6] [初始创建]
      */
     public BaseEventVO copy() {
         if (map == null) {
@@ -42,7 +40,6 @@ public class BaseEventVO {
      *
      * @author henhen6
      * @date 2022/7/29 11:12 PM
-     * @create [2022/7/29 11:12 PM ] [henhen6] [初始创建]
      */
     public BaseEventVO write() {
         if (CollUtil.isNotEmpty(map)) {
