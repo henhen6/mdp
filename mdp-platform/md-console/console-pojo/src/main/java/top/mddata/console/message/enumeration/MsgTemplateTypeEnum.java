@@ -9,9 +9,8 @@ import top.mddata.base.interfaces.BaseEnum;
 import java.util.stream.Stream;
 
 /**
- * <p>
- * 消息表
- * </p>
+ * 消息类型
+ * [1-站内信 2-短信 3-邮件]
  *
  * @author henhen
  * @date 2021-11-15

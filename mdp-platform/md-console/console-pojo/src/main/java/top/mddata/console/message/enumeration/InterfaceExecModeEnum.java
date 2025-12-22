@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import top.mddata.base.interfaces.BaseEnum;
 
 /**
- * [01-实现类 02-脚本]
+ * 接口执行模式
+ * [1-实现类 2-MagicApi 3-脚本]
  *
  * @author henhen6
  * @date 2022/7/10 0010 15:00

@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 
 /**
  * <p>
- * 实体注释中生成的类型枚举
- * 消息表
+ * 消息分类
+ * [1-待办 2-预警 3-提醒]
  * </p>
  *
  * @author henhen

@@ -19,14 +19,19 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.console.message.dto.InterfaceConfigSettingDto;
+import top.mddata.base.utils.SpringUtils;
+import top.mddata.common.vo.Option;
 import top.mddata.console.message.dto.InterfaceConfigDto;
+import top.mddata.console.message.dto.InterfaceConfigSettingDto;
 import top.mddata.console.message.entity.InterfaceConfig;
 import top.mddata.console.message.query.InterfaceConfigQuery;
 import top.mddata.console.message.service.InterfaceConfigService;
+import top.mddata.console.message.strategy.MsgTaskStrategy;
 import top.mddata.console.message.vo.InterfaceConfigVo;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 接口 控制层。
@@ -138,5 +143,17 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<InterfaceConfigVo> listVo = superService.listAs(wrapper, InterfaceConfigVo.class);
         return R.success(listVo);
+    }
+
+    @PostMapping("/listImplClass")
+    @Operation(summary = "获取接口实现类", description = "获取系统中存在的接口实现类")
+    @RequestLog(value = "获取接口实现类", response = false)
+    public R<List<Option>> listImplClass() {
+        Map<String, MsgTaskStrategy> beansOfType = SpringUtils.getBeansOfType(MsgTaskStrategy.class);
+        List<Option> list = new ArrayList<>();
+        beansOfType.forEach((key, value) -> {
+            list.add(Option.builder().value(key).label(value.getClass().getSimpleName()).build());
+        });
+        return R.success(list);
     }
 }

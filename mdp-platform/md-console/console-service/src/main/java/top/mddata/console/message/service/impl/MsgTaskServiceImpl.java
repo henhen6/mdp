@@ -121,6 +121,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         entity.setChannel(MsgChannelEnum.WEB.getCode());
         entity.setSenderId(ContextUtil.getUserId());
 
+        entity.setTemplateId();
+
         if (data.getId() == null) {
             this.save(entity);
         } else {
