@@ -150,6 +150,7 @@ public class MsgTaskContext {
             interfaceStatService.incrFailCount(interfaceStat.getId());
 
         } finally {
+            interfaceLog.setExecEndTime(LocalDateTime.now());
             interfaceLogService.save(interfaceLog);
         }
 
