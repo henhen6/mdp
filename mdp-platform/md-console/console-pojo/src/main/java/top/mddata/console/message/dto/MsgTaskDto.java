@@ -42,6 +42,7 @@ public class MsgTaskDto implements Serializable {
      * [1-待办 2-公告 3-预警]
      */
     @Schema(description = "消息分类")
+    @NotNull(message = "请填写消息分类")
     private Integer msgCategory;
 
 
@@ -74,10 +75,10 @@ public class MsgTaskDto implements Serializable {
     private LocalDateTime scheduledSendTime;
 
     /**
-     * 发送人
+     * 发布人
      */
-    @Size(max = 255, message = "发送人长度不能超过{max}")
-    @Schema(description = "发送人")
+    @Size(max = 255, message = "发布人长度不能超过{max}")
+    @Schema(description = "发布人")
     private String author;
 
     /**

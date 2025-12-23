@@ -38,10 +38,10 @@ public abstract class MsgSendNoticeDto extends MsgSendDto implements Serializabl
     private MsgChannelEnum msgCategory;
 
     /**
-     * 发送人
+     * 发布人
      */
-    @Size(max = 255, message = "发送人长度不能超过{max}")
-    @Schema(description = "发送人")
+    @Size(max = 255, message = "发布人长度不能超过{max}")
+    @Schema(description = "发布人")
     private String author;
 
     @Schema(description = "接收人ID")

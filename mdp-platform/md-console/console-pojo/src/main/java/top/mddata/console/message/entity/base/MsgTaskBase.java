@@ -109,12 +109,12 @@ public class MsgTaskBase extends SuperEntity<Long> implements Serializable {
     private String bizType;
 
     /**
-     * 发送人
+     * 发布人
      */
     private String author;
 
     /**
-     * 发送人ID
+     * 发布人ID
      */
     private Long senderId;
 

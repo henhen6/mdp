@@ -129,15 +129,15 @@ public class MsgTaskVo implements Serializable {
     private String bizType;
 
     /**
-     * 发送人
+     * 发布人
      */
-    @Schema(description = "发送人")
+    @Schema(description = "发布人")
     private String author;
 
     /**
-     * 发送人ID
+     * 发布人ID
      */
-    @Schema(description = "发送人ID")
+    @Schema(description = "发布人ID")
     private Long senderId;
 
     /**
