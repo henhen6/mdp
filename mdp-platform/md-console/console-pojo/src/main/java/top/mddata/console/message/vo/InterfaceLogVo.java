@@ -43,10 +43,15 @@ public class InterfaceLogVo implements Serializable {
     private Long interfaceStatId;
 
     /**
-     * 执行时间
+     * 执行开始时间
      */
-    @Schema(description = "执行时间")
-    private LocalDateTime execTime;
+    @Schema(description = "执行开始时间")
+    private LocalDateTime execStartTime;
+    /**
+     * 执行结束时间
+     */
+    @Schema(description = "执行结束时间")
+    private LocalDateTime execEndTime;
 
     /**
      * 执行状态

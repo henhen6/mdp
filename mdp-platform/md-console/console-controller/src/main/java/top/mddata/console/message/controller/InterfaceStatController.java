@@ -18,10 +18,15 @@ import top.mddata.base.base.R;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.console.message.entity.InterfaceConfig;
 import top.mddata.console.message.entity.InterfaceStat;
+import top.mddata.console.message.query.InterfaceLogQuery;
 import top.mddata.console.message.query.InterfaceStatQuery;
 import top.mddata.console.message.service.InterfaceStatService;
+import top.mddata.console.message.vo.InterfaceLogVo;
 import top.mddata.console.message.vo.InterfaceStatVo;
+
+import java.util.List;
 
 /**
  * 接口统计 控制层。
@@ -67,6 +72,22 @@ public class InterfaceStatController extends SuperController<InterfaceStatServic
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, InterfaceStatVo.class);
         return R.success(page);
+    }
+
+
+    /**
+     * 批量查询
+     * @param params 查询参数
+     * @return 集合
+     */
+    @PostMapping("/list")
+    @Operation(summary = "批量查询", description = "批量查询")
+    @RequestLog(value = "批量查询", response = false)
+    public R<List<InterfaceStatVo>> list(@RequestBody @Validated InterfaceStatQuery params) {
+        InterfaceStat entity = BeanUtil.toBean(params, InterfaceStat.class);
+        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+        List<InterfaceStatVo> listVo = superService.listAs(wrapper, InterfaceStatVo.class);
+        return R.success(listVo);
     }
 
 }
