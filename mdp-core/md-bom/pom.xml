@@ -12,7 +12,7 @@
     <url>https://github.com/henhen6/mdp</url>
 
     <properties>
-        <revision>0.0.5</revision>
+        <revision>0.0.6-SNAPSHOT</revision>
     </properties>
 
     <dependencyManagement>
