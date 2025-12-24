@@ -2,14 +2,12 @@ package top.mddata.console.message.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
 import top.mddata.base.model.Kv;
 import top.mddata.console.message.enumeration.MsgChannelEnum;
-import top.mddata.console.message.enumeration.MsgRecipientScopeEnum;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -76,7 +74,6 @@ public abstract class MsgSendDto implements Serializable {
      */
     @Schema(description = "发送渠道")
     private MsgChannelEnum channel;
-
 
 
 }

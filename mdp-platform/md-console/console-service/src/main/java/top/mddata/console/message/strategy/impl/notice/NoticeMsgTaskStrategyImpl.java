@@ -54,27 +54,26 @@ public class NoticeMsgTaskStrategyImpl implements MsgTaskStrategy {
 
         MsgRecipientScopeEnum recipientScope = MsgRecipientScopeEnum.getByCode(msgTask.getRecipientScope(), MsgRecipientScopeEnum.USER);
         List<Long> userIdList = null;
+        List<User> userList = null;
         switch (recipientScope) {
-            case ALL: {
-                List<User> userList = userService.list(QueryWrapper.create().eq(User::getState, true));
+            case ALL:
+                userList = userService.list(QueryWrapper.create().eq(User::getState, true));
                 userIdList = userList.stream().map(User::getId).toList();
                 break;
-            }
-            case ROLE: {
-                List<User> userList = userService.listByRoleIds(taskRecipientList.stream().map(MsgTaskRecipient::getRecipient).map(Convert::toLong).toList());
+
+            case ROLE:
+                userList = userService.listByRoleIds(taskRecipientList.stream().map(MsgTaskRecipient::getRecipient).map(Convert::toLong).toList());
                 userIdList = userList.stream().map(User::getId).toList();
                 break;
-            }
-            case DEPT: {
-                List<User> userList = userService.listByDeptIds(taskRecipientList.stream().map(MsgTaskRecipient::getRecipient).map(Convert::toLong).toList());
+
+            case DEPT:
+                userList = userService.listByDeptIds(taskRecipientList.stream().map(MsgTaskRecipient::getRecipient).map(Convert::toLong).toList());
                 userIdList = userList.stream().map(User::getId).toList();
                 break;
-            }
             case USER:
-            default: {
+            default:
                 userIdList = taskRecipientList.stream().map(MsgTaskRecipient::getRecipient).map(Convert::toLong).toList();
                 break;
-            }
 
         }
 

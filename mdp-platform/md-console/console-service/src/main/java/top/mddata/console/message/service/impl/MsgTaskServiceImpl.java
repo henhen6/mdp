@@ -148,6 +148,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         }
 
         if (data.getIsTiming() != null && data.getIsTiming() && data.getScheduledSendTime() != null) {
+            log.info("定时发送消息任务：{}", entity);
             // 定时发送
         } else {
             // 执行发送
@@ -223,6 +224,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
 
         if (data.getIsTiming() != null && data.getIsTiming() && data.getScheduledSendTime() != null) {
             // 定时发送
+            log.info("定时发送消息任务：{}", entity);
         } else {
             // 执行发送
             MsgSendEventDto dto = new MsgSendEventDto();

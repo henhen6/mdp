@@ -31,8 +31,7 @@ public enum MsgChannelEnum implements BaseEnum<Integer> {
      * API
      */
     API(2, "API发送"),
-    JOB(3, "JOB发送"),
-    ;
+    JOB(3, "JOB发送");
     private Integer code;
     @Schema(description = "描述")
     private String desc;
