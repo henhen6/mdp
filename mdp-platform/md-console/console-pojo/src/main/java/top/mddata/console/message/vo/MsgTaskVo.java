@@ -11,6 +11,7 @@ import top.mddata.console.message.entity.base.MsgTaskBase;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 消息任务 VO类（通常用作Controller出参）。
@@ -109,11 +110,15 @@ public class MsgTaskVo implements Serializable {
     private Boolean isTiming;
 
     /**
+     * 计划发送时间
+     */
+    @Schema(description = "计划发送时间")
+    private LocalDateTime scheduledSendTime;
+    /**
      * 发送时间
      */
     @Schema(description = "发送时间")
-    private LocalDateTime scheduledSendTime;
-
+    private LocalDateTime sendTime;
     /**
      * 业务ID
      * Api发送和job发送时指定，用于业务追踪
@@ -139,6 +144,9 @@ public class MsgTaskVo implements Serializable {
      */
     @Schema(description = "发布人ID")
     private Long senderId;
+
+    @Schema(description = "接收人")
+    private List<Long> recipientList;
 
     /**
      * 创建人ID

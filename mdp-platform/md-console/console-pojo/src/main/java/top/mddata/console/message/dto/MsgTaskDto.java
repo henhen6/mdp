@@ -69,11 +69,15 @@ public class MsgTaskDto implements Serializable {
     private Boolean isTiming;
 
     /**
+     * 计划发送时间
+     */
+    @Schema(description = "计划发送时间")
+    private LocalDateTime scheduledSendTime;
+    /**
      * 发送时间
      */
     @Schema(description = "发送时间")
-    private LocalDateTime scheduledSendTime;
-
+    private LocalDateTime sendTime;
     /**
      * 发布人
      */

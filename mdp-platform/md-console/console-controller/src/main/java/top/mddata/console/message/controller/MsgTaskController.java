@@ -1,6 +1,7 @@
 package top.mddata.console.message.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.convert.Convert;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,9 @@ import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.console.message.dto.MsgTaskDto;
 import top.mddata.console.message.entity.MsgTask;
+import top.mddata.console.message.entity.MsgTaskRecipient;
 import top.mddata.console.message.query.MsgTaskQuery;
+import top.mddata.console.message.service.MsgTaskRecipientService;
 import top.mddata.console.message.service.MsgTaskService;
 import top.mddata.console.message.vo.MsgTaskVo;
 
@@ -39,6 +42,8 @@ import java.util.List;
 @RequestMapping("/message/msgTask")
 @RequiredArgsConstructor
 public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> {
+    private final MsgTaskRecipientService msgTaskRecipientService;
+
     /**
      * 添加消息任务。
      *
@@ -89,7 +94,10 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
     @RequestLog("'单体查询:' + #id")
     public R<MsgTaskVo> get(@RequestParam Long id) {
         MsgTask entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, MsgTaskVo.class));
+        MsgTaskVo vo = BeanUtil.toBean(entity, MsgTaskVo.class);
+        List<MsgTaskRecipient> msgTaskRecipientList = msgTaskRecipientService.listByMsgTaskId(vo.getId());
+        vo.setRecipientList(msgTaskRecipientList.stream().map(MsgTaskRecipient::getRecipient).map(Convert::toLong).toList());
+        return R.success(vo);
     }
 
     /**

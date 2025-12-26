@@ -106,11 +106,15 @@ public class MsgTaskQuery extends ExtraParams implements Serializable {
     private Boolean isTiming;
 
     /**
+     * 计划发送时间
+     */
+    @Schema(description = "计划发送时间")
+    private LocalDateTime scheduledSendTime;
+    /**
      * 发送时间
      */
     @Schema(description = "发送时间")
-    private LocalDateTime scheduledSendTime;
-
+    private LocalDateTime sendTime;
     /**
      * 业务ID
      * Api发送和job发送时指定，用于业务追踪
