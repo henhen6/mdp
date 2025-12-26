@@ -40,8 +40,8 @@ import top.mddata.console.organization.service.UserOrgRelService;
 import top.mddata.console.organization.service.UserService;
 import top.mddata.console.organization.vo.UserVo;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
-import top.mddata.console.system.facade.ConfigFacade;
-import top.mddata.console.system.facade.FileFacade;
+import top.mddata.console.system.service.ConfigService;
+import top.mddata.console.system.service.FileService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -58,8 +58,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implements UserService {
     private final UserOrgRelService userOrgRelService;
-    private final FileFacade fileFacade;
-    private final ConfigFacade configFacade;
+    private final FileService fileService; // 同一个服务，直接调用 service。跨服务需要调用 facade
+    private final ConfigService configService;  // 同一个服务，直接调用 service。跨服务需要调用 facade
     private final SystemProperties systemProperties;
     private final UidGenerator uidGenerator;
 
@@ -84,7 +84,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         entity.setSalt(salt);
         entity.setPassword(password);
         entity.setUserType(UserTypeEnum.USER.getCode());
-        String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
+        String expireTime = configService.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
         entity.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
         entity.setUserSource(UserSourceEnum.PLATFORM.getCode());
         entity.setAvatar(entity.getId());
@@ -107,7 +107,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         saveOrg(entity, orgIdList);
 
         // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 即可生成新的唯一id）
-        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+        fileService.relateFilesToBiz(RelateFilesToBizDto.builder()
                 .objectId(entity.getAvatar())
                 .objectType(FileObjectType.Console.USER_AVATAR)
                 .build().setKeepFileIds(dto.getAvatar()));
@@ -153,7 +153,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         saveOrg(entity, orgIdList);
 
         // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
-        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+        fileService.relateFilesToBiz(RelateFilesToBizDto.builder()
                 .objectId(entity.getAvatar())
                 .objectType(FileObjectType.Console.USER_AVATAR)
                 .build().setKeepFileIds(dto.getAvatar()));
@@ -208,7 +208,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         sysUser.setSalt(salt);
         sysUser.setPassword(password);
 
-        String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
+        String expireTime = configService.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
         sysUser.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
 
         boolean flag = updateById(sysUser);

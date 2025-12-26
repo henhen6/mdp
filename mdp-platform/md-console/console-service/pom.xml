@@ -14,8 +14,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>top.mddata.console</groupId>
-            <artifactId>console-api</artifactId>
+            <groupId>top.mddata.workbench</groupId>
+            <artifactId>workbench-api</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

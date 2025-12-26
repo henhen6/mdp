@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>top.mddata.workbench</groupId>
+        <artifactId>workbench-facade</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>workbench-boot-impl</artifactId>
+    <name>${project.artifactId}</name>
+    <description>用户中心-单体版实现</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>top.mddata.workbench</groupId>
+            <artifactId>workbench-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.workbench</groupId>
+            <artifactId>workbench-service</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
+</project>

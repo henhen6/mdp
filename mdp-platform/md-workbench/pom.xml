@@ -17,6 +17,7 @@
     <description>工作台</description>
 
     <modules>
+        <module>workbench-facade</module>
         <module>workbench-pojo</module>
         <module>workbench-dao</module>
         <module>workbench-service</module>

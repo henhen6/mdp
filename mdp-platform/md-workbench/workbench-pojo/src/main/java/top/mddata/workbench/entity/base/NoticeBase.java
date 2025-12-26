@@ -1,4 +1,4 @@
-package top.mddata.console.message.entity.base;
+package top.mddata.workbench.entity.base;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 站内通知实体类。
  *
  * @author henhen6
- * @since 2025-12-21 00:30:09
+ * @since 2025-12-26 09:47:55
  */
 @FieldNameConstants
 @Data

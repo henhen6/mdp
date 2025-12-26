@@ -1,7 +1,9 @@
-package top.mddata.console.message.controller;
+package top.mddata.workbench.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryColumn;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
-import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.console.message.dto.NoticeDto;
-import top.mddata.console.message.entity.Notice;
-import top.mddata.console.message.query.NoticeQuery;
-import top.mddata.console.message.service.NoticeService;
-import top.mddata.console.message.vo.NoticeVo;
+import top.mddata.base.utils.ContextUtil;
+import top.mddata.workbench.entity.Notice;
+import top.mddata.workbench.entity.NoticeRecipient;
+import top.mddata.workbench.query.NoticeQuery;
+import top.mddata.workbench.service.NoticeService;
+import top.mddata.workbench.vo.NoticeVo;
 
 import java.util.List;
 
@@ -31,26 +33,14 @@ import java.util.List;
  * 站内通知 控制层。
  *
  * @author henhen6
- * @since 2025-12-21 00:30:09
+ * @since 2025-12-26 09:47:55
  */
 @RestController
 @Validated
 @Tag(name = "站内通知")
-@RequestMapping("/message/notice")
+@RequestMapping("/notice")
 @RequiredArgsConstructor
 public class NoticeController extends SuperController<NoticeService, Notice> {
-    /**
-     * 添加站内通知。
-     *
-     * @param dto 站内通知
-     * @return {@code true} 添加成功，{@code false} 添加失败
-     */
-    @PostMapping("/save")
-    @Operation(summary = "新增", description = "保存站内通知")
-    @RequestLog(value = "新增", request = false)
-    public R<Long> save(@Validated @RequestBody NoticeDto dto) {
-        return R.success(superService.saveDto(dto).getId());
-    }
 
     /**
      * 根据主键删除站内通知。
@@ -66,16 +56,16 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
     }
 
     /**
-     * 根据主键更新站内通知。
+     * 标记为已读。
      *
-     * @param dto 站内通知
+     * @param ids 主键ID
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
-    @PostMapping("/update")
-    @Operation(summary = "修改", description = "根据主键更新站内通知")
-    @RequestLog(value = "修改", request = false)
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody NoticeDto dto) {
-        return R.success(superService.updateDtoById(dto).getId());
+    @PostMapping("/mark")
+    @Operation(summary = "标记为已读", description = "标记为已读")
+    @RequestLog(value = "标记为已读", request = false)
+    public R<Boolean> mark(@RequestBody List<Long> ids) {
+        return R.success(superService.mark(ids, ContextUtil.getUserId()));
     }
 
     /**
@@ -103,26 +93,24 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
     @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
     public R<Page<NoticeVo>> page(@RequestBody @Validated PageParams<NoticeQuery> params) {
         Page<NoticeVo> page = Page.of(params.getCurrent(), params.getSize());
+        NoticeQuery query = params.getModel();
         Notice entity = BeanUtil.toBean(params.getModel(), Notice.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+        // 主表的所有字段
+        Iterable<QueryColumn> queryColumns = QueryMethods.allColumns(Notice.class);
+        QueryWrapper wrapper = QueryWrapper.create().select(queryColumns).select(NoticeRecipient::getRead, NoticeRecipient::getReadTime)
+                .from(Notice.class).innerJoin(NoticeRecipient.class).on(NoticeRecipient::getNoticeId, Notice::getId)
+                .where(NoticeRecipient::getUserId).eq(ContextUtil.getUserId())
+                .eq(NoticeRecipient::getRead, query.getRead())
+                .eq(Notice::getMsgCategory, query.getMsgCategory())
+                .like(Notice::getTitle, query.getTitle())
+                .like(Notice::getContent, query.getContent())
+                .like(Notice::getUrl, query.getUrl())
+                .like(Notice::getAuthor, query.getAuthor());
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, NoticeVo.class);
         return R.success(page);
     }
 
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<NoticeVo>> list(@RequestBody @Validated NoticeQuery params) {
-        Notice entity = BeanUtil.toBean(params, Notice.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<NoticeVo> listVo = superService.listAs(wrapper, NoticeVo.class);
-        return R.success(listVo);
-    }
+
 }

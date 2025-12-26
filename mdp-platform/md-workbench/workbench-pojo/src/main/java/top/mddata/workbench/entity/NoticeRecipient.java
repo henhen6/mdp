@@ -1,4 +1,4 @@
-package top.mddata.console.message.entity;
+package top.mddata.workbench.entity;
 
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
@@ -6,14 +6,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import top.mddata.console.message.entity.base.NoticeRecipientBase;
+import top.mddata.workbench.entity.base.NoticeRecipientBase;
 
 /**
  * 通知接收人实体类。
  * DO类：数据对象，可以在关联查询时，再次添加字段，重新生成代码时，忽略此文件。
  *
  * @author henhen6
- * @since 2025-12-21 00:30:09
+ * @since 2025-12-26 09:55:35
  */
 @FieldNameConstants
 @Accessors(chain = true)

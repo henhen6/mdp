@@ -1,4 +1,4 @@
-package top.mddata.console.message.query;
+package top.mddata.workbench.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 通知接收人 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:30:09
+ * @since 2025-12-26 09:55:35
  */
 @Accessors(chain = true)
 @Data

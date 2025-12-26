@@ -14,6 +14,7 @@
     <description>全部功能-单体架构-启动层</description>
 
     <dependencies>
+        <!-- 项目业务控制层 -->
         <dependency>
             <groupId>top.mddata.workbench</groupId>
             <artifactId>workbench-controller</artifactId>
@@ -34,17 +35,8 @@
             <artifactId>open-controller</artifactId>
             <version>${revision}</version>
         </dependency>
-        <dependency>
-            <groupId>top.mddata.common</groupId>
-            <artifactId>md-common-config</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>top.mddata.common</groupId>
-            <artifactId>md-enumeration-scanning</artifactId>
-            <version>${revision}</version>
-        </dependency>
 
+        <!-- 适配层 单体版实现类 -->
         <dependency>
             <groupId>top.mddata.open</groupId>
             <artifactId>open-boot-impl</artifactId>
@@ -55,26 +47,44 @@
             <artifactId>console-boot-impl</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>top.mddata.workbench</groupId>
+            <artifactId>workbench-boot-impl</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
+        <!-- 启动配置 -->
+        <dependency>
+            <groupId>top.mddata.common</groupId>
+            <artifactId>md-common-config</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- 业务枚举扫描层 -->
+        <dependency>
+            <groupId>top.mddata.common</groupId>
+            <artifactId>md-enumeration-scanning</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 本项目特有的单体版通用组件 -->
         <dependency>
             <groupId>top.mddata.base</groupId>
             <artifactId>md-all-boot</artifactId>
         </dependency>
+
+        <!-- 代码生成 -->
         <dependency>
             <groupId>top.mddata.base</groupId>
             <artifactId>md-codegen</artifactId>
         </dependency>
+
+        <!-- 文件存储 -->
         <dependency>
             <groupId>org.dromara.x-file-storage</groupId>
             <artifactId>x-file-storage-spring</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
-
+        <!-- Dto、Vo、Entity 优雅转换 -->
         <dependency>
             <groupId>io.github.linpeilie</groupId>
             <artifactId>mapstruct-plus</artifactId>
@@ -83,7 +93,6 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
-
 
         <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
         <dependency>
@@ -101,14 +110,17 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-redis-template</artifactId>
         </dependency>
+        <!-- Sa-Token 序列化 -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-redis-jackson</artifactId>
         </dependency>
+        <!-- Sa-Token 底层依赖 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+        <!-- Sa-Token 自动配置 -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot-autoconfig</artifactId>
@@ -132,8 +144,10 @@
             <optional>true</optional>
             <scope>compile</scope>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

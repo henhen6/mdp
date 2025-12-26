@@ -32,7 +32,7 @@ import top.mddata.console.message.mapper.MsgTaskMapper;
 import top.mddata.console.message.service.MsgTaskRecipientService;
 import top.mddata.console.message.service.MsgTaskService;
 import top.mddata.console.message.service.MsgTemplateService;
-import top.mddata.console.system.facade.ConfigFacade;
+import top.mddata.console.system.service.ConfigService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import java.util.List;
 public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask> implements MsgTaskService {
     private final MsgTaskRecipientService msgTaskRecipientService;
     private final MsgTemplateService msgTemplateService;
-    private final ConfigFacade configFacade;
+    private final ConfigService configService; // 同一个服务，直接调用 service。跨服务需要调用 facade
 
     @Override
     protected MsgTask saveBefore(Object save) {
@@ -111,7 +111,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean publish(MsgTaskDto data) {
-        String msgTemplateKey = configFacade.getString(ConfigKey.Console.MESSAGE_NOTICE, null);  // 在【系统配置】获取站内信的模板标识  虽然多了一次查询，但方便系统运行过程中切换模版
+        String msgTemplateKey = configService.getString(ConfigKey.Console.MESSAGE_NOTICE, null);  // 在【系统配置】获取站内信的模板标识  虽然多了一次查询，但方便系统运行过程中切换模版
         ArgumentAssert.notEmpty(msgTemplateKey, "请联系管理员在【系统配置】页面配置【站内信】的模板标识");
         MsgTemplate defNoticeTemplate = msgTemplateService.getByTemplateKey(msgTemplateKey);   // 在【消息模板】获取站内信的模板id
         ArgumentAssert.notNull(defNoticeTemplate, "请联系管理员在【消息模板】页面配置【站内信】的消息模板");

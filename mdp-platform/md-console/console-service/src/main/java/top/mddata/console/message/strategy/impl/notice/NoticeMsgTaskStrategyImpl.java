@@ -10,15 +10,14 @@ import top.mddata.common.entity.User;
 import top.mddata.console.message.entity.MsgTask;
 import top.mddata.console.message.entity.MsgTaskRecipient;
 import top.mddata.console.message.entity.MsgTemplate;
-import top.mddata.console.message.entity.Notice;
-import top.mddata.console.message.entity.NoticeRecipient;
 import top.mddata.console.message.enumeration.MsgRecipientScopeEnum;
-import top.mddata.console.message.service.NoticeRecipientService;
-import top.mddata.console.message.service.NoticeService;
 import top.mddata.console.message.strategy.MsgTaskStrategy;
 import top.mddata.console.message.strategy.dto.MsgResult;
 import top.mddata.console.message.strategy.dto.MsgTaskParam;
 import top.mddata.console.organization.service.UserService;
+import top.mddata.workbench.entity.Notice;
+import top.mddata.workbench.entity.NoticeRecipient;
+import top.mddata.workbench.facade.NoticeFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +30,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NoticeMsgTaskStrategyImpl implements MsgTaskStrategy {
-    private final NoticeService noticeService;
-    private final NoticeRecipientService noticeRecipientService;
+    private final NoticeFacade noticeFacade;
     private final UserService userService;
 
     @Override
@@ -50,7 +48,7 @@ public class NoticeMsgTaskStrategyImpl implements MsgTaskStrategy {
                 .setAuthor(msgTask.getAuthor())
                 .setUrl(msgTask.getUrl());
 
-        noticeService.save(notice);
+        noticeFacade.save(notice);
 
         MsgRecipientScopeEnum recipientScope = MsgRecipientScopeEnum.getByCode(msgTask.getRecipientScope(), MsgRecipientScopeEnum.USER);
         List<Long> userIdList = null;
@@ -89,7 +87,7 @@ public class NoticeMsgTaskStrategyImpl implements MsgTaskStrategy {
         }
 
         if (CollUtil.isNotEmpty(recipientList)) {
-            noticeRecipientService.saveBatch(recipientList);
+            noticeFacade.saveBatchNoticeRecipient(recipientList);
         }
 
         msgResult.setResult(true);

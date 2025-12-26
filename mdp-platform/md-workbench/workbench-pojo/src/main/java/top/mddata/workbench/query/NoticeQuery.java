@@ -1,38 +1,35 @@
-package top.mddata.console.message.vo;
+package top.mddata.workbench.query;
 
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import top.mddata.console.message.entity.base.NoticeBase;
+import top.mddata.base.base.ExtraParams;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 站内通知 VO类（通常用作Controller出参）。
+ * 站内通知 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-12-21 00:30:09
+ * @since 2025-12-26 09:47:55
  */
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "站内通知Vo")
-@Table(NoticeBase.TABLE_NAME)
-public class NoticeVo implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+@Schema(description = "站内通知Query")
+public class NoticeQuery extends ExtraParams implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-
     /**
      * ID
      */
-    @Id
     @Schema(description = "ID")
     private Long id;
 
@@ -96,5 +93,10 @@ public class NoticeVo implements Serializable {
      */
     @Schema(description = "最后修改时间")
     private LocalDateTime updatedAt;
+
+    /**
+     * 是否已读
+     */
+    private Boolean read;
 
 }
