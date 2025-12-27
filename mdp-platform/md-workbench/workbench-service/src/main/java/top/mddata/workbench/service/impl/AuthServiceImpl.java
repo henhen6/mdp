@@ -6,10 +6,12 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.mybatisflex.core.util.UpdateEntity;
+import com.wf.captcha.base.Captcha;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,16 +21,19 @@ import org.springframework.stereotype.Service;
 import top.mddata.base.base.R;
 import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.repository.CacheOps;
+import top.mddata.base.captcha.graphic.service.GraphicCaptchaService;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
+import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.properties.SystemProperties;
+import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
@@ -38,6 +43,7 @@ import top.mddata.workbench.event.LoginEvent;
 import top.mddata.workbench.service.AuthService;
 import top.mddata.workbench.service.LoginStrategy;
 import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.vo.CaptchaVo;
 import top.mddata.workbench.vo.LoginVo;
 
 import java.util.List;
@@ -50,6 +56,7 @@ import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_IS_ADMIN;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
 import static top.mddata.base.constant.ContextConstants.USER_ID;
+import static top.mddata.workbench.service.impl.CaptchaLoginStrategyImpl.GRANT_TYPE;
 
 
 /**
@@ -66,6 +73,8 @@ public class AuthServiceImpl implements AuthService {
     private final SystemProperties systemProperties;
     private final SaTokenConfig saTokenConfig;
     private final CacheOps cacheOps;
+    private final GraphicCaptchaService graphicCaptchaService;
+    private final ConfigFacade configFacade;
 
     private final Map<String, LoginStrategy> loginStrategy;
 
@@ -341,6 +350,28 @@ public class AuthServiceImpl implements AuthService {
         ssoUserService.registerByPhone(defUser);
 
         return defUser.getPhone();
+    }
+
+    @Override
+    public CaptchaVo createImg() {
+        if (!configFacade.getBoolean(ConfigKey.Console.LOGIN_CAPTCHA_ENABLED, true)) {
+            return CaptchaVo.builder().enabled(false).build();
+        }
+
+        // 生成验证码图片
+        Captcha captcha = graphicCaptchaService.getCaptcha();
+
+        // 缓存验证码
+        String key = UUID.fastUUID().toString();
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, GRANT_TYPE);
+        cacheOps.set(cacheKey, captcha.text());
+
+        return CaptchaVo.builder()
+                .key(key)
+                .img(captcha.toBase64())
+                .expireTime(cacheKey.getExpire().toSeconds())
+                .enabled(true).build();
+
     }
 
     @Builder

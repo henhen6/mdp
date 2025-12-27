@@ -22,6 +22,7 @@ import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.service.AuthService;
 import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.vo.CaptchaVo;
 import top.mddata.workbench.vo.LoginVo;
 
 import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
@@ -89,5 +90,11 @@ public class AuthController {
     @GetMapping(value = "/sendEmailCode")
     public R<String> sendEmailCode(@RequestParam(value = "email") String email, @RequestParam(value = "templateCode") String templateCode) {
         return authService.sendEmailCode(email, templateCode);
+    }
+
+    @Operation(summary = "获取图片验证码", description = "获取图片验证码")
+    @GetMapping(value = "/captcha")
+    public R<CaptchaVo> captcha() {
+        return R.success(authService.createImg());
     }
 }

@@ -37,7 +37,7 @@ public class UsernameLoginStrategyImpl implements LoginStrategy {
     public static final String GRANT_TYPE = "USERNAME";
     protected final SystemProperties systemProperties;
     protected final SsoUserService ssoUserService;
-    private final ConfigFacade configFacade;
+    protected final ConfigFacade configFacade;
 
     @Override
     public void checkParam(LoginDto login) {

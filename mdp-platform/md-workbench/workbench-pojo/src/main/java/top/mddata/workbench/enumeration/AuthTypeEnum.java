@@ -11,6 +11,7 @@ import top.mddata.base.interfaces.BaseEnum;
  * <p>
  * 认证方式
  * [01-密码 02-手机短信验证码 03-邮箱验证码登录]
+ * CAPTCHA,USERNAME,EMAIL,PHONE
  * </p>
  *
  * @author henhen6

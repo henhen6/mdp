@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.repository.CacheOps;
-import top.mddata.base.exception.BizException;
+import top.mddata.base.exception.CaptchaException;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.base.utils.StrHelper;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
+import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
@@ -36,27 +37,24 @@ public class CaptchaLoginStrategyImpl extends UsernameLoginStrategyImpl {
     @Override
     public void checkParam(LoginDto login) {
         super.checkParam(login);
-        if (systemProperties.getVerifyCaptcha()) {
+        if (configFacade.getBoolean(ConfigKey.Console.LOGIN_CAPTCHA_ENABLED, true)) {
             if (StrHelper.isAnyBlank(login.getKey(), login.getCode())) {
-                throw new BizException("请输入验证码");
+                throw CaptchaException.wrap("请输入验证码");
             }
             CacheKey cacheKey = CaptchaCacheKeyBuilder.build(login.getKey(), GRANT_TYPE);
             CacheResult<String> code = cacheOps.get(cacheKey);
             if (StrUtil.isEmpty(code.getValue())) {
                 String msg = "验证码已过期";
                 SpringUtils.publishEvent(new LoginEvent(LoginLogDto.failByCheck(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), msg)));
-                throw new BizException(msg);
+                throw CaptchaException.wrap(msg);
             }
             if (!StrUtil.equalsIgnoreCase(code.getValue(), login.getCode())) {
                 String msg = "验证码不正确";
                 SpringUtils.publishEvent(new LoginEvent(LoginLogDto.failByCheck(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), msg)));
-                throw new BizException(msg);
+                throw CaptchaException.wrap(msg);
             }
             cacheOps.del(cacheKey);
         }
     }
 
-    private LoginLogDto builder() {
-        return null;
-    }
 }

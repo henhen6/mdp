@@ -5,6 +5,7 @@ import top.mddata.base.base.R;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
+import top.mddata.workbench.vo.CaptchaVo;
 import top.mddata.workbench.vo.LoginVo;
 
 /**
@@ -50,4 +51,9 @@ public interface AuthService {
      * @return 手机号
      */
     String registerByPhone(RegisterByPhoneDto register);
+
+    /**
+     * 创建图片验证码
+     */
+    CaptchaVo createImg();
 }
