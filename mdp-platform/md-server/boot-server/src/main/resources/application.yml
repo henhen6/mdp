@@ -84,12 +84,11 @@ mdp:
     ignoreParamValues:
       - noxss
   captcha:
-    # 登录界面的验证码配置 详情看：CaptchaProperties
-    type: ARITHMETIC
-    width: 158
-    height: 58
-    len: 2
-    charType: 2
+    slider:
+      enabled: true
+      cache-type: redis
+    graphic:
+      enabled: true
   async: # 全局线程池配置
     corePoolSize: 2
     maxPoolSize: 50
