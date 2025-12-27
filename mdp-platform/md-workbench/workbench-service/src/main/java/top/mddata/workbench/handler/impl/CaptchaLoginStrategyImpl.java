@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.repository.CacheOps;
+import top.mddata.base.captcha.graphic.properties.GraphicCaptchaProperties;
 import top.mddata.base.exception.CaptchaException;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.base.utils.StrHelper;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
-import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
@@ -28,16 +28,18 @@ import top.mddata.workbench.service.SsoUserService;
 public class CaptchaLoginStrategyImpl extends UsernameLoginStrategyImpl {
     public static final String GRANT_TYPE = "CAPTCHA";
     private final CacheOps cacheOps;
+    private final GraphicCaptchaProperties graphicCaptchaProperties;
 
-    public CaptchaLoginStrategyImpl(CacheOps cacheOps, SystemProperties systemProperties, SsoUserService ssoUserService, ConfigFacade configFacade) {
+    public CaptchaLoginStrategyImpl(CacheOps cacheOps, SystemProperties systemProperties, SsoUserService ssoUserService, ConfigFacade configFacade, GraphicCaptchaProperties graphicCaptchaProperties) {
         super(systemProperties, ssoUserService, configFacade);
         this.cacheOps = cacheOps;
+        this.graphicCaptchaProperties = graphicCaptchaProperties;
     }
 
     @Override
     public void checkParam(LoginDto login) {
         super.checkParam(login);
-        if (configFacade.getBoolean(ConfigKey.Console.LOGIN_CAPTCHA_ENABLED, true)) {
+        if (graphicCaptchaProperties.getEnabled()) {
             if (StrHelper.isAnyBlank(login.getKey(), login.getCode())) {
                 throw CaptchaException.wrap("请输入验证码");
             }

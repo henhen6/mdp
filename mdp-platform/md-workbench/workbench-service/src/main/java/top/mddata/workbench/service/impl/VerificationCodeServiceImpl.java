@@ -8,17 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.base.base.R;
 import top.mddata.base.cache.repository.CacheOps;
+import top.mddata.base.captcha.graphic.properties.GraphicCaptchaProperties;
 import top.mddata.base.captcha.graphic.service.GraphicCaptchaService;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.base.utils.SpringUtils;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
-import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.constant.MsgTemplateKey;
 import top.mddata.console.message.dto.MsgSendDto;
 import top.mddata.console.message.dto.MsgSendMailDto;
 import top.mddata.console.message.dto.MsgSendSmsDto;
 import top.mddata.console.message.facade.MsgFacade;
-import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.service.SsoUserService;
 import top.mddata.workbench.service.VerificationCodeService;
 import top.mddata.workbench.vo.CaptchaVo;
@@ -34,11 +34,10 @@ import static top.mddata.workbench.handler.impl.CaptchaLoginStrategyImpl.GRANT_T
 @Service
 @RequiredArgsConstructor
 public class VerificationCodeServiceImpl implements VerificationCodeService {
-    private final GraphicCaptchaService graphicCaptchaService;
-    private final ConfigFacade configFacade;
     private final MsgFacade msgFacade;
     private final CacheOps cacheOps;
     private final SsoUserService ssoUserService;
+    private final GraphicCaptchaProperties graphicCaptchaProperties;
 
     @Override
     public R<String> sendPhoneCode(String phone, String templateCode) {
@@ -110,12 +109,12 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
     @Override
     public CaptchaVo createImg() {
-        if (!configFacade.getBoolean(ConfigKey.Console.LOGIN_CAPTCHA_ENABLED, true)) {
+        if (!graphicCaptchaProperties.getEnabled()) {
             return CaptchaVo.builder().enabled(false).build();
         }
 
         // 生成验证码图片
-        Captcha captcha = graphicCaptchaService.getCaptcha();
+        Captcha captcha = SpringUtils.getBean(GraphicCaptchaService.class).getCaptcha();
 
         // 缓存验证码
         String key = UUID.fastUUID().toString();
