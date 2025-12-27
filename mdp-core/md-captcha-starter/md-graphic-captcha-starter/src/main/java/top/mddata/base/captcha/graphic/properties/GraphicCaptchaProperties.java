@@ -22,7 +22,7 @@ public class GraphicCaptchaProperties {
     /**
      * 是否启用
      */
-    private boolean enabled = true;
+    private Boolean enabled = true;
 
     /**
      * 类型

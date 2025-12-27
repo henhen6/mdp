@@ -1,1 +1,2 @@
 top.mddata.base.captcha.graphic.autoconfigure.GraphicCaptchaAutoConfiguration
+top.mddata.base.captcha.graphic.autoconfigure.GraphicCaptchaPropertiesAutoConfiguration

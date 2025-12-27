@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import top.mddata.base.cache.RedisAutoConfigure;
@@ -23,13 +24,14 @@ import top.mddata.base.captcha.slider.properties.SliderCaptchaProperties;
  *
  * @author henhen
  */
+@EnableConfigurationProperties(SliderCaptchaProperties.class)
 @AutoConfiguration
 public class SliderCaptchaCacheAutoConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(SliderCaptchaCacheAutoConfiguration.class);
 
-    private SliderCaptchaCacheAutoConfiguration() {
-        log.info("加载行为验证码缓存自动配置");
+    private SliderCaptchaCacheAutoConfiguration(SliderCaptchaProperties sliderCaptchaProperties) {
+        log.info("[行为验证码缓存] 加载成功: {}", sliderCaptchaProperties.getCacheType());
     }
 
     /**

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import top.mddata.base.captcha.graphic.properties.GraphicCaptchaProperties;
 import top.mddata.base.captcha.graphic.service.GraphicCaptchaService;
@@ -17,10 +16,11 @@ import top.mddata.base.constant.Constants;
  */
 @AutoConfiguration
 @Slf4j
-@EnableConfigurationProperties(GraphicCaptchaProperties.class)
 @ConditionalOnProperty(prefix = GraphicCaptchaProperties.PREFIX, name = Constants.ENABLED, havingValue = "true", matchIfMissing = true)
 public class GraphicCaptchaAutoConfiguration {
-
+    private GraphicCaptchaAutoConfiguration() {
+        log.info("[图形验证码] 加载成功");
+    }
 
     /**
      * 验证码服务接口配置
@@ -28,7 +28,6 @@ public class GraphicCaptchaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public GraphicCaptchaService graphicCaptchaService(GraphicCaptchaProperties properties) {
-        log.info("[图形验证码] 加载成功");
         return new GraphicCaptchaService(properties);
     }
 
