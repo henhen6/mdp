@@ -37,6 +37,7 @@ import top.mddata.common.cache.workbench.SsoUserPhoneCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserUserNameCacheKeyBuilder;
 import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.constant.FileObjectType;
+import top.mddata.common.constant.MsgTemplateKey;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
@@ -53,7 +54,6 @@ import top.mddata.workbench.dto.ProfileEmailDto;
 import top.mddata.workbench.dto.ProfilePasswordDto;
 import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
-import top.mddata.workbench.enumeration.MsgTemplateCodeEnum;
 import top.mddata.workbench.service.SsoUserService;
 
 import java.time.LocalDateTime;
@@ -325,7 +325,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
 
         String code = RandomUtil.randomNumbers(6);
         String key = RandomUtil.randomNumbers(10);
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateCodeEnum.PHONE_EDIT.name());
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateKey.Sms.PHONE_EDIT);
         cacheOps.set(cacheKey, code);
 
         log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
@@ -348,7 +348,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
 
         String code = RandomUtil.randomNumbers(6);
         String key = RandomUtil.randomNumbers(10);
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateCodeEnum.EMAIL_EDIT.name());
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateKey.Email.EMAIL_EDIT);
         cacheOps.set(cacheKey, code);
 
         log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
@@ -376,7 +376,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         ArgumentAssert.isTrue(StrUtil.equals(current.getPhone(), dto.getOldPhone()), "原手机号不一致");
         ArgumentAssert.isFalse(checkPhone(dto.getPhone(), null), "该手机号已经被他人使用");
 
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateCodeEnum.PHONE_EDIT.name());
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateKey.Sms.PHONE_EDIT);
         CacheResult<String> result = cacheOps.get(cacheKey);
         ArgumentAssert.isTrue(StrUtil.equals(result.getValue(), dto.getCode()), "验证码错误");
 
@@ -400,7 +400,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         ArgumentAssert.isTrue(StrUtil.equals(current.getEmail(), dto.getOldEmail()), "原邮箱不一致");
         ArgumentAssert.isFalse(checkPhone(dto.getEmail(), null), "该邮箱已经被他人使用");
 
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateCodeEnum.EMAIL_EDIT.name());
+        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateKey.Email.EMAIL_EDIT);
         CacheResult<String> result = cacheOps.get(cacheKey);
         ArgumentAssert.isTrue(StrUtil.equals(result.getValue(), dto.getCode()), "验证码错误");
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * 跨服务-通知实现类
- * @author tangyh
+ * @author henhen6
  * @since 2025/12/26 10:21
  */
 @Service

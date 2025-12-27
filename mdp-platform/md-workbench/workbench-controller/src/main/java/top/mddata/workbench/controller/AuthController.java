@@ -1,10 +1,6 @@
 package top.mddata.workbench.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +18,7 @@ import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.service.AuthService;
 import top.mddata.workbench.service.SsoUserService;
-import top.mddata.workbench.vo.CaptchaVo;
 import top.mddata.workbench.vo.LoginVo;
-
-import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
 
 /**
@@ -49,9 +42,6 @@ public class AuthController {
         return authService.login(login);
     }
 
-    /**
-     * 注册
-     */
     @Operation(summary = "根据手机号注册", description = "根据手机号注册")
     @PostMapping(value = "/registerByPhone")
     public R<String> registerByPhone(@Validated @RequestBody RegisterByPhoneDto register) throws BizException {
@@ -70,31 +60,4 @@ public class AuthController {
         return R.success(ssoUserService.checkPhone(phone, null));
     }
 
-
-    @Operation(summary = "发送短信验证码", description = "发送短信验证码")
-    @Parameters({
-            @Parameter(name = "phone", description = "手机号", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-            @Parameter(name = "templateCode", description = "模板编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-    })
-    @GetMapping(value = "/sendPhoneCode")
-    public R<String> sendPhoneCode(@RequestParam(value = "phone") String phone,
-                                   @RequestParam(value = "templateCode") String templateCode) {
-        return authService.sendPhoneCode(phone, templateCode);
-    }
-
-    @Parameters({
-            @Parameter(name = "email", description = "邮箱", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-            @Parameter(name = "templateCode", description = "模板编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-    })
-    @Operation(summary = "发送邮箱验证码", description = "发送邮箱验证码")
-    @GetMapping(value = "/sendEmailCode")
-    public R<String> sendEmailCode(@RequestParam(value = "email") String email, @RequestParam(value = "templateCode") String templateCode) {
-        return authService.sendEmailCode(email, templateCode);
-    }
-
-    @Operation(summary = "获取图片验证码", description = "获取图片验证码")
-    @GetMapping(value = "/captcha")
-    public R<CaptchaVo> captcha() {
-        return R.success(authService.createImg());
-    }
 }

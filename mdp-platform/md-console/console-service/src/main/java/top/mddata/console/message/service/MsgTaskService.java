@@ -24,7 +24,6 @@ public interface MsgTaskService extends SuperService<MsgTask> {
      * 根据消息模板发送消息
      *
      * @param data 消息参数
-     * @return 发送成功
      */
-    Boolean sendByTemplateKey(MsgSendDto data);
+    void sendByTemplateKey(MsgSendDto data);
 }

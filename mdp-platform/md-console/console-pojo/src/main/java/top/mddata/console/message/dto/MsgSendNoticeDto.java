@@ -25,7 +25,7 @@ import java.util.List;
 @Data
 @FieldNameConstants
 @Schema(description = "站内信发送Dto")
-public abstract class MsgSendNoticeDto extends MsgSendDto implements Serializable {
+public class MsgSendNoticeDto extends MsgSendDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

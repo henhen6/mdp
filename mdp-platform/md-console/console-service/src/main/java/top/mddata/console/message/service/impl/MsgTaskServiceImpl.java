@@ -162,7 +162,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
     }
 
 
-    public Boolean sendByTemplateKey(MsgSendDto data) {
+    @Override
+    public void sendByTemplateKey(MsgSendDto data) {
         MsgTemplate msgTemplate = validParam(data);
         MsgTask entity = new MsgTask();
         entity.setTemplateId(msgTemplate.getId());
@@ -232,7 +233,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
             dto.setMsgTaskId(entity.getId()).copy();
             SpringUtils.publishEvent(new MsgSendEvent(dto));
         }
-        return true;
+
     }
 
     /**

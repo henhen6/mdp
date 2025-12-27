@@ -28,6 +28,11 @@
             <artifactId>md-graphic-captcha-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-slider-captcha-starter</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>top.mddata.common</groupId>
             <artifactId>md-cache-key</artifactId>
             <version>${revision}</version>

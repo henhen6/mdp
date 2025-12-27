@@ -1,4 +1,4 @@
-package top.mddata.workbench.service.impl;
+package top.mddata.workbench.handler.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
@@ -19,7 +19,7 @@ import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.service.LoginStrategy;
+import top.mddata.workbench.handler.LoginStrategy;
 import top.mddata.workbench.service.SsoUserService;
 
 import java.time.LocalDateTime;

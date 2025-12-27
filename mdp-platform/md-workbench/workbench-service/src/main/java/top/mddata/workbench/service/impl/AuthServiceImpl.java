@@ -6,12 +6,9 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.lang.UUID;
-import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.mybatisflex.core.util.UpdateEntity;
-import com.wf.captcha.base.Captcha;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,29 +18,24 @@ import org.springframework.stereotype.Service;
 import top.mddata.base.base.R;
 import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.repository.CacheOps;
-import top.mddata.base.captcha.graphic.service.GraphicCaptchaService;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
-import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.properties.SystemProperties;
-import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
-import top.mddata.workbench.enumeration.MsgTemplateCodeEnum;
 import top.mddata.workbench.event.LoginEvent;
+import top.mddata.workbench.handler.LoginStrategy;
 import top.mddata.workbench.service.AuthService;
-import top.mddata.workbench.service.LoginStrategy;
 import top.mddata.workbench.service.SsoUserService;
-import top.mddata.workbench.vo.CaptchaVo;
 import top.mddata.workbench.vo.LoginVo;
 
 import java.util.List;
@@ -56,7 +48,6 @@ import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_IS_ADMIN;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
 import static top.mddata.base.constant.ContextConstants.USER_ID;
-import static top.mddata.workbench.service.impl.CaptchaLoginStrategyImpl.GRANT_TYPE;
 
 
 /**
@@ -69,13 +60,10 @@ import static top.mddata.workbench.service.impl.CaptchaLoginStrategyImpl.GRANT_T
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final SsoUserService ssoUserService;
     private final SystemProperties systemProperties;
     private final SaTokenConfig saTokenConfig;
     private final CacheOps cacheOps;
-    private final GraphicCaptchaService graphicCaptchaService;
-    private final ConfigFacade configFacade;
-
+    private final SsoUserService ssoUserService;
     private final Map<String, LoginStrategy> loginStrategy;
 
     @Override
@@ -259,72 +247,6 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public R<String> sendPhoneCode(String phone, String templateCode) {
-        if (MsgTemplateCodeEnum.PHONE_REGISTER.eq(templateCode)) {
-            // 查user表判断重复
-            boolean flag = ssoUserService.checkPhone(phone, null);
-            ArgumentAssert.isFalse(flag, "该手机号已经被注册");
-        } else if (MsgTemplateCodeEnum.PHONE_LOGIN.eq(templateCode)) {
-            //查user表判断是否存在
-            boolean flag = ssoUserService.checkPhone(phone, null);
-            ArgumentAssert.isTrue(flag, "该手机号尚未注册，请先注册后在登陆。");
-        } else if (MsgTemplateCodeEnum.PHONE_EDIT.eq(templateCode)) {
-            //查user表判断是否存在
-            boolean flag = ssoUserService.checkPhone(phone, null);
-            ArgumentAssert.isFalse(flag, "该手机号已经被他人使用");
-        }
-
-        String code = RandomUtil.randomNumbers(6);
-        String key = RandomUtil.randomNumbers(10);
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, templateCode);
-        cacheOps.set(cacheKey, code);
-
-        log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
-
-        // TODO 未完成
-        // 配置一个「模板标识」为 templateCode， 且「模板内容」中需要有 code 占位符
-        // 也可以考虑给模板增加一个过期时间等参数
-//        ExtendMsgSendVO msgSendVO = ExtendMsgSendVO.builder().code(templateCode).build();
-//        msgSendVO.addParam("code", code);
-//        msgSendVO.addRecipient(mobile);
-//        return R.success(msgFacade.sendByTemplate(msgSendVO));
-        return R.success(key);
-    }
-
-    @Override
-    public R<String> sendEmailCode(String email, String templateCode) {
-        if (MsgTemplateCodeEnum.EMAIL_LOGIN.eq(templateCode)) {
-            // 查user表判断重复
-            boolean flag = ssoUserService.checkEmail(email, null);
-            ArgumentAssert.isTrue(flag, "邮箱尚未注册，请先注册后在登陆。");
-        } else if (MsgTemplateCodeEnum.EMAIL_REGISTER.eq(templateCode)) {
-            // 查user表判断重复
-            boolean flag = ssoUserService.checkEmail(email, null);
-            ArgumentAssert.isFalse(flag, "该邮箱已经被注册");
-        } else if (MsgTemplateCodeEnum.EMAIL_EDIT.eq(templateCode)) {
-            //查user表判断是否存在
-            boolean flag = ssoUserService.checkEmail(email, null);
-            ArgumentAssert.isFalse(flag, "该邮箱已经被他人使用");
-        }
-
-        String code = RandomUtil.randomNumbers(6);
-        String key = RandomUtil.randomNumbers(10);
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, templateCode);
-        cacheOps.set(cacheKey, code);
-
-        log.info("邮件验证码 cacheKey={}, code={}", cacheKey, code);
-
-        // TODO 未完成
-        // 配置一个「模板标识」为 templateCode， 且「模板内容」中需要有 code 占位符
-//        ExtendMsgSendVO msgSendVO = ExtendMsgSendVO.builder().code(templateCode).build();
-//        msgSendVO.addParam("code", code);
-//        msgSendVO.addRecipient(email);
-//        return R.success(msgFacade.sendByTemplate(msgSendVO));
-        return R.success(key);
-    }
-
-
-    @Override
     public String registerByEmail(RegisterByEmailDto register) {
         if (systemProperties.getVerifyCaptcha()) {
             CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(register.getEmail(), register.getKey());
@@ -352,27 +274,6 @@ public class AuthServiceImpl implements AuthService {
         return defUser.getPhone();
     }
 
-    @Override
-    public CaptchaVo createImg() {
-        if (!configFacade.getBoolean(ConfigKey.Console.LOGIN_CAPTCHA_ENABLED, true)) {
-            return CaptchaVo.builder().enabled(false).build();
-        }
-
-        // 生成验证码图片
-        Captcha captcha = graphicCaptchaService.getCaptcha();
-
-        // 缓存验证码
-        String key = UUID.fastUUID().toString();
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, GRANT_TYPE);
-        cacheOps.set(cacheKey, captcha.text());
-
-        return CaptchaVo.builder()
-                .key(key)
-                .img(captcha.toBase64())
-                .expireTime(cacheKey.getExpire().toSeconds())
-                .enabled(true).build();
-
-    }
 
     @Builder
     @AllArgsConstructor

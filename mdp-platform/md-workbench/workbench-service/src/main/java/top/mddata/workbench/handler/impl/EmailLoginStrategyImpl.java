@@ -1,4 +1,4 @@
-package top.mddata.workbench.service.impl;
+package top.mddata.workbench.handler.impl;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -10,43 +10,43 @@ import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.base.utils.StrHelper;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
+import top.mddata.common.constant.MsgTemplateKey;
 import top.mddata.common.entity.User;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.system.facade.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.LoginLogDto;
-import top.mddata.workbench.enumeration.MsgTemplateCodeEnum;
 import top.mddata.workbench.event.LoginEvent;
 import top.mddata.workbench.service.SsoUserService;
 
 /**
- * 手机 + 短信验证码
+ * 邮箱 + 邮箱验证码
  * @author henhen6
  * @since 2025/7/10 17:25
  */
-@Component(PhoneLoginStrategyImpl.GRANT_TYPE)
+@Component(EmailLoginStrategyImpl.GRANT_TYPE)
 @Slf4j
-public class PhoneLoginStrategyImpl extends UsernameLoginStrategyImpl {
-    public static final String GRANT_TYPE = "PHONE";
+public class EmailLoginStrategyImpl extends UsernameLoginStrategyImpl {
+    public static final String GRANT_TYPE = "EMAIL";
     private final CacheOps cacheOps;
 
-    public PhoneLoginStrategyImpl(CacheOps cacheOps, SystemProperties systemProperties, SsoUserService ssoUserService, ConfigFacade configFacade) {
+    public EmailLoginStrategyImpl(CacheOps cacheOps, SystemProperties systemProperties, SsoUserService ssoUserService, ConfigFacade configFacade) {
         super(systemProperties, ssoUserService, configFacade);
         this.cacheOps = cacheOps;
     }
 
     @Override
     public void checkParam(LoginDto login) {
-        String phone = login.getUsername();
-        if (StrHelper.isAnyBlank(phone)) {
-            throw new BizException("请输入手机号证码");
+        String email = login.getUsername();
+        if (StrHelper.isAnyBlank(email)) {
+            throw new BizException("请输入邮箱");
         }
 
         if (systemProperties.getVerifyCaptcha()) {
             if (StrHelper.isAnyBlank(login.getKey(), login.getCode())) {
                 throw new BizException("请输入验证码");
             }
-            CacheKey cacheKey = CaptchaCacheKeyBuilder.build(login.getKey(), MsgTemplateCodeEnum.PHONE_LOGIN.name());
+            CacheKey cacheKey = CaptchaCacheKeyBuilder.build(login.getKey(), MsgTemplateKey.Email.EMAIL_LOGIN);
             CacheResult<String> code = cacheOps.get(cacheKey);
             if (StrUtil.isEmpty(code.getValue())) {
                 String msg = "验证码已过期";
@@ -59,20 +59,20 @@ public class PhoneLoginStrategyImpl extends UsernameLoginStrategyImpl {
                 throw new BizException(msg);
             }
             cacheOps.del(cacheKey);
+
         }
     }
-
 
     @Override
     public void checkUserPassword(LoginDto login, User user) {
         // 判断用户状态
         if (user == null) {
-            throw new BizException("手机或验证码错误!");
+            throw new BizException("邮箱或验证码错误!");
         }
     }
 
     @Override
     public User getUser(String value) {
-        return ssoUserService.getByPhone(value);
+        return ssoUserService.getByEmail(value);
     }
 }

@@ -5,13 +5,13 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import lombok.experimental.FieldNameConstants;
 import top.mddata.base.model.Kv;
 import top.mddata.console.message.enumeration.MsgChannelEnum;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +22,6 @@ import java.util.List;
  */
 @Accessors(chain = true)
 @Data
-@FieldNameConstants
 @Schema(description = "消息发送抽象Dto")
 public abstract class MsgSendDto implements Serializable {
 
@@ -56,11 +55,6 @@ public abstract class MsgSendDto implements Serializable {
     @Schema(description = "计划发送时间")
     private LocalDateTime scheduledSendTime;
     /**
-     * 发送时间
-     */
-    @Schema(description = "发送时间")
-    private LocalDateTime sendTime;
-    /**
      * 业务ID
      */
     @Schema(description = "业务ID")
@@ -79,5 +73,19 @@ public abstract class MsgSendDto implements Serializable {
     @Schema(description = "发送渠道")
     private MsgChannelEnum channel;
 
+    /**
+     * 添加参数
+     *
+     * @param key   参数名
+     * @param value 参数值
+     * @return this
+     */
+    public <T extends MsgSendDto> T addParam(String key, String value) {
+        if (paramList == null) {
+            paramList = new ArrayList<>();
+        }
+        paramList.add(new Kv(key, value));
+        return (T) this;
+    }
 
 }
