@@ -2,6 +2,8 @@ package top.mddata.base.exception;
 
 import top.mddata.base.exception.code.BaseExceptionCode;
 
+import java.io.Serial;
+
 /**
  * 业务异常
  * 用于在处理业务逻辑时，进行抛出的异常。
@@ -11,6 +13,7 @@ import top.mddata.base.exception.code.BaseExceptionCode;
  */
 public class BizException extends BaseUncheckedException {
 
+    @Serial
     private static final long serialVersionUID = -3843907364558373817L;
 
     public BizException(Throwable cause) {
