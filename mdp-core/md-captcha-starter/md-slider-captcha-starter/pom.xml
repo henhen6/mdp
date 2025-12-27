@@ -19,6 +19,16 @@
             <groupId>top.mddata.base</groupId>
             <artifactId>md-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-cache-starter</artifactId>
+        </dependency>
+
+        <!-- AJ-Captcha -->
+        <dependency>
+            <groupId>com.anji-plus</groupId>
+            <artifactId>captcha</artifactId>
+        </dependency>
 
         <!-- Spring Boot Starter（自动配置相关依赖） -->
         <dependency>

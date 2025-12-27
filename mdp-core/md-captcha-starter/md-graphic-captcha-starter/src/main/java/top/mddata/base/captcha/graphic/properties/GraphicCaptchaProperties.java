@@ -1,5 +1,5 @@
 
-package top.mddata.base.captcha.graphic.autoconfigure;
+package top.mddata.base.captcha.graphic.properties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.mddata.base.captcha.graphic.enumeration.GraphicCaptchaType;
 import top.mddata.base.constant.Constants;
 
-import static top.mddata.base.captcha.graphic.autoconfigure.GraphicCaptchaProperties.PREFIX;
+import static top.mddata.base.captcha.graphic.properties.GraphicCaptchaProperties.PREFIX;
 
 /**
  * 图形验证码配置

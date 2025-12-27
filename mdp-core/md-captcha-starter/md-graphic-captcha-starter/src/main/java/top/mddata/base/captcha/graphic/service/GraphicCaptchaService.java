@@ -3,7 +3,7 @@ package top.mddata.base.captcha.graphic.service;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.wf.captcha.base.Captcha;
-import top.mddata.base.captcha.graphic.autoconfigure.GraphicCaptchaProperties;
+import top.mddata.base.captcha.graphic.properties.GraphicCaptchaProperties;
 
 import java.awt.*;
 

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import top.mddata.base.captcha.graphic.properties.GraphicCaptchaProperties;
 import top.mddata.base.captcha.graphic.service.GraphicCaptchaService;
 import top.mddata.base.constant.Constants;
 
