@@ -118,6 +118,16 @@
                 <artifactId>md-xss-starter</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>top.mddata.base</groupId>
+                <artifactId>md-graphic-captcha-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.mddata.base</groupId>
+                <artifactId>md-slider-captcha-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

@@ -51,6 +51,11 @@
 
         <sa-token.version>1.44.0</sa-token.version>
         <magic-api.version>2.2.2</magic-api.version>
+        <!-- 验证码 -->
+        <aj-captcha.version>1.4.0</aj-captcha.version>
+        <easy-captcha.version>1.6.2</easy-captcha.version>
+        <nashorn.version>15.7</nashorn.version>
+
         <oshi.version>6.8.2</oshi.version>
         <druid.version>1.2.27</druid.version>
         <mybatis.version>3.5.19</mybatis.version>
@@ -365,7 +370,28 @@
                 <version>${sms4j.version}</version>
             </dependency>
 
+            <!-- AJ-Captcha（行为验证码，包含滑动拼图、文字点选两种方式，UI支持弹出和嵌入两种方式） -->
+            <dependency>
+                <groupId>com.anji-plus</groupId>
+                <artifactId>captcha</artifactId>
+                <version>${aj-captcha.version}</version>
+            </dependency>
 
+            <!-- Easy Captcha（Java 图形验证码，支持 gif、中文、算术等类型，可用于 Java Web、JavaSE 等项目） -->
+            <dependency>
+                <groupId>com.github.whvcse</groupId>
+                <artifactId>easy-captcha</artifactId>
+                <version>${easy-captcha.version}</version>
+            </dependency>
+
+            <!-- JS 引擎（纯编译的 JavaScript 引擎） -->
+            <dependency>
+                <groupId>org.openjdk.nashorn</groupId>
+                <artifactId>nashorn-core</artifactId>
+                <version>${nashorn.version}</version>
+            </dependency>
+
+            <!-- OSS 存储 -->
             <dependency>
                 <groupId>org.dromara.x-file-storage</groupId>
                 <artifactId>x-file-storage-spring</artifactId>

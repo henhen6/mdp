@@ -5,14 +5,17 @@ package top.mddata.base.constant;
  *
  * @author henhen6
  * @version v1.0
- * @date 2022/4/12 11:05 PM
- * @create [2022/4/12 11:05 PM ] [henhen6] [初始创建]
  */
 public interface Constants {
     /**
      * 项目前缀
      */
     String PROJECT_PREFIX = "mdp";
+
+    /**
+     * 启用配置
+     */
+    String ENABLED = "enabled";
 
     /**
      * 基础包

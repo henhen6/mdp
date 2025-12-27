@@ -41,6 +41,7 @@
         <module>md-all</module>
         <module>md-sop-support</module>
         <module>md-sa-token</module>
+        <module>md-captcha-starter</module>
     </modules>
     <licenses>
         <license>
