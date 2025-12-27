@@ -32,6 +32,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import top.mddata.base.base.R;
 import top.mddata.base.exception.ArgumentException;
 import top.mddata.base.exception.BizException;
+import top.mddata.base.exception.CaptchaException;
 import top.mddata.base.exception.ForbiddenException;
 import top.mddata.base.exception.UnauthorizedException;
 import top.mddata.base.exception.code.ExceptionCode;
@@ -62,14 +63,22 @@ public abstract class AbstractGlobalExceptionHandler {
     @ExceptionHandler(BizException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<?> bizException(BizException ex) {
-        log.warn("BizException:", ex);
+        log.warn("业务异常:", ex);
+        return R.result(ex.getCode(), null, ex.getMessage())
+                .setErrorMsg(getErrorMsg(ex)).setPath(getPath());
+    }
+
+    @ExceptionHandler(CaptchaException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public R<?> getCaptchaException(CaptchaException ex) {
+        log.warn("验证码异常:", ex);
         return R.result(ex.getCode(), null, ex.getMessage())
                 .setErrorMsg(getErrorMsg(ex)).setPath(getPath());
     }
 
     @ExceptionHandler(SaTokenException.class)
     public R<?> handlerSaTokenException(SaTokenException e) {
-        log.warn("SaTokenException:", e);
+        log.warn("SaToken异常:", e);
         return R.result(e.getCode(), null, e.getMessage())
                 .setErrorMsg(getErrorMsg(e)).setPath(getPath());
     }
@@ -118,7 +127,7 @@ public abstract class AbstractGlobalExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public R<?> forbiddenException(ForbiddenException ex) {
-        log.warn("BizException:", ex);
+        log.warn("403  禁止访问异常:", ex);
         return R.result(ex.getCode(), null, ex.getMessage())
                 .setErrorMsg(getErrorMsg(ex)).setPath(getPath());
     }
@@ -126,7 +135,7 @@ public abstract class AbstractGlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public R<?> unauthorizedException(UnauthorizedException ex) {
-        log.warn("BizException:", ex);
+        log.warn("401 未认证 未登录异常:", ex);
         return R.result(ex.getCode(), null, ex.getMessage())
                 .setErrorMsg(getErrorMsg(ex)).setPath(getPath());
     }
@@ -134,7 +143,7 @@ public abstract class AbstractGlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<?> httpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        log.warn("HttpMessageNotReadableException:", ex);
+        log.warn("json参数解析异常:", ex);
         String message = ex.getMessage();
         if (StrUtil.containsAny(message, "Could not read document:")) {
             String msg = String.format("无法正确的解析json类型的参数：%s", StrUtil.subBetween(message, "Could not read document:", " at "));
