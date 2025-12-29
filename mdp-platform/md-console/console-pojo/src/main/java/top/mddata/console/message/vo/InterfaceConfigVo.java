@@ -45,7 +45,12 @@ public class InterfaceConfigVo implements Serializable {
      */
     @Schema(description = "接口名称")
     private String name;
-
+    /**
+     * 接口类型
+     * [1-短信 2-邮件 3-微信]
+     */
+    @Schema(description = "接口类型")
+    private Integer msgType;
     /**
      * 执行方式
      * [1-实现类 2-脚本 3-magic-api]

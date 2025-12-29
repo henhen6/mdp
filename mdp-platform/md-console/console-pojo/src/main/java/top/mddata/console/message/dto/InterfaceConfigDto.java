@@ -48,7 +48,13 @@ public class InterfaceConfigDto implements Serializable {
     @Size(max = 255, message = "接口名称长度不能超过{max}")
     @Schema(description = "接口名称")
     private String name;
-
+    /**
+     * 接口类型
+     * [1-短信 2-邮件 3-微信]
+     */
+    @NotNull(message = "请填写接口类型")
+    @Schema(description = "接口类型")
+    private Integer msgType;
     /**
      * 执行方式
      * [1-实现类 2-脚本 3-magic-api]

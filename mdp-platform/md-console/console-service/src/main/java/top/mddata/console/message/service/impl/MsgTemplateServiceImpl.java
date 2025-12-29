@@ -13,8 +13,10 @@ import top.mddata.base.model.Kv;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.StrPool;
+import top.mddata.console.message.entity.InterfaceConfig;
 import top.mddata.console.message.entity.MsgTemplate;
 import top.mddata.console.message.mapper.MsgTemplateMapper;
+import top.mddata.console.message.service.InterfaceConfigService;
 import top.mddata.console.message.service.MsgTemplateService;
 
 import java.util.LinkedHashSet;
@@ -32,6 +34,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @RequiredArgsConstructor
 public class MsgTemplateServiceImpl extends SuperServiceImpl<MsgTemplateMapper, MsgTemplate> implements MsgTemplateService {
+    private final InterfaceConfigService interfaceConfigService;
     /**
      * 解析占位符 ${xxx}
      */
@@ -81,18 +84,23 @@ public class MsgTemplateServiceImpl extends SuperServiceImpl<MsgTemplateMapper, 
     protected MsgTemplate updateBefore(Object update) {
         MsgTemplate entity = UpdateEntity.of(getEntityClass());
         BeanUtil.copyProperties(update, entity);
+        InterfaceConfig interfaceConfig = interfaceConfigService.getById(entity.getInterfaceConfigId());
+        ArgumentAssert.notNull(interfaceConfig, "接口不存在");
         ArgumentAssert.isFalse(StrUtil.isNotBlank(entity.getKey()) && check(entity.getKey(), entity.getId()), "模板标识{}已存在", entity.getKey());
         entity.setParam(parseParam(entity.getTitle(), entity.getContent()));
-
+        entity.setMsgType(interfaceConfig.getMsgType());
         return entity;
     }
 
     @Override
     protected MsgTemplate saveBefore(Object save) {
         MsgTemplate entity = BeanUtil.toBean(save, getEntityClass());
+        InterfaceConfig interfaceConfig = interfaceConfigService.getById(entity.getInterfaceConfigId());
+        ArgumentAssert.notNull(interfaceConfig, "接口不存在");
         entity.setId(null);
         ArgumentAssert.isFalse(StrUtil.isNotBlank(entity.getKey()) && check(entity.getKey(), entity.getId()), "模板标识{}已存在", entity.getKey());
         entity.setParam(parseParam(entity.getTitle(), entity.getContent()));
+        entity.setMsgType(interfaceConfig.getMsgType());
         return entity;
     }
 }

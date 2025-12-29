@@ -42,14 +42,6 @@ public class MsgTemplateDto implements Serializable {
     private Long interfaceConfigId;
 
     /**
-     * 消息类型
-     * [1-站内信 2-短信 3-邮件 ]
-     */
-    @NotNull(message = "请填写消息类型")
-    @Schema(description = "消息类型")
-    private Integer msgType;
-
-    /**
      * 模板标识
      */
     @NotEmpty(message = "请填写模板标识")

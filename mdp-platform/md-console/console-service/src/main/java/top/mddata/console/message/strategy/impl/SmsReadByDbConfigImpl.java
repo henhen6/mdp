@@ -2,6 +2,7 @@ package top.mddata.console.message.strategy.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.sms4j.aliyun.config.AlibabaConfig;
@@ -33,6 +34,7 @@ import org.dromara.sms4j.zhutong.config.ZhutongConfig;
 import org.springframework.stereotype.Component;
 import top.mddata.console.message.dto.InterfaceConfigJsonDto;
 import top.mddata.console.message.entity.InterfaceConfig;
+import top.mddata.console.message.enumeration.MsgTypeEnum;
 import top.mddata.console.message.service.InterfaceConfigService;
 
 import java.util.ArrayList;
@@ -104,7 +106,7 @@ public class SmsReadByDbConfigImpl implements SmsReadConfig {
 
     @Override
     public List<BaseConfig> getSupplierConfigList() {
-        List<InterfaceConfig> list = interfaceConfigService.list();
+        List<InterfaceConfig> list = interfaceConfigService.list(QueryWrapper.create().eq(InterfaceConfig::getMsgType, MsgTypeEnum.SMS.getCode()));
         List<BaseConfig> configList = new ArrayList<>();
         list.forEach(interfaceConfig -> {
             BaseConfig baseConfig = getBaseConfig(interfaceConfig);

@@ -37,6 +37,11 @@ public class InterfaceConfigBase extends SuperEntity<Long> implements Serializab
      * 接口名称
      */
     private String name;
+    /**
+     * 接口类型
+     * [1-短信 2-邮件 3-微信]
+     */
+    private Integer msgType;
 
     /**
      * 执行方式
