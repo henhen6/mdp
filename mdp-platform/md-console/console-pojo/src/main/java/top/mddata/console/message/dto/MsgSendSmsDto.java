@@ -33,20 +33,6 @@ public class MsgSendSmsDto extends MsgSendDto implements Serializable {
     private List<String> recipientList;
 
     /**
-     * 添加接收人
-     *
-     * @param phone 接收人手机号
-     * @return this
-     */
-    public MsgSendSmsDto addRecipient(String phone) {
-        if (this.recipientList == null) {
-            this.recipientList = new ArrayList<>();
-        }
-        this.recipientList.add(phone);
-        return this;
-    }
-
-    /**
      * 构建API定时发送者
      *
      * @param scheduledSendTime 计划发送时间
@@ -78,5 +64,19 @@ public class MsgSendSmsDto extends MsgSendDto implements Serializable {
         MsgSendSmsDto dto = new MsgSendSmsDto();
         dto.setChannel(MsgChannelEnum.JOB).setIsTiming(false);
         return dto;
+    }
+
+    /**
+     * 添加接收人
+     *
+     * @param phone 接收人手机号
+     * @return this
+     */
+    public MsgSendSmsDto addRecipient(String phone) {
+        if (this.recipientList == null) {
+            this.recipientList = new ArrayList<>();
+        }
+        this.recipientList.add(phone);
+        return this;
     }
 }

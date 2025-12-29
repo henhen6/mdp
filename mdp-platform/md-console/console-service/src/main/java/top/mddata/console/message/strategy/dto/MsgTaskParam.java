@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import top.mddata.console.message.entity.InterfaceConfig;
 import top.mddata.console.message.entity.MsgTask;
 import top.mddata.console.message.entity.MsgTaskRecipient;
 import top.mddata.console.message.entity.MsgTemplate;
@@ -30,6 +31,8 @@ public class MsgTaskParam {
     private List<MsgTaskRecipient> recipientList;
     /** 采用的消息模板 */
     private MsgTemplate msgTemplate;
+    /** 接口配置 */
+    private InterfaceConfig interfaceConfig;
     /** 接口需要使用的动态参数 */
     private Map<String, String> propertyParam;
 

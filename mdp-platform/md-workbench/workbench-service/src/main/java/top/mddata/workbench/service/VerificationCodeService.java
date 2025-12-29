@@ -1,6 +1,5 @@
 package top.mddata.workbench.service;
 
-import top.mddata.base.base.R;
 import top.mddata.workbench.vo.CaptchaVo;
 
 /**
@@ -20,16 +19,16 @@ public interface VerificationCodeService {
      * 发送手机 验证码
      * @param phone 手机号
      * @param templateCode 短信模板
-     * @return 是否成功
+     * @return 验证码Key
      */
-    R<String> sendPhoneCode(String phone, String templateCode);
+    String sendPhoneCode(String phone, String templateCode);
 
     /**
      * 发送邮箱 验证码
      * @param email 邮箱
      * @param templateCode 邮箱编码
-     * @return 是否成功
+     * @return 验证码Key
      */
-    R<String> sendEmailCode(String email, String templateCode);
+    String sendEmailCode(String email, String templateCode);
 
 }

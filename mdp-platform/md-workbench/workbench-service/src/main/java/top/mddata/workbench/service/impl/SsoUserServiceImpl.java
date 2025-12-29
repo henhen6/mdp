@@ -12,11 +12,6 @@ import com.mybatisflex.core.util.LambdaGetter;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.email.jakarta.api.MailClient;
-import org.dromara.email.jakarta.comm.entity.MailMessage;
-import org.dromara.sms4j.api.SmsBlend;
-import org.dromara.sms4j.chuanglan.config.ChuangLanConfig;
-import org.dromara.sms4j.core.factory.SmsFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.cache.redis.CacheResult;
@@ -55,13 +50,13 @@ import top.mddata.workbench.dto.ProfilePasswordDto;
 import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
 import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.VerificationCodeService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -80,8 +75,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     private final FileFacade fileFacade;
     private final CacheOps cacheOps;
     private final ConfigFacade configFacade;
-    private final ChuangLanConfig chuangLanConfig;
-    private final MailClient mailClient;
+    private final VerificationCodeService verificationCodeService;
 
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
@@ -323,20 +317,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         ArgumentAssert.isTrue(StrUtil.equals(current.getPhone(), oldPhone), "原手机号不一致");
         ArgumentAssert.isFalse(checkPhone(phone, null), "该手机号已经被他人使用");
 
-        String code = RandomUtil.randomNumbers(6);
-        String key = RandomUtil.randomNumbers(10);
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateKey.Sms.PHONE_EDIT);
-        cacheOps.set(cacheKey, code);
-
-        log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
-
-        SmsBlend smsBlend = SmsFactory.getSmsBlend("chuanglan");
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("s", code);
-        String template = "【" + chuangLanConfig.getSignature() + "】您的验证码为：{$var}";
-//        TODO 调用消息中心接口
-        smsBlend.sendMessage(phone, template, params);
-        return (key);
+        return verificationCodeService.sendPhoneCode(phone, MsgTemplateKey.Sms.PHONE_EDIT);
     }
 
     @Override
@@ -345,25 +326,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         ArgumentAssert.notNull(current, "用户不存在");
         ArgumentAssert.isTrue(StrUtil.equals(current.getEmail(), oldEmail), "原邮箱不一致");
         ArgumentAssert.isFalse(checkEmail(email, null), "该邮箱已经被他人使用");
-
-        String code = RandomUtil.randomNumbers(6);
-        String key = RandomUtil.randomNumbers(10);
-        CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, MsgTemplateKey.Email.EMAIL_EDIT);
-        cacheOps.set(cacheKey, code);
-
-        log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
-
-        String template = "您的验证码为：" + code;
-
-//        TODO 调用消息中心接口
-        MailMessage message = MailMessage.Builder()
-                .mailAddress(email) // 收件人地址
-                .title("修改个人邮箱")
-                .body(template)
-                .build();
-        mailClient.send(message);
-
-        return (key);
+        return verificationCodeService.sendEmailCode(email, MsgTemplateKey.Email.EMAIL_EDIT);
     }
 
     @Override

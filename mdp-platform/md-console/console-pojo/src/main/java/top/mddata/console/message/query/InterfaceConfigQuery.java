@@ -32,7 +32,11 @@ public class InterfaceConfigQuery extends ExtraParams implements Serializable {
      */
     @Schema(description = "ID")
     private Long id;
-
+    /**
+     * 接口标识
+     */
+    @Schema(description = "接口标识")
+    private String key;
     /**
      * 接口名称
      */

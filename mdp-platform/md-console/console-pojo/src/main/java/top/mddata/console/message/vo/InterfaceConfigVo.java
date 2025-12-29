@@ -35,7 +35,11 @@ public class InterfaceConfigVo implements Serializable {
     @Id
     @Schema(description = "ID")
     private Long id;
-
+    /**
+     * 接口标识
+     */
+    @Schema(description = "接口标识")
+    private String key;
     /**
      * 接口名称
      */

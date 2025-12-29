@@ -7,11 +7,12 @@ import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.mddata.common.entity.User;
+import top.mddata.common.properties.MsgProperties;
 import top.mddata.console.message.entity.MsgTask;
 import top.mddata.console.message.entity.MsgTaskRecipient;
 import top.mddata.console.message.entity.MsgTemplate;
 import top.mddata.console.message.enumeration.MsgRecipientScopeEnum;
-import top.mddata.console.message.strategy.MsgTaskStrategy;
+import top.mddata.console.message.strategy.AbstractMsgTaskStrategy;
 import top.mddata.console.message.strategy.dto.MsgResult;
 import top.mddata.console.message.strategy.dto.MsgTaskParam;
 import top.mddata.console.organization.service.UserService;
@@ -23,22 +24,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 示例实现类
+ * 站内信 实现类
  * @author henhen
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NoticeMsgTaskStrategyImpl implements MsgTaskStrategy {
+public class NoticeMsgTaskStrategyImpl extends AbstractMsgTaskStrategy {
     private final NoticeFacade noticeFacade;
     private final UserService userService;
+    private final MsgProperties msgProperties;
 
     @Override
     public MsgResult exec(MsgTaskParam msgParam) {
+        validParam(msgParam);
+
         MsgTask msgTask = msgParam.getMsgTask();
         MsgTemplate msgTemplate = msgParam.getMsgTemplate();
         List<MsgTaskRecipient> taskRecipientList = msgParam.getRecipientList();
-        MsgResult msgResult = replaceVariable(msgTask, msgTemplate);
+        MsgResult msgResult = replaceVariable(msgTask, msgTemplate, msgProperties);
 
         Notice notice = new Notice();
         notice.setTaskId(msgTask.getId())

@@ -2,7 +2,7 @@ package top.mddata.console.message.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import com.alibaba.fastjson2.JSON;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,21 +36,9 @@ public class InterfaceConfigServiceImpl extends SuperServiceImpl<InterfaceConfig
     private final InterfaceStatService interfaceStatService;
 
     @Override
-    protected InterfaceConfig updateBefore(Object updateDto) {
-        InterfaceConfigDto dto = (InterfaceConfigDto) updateDto;
-        if (InterfaceExecModeEnum.MAGIC_API.eq(dto.getExecMode())) {
-            ArgumentAssert.notEmpty(dto.getMagicApiId(), "请填写MagicApi实现类");
-        } else if (InterfaceExecModeEnum.IMPL_CLASS.eq(dto.getExecMode())) {
-            ArgumentAssert.notEmpty(dto.getImplClass(), "请填写实现类");
-        } else {
-            ArgumentAssert.notEmpty(dto.getScript(), "请填写实现脚本");
-        }
-        return super.updateBefore(updateDto);
-    }
-
-    @Override
     protected InterfaceConfig saveBefore(Object save) {
         InterfaceConfigDto dto = (InterfaceConfigDto) save;
+        ArgumentAssert.isFalse(check(dto.getKey(), null), "接口标识重复");
         if (InterfaceExecModeEnum.MAGIC_API.eq(dto.getExecMode())) {
             ArgumentAssert.notEmpty(dto.getMagicApiId(), "请填写MagicApi实现类");
         } else if (InterfaceExecModeEnum.IMPL_CLASS.eq(dto.getExecMode())) {
@@ -61,16 +49,29 @@ public class InterfaceConfigServiceImpl extends SuperServiceImpl<InterfaceConfig
 
         InterfaceConfig entity = BeanUtil.toBean(save, InterfaceConfig.class);
         entity.setId(null);
-        entity.setConfigJson(JSON.toJSONString(Collections.emptyList()));
+        entity.setConfigJson(Collections.emptyList());
         return entity;
     }
 
     @Override
     protected void saveAfter(Object save, InterfaceConfig entity) {
-
         // ID一致
         InterfaceStat stat = BeanUtil.toBean(entity, InterfaceStat.class);
         interfaceStatService.save(stat);
+    }
+
+    @Override
+    protected InterfaceConfig updateBefore(Object updateDto) {
+        InterfaceConfigDto dto = (InterfaceConfigDto) updateDto;
+        ArgumentAssert.isFalse(check(dto.getKey(), dto.getId()), "接口标识重复");
+        if (InterfaceExecModeEnum.MAGIC_API.eq(dto.getExecMode())) {
+            ArgumentAssert.notEmpty(dto.getMagicApiId(), "请填写MagicApi实现类");
+        } else if (InterfaceExecModeEnum.IMPL_CLASS.eq(dto.getExecMode())) {
+            ArgumentAssert.notEmpty(dto.getImplClass(), "请填写实现类");
+        } else {
+            ArgumentAssert.notEmpty(dto.getScript(), "请填写实现脚本");
+        }
+        return super.updateBefore(updateDto);
     }
 
     @Override
@@ -86,27 +87,43 @@ public class InterfaceConfigServiceImpl extends SuperServiceImpl<InterfaceConfig
     public Long updateConfigById(InterfaceConfigSettingDto dto) {
         InterfaceConfig interfaceConfig = UpdateEntity.of(InterfaceConfig.class, dto.getId());
         if (CollUtil.isNotEmpty(dto.getConfigJsonList())) {
-            interfaceConfig.setConfigJson(JSON.toJSONString(dto.getConfigJsonList()));
+            interfaceConfig.setConfigJson(dto.getConfigJsonList());
         } else {
-            interfaceConfig.setConfigJson(JSON.toJSONString(Collections.emptyList()));
+            interfaceConfig.setConfigJson(Collections.emptyList());
         }
         updateById(interfaceConfig);
         return interfaceConfig.getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Boolean check(String key, Long id) {
+        ArgumentAssert.notEmpty(key, "请填写模板标识");
+        return count(QueryWrapper.create().eq(InterfaceConfig::getKey, key).ne(InterfaceConfig::getId, id)) > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public InterfaceConfig getByKey(String key) {
+        return getOne(QueryWrapper.create().eq(InterfaceConfig::getKey, key));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeByIds(Collection<? extends Serializable> idList) {
         interfaceStatService.removeByIds(idList);
         return super.removeByIds(idList);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeById(InterfaceConfig entity) {
         interfaceStatService.removeById(entity.getId());
         return super.removeById(entity);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeById(Serializable id) {
         interfaceStatService.removeById(id);
         return super.removeById(id);

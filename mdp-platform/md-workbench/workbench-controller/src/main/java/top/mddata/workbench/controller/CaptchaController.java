@@ -52,8 +52,14 @@ public class CaptchaController {
     })
     @GetMapping(value = "/send/phone")
     public R<String> sendPhoneCode(@RequestParam(value = "phone") String phone,
-                                   @RequestParam(value = "templateCode") String templateCode) {
-        return verificationCodeService.sendPhoneCode(phone, templateCode);
+                                   @RequestParam(value = "templateCode") String templateCode,
+                                   CaptchaVO captchaReq
+    ) {
+        log.info("captchaReq = {}", captchaReq.getCaptchaVerification());
+        CaptchaService behaviorCaptchaService = SpringUtil.getBean(CaptchaService.class);
+        ResponseModel verificationRes = behaviorCaptchaService.verification(captchaReq);
+        ArgumentAssert.equals(verificationRes.getRepCode(), RepCodeEnum.SUCCESS.getCode(), verificationRes.getRepMsg());
+        return R.success(verificationCodeService.sendPhoneCode(phone, templateCode));
     }
 
     @Parameters({
@@ -62,8 +68,11 @@ public class CaptchaController {
     })
     @Operation(summary = "发送邮箱验证码", description = "发送邮箱验证码")
     @GetMapping(value = "/send/email")
-    public R<String> sendEmailCode(@RequestParam(value = "email") String email, @RequestParam(value = "templateCode") String templateCode) {
-        return verificationCodeService.sendEmailCode(email, templateCode);
+    public R<String> sendEmailCode(@RequestParam(value = "email") String email, @RequestParam(value = "templateCode") String templateCode, CaptchaVO captchaReq) {
+        CaptchaService behaviorCaptchaService = SpringUtil.getBean(CaptchaService.class);
+        ResponseModel verificationRes = behaviorCaptchaService.verification(captchaReq);
+        ArgumentAssert.equals(verificationRes.getRepCode(), RepCodeEnum.SUCCESS.getCode(), verificationRes.getRepMsg());
+        return R.success(verificationCodeService.sendEmailCode(email, templateCode));
     }
 
     @Operation(summary = "获取图片验证码", description = "获取图片验证码")

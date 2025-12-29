@@ -33,6 +33,13 @@ public class InterfaceConfigDto implements Serializable {
     @NotNull(message = "请填写ID", groups = BaseEntity.Update.class)
     @Schema(description = "ID")
     private Long id;
+    /**
+     * 接口标识
+     */
+    @NotEmpty(message = "请填写接口标识")
+    @Size(max = 255, message = "接口标识长度不能超过{max}")
+    @Schema(description = "接口标识")
+    private String key;
 
     /**
      * 接口名称

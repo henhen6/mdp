@@ -1,14 +1,12 @@
 package top.mddata.console.message.strategy;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import top.mddata.base.exception.BizException;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.console.message.dto.InterfaceConfigJsonDto;
@@ -67,14 +65,7 @@ public class MsgTaskContext {
 
         InterfaceConfig interfaceConfig = interfaceConfigService.getById(msgTemplate.getInterfaceConfigId());
         ArgumentAssert.notNull(interfaceConfig, "请配置消息模板【{}:{}】的接口", msgTemplate.getKey(), msgTemplate.getName());
-        String configJson = interfaceConfig.getConfigJson();
-        try {
-            ArgumentAssert.isTrue(JSON.isValidArray(configJson), "消息模板【{}:{}】的接口配置信息错误： {}", msgTemplate.getKey(), msgTemplate.getName(), configJson);
-        } catch (Exception e) {
-            log.error("消息模板【{}:{}】的接口配置信息错误： {}", msgTemplate.getKey(), msgTemplate.getName(), configJson, e);
-            throw new BizException(StrUtil.format("消息模板【{}:{}】的接口配置信息错误： {}", msgTemplate.getKey(), msgTemplate.getName(), configJson), e);
-        }
-        List<InterfaceConfigJsonDto> interfaceConfigList = JSON.parseArray(configJson, InterfaceConfigJsonDto.class);
+        List<InterfaceConfigJsonDto> interfaceConfigList = interfaceConfig.getConfigJson();
         Map<String, String> propertyParam = new LinkedHashMap<>();
         interfaceConfigList.forEach(item -> propertyParam.put(item.getKey(), item.getValue()));
 
@@ -99,7 +90,7 @@ public class MsgTaskContext {
                 .setExecStartTime(LocalDateTime.now())
                 .setParam(msgTask.getParam());
 
-        MsgTaskParam msgTaskParam = MsgTaskParam.builder().msgTask(msgTask).msgTemplate(msgTemplate)
+        MsgTaskParam msgTaskParam = MsgTaskParam.builder().msgTask(msgTask).msgTemplate(msgTemplate).interfaceConfig(interfaceConfig)
                 .propertyParam(propertyParam).recipientList(msgTaskRecipientList)
                 .build();
 
@@ -126,10 +117,12 @@ public class MsgTaskContext {
 
             boolean success = msgTaskStrategy.isSuccess(result);
             if (success) {
+                log.info("消息执行结果={}", JSON.toJSONString(result));
                 interfaceLog.setStatus(MsgInterfaceLogStatusEnum.SUCCESS.getCode());
                 msgTaskUpdate.setStatus(MsgTaskStatusEnum.SUCCESS.getCode());
                 interfaceStatService.incrSuccessCount(interfaceStat.getId());
             } else {
+                log.warn("消息执行结果={}", JSON.toJSONString(result));
                 msgTaskUpdate.setStatus(MsgTaskStatusEnum.FAIL.getCode());
                 interfaceLog.setStatus(MsgInterfaceLogStatusEnum.FAIL.getCode());
                 interfaceStatService.incrFailCount(interfaceStat.getId());

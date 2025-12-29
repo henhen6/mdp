@@ -81,7 +81,7 @@ public class MsgTemplateServiceImpl extends SuperServiceImpl<MsgTemplateMapper, 
     protected MsgTemplate updateBefore(Object update) {
         MsgTemplate entity = UpdateEntity.of(getEntityClass());
         BeanUtil.copyProperties(update, entity);
-        ArgumentAssert.isFalse(StrUtil.isNotBlank(entity.getKey()) && check(entity.getKey(), null), "模板标识{}已存在", entity.getKey());
+        ArgumentAssert.isFalse(StrUtil.isNotBlank(entity.getKey()) && check(entity.getKey(), entity.getId()), "模板标识{}已存在", entity.getKey());
         entity.setParam(parseParam(entity.getTitle(), entity.getContent()));
 
         return entity;

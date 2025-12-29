@@ -84,11 +84,22 @@ mdp:
     ignoreParamValues:
       - noxss
   captcha:
-    slider:
+    slider: # 行为验证码
       enabled: true
       cache-type: redis
-    graphic:
+    graphic: # 图片验证码
       enabled: true
+      length: 4
+  msg:
+    param: # 消息模板中读取的全局参数
+      appName: '主数据平台'
+      homeWebsiteUrl: 'http://mddata.top'
+    sms: # 短信验证码配置
+      length: 6
+      type: number
+    email: # 邮件验证码配置
+      length: 6
+      type: string
   async: # 全局线程池配置
     corePoolSize: 2
     maxPoolSize: 50
@@ -115,23 +126,6 @@ mdp:
   file:
     delFile: false
     suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db
-
-#FAST_DFS配置
-fdfs:
-  soTimeout: 1500
-  connectTimeout: 600
-  thumb-image:
-    width: 150
-    height: 150
-  tracker-list:
-    - 39.108.109.234:22122
-  pool:
-    #从池中借出的对象的最大数目
-    max-total: 153
-    max-wait-millis: 102
-    jmx-name-base: 1
-    jmx-name-prefix: 1
-
 
 spring:
   main:
@@ -358,17 +352,7 @@ sa-token:
     # API 接口调用秘钥
     secret-key: SSO-C3-kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
 sms:
-  config-type: yaml
-  blends:
-    chuanglan:
-      supplier: chuanglan
-      #您的accessKey
-      access-key-id: 'ddddd'
-      #您的accessKeySecret
-      access-key-secret: 'xxxx'
-      #您的短信签名
-      signature: '主数据平台'
-
+  config-type: INTERFACE
 
 logging:
   file:

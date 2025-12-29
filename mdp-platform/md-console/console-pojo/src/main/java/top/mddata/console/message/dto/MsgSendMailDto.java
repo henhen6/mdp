@@ -32,21 +32,6 @@ public class MsgSendMailDto extends MsgSendDto implements Serializable {
     @Schema(description = "接收人邮箱")
     private List<String> recipientList;
 
-
-    /**
-     * 添加接收人
-     *
-     * @param email 接收人邮箱
-     * @return this
-     */
-    public MsgSendMailDto addRecipient(String email) {
-        if (this.recipientList == null) {
-            this.recipientList = new ArrayList<>();
-        }
-        this.recipientList.add(email);
-        return this;
-    }
-
     /**
      * 构建API定时发送者
      *
@@ -79,5 +64,19 @@ public class MsgSendMailDto extends MsgSendDto implements Serializable {
         MsgSendMailDto dto = new MsgSendMailDto();
         dto.setChannel(MsgChannelEnum.JOB).setIsTiming(false);
         return dto;
+    }
+
+    /**
+     * 添加接收人
+     *
+     * @param email 接收人邮箱
+     * @return this
+     */
+    public MsgSendMailDto addRecipient(String email) {
+        if (this.recipientList == null) {
+            this.recipientList = new ArrayList<>();
+        }
+        this.recipientList.add(email);
+        return this;
     }
 }

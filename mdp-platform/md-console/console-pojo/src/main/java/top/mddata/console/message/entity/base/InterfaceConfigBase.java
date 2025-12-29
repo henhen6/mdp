@@ -1,13 +1,17 @@
 package top.mddata.console.message.entity.base;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.Fastjson2TypeHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.entity.SuperEntity;
+import top.mddata.console.message.dto.InterfaceConfigJsonDto;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 接口实体类。
@@ -25,7 +29,10 @@ public class InterfaceConfigBase extends SuperEntity<Long> implements Serializab
 
     @Serial
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 接口标识
+     */
+    private String key;
     /**
      * 接口名称
      */
@@ -56,7 +63,8 @@ public class InterfaceConfigBase extends SuperEntity<Long> implements Serializab
      * 配置参数
      * (JSON存储：AppId, SecretKey等)
      */
-    private String configJson;
+    @Column(typeHandler = Fastjson2TypeHandler.class)
+    private List<InterfaceConfigJsonDto> configJson;
 
     /**
      * 状态

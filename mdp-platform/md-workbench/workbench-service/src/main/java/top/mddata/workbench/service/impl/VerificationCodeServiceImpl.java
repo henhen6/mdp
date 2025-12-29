@@ -6,22 +6,21 @@ import com.wf.captcha.base.Captcha;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import top.mddata.base.base.R;
 import top.mddata.base.cache.repository.CacheOps;
 import top.mddata.base.captcha.graphic.properties.GraphicCaptchaProperties;
 import top.mddata.base.captcha.graphic.service.GraphicCaptchaService;
 import top.mddata.base.model.cache.CacheKey;
-import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.SpringUtils;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
-import top.mddata.common.constant.MsgTemplateKey;
+import top.mddata.common.properties.MsgProperties;
 import top.mddata.console.message.dto.MsgSendDto;
 import top.mddata.console.message.dto.MsgSendMailDto;
 import top.mddata.console.message.dto.MsgSendSmsDto;
 import top.mddata.console.message.facade.MsgFacade;
-import top.mddata.workbench.service.SsoUserService;
 import top.mddata.workbench.service.VerificationCodeService;
 import top.mddata.workbench.vo.CaptchaVo;
+
+import java.time.Duration;
 
 import static top.mddata.workbench.handler.impl.CaptchaLoginStrategyImpl.GRANT_TYPE;
 
@@ -36,28 +35,25 @@ import static top.mddata.workbench.handler.impl.CaptchaLoginStrategyImpl.GRANT_T
 public class VerificationCodeServiceImpl implements VerificationCodeService {
     private final MsgFacade msgFacade;
     private final CacheOps cacheOps;
-    private final SsoUserService ssoUserService;
     private final GraphicCaptchaProperties graphicCaptchaProperties;
+    private final MsgProperties msgProperties;
 
     @Override
-    public R<String> sendPhoneCode(String phone, String templateCode) {
-        if (MsgTemplateKey.Sms.PHONE_REGISTER.equals(templateCode)) {
-            // 查user表判断重复
-            boolean flag = ssoUserService.checkPhone(phone, null);
-            ArgumentAssert.isFalse(flag, "该手机号已经被注册");
-        } else if (MsgTemplateKey.Sms.PHONE_LOGIN.equals(templateCode)) {
-            //查user表判断是否存在
-            boolean flag = ssoUserService.checkPhone(phone, null);
-            ArgumentAssert.isTrue(flag, "该手机号尚未注册，请先注册后在登陆。");
-        } else if (MsgTemplateKey.Sms.PHONE_EDIT.equals(templateCode)) {
-            //查user表判断是否存在
-            boolean flag = ssoUserService.checkPhone(phone, null);
-            ArgumentAssert.isFalse(flag, "该手机号已经被他人使用");
+    public String sendPhoneCode(String phone, String templateCode) {
+        MsgProperties.Sms smsProperties = msgProperties.getSms();
+        String code;
+        if (MsgProperties.Type.string.equals(smsProperties.getType())) {
+            code = RandomUtil.randomString(smsProperties.getLength());
+        } else {
+            code = RandomUtil.randomNumbers(smsProperties.getLength());
         }
 
-        String code = RandomUtil.randomNumbers(6);
         String key = RandomUtil.randomNumbers(10);
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, templateCode);
+
+        if (smsProperties.getExpirationInMinutes() != null) {
+            cacheKey.setExpire(Duration.ofMinutes(smsProperties.getExpirationInMinutes()));
+        }
         cacheOps.set(cacheKey, code);
 
         log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
@@ -69,41 +65,37 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
                 .addParam("code", code);
 
         msgFacade.sendByTemplateKey(msgSendDto);
-        return R.success(key);
+        return key;
     }
 
     @Override
-    public R<String> sendEmailCode(String email, String templateCode) {
-        if (MsgTemplateKey.Email.EMAIL_LOGIN.equals(templateCode)) {
-            // 查user表判断重复
-            boolean flag = ssoUserService.checkEmail(email, null);
-            ArgumentAssert.isTrue(flag, "邮箱尚未注册，请先注册后在登陆。");
-        } else if (MsgTemplateKey.Email.EMAIL_REGISTER.equals(templateCode)) {
-            // 查user表判断重复
-            boolean flag = ssoUserService.checkEmail(email, null);
-            ArgumentAssert.isFalse(flag, "该邮箱已经被注册");
-        } else if (MsgTemplateKey.Email.EMAIL_EDIT.equals(templateCode)) {
-            //查user表判断是否存在
-            boolean flag = ssoUserService.checkEmail(email, null);
-            ArgumentAssert.isFalse(flag, "该邮箱已经被他人使用");
+    public String sendEmailCode(String email, String templateCode) {
+        MsgProperties.Email emailProperties = msgProperties.getEmail();
+        String code;
+        if (MsgProperties.Type.string.equals(emailProperties.getType())) {
+            code = RandomUtil.randomString(emailProperties.getLength());
+        } else {
+            code = RandomUtil.randomNumbers(emailProperties.getLength());
         }
 
-        String code = RandomUtil.randomNumbers(6);
         String key = RandomUtil.randomNumbers(10);
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, templateCode);
+        if (emailProperties.getExpirationInMinutes() != null) {
+            cacheKey.setExpire(Duration.ofMinutes(emailProperties.getExpirationInMinutes()));
+        }
         cacheOps.set(cacheKey, code);
 
         log.info("邮件验证码 cacheKey={}, code={}", cacheKey, code);
-
 
         MsgSendDto msgSendDto = MsgSendMailDto.buildApiSender()
                 .addRecipient(email)
                 .setTemplateKey(templateCode)
                 // code 是在模版中配置的 占位符参数
-                .addParam("code", code);
+                .addParam("code", code)
+                .addParam("validityPeriod", String.valueOf(cacheKey.getExpire().toMinutes()));
 
         msgFacade.sendByTemplateKey(msgSendDto);
-        return R.success(key);
+        return key;
     }
 
 
@@ -120,6 +112,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         String key = UUID.fastUUID().toString();
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, GRANT_TYPE);
         cacheOps.set(cacheKey, captcha.text());
+        log.info("图片验证码 cacheKey={}, code={}", cacheKey, captcha.text());
 
         return CaptchaVo.builder()
                 .key(key)
