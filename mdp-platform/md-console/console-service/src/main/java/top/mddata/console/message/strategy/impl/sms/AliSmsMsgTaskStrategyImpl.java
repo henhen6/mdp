@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @since 2025/12/29 10:36
  */
 @Slf4j
-@Service("tencentSmsMsgTaskStrategyImpl")
+@Service("aliSmsMsgTaskStrategyImpl")
 @RequiredArgsConstructor
 public class AliSmsMsgTaskStrategyImpl extends AbstractMsgTaskStrategy {
     @Override
