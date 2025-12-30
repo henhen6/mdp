@@ -163,6 +163,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void sendByTemplateKey(MsgSendDto data) {
         MsgTemplate msgTemplate = validParam(data);
         MsgTask entity = new MsgTask();
@@ -178,6 +179,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         entity.setType(msgTemplate.getMsgType());
         entity.setStatus(MsgTaskStatusEnum.WAITING.getCode());
         entity.setSenderId(ContextUtil.getUserId());
+        entity.setContent("");
+        entity.setTitle("");
 
         if (data instanceof MsgSendNoticeDto noticeDto) {
             entity.setMsgCategory(noticeDto.getMsgCategory() != null ? noticeDto.getMsgCategory().getCode() : null);
@@ -266,7 +269,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         } else {
             data.setScheduledSendTime(null);
         }
-        ArgumentAssert.contain(Arrays.asList(MsgChannelEnum.JOB.getCode(), MsgChannelEnum.API.getCode()), data.getChannel(), "非法的参数, 发送渠道: {}", data.getChannel());
+        ArgumentAssert.notNull(data.getChannel(), "请填写消息发送渠道");
+        ArgumentAssert.contain(Arrays.asList(MsgChannelEnum.JOB.getCode(), MsgChannelEnum.API.getCode()), data.getChannel().getCode(), "非法的参数, 发送渠道: {}", data.getChannel().getDesc());
         return msgTemplate;
     }
 

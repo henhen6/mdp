@@ -1,12 +1,13 @@
 package top.mddata.common.configuration;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.sms4j.core.datainterface.SmsReadConfig;
 import org.dromara.sms4j.core.factory.SmsFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import top.mddata.common.properties.MsgProperties;
 
 /**
@@ -22,8 +23,14 @@ import top.mddata.common.properties.MsgProperties;
 public class MsgAutoConfiguration {
     private final SmsReadConfig smsReadConfig;
 
-    @PostConstruct
-    public void init() {
+//    @PostConstruct
+//    public void init() {
+//        SmsFactory.createSmsBlend(smsReadConfig);
+//        log.info("[通过配置读取接口创建全部短信实例] 加载成功");
+//    }
+
+    @EventListener
+    public void init(ContextRefreshedEvent event) {
         SmsFactory.createSmsBlend(smsReadConfig);
         log.info("[通过配置读取接口创建全部短信实例] 加载成功");
     }
