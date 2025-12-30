@@ -6,12 +6,10 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.ExtraParams;
-import top.mddata.console.message.dto.InterfaceConfigJsonDto;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 接口 Query类（查询方法入参）。

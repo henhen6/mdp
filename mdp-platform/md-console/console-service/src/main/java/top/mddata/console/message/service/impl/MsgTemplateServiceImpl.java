@@ -34,11 +34,11 @@ import java.util.regex.Pattern;
 @Slf4j
 @RequiredArgsConstructor
 public class MsgTemplateServiceImpl extends SuperServiceImpl<MsgTemplateMapper, MsgTemplate> implements MsgTemplateService {
-    private final InterfaceConfigService interfaceConfigService;
     /**
      * 解析占位符 ${xxx}
      */
     private static final Pattern REG_EX = Pattern.compile("\\$\\{([^}]+)}");
+    private final InterfaceConfigService interfaceConfigService;
 
     /**
      * 解析参数

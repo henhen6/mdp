@@ -30,6 +30,13 @@ public class MsgProperties {
     private Sms sms = new Sms();
     private Email email = new Email();
 
+    public enum Type {
+        /** 数字 */
+        number,
+        /** 字符串 */
+        string;
+    }
+
     @Getter
     @Setter
     public static class Sms {
@@ -62,12 +69,5 @@ public class MsgProperties {
          * 过期时间
          */
         private Long expirationInMinutes;
-    }
-
-    public enum Type {
-        /** 数字 */
-        number,
-        /** 字符串 */
-        string;
     }
 }
