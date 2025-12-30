@@ -6,10 +6,12 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.ExtraParams;
+import top.mddata.console.message.dto.InterfaceConfigJsonDto;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 接口 Query类（查询方法入参）。
@@ -73,12 +75,6 @@ public class InterfaceConfigQuery extends ExtraParams implements Serializable {
     @Schema(description = "实现ID")
     private String magicApiId;
 
-    /**
-     * 配置参数
-     * (JSON存储：AppId, SecretKey等)
-     */
-    @Schema(description = "配置参数")
-    private String configJson;
 
     /**
      * 状态

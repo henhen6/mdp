@@ -1,16 +1,20 @@
 package top.mddata.console.message.vo;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.handler.Fastjson2TypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+import top.mddata.console.message.dto.InterfaceConfigJsonDto;
 import top.mddata.console.message.entity.base.InterfaceConfigBase;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 接口 VO类（通常用作Controller出参）。
@@ -81,7 +85,8 @@ public class InterfaceConfigVo implements Serializable {
      * (JSON存储：AppId, SecretKey等)
      */
     @Schema(description = "配置参数")
-    private String configJson;
+    @Column(typeHandler = Fastjson2TypeHandler.class)
+    private List<InterfaceConfigJsonDto> configJson;
 
     /**
      * 状态
