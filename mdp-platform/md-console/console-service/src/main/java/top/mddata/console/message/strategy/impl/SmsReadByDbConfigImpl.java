@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import top.mddata.console.message.dto.InterfaceConfigJsonDto;
 import top.mddata.console.message.entity.InterfaceConfig;
 import top.mddata.console.message.enumeration.MsgTypeEnum;
-import top.mddata.console.message.service.InterfaceConfigService;
+import top.mddata.console.message.mapper.InterfaceConfigMapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class SmsReadByDbConfigImpl implements SmsReadConfig {
-    private final InterfaceConfigService interfaceConfigService;
+    private final InterfaceConfigMapper interfaceConfigMapper;
 
     private static BaseConfig getBaseConfig(InterfaceConfig interfaceConfig) {
         List<InterfaceConfigJsonDto> configJsonList = interfaceConfig.getConfigJson();
@@ -96,7 +96,7 @@ public class SmsReadByDbConfigImpl implements SmsReadConfig {
 
     @Override
     public BaseConfig getSupplierConfig(String configId) {
-        InterfaceConfig interfaceConfig = interfaceConfigService.getByKey(configId);
+        InterfaceConfig interfaceConfig = interfaceConfigMapper.selectOneByQuery(QueryWrapper.create().eq(InterfaceConfig::getKey, configId));
         if (interfaceConfig == null) {
             return null;
         }
@@ -106,7 +106,7 @@ public class SmsReadByDbConfigImpl implements SmsReadConfig {
 
     @Override
     public List<BaseConfig> getSupplierConfigList() {
-        List<InterfaceConfig> list = interfaceConfigService.list(QueryWrapper.create().eq(InterfaceConfig::getMsgType, MsgTypeEnum.SMS.getCode()));
+        List<InterfaceConfig> list = interfaceConfigMapper.selectListByQuery(QueryWrapper.create().eq(InterfaceConfig::getMsgType, MsgTypeEnum.SMS.getCode()));
         List<BaseConfig> configList = new ArrayList<>();
         list.forEach(interfaceConfig -> {
             BaseConfig baseConfig = getBaseConfig(interfaceConfig);

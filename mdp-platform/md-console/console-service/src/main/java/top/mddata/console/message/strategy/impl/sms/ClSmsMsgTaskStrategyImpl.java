@@ -67,7 +67,7 @@ public class ClSmsMsgTaskStrategyImpl extends AbstractMsgTaskStrategy {
         for (Kv kv : paramList) {
             params.put(kv.getKey(), kv.getValue());
         }
-        String template = buildVariableContent(sign, msgTask.getContent());
+        String template = buildVariableContent(sign, msgTemplate.getContent());
 
         InterfaceConfig interfaceConfig = msgParam.getInterfaceConfig();
         SmsBlend smsBlend = SmsFactory.getSmsBlend(interfaceConfig.getKey());

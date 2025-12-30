@@ -6,6 +6,8 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.sms4j.core.datainterface.SmsReadConfig;
+import org.dromara.sms4j.core.factory.SmsFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
@@ -34,6 +36,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class InterfaceConfigServiceImpl extends SuperServiceImpl<InterfaceConfigMapper, InterfaceConfig> implements InterfaceConfigService {
     private final InterfaceStatService interfaceStatService;
+    private final SmsReadConfig smsReadConfig;
 
     @Override
     protected InterfaceConfig saveBefore(Object save) {
@@ -85,6 +88,8 @@ public class InterfaceConfigServiceImpl extends SuperServiceImpl<InterfaceConfig
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long updateConfigById(InterfaceConfigSettingDto dto) {
+        InterfaceConfig config = getById(dto.getId());
+        ArgumentAssert.notNull(config, "接口不存在");
         InterfaceConfig interfaceConfig = UpdateEntity.of(InterfaceConfig.class, dto.getId());
         if (CollUtil.isNotEmpty(dto.getConfigJsonList())) {
             interfaceConfig.setConfigJson(dto.getConfigJsonList());
@@ -92,6 +97,9 @@ public class InterfaceConfigServiceImpl extends SuperServiceImpl<InterfaceConfig
             interfaceConfig.setConfigJson(Collections.emptyList());
         }
         updateById(interfaceConfig);
+
+        SmsFactory.createSmsBlend(smsReadConfig, config.getKey());
+
         return interfaceConfig.getId();
     }
 
