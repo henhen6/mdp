@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.experimental.FieldNameConstants;
 import top.mddata.workbench.entity.base.NoticeRecipientBase;
 
 /**
@@ -15,7 +14,6 @@ import top.mddata.workbench.entity.base.NoticeRecipientBase;
  * @author henhen6
  * @since 2025-12-26 09:55:35
  */
-@FieldNameConstants
 @Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)

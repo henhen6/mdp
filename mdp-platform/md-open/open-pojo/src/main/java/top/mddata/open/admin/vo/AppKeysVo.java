@@ -3,11 +3,9 @@ package top.mddata.open.admin.vo;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.open.admin.entity.base.AppKeysBase;
 
 import java.io.Serial;
@@ -18,14 +16,12 @@ import java.time.LocalDateTime;
  * 应用秘钥 VO类（通常用作Controller出参）。
  *
  * @author henhen6
- * @since 2025-11-20 16:31:25
+ * @since 2026-01-02 10:14:29
  */
 @Accessors(chain = true)
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Schema(description = "应用秘钥")
+@FieldNameConstants
+@Schema(description = "应用秘钥Vo")
 @Table(AppKeysBase.TABLE_NAME)
 public class AppKeysVo implements Serializable {
 
@@ -58,6 +54,25 @@ public class AppKeysVo implements Serializable {
      */
     @Schema(description = "秘钥格式")
     private Integer keyFormat;
+
+    /**
+     * 通知地址
+     */
+    @Schema(description = "通知地址")
+    private String notifyUrl;
+
+    /**
+     * 通知状态
+     */
+    @Schema(description = "通知状态")
+    private Boolean notifyState;
+
+    /**
+     * 加密类型
+     * [0-不加密 1-aes加密 2-sm4加密]
+     */
+    @Schema(description = "加密类型")
+    private Integer notifyEncryptionType;
 
     /**
      * 应用公钥

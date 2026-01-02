@@ -4,7 +4,6 @@ import com.mybatisflex.annotation.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import lombok.experimental.FieldNameConstants;
 import top.mddata.open.admin.entity.base.AppApplyBase;
 
 /**
@@ -18,6 +17,5 @@ import top.mddata.open.admin.entity.base.AppApplyBase;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Table(AppApplyBase.TABLE_NAME)
-@FieldNameConstants
 public class AppApply extends AppApplyBase {
 }

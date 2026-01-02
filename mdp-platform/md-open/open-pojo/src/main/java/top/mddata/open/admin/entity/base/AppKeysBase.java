@@ -1,11 +1,9 @@
 package top.mddata.open.admin.entity.base;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.entity.SuperEntity;
 
 import java.io.Serial;
@@ -15,13 +13,11 @@ import java.io.Serializable;
  * 应用秘钥实体类。
  *
  * @author henhen6
- * @since 2025-11-20 16:31:25
+ * @since 2026-01-02 10:14:29
  */
+@FieldNameConstants
 @Data
-@Builder
 @Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class AppKeysBase extends SuperEntity<Long> implements Serializable {
     /** 表名称 */
@@ -40,6 +36,22 @@ public class AppKeysBase extends SuperEntity<Long> implements Serializable {
      * [1-PKCS8(JAVA适用) 2-PKCS1(非JAVA适用)]
      */
     private Integer keyFormat;
+
+    /**
+     * 通知地址
+     */
+    private String notifyUrl;
+
+    /**
+     * 通知状态
+     */
+    private Boolean notifyState;
+
+    /**
+     * 加密类型
+     * [0-不加密 1-aes加密 2-sm4加密]
+     */
+    private Integer notifyEncryptionType;
 
     /**
      * 应用公钥

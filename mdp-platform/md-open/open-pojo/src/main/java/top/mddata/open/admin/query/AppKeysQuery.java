@@ -1,12 +1,10 @@
 package top.mddata.open.admin.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import top.mddata.base.base.ExtraParams;
 
 import java.io.Serial;
@@ -17,15 +15,13 @@ import java.time.LocalDateTime;
  * 应用秘钥 Query类（查询方法入参）。
  *
  * @author henhen6
- * @since 2025-11-20 16:31:25
+ * @since 2026-01-02 10:14:29
  */
 @Accessors(chain = true)
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "应用秘钥")
+@Schema(description = "应用秘钥Query")
 public class AppKeysQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -49,6 +45,25 @@ public class AppKeysQuery extends ExtraParams implements Serializable {
      */
     @Schema(description = "秘钥格式")
     private Integer keyFormat;
+
+    /**
+     * 通知地址
+     */
+    @Schema(description = "通知地址")
+    private String notifyUrl;
+
+    /**
+     * 通知状态
+     */
+    @Schema(description = "通知状态")
+    private Boolean notifyState;
+
+    /**
+     * 加密类型
+     * [0-不加密 1-aes加密 2-sm4加密]
+     */
+    @Schema(description = "加密类型")
+    private Integer notifyEncryptionType;
 
     /**
      * 应用公钥

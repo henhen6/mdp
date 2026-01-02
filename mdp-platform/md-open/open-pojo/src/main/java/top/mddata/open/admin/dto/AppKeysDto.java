@@ -4,11 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
+import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,18 +16,23 @@ import java.io.Serializable;
  * 应用秘钥 DTO（写入方法入参）。
  *
  * @author henhen6
- * @since 2025-11-20 16:31:25
+ * @since 2026-01-02 10:14:29
  */
 @Accessors(chain = true)
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Schema(description = "应用秘钥")
+@FieldNameConstants
+@Schema(description = "应用秘钥Dto")
 public class AppKeysDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    /**
+     * id
+     */
+    @NotNull(message = "请填写id", groups = BaseEntity.Update.class)
+    @Schema(description = "id")
+    private Long id;
 
     /**
      * 所属应用
@@ -44,6 +48,26 @@ public class AppKeysDto implements Serializable {
     @NotNull(message = "请填写秘钥格式")
     @Schema(description = "秘钥格式")
     private Integer keyFormat;
+
+    /**
+     * 通知地址
+     */
+    @Size(max = 255, message = "通知地址长度不能超过{max}")
+    @Schema(description = "通知地址")
+    private String notifyUrl;
+
+    /**
+     * 通知状态
+     */
+    @Schema(description = "通知状态")
+    private Boolean notifyState;
+
+    /**
+     * 加密类型
+     * [0-不加密 1-aes加密 2-sm4加密]
+     */
+    @Schema(description = "加密类型")
+    private Integer notifyEncryptionType;
 
     /**
      * 应用公钥

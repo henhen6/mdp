@@ -12,7 +12,7 @@ import top.mddata.open.admin.entity.base.AppKeysBase;
  * DO类：数据对象，可以在关联查询时，再次添加字段，重新生成代码时，忽略此文件。
  *
  * @author henhen6
- * @since 2025-11-20 16:31:25
+ * @since 2026-01-02 10:14:29
  */
 @Accessors(chain = true)
 @Data

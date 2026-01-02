@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.experimental.FieldNameConstants;
 import top.mddata.workbench.entity.base.LoginLogBase;
 
 /**
@@ -15,7 +14,6 @@ import top.mddata.workbench.entity.base.LoginLogBase;
  * @author henhen6
  * @since 2025-12-14 14:15:09
  */
-@FieldNameConstants
 @Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
