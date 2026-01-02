@@ -98,7 +98,15 @@ public class ApiRegister {
         }*/
 
         Set<Method> cache = new HashSet<>();
-        Class<?>[] interfaces = objClass.getInterfaces();
+        Set<Class<?>> interfaceSet = new HashSet<>();
+        Class<?> current = objClass;
+        while (current != null) {
+            for (Class<?> iface : current.getInterfaces()) {
+                interfaceSet.add(iface);
+            }
+            current = current.getSuperclass();
+        }
+        Class<?>[] interfaces = interfaceSet.toArray(new Class<?>[0]);
         for (Class<?> interfaceClass : interfaces) {
             for (Method method : interfaceClass.getMethods()) {
                 Open open = method.getAnnotation(Open.class);

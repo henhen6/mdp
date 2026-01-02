@@ -222,6 +222,7 @@ public class SopDocBuildTemplate extends RpcDocBuildTemplate {
 
     @Override
     public boolean isEntryPoint(JavaClass javaClass, FrameworkAnnotations frameworkAnnotations) {
+        // 必须是接口
         return javaClass.isInterface();
     }
 
