@@ -20,7 +20,6 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 #end
 #if(withLombok)
-import lombok.experimental.FieldNameConstants;
 #if(withActiveRecord)
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -43,7 +42,6 @@ import lombok.experimental.Accessors;
  */
 #end
 #if(withLombok)
-@FieldNameConstants
 #if(withActiveRecord)
 @Accessors(chain = true)
 @Data(staticConstructor = "create")
