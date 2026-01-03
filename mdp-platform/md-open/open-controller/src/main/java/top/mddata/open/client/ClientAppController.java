@@ -29,6 +29,7 @@ import top.mddata.open.admin.utils.RsaTool;
 import top.mddata.open.admin.vo.AppKeysVo;
 import top.mddata.open.admin.vo.AppVo;
 import top.mddata.open.client.dto.AppDevInfoDto;
+import top.mddata.open.client.dto.AppEventSubscriptionDto;
 import top.mddata.open.client.dto.AppInfoUpdateDto;
 import top.mddata.open.client.dto.AppKeysUpdateDto;
 
@@ -87,6 +88,18 @@ public class ClientAppController extends SuperController<AppService, App> {
         return R.success(appKeysService.updateKeysByClient(param));
     }
 
+    /**
+     * 修改事件订阅
+     *
+     * @param param 表单数据
+     * @return 返回影响行数
+     */
+    @PostMapping("/updateEventSubscription")
+    @Operation(summary = "修改事件订阅", description = "修改事件订阅")
+    @RequestLog(value = "修改事件订阅")
+    public R<Long> updateEventSubscription(@Validated @RequestBody AppEventSubscriptionDto param) {
+        return R.success(appKeysService.updateEventSubscription(param));
+    }
 
     /**
      * 根据主键删除应用。

@@ -11,6 +11,7 @@ import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 应用秘钥 DTO（写入方法入参）。
@@ -60,6 +61,7 @@ public class AppKeysDto implements Serializable {
      * 通知状态
      */
     @Schema(description = "通知状态")
+    @NotNull(message = "请填写通知状态")
     private Boolean notifyState;
 
     /**
@@ -68,6 +70,9 @@ public class AppKeysDto implements Serializable {
      */
     @Schema(description = "加密类型")
     private Integer notifyEncryptionType;
+
+    @Schema(description = "订阅的事件")
+    private List<Long> eventTypeIdList;
 
     /**
      * 应用公钥

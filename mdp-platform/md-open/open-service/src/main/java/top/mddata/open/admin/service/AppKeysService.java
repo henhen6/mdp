@@ -3,6 +3,7 @@ package top.mddata.open.admin.service;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.open.admin.dto.AppKeysDto;
 import top.mddata.open.admin.entity.AppKeys;
+import top.mddata.open.client.dto.AppEventSubscriptionDto;
 import top.mddata.open.client.dto.AppKeysUpdateDto;
 
 /**
@@ -21,18 +22,26 @@ public interface AppKeysService extends SuperService<AppKeys> {
     AppKeys getByAppId(Long appId);
 
     /**
-     * 开发者修改公钥
+     * 修改应用秘钥信息
      *
      * @param param 公钥参数
-     * @return
+     * @return 应用秘钥实体
      */
     AppKeys updateKeysByClient(AppKeysUpdateDto param);
 
     /**
-     * 开发者重置秘钥
+     * 修改 应用公私钥
      *
      * @param param 公钥参数
-     * @return
+     * @return 应用秘钥实体
      */
     AppKeys updateAppKeys(AppKeysDto param);
+
+    /**
+     * 修改应用事件订阅
+     *
+     * @param param 应用事件参数
+     * @return 应用id
+     */
+    Long updateEventSubscription(AppEventSubscriptionDto param);
 }
