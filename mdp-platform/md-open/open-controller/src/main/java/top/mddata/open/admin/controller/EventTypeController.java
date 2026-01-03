@@ -79,6 +79,20 @@ public class EventTypeController extends SuperController<EventTypeService, Event
     }
 
     /**
+     * 检测编码是否存在。
+     *
+     * @param code 事件编码
+     * @param id 主键id
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/check")
+    @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
+    @RequestLog(value = "检测编码是否存在", request = false)
+    public R<Boolean> check(@RequestParam String code, @RequestParam(required = false) Long id) {
+        return R.success(superService.check(code, id));
+    }
+
+    /**
      * 根据事件类型主键获取详细信息。
      *
      * @param id 事件类型主键

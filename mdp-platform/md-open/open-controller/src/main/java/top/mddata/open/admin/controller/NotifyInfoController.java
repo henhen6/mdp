@@ -87,7 +87,6 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
         return R.success(page);
     }
 
-
     /**
      * 重新推送
      *

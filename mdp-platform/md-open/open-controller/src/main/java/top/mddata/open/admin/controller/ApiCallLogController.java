@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
-import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.open.admin.dto.ApiCallLogDto;
 import top.mddata.open.admin.entity.ApiCallLog;
 import top.mddata.open.admin.query.ApiCallLogQuery;
 import top.mddata.open.admin.service.ApiCallLogService;
@@ -39,18 +37,6 @@ import java.util.List;
 @RequestMapping("/admin/apiCallLog")
 @RequiredArgsConstructor
 public class ApiCallLogController extends SuperController<ApiCallLogService, ApiCallLog> {
-    /**
-     * 添加调用日志。
-     *
-     * @param dto 调用日志
-     * @return {@code true} 添加成功，{@code false} 添加失败
-     */
-    @PostMapping("/save")
-    @Operation(summary = "新增", description = "保存调用日志")
-    @RequestLog(value = "新增", request = false)
-    public R<Long> save(@Validated @RequestBody ApiCallLogDto dto) {
-        return R.success(superService.saveDto(dto).getId());
-    }
 
     /**
      * 根据主键删除调用日志。
@@ -65,18 +51,6 @@ public class ApiCallLogController extends SuperController<ApiCallLogService, Api
         return R.success(superService.removeByIds(ids));
     }
 
-    /**
-     * 根据主键更新调用日志。
-     *
-     * @param dto 调用日志
-     * @return {@code true} 更新成功，{@code false} 更新失败
-     */
-    @PostMapping("/update")
-    @Operation(summary = "修改", description = "根据主键更新调用日志")
-    @RequestLog(value = "修改", request = false)
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ApiCallLogDto dto) {
-        return R.success(superService.updateDtoById(dto).getId());
-    }
 
     /**
      * 根据调用日志主键获取详细信息。
@@ -109,20 +83,5 @@ public class ApiCallLogController extends SuperController<ApiCallLogService, Api
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, ApiCallLogVo.class);
         return R.success(page);
-    }
-
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<ApiCallLogVo>> list(@RequestBody @Validated ApiCallLogQuery params) {
-        ApiCallLog entity = BeanUtil.toBean(params, ApiCallLog.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<ApiCallLogVo> listVo = superService.listAs(wrapper, ApiCallLogVo.class);
-        return R.success(listVo);
     }
 }
