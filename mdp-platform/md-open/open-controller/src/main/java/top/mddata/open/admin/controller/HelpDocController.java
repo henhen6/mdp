@@ -1,6 +1,7 @@
 package top.mddata.open.admin.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.tree.TreeUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.open.admin.dto.HelpDocDto;
 import top.mddata.open.admin.entity.HelpDoc;
 import top.mddata.open.admin.query.HelpDocQuery;
@@ -124,5 +126,21 @@ public class HelpDocController extends SuperController<HelpDocService, HelpDoc> 
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         List<HelpDocVo> listVo = superService.listAs(wrapper, HelpDocVo.class);
         return R.success(listVo);
+    }
+
+    /**
+     * 按树结构查询
+     *
+     * @param params 查询参数
+     * @return 查询结果
+     */
+    @Operation(summary = "按树结构查询")
+    @PostMapping("/tree")
+    @RequestLog("按树结构查询")
+    public R<List<HelpDocVo>> tree(@RequestBody @Validated HelpDocQuery params) {
+        HelpDoc entity = BeanUtil.toBean(params, HelpDoc.class);
+        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+        List<HelpDocVo> listVo = superService.listAs(wrapper, HelpDocVo.class);
+        return R.success(MyTreeUtil.buildTreeEntity(listVo, HelpDocVo::new));
     }
 }

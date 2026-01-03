@@ -15,9 +15,9 @@ import top.mddata.base.interfaces.BaseEnum;
 @Schema(description = "通知执行状态-枚举")
 public enum NotifyStatusEnum implements BaseEnum<String> {
 
-    WAIT_SEND("0", "待执行"),
-    SEND_SUCCESS("1", "执行成功"),
-    SEND_FAIL("2", "执行失败"),
+    WAIT("0", "待执行"),
+    SUCCESS("1", "执行成功"),
+    FAIL("2", "执行失败"),
     RETRY_OVER("3", "重试结束"),
     END("4", "手动结束");
     @Schema(description = "状态")

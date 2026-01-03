@@ -4,7 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import top.mddata.base.base.entity.SuperEntity;
+import top.mddata.base.base.entity.TreeEntity;
+import top.mddata.open.admin.vo.HelpDocVo;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ import java.io.Serializable;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class HelpDocBase extends SuperEntity<Long> implements Serializable {
+public class HelpDocBase extends TreeEntity<Long, HelpDocVo> implements Serializable {
     /** 表名称 */
     public static final String TABLE_NAME = "mdo_help_doc";
 

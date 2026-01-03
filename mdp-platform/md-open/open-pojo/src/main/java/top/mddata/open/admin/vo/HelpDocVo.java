@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+import top.mddata.base.base.entity.TreeEntity;
 import top.mddata.open.admin.entity.base.HelpDocBase;
 
 import java.io.Serial;
@@ -24,7 +25,7 @@ import java.time.LocalDateTime;
 @FieldNameConstants
 @Schema(description = "帮助文档Vo")
 @Table(HelpDocBase.TABLE_NAME)
-public class HelpDocVo implements Serializable {
+public class HelpDocVo extends TreeEntity<Long, HelpDocVo> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
