@@ -46,7 +46,7 @@ public class NotifyInfoBase extends SuperEntity<Long> implements Serializable {
      * 通知类型
      * [0-推送 1-回调]
      */
-    private Integer notityType;
+    private Integer notifyType;
 
     /**
      * 所属应用

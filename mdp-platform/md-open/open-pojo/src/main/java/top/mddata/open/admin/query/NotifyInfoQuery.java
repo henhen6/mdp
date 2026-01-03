@@ -56,7 +56,7 @@ public class NotifyInfoQuery extends ExtraParams implements Serializable {
      * [0-推送 1-回调]
      */
     @Schema(description = "通知类型")
-    private Integer notityType;
+    private Integer notifyType;
 
     /**
      * 所属应用

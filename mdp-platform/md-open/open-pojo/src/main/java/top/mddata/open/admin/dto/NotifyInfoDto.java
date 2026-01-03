@@ -60,7 +60,7 @@ public class NotifyInfoDto implements Serializable {
      */
     @NotNull(message = "请填写通知类型")
     @Schema(description = "通知类型")
-    private Integer notityType;
+    private Integer notifyType;
 
     /**
      * 所属应用

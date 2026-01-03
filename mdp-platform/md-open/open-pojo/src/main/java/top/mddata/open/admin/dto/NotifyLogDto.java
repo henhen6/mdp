@@ -47,7 +47,12 @@ public class NotifyLogDto implements Serializable {
      */
     @Schema(description = "请求时间")
     private LocalDateTime requestTime;
-
+    /**
+     * 请求参数
+     */
+    @Size(max = 536870911, message = "请求参数长度不能超过{max}")
+    @Schema(description = "请求参数")
+    private String requestData;
     /**
      * 响应内容
      */

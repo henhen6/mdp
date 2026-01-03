@@ -36,6 +36,10 @@ public class NotifyLogBase extends BaseEntity<Long> implements Serializable {
      * 请求时间
      */
     private LocalDateTime requestTime;
+    /**
+     * 请求参数
+     */
+    private String requestData;
 
     /**
      * 响应内容

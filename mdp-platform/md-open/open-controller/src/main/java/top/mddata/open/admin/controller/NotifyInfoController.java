@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
-import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.open.admin.dto.NotifyInfoDto;
+import top.mddata.common.dto.IdDto;
 import top.mddata.open.admin.entity.NotifyInfo;
 import top.mddata.open.admin.query.NotifyInfoQuery;
 import top.mddata.open.admin.service.NotifyInfoService;
@@ -39,18 +38,7 @@ import java.util.List;
 @RequestMapping("/admin/notifyInfo")
 @RequiredArgsConstructor
 public class NotifyInfoController extends SuperController<NotifyInfoService, NotifyInfo> {
-    /**
-     * 添加回调任务。
-     *
-     * @param dto 回调任务
-     * @return {@code true} 添加成功，{@code false} 添加失败
-     */
-    @PostMapping("/save")
-    @Operation(summary = "新增", description = "保存回调任务")
-    @RequestLog(value = "新增", request = false)
-    public R<Long> save(@Validated @RequestBody NotifyInfoDto dto) {
-        return R.success(superService.saveDto(dto).getId());
-    }
+
 
     /**
      * 根据主键删除回调任务。
@@ -65,18 +53,6 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
         return R.success(superService.removeByIds(ids));
     }
 
-    /**
-     * 根据主键更新回调任务。
-     *
-     * @param dto 回调任务
-     * @return {@code true} 更新成功，{@code false} 更新失败
-     */
-    @PostMapping("/update")
-    @Operation(summary = "修改", description = "根据主键更新回调任务")
-    @RequestLog(value = "修改", request = false)
-    public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody NotifyInfoDto dto) {
-        return R.success(superService.updateDtoById(dto).getId());
-    }
 
     /**
      * 根据回调任务主键获取详细信息。
@@ -111,18 +87,31 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
         return R.success(page);
     }
 
+
     /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
+     * 重新推送
+     *
+     * @param id ID
+     * @param url 重试地址
+     * @return 返回影响行数
      */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
-    public R<List<NotifyInfoVo>> list(@RequestBody @Validated NotifyInfoQuery params) {
-        NotifyInfo entity = BeanUtil.toBean(params, NotifyInfo.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<NotifyInfoVo> listVo = superService.listAs(wrapper, NotifyInfoVo.class);
-        return R.success(listVo);
+    @PostMapping("/push")
+    @Operation(summary = "重新推送", description = "重新推送")
+    @RequestLog("'重新推送:' + #id")
+    public R<Boolean> push(@RequestParam Long id, @RequestParam(required = false) String url) {
+        return R.success(superService.push(id, url));
+    }
+
+    /**
+     * 结束重试
+     *
+     * @param param 表单数据
+     * @return 返回影响行数
+     */
+    @Operation(summary = "结束重试", description = "结束重试")
+    @PostMapping("/end")
+    @RequestLog("'结束重试:' + #param.id")
+    public R<Boolean> end(@Validated @RequestBody IdDto param) {
+        return R.success(superService.end(param.getId()));
     }
 }
