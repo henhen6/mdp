@@ -2,10 +2,10 @@ package com.gitee.sop.support.util;
 
 
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.StrUtil;
 import com.gitee.sop.support.dto.ApiConfig;
 import com.gitee.sop.support.exception.SignException;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
@@ -69,7 +69,7 @@ public class SignUtil {
         int index = 0;
         for (String key : keys) {
             String value = String.valueOf(params.get(key));
-            if (!StringUtils.isAnyBlank(key, value)) {
+            if (StrUtil.isAllNotEmpty(key, value)) {
                 content.append(index == 0 ? "" : "&").append(key).append("=").append(value);
                 index++;
             }
@@ -116,7 +116,7 @@ public class SignUtil {
 
             signature.initSign(priKey);
 
-            if (StringUtils.isEmpty(charset)) {
+            if (StrUtil.isEmpty(charset)) {
                 signature.update(content.getBytes());
             } else {
                 signature.update(content.getBytes(charset));
@@ -149,7 +149,7 @@ public class SignUtil {
 
             signature.initSign(priKey);
 
-            if (StringUtils.isEmpty(charset)) {
+            if (StrUtil.isEmpty(charset)) {
                 signature.update(content.getBytes());
             } else {
                 signature.update(content.getBytes(charset));
@@ -190,7 +190,7 @@ public class SignUtil {
      * @throws Exception 异常
      */
     public static PrivateKey getPrivateKeyFromPKCS8(String algorithm, InputStream ins) throws Exception {
-        if (ins == null || StringUtils.isEmpty(algorithm)) {
+        if (ins == null || StrUtil.isEmpty(algorithm)) {
             return null;
         }
 
@@ -343,7 +343,7 @@ public class SignUtil {
 
             signature.initVerify(pubKey);
 
-            if (StringUtils.isEmpty(charset)) {
+            if (StrUtil.isEmpty(charset)) {
                 signature.update(content.getBytes());
             } else {
                 signature.update(content.getBytes(charset));
@@ -366,7 +366,7 @@ public class SignUtil {
 
             signature.initVerify(pubKey);
 
-            if (StringUtils.isEmpty(charset)) {
+            if (StrUtil.isEmpty(charset)) {
                 signature.update(content.getBytes());
             } else {
                 signature.update(content.getBytes(charset));
@@ -480,7 +480,7 @@ public class SignUtil {
                                         String cusPrivateKey, String charset, boolean isEncrypt,
                                         boolean isSign) throws SignException {
         StringBuilder sb = new StringBuilder();
-        if (StringUtils.isEmpty(charset)) {
+        if (StrUtil.isEmpty(charset)) {
             charset = CHARSET_GBK;
         }
         sb.append("<?xml version=\"1.0\" encoding=\"" + charset + "\"?>");
@@ -536,7 +536,7 @@ public class SignUtil {
                                         String cusPrivateKey, String charset, boolean isEncrypt,
                                         boolean isSign, String signType) throws SignException {
         StringBuilder sb = new StringBuilder();
-        if (StringUtils.isEmpty(charset)) {
+        if (StrUtil.isEmpty(charset)) {
             charset = CHARSET_GBK;
         }
         sb.append("<?xml version=\"1.0\" encoding=\"" + charset + "\"?>");
@@ -586,7 +586,7 @@ public class SignUtil {
                     new ByteArrayInputStream(publicKey.getBytes()));
             Cipher cipher = Cipher.getInstance(RSA);
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-            byte[] data = StringUtils.isEmpty(charset) ? content.getBytes()
+            byte[] data = StrUtil.isEmpty(charset) ? content.getBytes()
                     : content.getBytes(charset);
             int inputLen = data.length;
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -607,7 +607,7 @@ public class SignUtil {
             byte[] encryptedData = Base64.encodeBase64(out.toByteArray());
             out.close();
 
-            return StringUtils.isEmpty(charset) ? new String(encryptedData)
+            return StrUtil.isEmpty(charset) ? new String(encryptedData)
                     : new String(encryptedData, charset);
         } catch (Exception e) {
             throw new SignException(INVALID, ISV_INVALID_SIGNATURE, e);
@@ -628,7 +628,7 @@ public class SignUtil {
             PrivateKey priKey = getPrivateKeyFromPKCS8(RSA, new ByteArrayInputStream(privateKey.getBytes()));
             Cipher cipher = Cipher.getInstance(RSA);
             cipher.init(Cipher.DECRYPT_MODE, priKey);
-            byte[] encryptedData = StringUtils.isEmpty(charset)
+            byte[] encryptedData = StrUtil.isEmpty(charset)
                     ? Base64.decodeBase64(content.getBytes())
                     : Base64.decodeBase64(content.getBytes(charset));
             int inputLen = encryptedData.length;
@@ -650,7 +650,7 @@ public class SignUtil {
             byte[] decryptedData = out.toByteArray();
             out.close();
 
-            return StringUtils.isEmpty(charset) ? new String(decryptedData)
+            return StrUtil.isEmpty(charset) ? new String(decryptedData)
                     : new String(decryptedData, charset);
         } catch (Exception e) {
             throw new SignException(INVALID, ISV_INVALID_SIGNATURE, e);

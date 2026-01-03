@@ -11,7 +11,6 @@ import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigInteger;
 
 /**
  * 帮助文档 DTO（写入方法入参）。
@@ -33,7 +32,7 @@ public class HelpDocDto implements Serializable {
      */
     @NotNull(message = "请填写id", groups = BaseEntity.Update.class)
     @Schema(description = "id")
-    private BigInteger id;
+    private Long id;
 
     /**
      * 文档名称

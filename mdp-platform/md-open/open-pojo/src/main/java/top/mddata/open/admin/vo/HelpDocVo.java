@@ -11,7 +11,6 @@ import top.mddata.open.admin.entity.base.HelpDocBase;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 /**
@@ -36,7 +35,7 @@ public class HelpDocVo extends TreeEntity<Long, HelpDocVo> implements Serializab
      */
     @Id
     @Schema(description = "id")
-    private BigInteger id;
+    private Long id;
 
     /**
      * 文档名称

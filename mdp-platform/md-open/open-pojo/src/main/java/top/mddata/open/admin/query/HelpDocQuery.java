@@ -9,7 +9,6 @@ import top.mddata.base.base.ExtraParams;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 /**
@@ -32,7 +31,7 @@ public class HelpDocQuery extends ExtraParams implements Serializable {
      * id
      */
     @Schema(description = "id")
-    private BigInteger id;
+    private Long id;
 
     /**
      * 文档名称
