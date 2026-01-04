@@ -13,6 +13,14 @@ import java.util.List;
  */
 public interface EventSubscriptionService extends SuperService<EventSubscription> {
     /**
+     * 根据应用ID获取请用拥有的事件类型ID列表
+     *
+     * @param appId 应用ID
+     * @return 事件类型ID列表
+     */
+    List<Long> listEventTypeIdByAppId(Long appId);
+
+    /**
      * 保存事件订阅信息
      *
      * @param appId 应用ID

@@ -48,6 +48,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClientAppController extends SuperController<AppService, App> {
     private final AppKeysService appKeysService;
+    // 应用信息 相关接口 start
+
+    /**
+     * 根据应用主键获取详细信息。
+     *
+     * @param id 应用主键
+     * @return 应用详情
+     */
+    @GetMapping("/getById")
+    @Operation(summary = "单体查询", description = "根据主键获取应用")
+    @RequestLog("'单体查询:' + #id")
+    public R<AppVo> get(@RequestParam Long id) {
+        App entity = superService.getById(id);
+        return R.success(BeanUtil.toBean(entity, AppVo.class));
+    }
 
     /**
      * 根据主键更新应用。
@@ -61,18 +76,21 @@ public class ClientAppController extends SuperController<AppService, App> {
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody AppInfoUpdateDto dto) {
         return R.success(superService.updateInfoById(dto));
     }
+    // 应用信息 相关接口 end
+
+    // 应用秘钥 相关接口 start
 
     /**
-     * 根据主键更新应用。
+     * 获取秘钥信息
      *
-     * @param dto 应用
-     * @return {@code true} 更新成功，{@code false} 更新失败
+     * @param appId 应用ID
+     * @return 秘钥
      */
-    @PostMapping("/updateDev")
-    @Operation(summary = "修改应用开发信息", description = "根据主键更新应用开发信息")
-    @RequestLog(value = "修改应用开发信息")
-    public R<Long> updateDev(@Validated(BaseEntity.Update.class) @RequestBody AppDevInfoDto dto) {
-        return R.success(superService.updateDevById(dto));
+    @GetMapping("getKeys")
+    @Operation(summary = "获取秘钥信息", description = "获取秘钥信息")
+    @RequestLog(value = "获取秘钥信息")
+    public R<AppKeysVo> getKeys(@RequestParam Long appId) {
+        return R.success(appKeysService.getKeys(appId, false));
     }
 
     /**
@@ -89,6 +107,39 @@ public class ClientAppController extends SuperController<AppService, App> {
     }
 
     /**
+     * 重置开发者秘钥
+     *
+     * @param appId 应用ID
+     * @param keyFormat     秘钥格式，1：PKCS8(JAVA适用)，2：PKCS1(非JAVA适用)
+     * @return 秘钥
+     * @throws Exception 异常
+     */
+    @PostMapping("resetAppKeys")
+    @Operation(summary = "重置秘钥", description = "重置秘钥")
+    @RequestLog(value = "重置秘钥")
+    public R<RsaTool.KeyStore> resetAppKeys(@RequestParam Long appId, @RequestParam Integer keyFormat) throws Exception {
+        return R.success(appKeysService.resetAppKeys(appId, keyFormat));
+    }
+    // 应用秘钥 相关接口 end
+
+    // 开发配置 相关接口 start
+
+    /**
+     * 根据主键更新应用。
+     *
+     * @param dto 应用
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/updateDev")
+    @Operation(summary = "修改应用开发信息", description = "根据主键更新应用开发信息")
+    @RequestLog(value = "修改应用开发信息")
+    public R<Long> updateDev(@Validated(BaseEntity.Update.class) @RequestBody AppDevInfoDto dto) {
+        return R.success(superService.updateDevById(dto));
+    }
+    // 开发配置 相关接口 end
+    // 事件订阅 相关接口 start
+
+    /**
      * 修改事件订阅
      *
      * @param param 表单数据
@@ -100,6 +151,7 @@ public class ClientAppController extends SuperController<AppService, App> {
     public R<Long> updateEventSubscription(@Validated @RequestBody AppEventSubscriptionDto param) {
         return R.success(appKeysService.updateEventSubscription(param));
     }
+    // 事件订阅 相关接口 end
 
     /**
      * 根据主键删除应用。
@@ -112,20 +164,6 @@ public class ClientAppController extends SuperController<AppService, App> {
     @RequestLog("'删除:' + #ids")
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
-    }
-
-    /**
-     * 根据应用主键获取详细信息。
-     *
-     * @param id 应用主键
-     * @return 应用详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取应用")
-    @RequestLog("'单体查询:' + #id")
-    public R<AppVo> get(@RequestParam Long id) {
-        App entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, AppVo.class));
     }
 
     /**
@@ -146,35 +184,6 @@ public class ClientAppController extends SuperController<AppService, App> {
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, AppVo.class);
         return R.success(page);
-    }
-
-
-    /**
-     * 获取秘钥信息
-     *
-     * @param appId 应用ID
-     * @return 秘钥
-     */
-    @GetMapping("getKeys")
-    @Operation(summary = "获取秘钥信息", description = "获取秘钥信息")
-    @RequestLog(value = "获取秘钥信息")
-    public R<AppKeysVo> getKeys(@RequestParam Long appId) {
-        return R.success(superService.getKeys(appId, false));
-    }
-
-    /**
-     * 重置开发者秘钥
-     *
-     * @param appId 应用ID
-     * @param keyFormat     秘钥格式，1：PKCS8(JAVA适用)，2：PKCS1(非JAVA适用)
-     * @return 秘钥
-     * @throws Exception 异常
-     */
-    @PostMapping("resetAppKeys")
-    @Operation(summary = "重置秘钥", description = "重置秘钥")
-    @RequestLog(value = "重置秘钥")
-    public R<RsaTool.KeyStore> resetAppKeys(@RequestParam Long appId, @RequestParam Integer keyFormat) throws Exception {
-        return R.success(superService.resetAppKeys(appId, keyFormat));
     }
 
 }

@@ -11,6 +11,7 @@ import top.mddata.open.admin.entity.base.AppKeysBase;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 应用秘钥 VO类（通常用作Controller出参）。
@@ -73,6 +74,10 @@ public class AppKeysVo implements Serializable {
      */
     @Schema(description = "加密类型")
     private Integer notifyEncryptionType;
+
+
+    @Schema(description = "订阅的事件")
+    private List<Long> eventTypeIdList;
 
     /**
      * 应用公钥

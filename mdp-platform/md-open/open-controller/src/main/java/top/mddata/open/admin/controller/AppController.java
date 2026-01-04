@@ -177,7 +177,6 @@ public class AppController extends SuperController<AppService, App> {
         return R.success(list);
     }
 
-
     /**
      * 获取秘钥信息
      *
@@ -188,7 +187,7 @@ public class AppController extends SuperController<AppService, App> {
     @Operation(summary = "获取秘钥信息", description = "获取秘钥信息")
     @RequestLog(value = "获取秘钥信息")
     public R<AppKeysVo> getKeys(@RequestParam Long appId) {
-        return R.success(superService.getKeys(appId, true));
+        return R.success(appKeysService.getKeys(appId, true));
     }
 
     /**
@@ -202,7 +201,7 @@ public class AppController extends SuperController<AppService, App> {
     @Operation(summary = "生成秘钥", description = "生成秘钥")
     @RequestLog(value = "生成秘钥")
     public R<RsaTool.KeyStore> createKeys(@RequestParam Integer keyFormat) throws Exception {
-        return R.success(superService.createKeys(keyFormat));
+        return R.success(appKeysService.createKeys(keyFormat));
     }
 
     /**

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.mybatisflex.utils.BeanPageUtil;
-import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.ContextUtil;
 import top.mddata.base.utils.StrPool;
 import top.mddata.common.constant.FileObjectType;
@@ -22,15 +21,10 @@ import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.facade.FileFacade;
 import top.mddata.open.admin.dto.AppDto;
-import top.mddata.open.admin.dto.AppKeysDto;
 import top.mddata.open.admin.entity.App;
-import top.mddata.open.admin.entity.AppKeys;
 import top.mddata.open.admin.mapper.AppMapper;
 import top.mddata.open.admin.query.AppQuery;
-import top.mddata.open.admin.service.AppKeysService;
 import top.mddata.open.admin.service.AppService;
-import top.mddata.open.admin.utils.RsaTool;
-import top.mddata.open.admin.vo.AppKeysVo;
 import top.mddata.open.admin.vo.AppVo;
 import top.mddata.open.client.dto.AppDevInfoDto;
 import top.mddata.open.client.dto.AppInfoUpdateDto;
@@ -53,7 +47,6 @@ import java.util.Map;
 public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements AppService {
     private final FileFacade fileFacade;
     private final UidGenerator uidGenerator;
-    private final AppKeysService appKeysService;
 
     @Override
     @Transactional(readOnly = true)
@@ -184,53 +177,4 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
         return entity.getId();
     }
 
-    @Override
-    public RsaTool.KeyStore createKeys(Integer keyFormat) throws Exception {
-        RsaTool.KeyFormat format = RsaTool.KeyFormat.of(keyFormat);
-        if (format == null) {
-            format = RsaTool.KeyFormat.PKCS8;
-        }
-        RsaTool rsaTool = new RsaTool(format, RsaTool.KeyLength.LENGTH_2048);
-        return rsaTool.createKeys();
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public RsaTool.KeyStore resetAppKeys(Long appId, Integer keyFormat) throws Exception {
-        RsaTool.KeyStore keyStore = createKeys(keyFormat);
-
-        AppKeysDto dto = new AppKeysDto();
-        dto.setKeyFormat(keyFormat);
-        dto.setAppId(appId);
-        dto.setPrivateKeyApp(keyStore.getPrivateKey());
-        dto.setPublicKeyApp(keyStore.getPublicKey());
-        appKeysService.updateAppKeys(dto);
-        return keyStore;
-    }
-
-    @Override
-    public AppKeysVo getKeys(Long appId, Boolean showPrivateKey) {
-        App app = this.getById(appId);
-        ArgumentAssert.notNull(app, "应用不存在");
-        AppKeys appKeys = appKeysService.getByAppId(appId);
-
-        AppKeysVo vo;
-        if (appKeys != null) {
-            vo = BeanUtil.copyProperties(appKeys, AppKeysVo.class);
-        } else {
-            vo = new AppKeysVo();
-            vo.setKeyFormat(RsaTool.KeyFormat.PKCS8.getCode());
-        }
-
-        // 私钥不能提供给开发者
-        if (showPrivateKey == null || !showPrivateKey) {
-            vo.setPrivateKeyApp(null);
-            vo.setPrivateKeyPlatform(null);
-        }
-        vo.setAppId(appId);
-        vo.setAppKey(app.getAppKey());
-        vo.setAppSecret(app.getAppSecret());
-        vo.setAppName(app.getName());
-        return vo;
-    }
 }
