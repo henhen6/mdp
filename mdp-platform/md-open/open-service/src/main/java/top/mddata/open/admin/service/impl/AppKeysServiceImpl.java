@@ -130,6 +130,8 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
         if (appKeys == null) {
             appKeys = new AppKeys();
             appKeys.setAppId(dto.getAppId());
+            appKeys.setPrivateKeyPlatform("");
+            appKeys.setPublicKeyPlatform("");
         }
         BeanUtils.copyProperties(dto, appKeys);
         saveOrUpdate(appKeys);
@@ -157,15 +159,18 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long updateEventSubscription(AppEventSubscriptionDto param) {
-        AppKeys appKeys = this.getOne(QueryWrapper.create().eq(AppKeys::getAppId, param.getId()));
+        AppKeys appKeys = this.getOne(QueryWrapper.create().eq(AppKeys::getAppId, param.getAppId()));
         if (appKeys == null) {
             appKeys = new AppKeys();
-            appKeys.setAppId(param.getId());
+            appKeys.setAppId(param.getAppId());
+            appKeys.setPrivateKeyPlatform("");
+            appKeys.setPublicKeyPlatform("");
+            appKeys.setPublicKeyApp("");
         }
         appKeys.setNotifyUrl(param.getNotifyUrl());
         appKeys.setNotifyEncryptionType(param.getNotifyEncryptionType());
         appKeys.setNotifyState(param.getNotifyState());
-        eventSubscriptionService.saveEventSubscriptionByAppId(param.getId(), param.getEventTypeIdList());
+        eventSubscriptionService.saveEventSubscriptionByAppId(param.getAppId(), param.getEventTypeIdList());
 
         saveOrUpdate(appKeys);
         return appKeys.getAppId();

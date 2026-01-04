@@ -32,9 +32,9 @@ public class AppEventSubscriptionDto implements Serializable {
     /**
      * appId
      */
-    @NotNull(message = "请填写id")
-    @Schema(description = "id")
-    private Long id;
+    @NotNull(message = "请填写应用ID")
+    @Schema(description = "应用ID")
+    private Long appId;
     /**
      * 通知状态
      */
