@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -28,12 +27,6 @@ public class AppKeysDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @NotNull(message = "请填写id", groups = BaseEntity.Update.class)
-    @Schema(description = "id")
-    private Long id;
 
     /**
      * 所属应用

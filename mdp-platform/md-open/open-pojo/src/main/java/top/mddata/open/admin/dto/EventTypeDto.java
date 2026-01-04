@@ -54,6 +54,7 @@ public class EventTypeDto implements Serializable {
      * 状态
      */
     @Schema(description = "状态")
+    @NotNull(message = "请填写状态")
     private Boolean state;
 
 }

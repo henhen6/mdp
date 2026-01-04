@@ -49,7 +49,7 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
             ArgumentAssert.notEmpty(dto.getNotifyUrl(), "请填写通知地址");
             ArgumentAssert.notNull(dto.getNotifyEncryptionType(), "请填写加密类型");
 
-            eventSubscriptionService.saveEventSubscriptionByAppId(dto.getId(), dto.getEventTypeIdList());
+            eventSubscriptionService.saveEventSubscriptionByAppId(dto.getAppId(), dto.getEventTypeIdList());
         }
 
         saveOrUpdate(appKeys);
