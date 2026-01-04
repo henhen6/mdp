@@ -1,25 +1,17 @@
 <script lang="ts" setup>
-import { Description } from '@vben/components/description';
-
 import { useDetail } from '../data/detail';
 
-const { loadFormData, schemaGroup, state } = useDetail();
+const { loadFormData, DetailForm } = useDetail();
 
 defineExpose({
   loadFormData,
 });
 </script>
 <template>
-  <div class="desc-wrap">
-    <div v-for="schema in schemaGroup" :key="schema.field" class="desc-card">
-      <Description
-        :data="state.formData"
-        :schema="schema.children"
-        :title="schema.label"
-      />
-    </div>
+  <div class="common-form">
+    <DetailForm />
   </div>
 </template>
 <style scoped lang="less">
-@import '@vben/components/styles/common-detail.less';
+@import '@vben/components/styles/common-form.less';
 </style>

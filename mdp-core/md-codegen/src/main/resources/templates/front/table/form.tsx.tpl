@@ -19,7 +19,7 @@ export interface Emits {
   (e: 'success'): void;
 }
 
-export function useSchema(): VbenFormSchema[] {
+export function useSchema(state: FormState): VbenFormSchema[] {
   return [
 #for(column : table.getSortedFormColumns())
 #if(column.formConfig?.show == null || column.formConfig?.show)
@@ -51,7 +51,7 @@ export function useForm(emit: Emits) {
   });
 
   const [EditForm, formApi] = useVbenForm({
-    schema: useSchema(),
+    schema: useSchema(state),
     showDefaultActions: false,
   });
 
