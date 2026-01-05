@@ -21,57 +21,86 @@
         <revision>0.0.6-SNAPSHOT</revision>
         <project-prefix>md</project-prefix>
 
-        <springdoc.version>2.8.5</springdoc.version>
-        <knife4j-swagger-models-v3.version>2.2.28</knife4j-swagger-models-v3.version>
         <spring-cloud-dependencies.version>2025.0.0</spring-cloud-dependencies.version>
         <spring-cloud-alibaba-dependencies.version>2025.0.0.0</spring-cloud-alibaba-dependencies.version>
         <spring-cloud-alibaba-seata-dependencies.version>2023.0.1.2</spring-cloud-alibaba-seata-dependencies.version>
         <spring-boot.version>3.5.7</spring-boot.version>
         <spring-framework.version>6.2.12</spring-framework.version>
         <seata.version>2.0.0</seata.version>
-        <nacos.version>3.1.0</nacos.version>
+        <nacos.version>3.1.1</nacos.version>
+        <dubbo.version>3.3.5</dubbo.version>
         <sentinel.version>1.8.6</sentinel.version>
+
         <spring-boot-admin.version>3.5.5</spring-boot-admin.version>
         <dockerfile-maven-plugin.version>1.4.12</dockerfile-maven-plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <x-file-storage.version>2.3.0</x-file-storage.version>
-        <dubbo.version>3.3.5</dubbo.version>
+        <!-- 文档相关 -->
+        <springdoc.version>2.8.5</springdoc.version>
+        <knife4j-swagger-models-v3.version>2.2.28</knife4j-swagger-models-v3.version>
+        <knife4j.version>4.5.0</knife4j.version>
         <smart-doc.version>3.1.2</smart-doc.version>
         <torna-sdk.version>1.0.16</torna-sdk.version>
-        <dm.version>8.1.3.140</dm.version>
-        <mysql.version>8.0.33</mysql.version>
-        <hutool.version>5.8.41</hutool.version>
-        <lombok.version>1.18.42</lombok.version>
-        <mapstruct.version>1.6.3</mapstruct.version>
-        <mapstruct-plus.version>1.4.2</mapstruct-plus.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 
+        <!-- 认证、安全、登录 -->
         <sa-token.version>1.44.0</sa-token.version>
+        <!-- 在线接口UI -->
         <magic-api.version>2.2.2</magic-api.version>
-        <!-- 验证码 -->
+        <!-- 短信 -->
+        <sms4j.version>3.3.5</sms4j.version>
+        <!-- OSS存储 -->
+        <x-file-storage.version>2.3.0</x-file-storage.version>
+        <!-- 行为验证码 -->
         <aj-captcha.version>1.4.0</aj-captcha.version>
+        <!-- 图片验证码 -->
         <easy-captcha.version>1.6.2</easy-captcha.version>
         <nashorn.version>15.7</nashorn.version>
 
-        <oshi.version>6.8.2</oshi.version>
+        <!-- 持久层相关 -->
         <druid.version>1.2.27</druid.version>
         <mybatis.version>3.5.19</mybatis.version>
         <mybatis-spring.version>3.0.4</mybatis-spring.version>
         <mybatis.typehandlers.version>1.0.2</mybatis.typehandlers.version>
         <mybatis-flex.version>1.11.3</mybatis-flex.version>
-        <jasypt.version>3.0.5</jasypt.version>
+        <dm.version>8.1.3.140</dm.version>
+        <mysql.version>8.0.33</mysql.version>
+        <mssql-jdbc.version>8.0.33</mssql-jdbc.version>
+
+        <!-- 对象转换 -->
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <mapstruct-plus.version>1.4.2</mapstruct-plus.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <!-- 本机操作系统和硬件信息 -->
+        <oshi.version>6.8.2</oshi.version>
+        <!-- ip地址查询 -->
+        <ip2region.version>2.7.0</ip2region.version>
+        <!-- 配置文件加密 -->
+        <jasypt.version>4.0.3</jasypt.version>
+        <!-- 序列化 -->
         <fastjson2.version>2.0.59</fastjson2.version>
+        <protostuff.version>1.7.4</protostuff.version>
+        <!-- excel 操作 -->
         <fastexcel.version>1.3.0</fastexcel.version>
         <poi.version>5.3.0</poi.version>
+
+        <!-- xss -->
+        <antisamy.version>1.7.8</antisamy.version>
+        <!-- 三方登录-->
+        <just-auth.version>1.16.5</just-auth.version>
+
+        <!-- 线程变量 -->
         <transmittable-thread-local.version>2.12.2</transmittable-thread-local.version>
-        <knife4j.version>4.5.0</knife4j.version>
-        <aviator.version>5.1.4</aviator.version>
+        <!-- Groovy是一种基于JVM（Java虚拟机）的敏捷开发语言 -->
         <groovy.version>4.0.26</groovy.version>
+        <!-- 模版引擎（类似Freemarker） -->
         <enjoy.version>5.1.3</enjoy.version>
+
+        <!-- 基础工具 -->
+        <hutool.version>5.8.41</hutool.version>
         <guava.version>33.4.6-jre</guava.version>
+        <lombok.version>1.18.42</lombok.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-exec.version>1.5</commons-exec.version>
         <commons-email.version>1.6.0</commons-email.version>
@@ -79,25 +108,7 @@
         <commons-logging.version>1.3.5</commons-logging.version>
         <commons-lang3.version>3.19.0</commons-lang3.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
-        <asm.version>5.0.4</asm.version>
-        <tencentcloud-sdk-java.version>4.0.11</tencentcloud-sdk-java.version>
-        <sms4j.version>3.3.5</sms4j.version>
-        <aliyun-sdk-oss.version>3.18.1</aliyun-sdk-oss.version>
-        <esdk-obs-java.version>3.24.3</esdk-obs-java.version>
-        <qiniu-java-sdk.version>7.15.1</qiniu-java-sdk.version>
-        <minio.version>8.5.12</minio.version>
-        <javassist.version>3.25.0-GA</javassist.version>
-        <antisamy.version>1.7.8</antisamy.version>
-        <caffeine.version>2.9.3</caffeine.version>
-        <protostuff.version>1.7.4</protostuff.version>
-        <ip2region.version>2.7.0</ip2region.version>
-        <bitwalker.version>1.21</bitwalker.version>
-        <gson.version>2.8.9</gson.version>
-        <jsoup.version>1.15.3</jsoup.version>
-        <JustAuth.version>1.16.5</JustAuth.version>
-        <sun-jaxb.version>2.3.0.1</sun-jaxb.version>
-        <okio.version>2.10.0</okio.version>
-        <okhttp3.version>4.10.0</okhttp3.version>
+
     </properties>
 
     <licenses>
@@ -232,6 +243,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- 使用高版本依赖，防止漏扫bug -->
             <dependency>
                 <groupId>org.eclipse.jgit</groupId>
                 <artifactId>org.eclipse.jgit</artifactId>
@@ -268,11 +280,6 @@
                         <artifactId>fastjson</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.googlecode.aviator</groupId>
-                <artifactId>aviator</artifactId>
-                <version>${aviator.version}</version>
             </dependency>
 
 
@@ -402,36 +409,6 @@
                 <artifactId>x-file-storage-core</artifactId>
                 <version>${x-file-storage.version}</version>
             </dependency>
-            <!-- 阿里云OSS -->
-            <dependency>
-                <groupId>com.aliyun.oss</groupId>
-                <artifactId>aliyun-sdk-oss</artifactId>
-                <version>${aliyun-sdk-oss.version}</version>
-            </dependency>
-            <!-- 华为云OBS -->
-            <dependency>
-                <groupId>com.huaweicloud</groupId>
-                <artifactId>esdk-obs-java</artifactId>
-                <version>${esdk-obs-java.version}</version>
-            </dependency>
-            <!-- 七牛云OSS -->
-            <dependency>
-                <groupId>com.qiniu</groupId>
-                <artifactId>qiniu-java-sdk</artifactId>
-                <version>${qiniu-java-sdk.version}</version>
-            </dependency>
-            <!--minio文件系统 -->
-            <dependency>
-                <groupId>io.minio</groupId>
-                <artifactId>minio</artifactId>
-                <version>${minio.version}</version>
-            </dependency>
-            <!--腾讯云 -->
-            <dependency>
-                <groupId>com.tencentcloudapi</groupId>
-                <artifactId>tencentcloud-sdk-java</artifactId>
-                <version>${tencentcloud-sdk-java.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>de.codecentric</groupId>
@@ -460,22 +437,11 @@
                 <version>${poi.version}</version>
             </dependency>
 
+            <!-- xss -->
             <dependency>
                 <groupId>org.owasp.antisamy</groupId>
                 <artifactId>antisamy</artifactId>
                 <version>${antisamy.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm</artifactId>
-                <version>${asm.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.ben-manes.caffeine</groupId>
-                <artifactId>caffeine</artifactId>
-                <version>${caffeine.version}</version>
             </dependency>
 
             <!-- 序列化 -->
@@ -545,12 +511,11 @@
                 <version>${commons-email.version}</version>
             </dependency>
 
-
             <!-- 三方登录 -->
             <dependency>
                 <groupId>me.zhyd.oauth</groupId>
                 <artifactId>JustAuth</artifactId>
-                <version>${JustAuth.version}</version>
+                <version>${just-auth.version}</version>
             </dependency>
 
             <!-- 对象转换 -->
@@ -571,16 +536,6 @@
             </dependency>
 
             <!-- json -->
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>${jsoup.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2</artifactId>
@@ -603,41 +558,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${sun-jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${sun-jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>${javassist.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.squareup.okio/okio -->
-            <dependency>
-                <groupId>com.squareup.okio</groupId>
-                <artifactId>okio</artifactId>
-                <version>${okio.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>${okhttp3.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/logging-interceptor -->
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>logging-interceptor</artifactId>
-                <version>${okhttp3.version}</version>
             </dependency>
 
         </dependencies>
