@@ -3,6 +3,7 @@ package com.gitee.sop.support.dto;
 import lombok.Data;
 
 /**
+ * API 配置
  * @author 六如
  */
 @Data
@@ -13,7 +14,7 @@ public class ApiConfig {
     /**
      * 分配给开发者的应用ID
      */
-    private String appIdName = "app_id";
+    private String appKeyName = "app_key";
     /**
      * 接口名称
      */
