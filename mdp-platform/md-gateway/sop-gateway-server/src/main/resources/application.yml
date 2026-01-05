@@ -1,0 +1,146 @@
+mdp:
+  database: # 字段介绍参考 DatabaseProperties
+    flex:
+      audit: true
+      auditCollector: DEFAULTS
+      logicDeleteProcessor: TIME_STAMP_DEL_BY_LOGIC_DELETE_PROCESSOR
+      deletedByColumn: deleted_by
+    # id生成策略
+    id-type: CACHE
+    cache-id:
+      time-bits: 31
+      worker-bits: 22
+      seq-bits: 10
+      epochStr: '2025-09-15'
+      boost-power: 3
+      padding-factor: 50
+  system:
+    # 缓存Key前缀
+    cachePrefix: mdp
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: '@project.artifactId@'
+  profiles:
+    active: '@profile.active@'
+  mvc:
+    pathmatch:
+      # 升级springboot2.6.6后临时处理，防止swagger报错
+      matching-strategy: ANT_PATH_MATCHER
+  lifecycle:
+    # 优雅停机宽限期时间
+    timeout-per-shutdown-phase: 30s
+  servlet:
+    # 上传文件最大值
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+      # multipart 懒加载
+      resolve-lazily: false
+  cache:
+    type: GENERIC
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 16379
+      password: 'SbtyMveYNfLzTks7H0apCmyStPzWJqjy'
+      database: 6
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      enable: true
+      db-type: mysql
+      validation-query: SELECT 'x'
+      filters: stat,wall
+      username: 'root'
+      password: 'root'
+      driverClassName: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/ua_admin?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
+      initialSize: 10
+      minIdle: 10
+      maxActive: 200
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000  #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      min-evictable-idle-time-millis: 300000    #配置一个连接在池中最小生存的时间，单位是毫秒
+      filter:
+        wall:
+          enabled: true
+          config:
+            strictSyntaxCheck: false
+            commentAllow: true
+            multiStatementAllow: true
+            noneBaseStatementAllow: true
+        slf4j:
+          enabled: false       # 使用slf4j打印可执行日志时，改成true
+          statement-executable-sql-log-enable: true  # 打印类似 p6spy 的可执行SQL 日志
+      # 以下的2段配置，同时适用于所有模式
+      web-stat-filter: # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js , *.gif ,*.jpg ,*.png ,*.css ,*.ico , /druid/*"
+        session-stat-max-count: 1000
+        profile-enable: true
+        session-stat-enable: false
+      stat-view-servlet: #展示Druid的统计信息,StatViewServlet的用途包括：1.提供监控信息展示的html页面2.提供监控信息的JSON API
+        enabled: true
+        url-pattern: /druid/*   #根据配置中的url-pattern来访问内置监控页面，如果是上面的配置，内置监控页面的首页是/druid/index.html例如：http://127.0.0.1:9000/druid/index.html
+        reset-enable: true    #允许清空统计数据
+        login-username: ''
+        login-password: ''
+        allow: ''
+
+mybatis-flex:
+  mapper-locations:
+    - classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    jdbc-type-for-null: null
+    auto-mapping-unknown-column-behavior: none
+    auto-mapping-behavior: full
+  typeAliasesPackage: top.mddata.base.db.typehandler
+  global-config:
+    # 全局配置逻辑删除字段，表中有该字段就会进行逻辑删除，否则进行物理删除
+    logicDeleteColumn: deleted_at
+    key-config:
+      before: true
+      key-type: generator
+      value: 'uid'
+
+server:
+  port: 23456
+  # 优雅停机
+  shutdown: GRACEFUL
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+logging:
+  file:
+    path: ./logs
+    name: ${logging.file.path}/${spring.application.name}/root.log
+  level:
+    root: INFO
+    # 关闭不必要的日志
+    org.reflections.Reflections: off
+    com.alibaba.nacos.client: error
+    com.alibaba.nacos.common.remote.client: error
+    com.ulisesbocchio: error
+    # 开发、调试需要的日志
+    top.mddata: info
+    org.springframework: info
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS
+    console: "[${spring.application.name}:%X{TenantId}:%X{UserId}] %d{yyyy-MM-dd HH:mm:ss.SSS}[%5p] ${PID} [%X{trace}] [%t:%r] [%logger{50}.%M:%L] %m%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 64MB

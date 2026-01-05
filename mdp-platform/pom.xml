@@ -31,6 +31,8 @@
         <module>md-open</module>
         <!-- 对外接口服务 -->
         <module>md-api</module>
+        <!-- 网关 -->
+        <module>md-gateway</module>
         <!-- 启动类 -->
         <module>md-server</module>
     </modules>
