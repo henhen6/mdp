@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import top.mddata.base.interfaces.BaseEnum;
 
+import java.util.Objects;
+
 /**
  * 是否
  *
@@ -53,5 +55,13 @@ public enum BooleanEnum implements BaseEnum<Boolean> {
             return FALSE.getBool();
         }
         return val.equals(this.getBool());
+    }
+
+    public static BooleanEnum of(Integer value) {
+        return Objects.equals(value, TRUE.integer) ? TRUE : FALSE;
+    }
+
+    public static BooleanEnum of(Boolean value) {
+        return Objects.equals(value, TRUE.bool) ? TRUE : FALSE;
     }
 }

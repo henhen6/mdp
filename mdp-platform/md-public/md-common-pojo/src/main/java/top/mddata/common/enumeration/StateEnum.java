@@ -67,4 +67,16 @@ public enum StateEnum implements BaseEnum<Boolean> {
         }
         return val.equals(this.getBool());
     }
+
+    public static StateEnum of(Integer number) {
+        if (number == null) {
+            return DISABLE;
+        }
+        for (StateEnum value : StateEnum.values()) {
+            if (value.integer == number) {
+                return value;
+            }
+        }
+        return DISABLE;
+    }
 }
