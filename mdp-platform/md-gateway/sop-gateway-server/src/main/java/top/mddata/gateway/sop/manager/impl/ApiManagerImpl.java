@@ -53,4 +53,13 @@ public class ApiManagerImpl implements ApiManager {
 
         return BeanUtil.toBean(apiCache.getValue(), ApiDto.class);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrUpdate(Api apiInfo) {
+        apiMapper.insertOrUpdate(apiInfo);
+
+        cacheOps.set(ApiByMethodVersionCkBuilder.builder(apiInfo.getMethodName(), apiInfo.getApiVersion()), apiInfo.getId());
+        cacheOps.set(ApiCkBuilder.builder(apiInfo.getId()), apiInfo);
+    }
 }

@@ -1,6 +1,7 @@
 package top.mddata.gateway.sop.manager;
 
 import top.mddata.gateway.sop.common.ApiDto;
+import top.mddata.open.admin.entity.Api;
 
 /**
  *
@@ -16,4 +17,6 @@ public interface ApiManager {
      * @return ApiDto
      */
     ApiDto getByMethodAndVersion(String method, String version);
+
+    void saveOrUpdate(Api apiInfo);
 }

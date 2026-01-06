@@ -2,6 +2,7 @@ package com.gitee.sop.support.service.dto;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -9,12 +10,13 @@ import java.io.Serializable;
  */
 @Data
 public class RegisterDTO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 2183251167679411550L;
 
     /**
      * 所属应用
      */
-    private String application;
+    private String appName;
 
     /**
      * 接口名称
@@ -54,17 +56,17 @@ public class RegisterDTO implements Serializable {
     /**
      * 接口是否需要授权访问
      */
-    private Integer isPermission;
+    private Integer permission;
 
     /**
      * 是否需要appAuthToken
      */
-    private Integer isNeedToken;
+    private Integer needToken;
 
     /**
      * 是否有公共响应参数
      */
-    private Integer hasCommonResponse;
+    private Integer commonResponse;
 
     /**
      * 接口模式，1-open接口，2-Restful模式
