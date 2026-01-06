@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.mddata.common.cache.CacheKeyModular;
+import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.common.configurer.AlwaysConfigurer;
 import top.mddata.common.properties.SystemProperties;
 
@@ -44,8 +44,8 @@ public class SystemAutoConfiguration {
     @PostConstruct
     public void init() {
         if (StrUtil.isNotEmpty(systemProperties.getCachePrefix())) {
-            CacheKeyModular.PREFIX = systemProperties.getCachePrefix();
             log.info("检查到配置文件中：{}.cachePrefix={}", SystemProperties.PREFIX, systemProperties.getCachePrefix());
+            CacheKeyBuilder.Key.setPrefix(systemProperties.getCachePrefix());
         }
     }
 

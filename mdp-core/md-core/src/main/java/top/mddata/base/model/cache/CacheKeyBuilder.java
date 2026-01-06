@@ -6,6 +6,8 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.StrPool;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import top.mddata.base.base.entity.SuperEntity;
@@ -37,6 +39,12 @@ import java.util.ArrayList;
  */
 @FunctionalInterface
 public interface CacheKeyBuilder {
+    class Key {
+        @Getter
+        @Setter
+        private static String prefix;
+
+    }
 
     /**
      * 缓存前缀，用于区分项目，环境等等
@@ -44,7 +52,7 @@ public interface CacheKeyBuilder {
      * @return 缓存前缀
      */
     default String getPrefix() {
-        return null;
+        return Key.getPrefix();
     }
 
     /**
