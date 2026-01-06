@@ -27,9 +27,12 @@ import top.mddata.console.system.dto.RelateFilesToBizDto;
 import top.mddata.console.system.facade.FileFacade;
 import top.mddata.open.admin.dto.AppDto;
 import top.mddata.open.admin.entity.App;
+import top.mddata.open.admin.entity.AppKeys;
+import top.mddata.open.admin.mapper.AppKeysMapper;
 import top.mddata.open.admin.mapper.AppMapper;
 import top.mddata.open.admin.query.AppQuery;
 import top.mddata.open.admin.service.AppService;
+import top.mddata.open.admin.utils.RsaTool;
 import top.mddata.open.admin.vo.AppVo;
 import top.mddata.open.client.dto.AppDevInfoDto;
 import top.mddata.open.client.dto.AppInfoUpdateDto;
@@ -52,6 +55,7 @@ import java.util.Map;
 public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements AppService {
     private final FileFacade fileFacade;
     private final UidGenerator uidGenerator;
+    private final AppKeysMapper appKeysMapper;
 
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
@@ -155,6 +159,11 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
     @Override
     protected void saveAfter(Object save, App entity) {
         AppDto dto = (AppDto) save;
+
+        AppKeys appKeys = new AppKeys();
+        appKeys.setAppId(entity.getId());
+        appKeys.setKeyFormat(RsaTool.KeyFormat.PKCS8.getCode());
+        appKeysMapper.insert(appKeys);
 
 //        关联LOGO
         fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()

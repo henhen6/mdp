@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -28,6 +29,7 @@ import java.io.Serializable;
  */
 @Data
 public class ApiRequest implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1815097687653555654L;
 
     /**

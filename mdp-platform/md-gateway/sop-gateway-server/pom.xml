@@ -137,6 +137,14 @@
             <filter>../../src/main/filters/config-${profile.active}.properties</filter>
         </filters>
         <finalName>${project-prefix}-${project.artifactId}</finalName>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <!-- 测试目录同理 -->
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

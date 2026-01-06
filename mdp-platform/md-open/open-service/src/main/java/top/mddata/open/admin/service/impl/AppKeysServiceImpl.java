@@ -7,8 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.cache.redis.CacheResult;
+import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.base.utils.StrPool;
+import top.mddata.common.cache.open.AppKeysCkBuilder;
 import top.mddata.open.admin.dto.AppKeysDto;
 import top.mddata.open.admin.entity.App;
 import top.mddata.open.admin.entity.AppKeys;
@@ -40,7 +44,9 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
     @Override
     @Transactional(readOnly = true)
     public AppKeys getByAppId(Long appId) {
-        return super.getOne(QueryWrapper.create().eq(AppKeys::getAppId, appId));
+        CacheKey cacheKey = AppKeysCkBuilder.builder(appId);
+        CacheResult<AppKeys> result = cacheOps.get(cacheKey, k -> super.getOne(QueryWrapper.create().eq(AppKeys::getAppId, appId)));
+        return result.getValue();
     }
 
 
@@ -96,6 +102,7 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
         dto.setPrivateKeyApp(keyStore.getPrivateKey());
         dto.setPublicKeyApp(keyStore.getPublicKey());
         updateAppKeys(dto);
+        delCacheByAppId(appId);
         return keyStore;
     }
 
@@ -119,9 +126,10 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
         }
 
         saveOrUpdate(appKeys);
-        // TODO henhen6 清理缓存
+        delCacheByAppId(appKeys.getAppId());
         return appKeys;
     }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -130,12 +138,12 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
         if (appKeys == null) {
             appKeys = new AppKeys();
             appKeys.setAppId(dto.getAppId());
-            appKeys.setPrivateKeyPlatform("");
-            appKeys.setPublicKeyPlatform("");
+            appKeys.setPrivateKeyPlatform(StrPool.EMPTY);
+            appKeys.setPublicKeyPlatform(StrPool.EMPTY);
         }
         BeanUtils.copyProperties(dto, appKeys);
         saveOrUpdate(appKeys);
-        // TODO henhen6 清理缓存
+        delCacheByAppId(appKeys.getAppId());
         return appKeys;
     }
 
@@ -152,7 +160,7 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
         appKeys.setPublicKeyApp(dto.getPublicKeyApp());
 
         saveOrUpdate(appKeys);
-        // TODO henhen6 清理缓存
+        delCacheByAppId(appKeys.getAppId());
         return appKeys;
     }
 
@@ -163,9 +171,9 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
         if (appKeys == null) {
             appKeys = new AppKeys();
             appKeys.setAppId(param.getAppId());
-            appKeys.setPrivateKeyPlatform("");
-            appKeys.setPublicKeyPlatform("");
-            appKeys.setPublicKeyApp("");
+            appKeys.setPrivateKeyPlatform(StrPool.EMPTY);
+            appKeys.setPublicKeyPlatform(StrPool.EMPTY);
+            appKeys.setPublicKeyApp(StrPool.EMPTY);
         }
         appKeys.setNotifyUrl(param.getNotifyUrl());
         appKeys.setNotifyEncryptionType(param.getNotifyEncryptionType());
@@ -173,6 +181,12 @@ public class AppKeysServiceImpl extends SuperServiceImpl<AppKeysMapper, AppKeys>
         eventSubscriptionService.saveEventSubscriptionByAppId(param.getAppId(), param.getEventTypeIdList());
 
         saveOrUpdate(appKeys);
+        delCacheByAppId(appKeys.getAppId());
         return appKeys.getAppId();
+    }
+
+    private void delCacheByAppId(Long appId) {
+        CacheKey cacheKey = AppKeysCkBuilder.builder(appId);
+        cacheOps.del(cacheKey);
     }
 }

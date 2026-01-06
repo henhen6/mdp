@@ -1,7 +1,7 @@
 package top.mddata.gateway.sop.manager;
 
-import top.mddata.gateway.sop.pojo.dto.ApiDto;
-import top.mddata.gateway.sop.pojo.dto.AppDto;
+import top.mddata.gateway.sop.common.ApiDto;
+import top.mddata.gateway.sop.common.AppDto;
 
 /**
  *
@@ -25,4 +25,12 @@ public interface AppManager {
      * @return boolean
      */
     boolean hasPermission(Long id, ApiDto apiDto);
+
+    /**
+     * 获取应用公钥
+     *
+     * @param id 应用ID
+     * @return String
+     */
+    String getAppPublicKey(Long id);
 }

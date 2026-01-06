@@ -11,7 +11,6 @@ import top.mddata.base.base.ExtraParams;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * 应用权限分组 Query类（查询方法入参）。
@@ -49,28 +48,7 @@ public class ScopeGroupQuery extends ExtraParams implements Serializable {
     @Schema(description = "权重")
     private Long weight;
 
-    /**
-     * 创建人
-     */
-    @Schema(description = "创建人")
-    private Long createdBy;
-
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private LocalDateTime createdAt;
-
-    /**
-     * 最后修改人
-     */
-    @Schema(description = "最后修改人")
-    private Long updatedBy;
-
-    /**
-     * 最后修改时间
-     */
-    @Schema(description = "最后修改时间")
-    private LocalDateTime updatedAt;
+    @Schema(description = "状态")
+    private Boolean state;
 
 }

@@ -49,6 +49,10 @@ public interface CacheKeyTable {
          */
         String APP = "app";
         /**
+         * 应用拥有的接口
+         */
+        String APP_API = "app_api";
+        /**
          * 应用秘钥
          */
         String APP_KEYS = "app_keys";

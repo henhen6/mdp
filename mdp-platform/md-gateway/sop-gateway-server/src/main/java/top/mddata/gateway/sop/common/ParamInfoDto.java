@@ -1,4 +1,4 @@
-package top.mddata.gateway.sop.pojo.dto;
+package top.mddata.gateway.sop.common;
 
 import lombok.Data;
 

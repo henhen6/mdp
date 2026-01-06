@@ -52,4 +52,8 @@ public class ScopeGroupDto implements Serializable {
     @Schema(description = "权重")
     private Long weight;
 
+    @Schema(description = "状态")
+    @NotNull(message = "请填写状态")
+    private Boolean state;
+
 }

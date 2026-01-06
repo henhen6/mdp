@@ -1,6 +1,6 @@
 package top.mddata.gateway.sop.manager;
 
-import top.mddata.gateway.sop.pojo.dto.ApiDto;
+import top.mddata.gateway.sop.common.ApiDto;
 
 /**
  *

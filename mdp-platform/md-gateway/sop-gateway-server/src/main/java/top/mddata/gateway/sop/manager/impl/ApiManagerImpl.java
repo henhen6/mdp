@@ -10,10 +10,10 @@ import top.mddata.base.cache.repository.CacheOps;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.common.cache.open.ApiByMethodVersionCkBuilder;
 import top.mddata.common.cache.open.ApiCkBuilder;
-import top.mddata.gateway.sop.dao.ApiMapper;
+import top.mddata.gateway.sop.common.ApiDto;
 import top.mddata.gateway.sop.manager.ApiManager;
-import top.mddata.gateway.sop.pojo.dto.ApiDto;
-import top.mddata.gateway.sop.pojo.entity.Api;
+import top.mddata.open.admin.entity.Api;
+import top.mddata.open.admin.mapper.ApiMapper;
 
 /**
  *

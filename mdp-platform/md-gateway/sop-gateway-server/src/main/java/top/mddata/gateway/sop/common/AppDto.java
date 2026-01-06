@@ -1,4 +1,4 @@
-package top.mddata.gateway.sop.pojo.dto;
+package top.mddata.gateway.sop.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,7 +14,6 @@ import top.mddata.base.base.entity.BaseEntity;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 应用 DTO（写入方法入参）。

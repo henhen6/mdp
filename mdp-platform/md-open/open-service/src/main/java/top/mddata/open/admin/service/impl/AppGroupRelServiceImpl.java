@@ -7,15 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
+import top.mddata.common.cache.open.AppApiCkBuilder;
 import top.mddata.open.admin.dto.AppGroupRelDto;
 import top.mddata.open.admin.entity.AppGroupRel;
-import top.mddata.open.admin.entity.GroupApiRel;
 import top.mddata.open.admin.mapper.AppGroupRelMapper;
-import top.mddata.open.admin.mapper.GroupApiRelMapper;
 import top.mddata.open.admin.service.AppGroupRelService;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,8 +25,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class AppGroupRelServiceImpl extends SuperServiceImpl<AppGroupRelMapper, AppGroupRel> implements AppGroupRelService {
-    private final AppGroupRelMapper appGroupRelMapper;
-    private final GroupApiRelMapper groupApiRelMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -45,6 +40,7 @@ public class AppGroupRelServiceImpl extends SuperServiceImpl<AppGroupRelMapper, 
         AppGroupRelDto dto = (AppGroupRelDto) save;
         remove(QueryWrapper.create().eq(AppGroupRel::getAppId, dto.getAppId()));
 
+        cacheOps.del(AppApiCkBuilder.builder(dto.getAppId()));
         if (CollUtil.isEmpty(dto.getGroupIdList())) {
             return null;
         }
@@ -58,15 +54,8 @@ public class AppGroupRelServiceImpl extends SuperServiceImpl<AppGroupRelMapper, 
                 }).toList();
 
         saveBatch(list);
+
         return null;
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean removeByIds(Collection<? extends Serializable> idList) {
-        boolean flag = super.removeByIds(idList);
-        appGroupRelMapper.deleteByQuery(QueryWrapper.create().in(AppGroupRel::getGroupId, idList));
-        groupApiRelMapper.deleteByQuery(QueryWrapper.create().in(GroupApiRel::getGroupId, idList));
-        return flag;
-    }
 }

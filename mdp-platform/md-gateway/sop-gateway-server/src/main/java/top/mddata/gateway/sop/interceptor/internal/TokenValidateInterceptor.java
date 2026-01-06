@@ -7,7 +7,7 @@ import top.mddata.gateway.sop.common.RouteContext;
 import top.mddata.gateway.sop.exception.ApiException;
 import top.mddata.gateway.sop.interceptor.RouteInterceptor;
 import top.mddata.gateway.sop.message.ErrorEnum;
-import top.mddata.gateway.sop.pojo.dto.ApiDto;
+import top.mddata.gateway.sop.common.ApiDto;
 import top.mddata.gateway.sop.request.ApiRequestContext;
 
 /**

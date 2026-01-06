@@ -3,6 +3,7 @@ package top.mddata.open.admin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baidu.fsg.uid.UidGenerator;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.common.cache.open.AppByAppKeyCkBuilder;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.dto.IdDto;
 import top.mddata.common.enumeration.AuditStatusEnum;
@@ -20,9 +22,12 @@ import top.mddata.open.admin.dto.AppApplyDto;
 import top.mddata.open.admin.dto.AppApplyReviewDto;
 import top.mddata.open.admin.entity.App;
 import top.mddata.open.admin.entity.AppApply;
+import top.mddata.open.admin.entity.AppKeys;
 import top.mddata.open.admin.mapper.AppApplyMapper;
 import top.mddata.open.admin.service.AppApplyService;
+import top.mddata.open.admin.service.AppKeysService;
 import top.mddata.open.admin.service.AppService;
+import top.mddata.open.admin.utils.RsaTool;
 import top.mddata.open.convert.AppApplyConvert;
 
 import java.text.SimpleDateFormat;
@@ -40,6 +45,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AppApplyServiceImpl extends SuperServiceImpl<AppApplyMapper, AppApply> implements AppApplyService {
     private final AppService appService;
+    private final AppKeysService appKeysService;
     private final FileFacade fileFacade;
     private final UidGenerator uidGenerator;
     private final AppApplyConvert appApplyConvert;
@@ -102,6 +108,9 @@ public class AppApplyServiceImpl extends SuperServiceImpl<AppApplyMapper, AppApp
 
         // 通过
         if (dto.getApprove()) {
+            long count = appService.count(QueryWrapper.create().eq(App::getApplyId, dto.getId()));
+            ArgumentAssert.isTrue(count <= 0, "申请已审核通过，请勿重复审核");
+
             App app = BeanUtil.toBean(applicationApply, App.class);
             app.setId(uidGenerator.getUid());
             // 复制头像
@@ -120,6 +129,12 @@ public class AppApplyServiceImpl extends SuperServiceImpl<AppApplyMapper, AppApp
             }
             app.setAppSecret(RandomUtil.randomString(36));
             appService.save(app);
+
+            AppKeys appKeys = new AppKeys();
+            appKeys.setAppId(app.getId());
+            appKeys.setKeyFormat(RsaTool.KeyFormat.PKCS8.getCode());
+            appKeysService.save(appKeys);
+            cacheOps.del(AppByAppKeyCkBuilder.builder(app.getAppKey()));
 
             // 修改审核状态
             AppApply apply = new AppApply();

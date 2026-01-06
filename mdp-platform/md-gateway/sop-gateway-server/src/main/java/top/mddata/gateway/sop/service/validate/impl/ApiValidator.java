@@ -19,8 +19,8 @@ import top.mddata.gateway.sop.manager.ApiManager;
 import top.mddata.gateway.sop.manager.AppManager;
 import top.mddata.gateway.sop.manager.IpBlacklistManager;
 import top.mddata.gateway.sop.message.ErrorEnum;
-import top.mddata.gateway.sop.pojo.dto.ApiDto;
-import top.mddata.gateway.sop.pojo.dto.AppDto;
+import top.mddata.gateway.sop.common.ApiDto;
+import top.mddata.gateway.sop.common.AppDto;
 import top.mddata.gateway.sop.request.ApiRequest;
 import top.mddata.gateway.sop.request.ApiRequestContext;
 import top.mddata.gateway.sop.request.UploadContext;
@@ -274,7 +274,7 @@ public class ApiValidator implements Validator {
         return appDto;
     }
 
-    protected void checkSign(ApiRequestContext apiRequestContext, AppDto isv) {
+    protected void checkSign(ApiRequestContext apiRequestContext, AppDto appDto) {
         ApiRequest apiRequest = apiRequestContext.getApiRequest();
         String clientSign = apiRequest.getSign();
         if (ObjectUtils.isEmpty(clientSign)) {
@@ -282,7 +282,7 @@ public class ApiValidator implements Validator {
                     apiRequest.takeNameVersion(), apiConfig.getSignName());
         }
         // ISV上传的公钥
-        String publicKey = secretManager.getIsvPublicKey(isv.getId());
+        String publicKey = appManager.getAppPublicKey(appDto.getId());
         if (ObjectUtils.isEmpty(publicKey)) {
             throw new ApiException(ErrorEnum.ISV_MISSING_SIGNATURE_CONFIG, apiRequestContext.getLocale(),
                     apiRequest.takeNameVersion());
