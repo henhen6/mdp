@@ -61,6 +61,8 @@ public abstract class SuperServiceImpl<M extends BaseMapper<Entity>, Entity exte
     /**
      * 缓存key 构造器
      *
+     * 子类实现了这个方法，saveDto、updateDto、removeByIds等方法会自动操作缓存。
+     *
      * @return 缓存key构造器
      */
     protected CacheKeyBuilder cacheKeyBuilder() {
