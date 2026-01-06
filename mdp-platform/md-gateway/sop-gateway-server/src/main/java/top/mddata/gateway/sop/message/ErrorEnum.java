@@ -143,9 +143,9 @@ public enum ErrorEnum implements I18nMessage {
      */
     ISV_INVALID_ENCRYPT(CodeEnum.INVALID, "isv.invalid-encrypt"),
     /**
-     * 无效的appId参数
+     * 无效的appKey参数
      */
-    ISV_INVALID_APP_ID(CodeEnum.INVALID, "isv.invalid-app-id"),
+    ISV_INVALID_APP_KEY(CodeEnum.INVALID, "isv.invalid-app-key"),
     /**
      * 非法的时间戳参数
      */

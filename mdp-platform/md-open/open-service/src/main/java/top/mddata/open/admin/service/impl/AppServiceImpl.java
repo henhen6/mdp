@@ -12,10 +12,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.cache.redis.CacheResult;
+import top.mddata.base.model.cache.CacheKey;
+import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.mybatisflex.utils.BeanPageUtil;
 import top.mddata.base.utils.ContextUtil;
 import top.mddata.base.utils.StrPool;
+import top.mddata.common.cache.open.AppByAppKeyCkBuilder;
+import top.mddata.common.cache.open.AppCkBuilder;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.system.dto.RelateFilesToBizDto;
@@ -47,6 +52,11 @@ import java.util.Map;
 public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements AppService {
     private final FileFacade fileFacade;
     private final UidGenerator uidGenerator;
+
+    @Override
+    protected CacheKeyBuilder cacheKeyBuilder() {
+        return new AppCkBuilder();
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -95,7 +105,21 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
     @Override
     @Transactional(readOnly = true)
     public AppVo getAppByAppKey(String appKey) {
-        return getOneAs(QueryWrapper.create().eq(App::getAppKey, appKey), AppVo.class);
+        CacheKey idKey = AppByAppKeyCkBuilder.builder(appKey);
+        CacheResult<Long> appIdCache = cacheOps.get(idKey, (k) -> {
+            App app = mapper.selectOneByQuery(QueryWrapper.create().eq(App::getAppKey, appKey));
+            return app != null ? app.getId() : null;
+        });
+
+        if (appIdCache.isNullVal()) {
+            return null;
+        }
+        Long appId = appIdCache.asLong();
+
+        CacheKey entityKey = AppCkBuilder.builder(appId);
+        CacheResult<App> apiCache = cacheOps.get(entityKey, (k) -> mapper.selectOneById(appId));
+
+        return BeanUtil.toBean(apiCache.getValue(), AppVo.class);
     }
 
     @Override
@@ -137,6 +161,8 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
                 .objectId(entity.getId())
                 .objectType(FileObjectType.Open.APP_LOGO)
                 .build().setKeepFileIds(dto.getLogo()));
+
+        cacheOps.del(AppByAppKeyCkBuilder.builder(entity.getAppKey()));
     }
 
     @Override
@@ -148,6 +174,8 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
                 .objectId(entity.getId())
                 .objectType(FileObjectType.Open.APP_LOGO)
                 .build().setKeepFileIds(dto.getLogo()));
+
+        cacheOps.del(AppByAppKeyCkBuilder.builder(entity.getAppKey()));
     }
 
     @Override
@@ -164,6 +192,8 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
                 .objectId(entity.getId())
                 .objectType(FileObjectType.Open.APP_LOGO)
                 .build().setKeepFileIds(dto.getLogo()));
+
+        cacheOps.del(AppByAppKeyCkBuilder.builder(entity.getAppKey()));
         return entity.getId();
     }
 
@@ -172,8 +202,9 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
     public Long updateDevById(AppDevInfoDto dto) {
         App entity = UpdateEntity.of(getEntityClass());
         BeanUtil.copyProperties(dto, entity);
-
         updateById(entity);
+
+        cacheOps.del(AppByAppKeyCkBuilder.builder(entity.getAppKey()));
         return entity.getId();
     }
 
