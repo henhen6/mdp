@@ -43,4 +43,22 @@ public interface CacheKeyTable {
          */
         String USER = "user";
     }
+    interface Open {
+        /**
+         * 应用
+         */
+        String APP = "app";
+        /**
+         * 应用秘钥
+         */
+        String APP_KEYS = "app_keys";
+        /**
+         * 接口
+         */
+        String API = "api";
+        /**
+         * 文档
+         */
+        String DOC_INFO = "doc_info";
+    }
 }

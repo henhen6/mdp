@@ -3,7 +3,6 @@ package top.mddata.common.cache.console.system;
 import top.mddata.base.model.cache.CacheHashKey;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
-import top.mddata.common.cache.CacheKeyModular;
 import top.mddata.common.cache.CacheKeyTable;
 
 import java.io.Serializable;
@@ -41,10 +40,6 @@ public class DictItemHashCacheKeyBuilder implements CacheKeyBuilder {
         return new DictItemHashCacheKeyBuilder().hashFieldKey(dictItemKey, dictKey);
     }
 
-    @Override
-    public String getPrefix() {
-        return CacheKeyModular.PREFIX;
-    }
 
     @Override
     public String getTable() {

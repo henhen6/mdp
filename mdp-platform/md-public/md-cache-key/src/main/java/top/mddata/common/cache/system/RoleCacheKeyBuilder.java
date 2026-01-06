@@ -3,7 +3,6 @@ package top.mddata.common.cache.system;
 
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
-import top.mddata.common.cache.CacheKeyModular;
 
 import java.time.Duration;
 
@@ -20,10 +19,7 @@ public class RoleCacheKeyBuilder implements CacheKeyBuilder {
     }
 
 
-    @Override
-    public String getPrefix() {
-        return CacheKeyModular.PREFIX;
-    }
+
 
     @Override
     public String getTable() {

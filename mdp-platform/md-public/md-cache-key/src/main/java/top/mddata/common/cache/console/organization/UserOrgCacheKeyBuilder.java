@@ -3,7 +3,6 @@ package top.mddata.common.cache.console.organization;
 
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
-import top.mddata.common.cache.CacheKeyModular;
 import top.mddata.common.cache.CacheKeyTable;
 
 import java.time.Duration;
@@ -24,10 +23,6 @@ public class UserOrgCacheKeyBuilder implements CacheKeyBuilder {
         return CacheKeyTable.Console.USER_ORG;
     }
 
-    @Override
-    public String getPrefix() {
-        return CacheKeyModular.PREFIX;
-    }
 
     @Override
     public Duration getExpire() {

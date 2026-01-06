@@ -3,7 +3,6 @@ package top.mddata.common.cache.workbench;
 
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
-import top.mddata.common.cache.CacheKeyModular;
 import top.mddata.common.cache.CacheKeyTable;
 
 import java.time.Duration;
@@ -22,10 +21,6 @@ public class SsoUserUserNameCacheKeyBuilder implements CacheKeyBuilder {
         return new SsoUserUserNameCacheKeyBuilder().key(name);
     }
 
-    @Override
-    public String getPrefix() {
-        return CacheKeyModular.PREFIX;
-    }
 
     @Override
     public String getTable() {
