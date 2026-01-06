@@ -82,9 +82,9 @@ public enum ErrorEnum implements I18nMessage {
      */
     ISV_MISSING_SIGNATURE_KEY(CodeEnum.MISSING, "isv.missing-signature-key"),
     /**
-     * 缺少appId参数
+     * 缺少appKey参数
      */
-    ISV_MISSING_APP_ID(CodeEnum.MISSING, "isv.missing-app-id"),
+    ISV_MISSING_APP_KEY(CodeEnum.MISSING, "isv.missing-app-key"),
     /**
      * 缺少时间戳参数
      */
