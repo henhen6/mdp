@@ -21,7 +21,7 @@ public abstract class OpenContext {
     /**
      * 获取appId
      */
-    public abstract String getAppId();
+    public abstract String getAppKey();
 
     /**
      * 获取apiName

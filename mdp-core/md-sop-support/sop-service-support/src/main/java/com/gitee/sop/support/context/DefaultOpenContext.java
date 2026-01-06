@@ -15,9 +15,9 @@ public class DefaultOpenContext extends OpenContext implements Serializable {
     private static final long serialVersionUID = -3218354527911979685L;
 
     /**
-     * appId
+     * appKey
      */
-    private String appId;
+    private String appKey;
 
 
     /**
