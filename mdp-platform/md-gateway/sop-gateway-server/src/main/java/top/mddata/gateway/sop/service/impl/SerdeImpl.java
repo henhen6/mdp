@@ -29,7 +29,7 @@ public class SerdeImpl implements Serde {
         CLASS_NAME_PRE_FILTER.getExcludes().add("class");
     }
 
-    @Value("${gateway.serialize.date-format}")
+    @Value("${mdp.gateway.serialize.date-format}")
     protected String dateFormat;
 
     @Override

@@ -51,13 +51,13 @@ public class ApiValidator implements Validator {
     /**
      * 单个文件内容最大值
      */
-    @Value("${upload.one-file-max-size}")
+    @Value("${mdp.upload.one-file-max-size}")
     private DataSize oneFileMaxSize;
 
     /**
      * 总文件最大值
      */
-    @Value("${upload.total-file-max-size}")
+    @Value("${mdp.upload.total-file-max-size}")
     private DataSize maxFileSize;
 
     @Resource

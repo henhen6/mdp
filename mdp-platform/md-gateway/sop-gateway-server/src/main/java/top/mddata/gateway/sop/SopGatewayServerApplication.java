@@ -36,7 +36,7 @@ public class SopGatewayServerApplication {
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"),
                 env.getProperty("server.servlet.context-path", ""),
-                env.getProperty("md.gateway.path", "")
+                env.getProperty("mdp.gateway.path", "")
         );
     }
 }

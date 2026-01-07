@@ -17,6 +17,37 @@ mdp:
   system:
     # 缓存Key前缀
     cachePrefix: mdp
+####### gateway config #######
+  gateway:
+    # 接口请求入口前缀
+    path: /api
+    # restfull风格接口请求入口前缀
+    rest: /rest
+    serialize:
+      # 序列化日期格式
+      date-format: yyyy-MM-dd HH:mm:ss
+####### 参数名称定义 #######
+  api:
+    app-key-name: app_key
+    api-name: method
+    format-name: format
+    charset-name: charset
+    sign-type-name: sign_type
+    sign-name: sign
+    timestamp-name: timestamp
+    version-name: version
+    notify-url-name: notify_url
+    app-auth-token-name: app_auth_token
+    biz-content-name: biz_content
+    # 接口请求有效时间
+    timeout-seconds: 300
+    # 时间戳格式化
+    timestamp-pattern: yyyy-MM-dd HH:mm:ss
+    # 默认时区
+    zone-id: Asia/Shanghai
+  upload:
+    one-file-max-size: 10MB
+    total-file-max-size: 50MB
 
 spring:
   main:
@@ -35,8 +66,10 @@ spring:
   servlet:
     # 上传文件最大值
     multipart:
-      max-file-size: 10MB
-      max-request-size: 50MB
+      # 确保这个配置比 {upload.one-file-max-size} 大
+      max-file-size: 60MB
+      # 确保这个配置比 {upload.total-file-max-size} and {dubbo.protocol.payload} 大
+      max-request-size: 200MB
       # multipart 懒加载
       resolve-lazily: false
   cache:
@@ -57,7 +90,7 @@ spring:
       username: 'root'
       password: 'root'
       driverClassName: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/ua_admin?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
+      url: jdbc:mysql://127.0.0.1:3306/mdp?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
       initialSize: 10
       minIdle: 10
       maxActive: 200

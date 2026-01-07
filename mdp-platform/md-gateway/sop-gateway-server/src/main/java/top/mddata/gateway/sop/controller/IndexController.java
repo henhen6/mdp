@@ -67,7 +67,7 @@ public class IndexController {
      * biz_content	    String	是		请求参数的集合，最大长度不限，除公共参数外所有请求参数都必须放在这个参数中传递，具体参照各产品快速接入文档
      * </pre>
      */
-    @RequestMapping(value = "${gateway.path:/api}", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "${mdp.gateway.path:/api}", method = {RequestMethod.GET, RequestMethod.POST})
     public void index(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ApiRequestContext apiRequestContext = paramExecutor.build(request);
         Response apiResponse = routeService.route(apiRequestContext);
@@ -84,7 +84,7 @@ public class IndexController {
      * @param v  版本号
      * @throws IOException
      */
-    @RequestMapping(value = "${gateway.rest}/**")
+    @RequestMapping(value = "${mdp.gateway.rest}/**")
     public void rest0(
             HttpServletRequest request,
             HttpServletResponse response,
