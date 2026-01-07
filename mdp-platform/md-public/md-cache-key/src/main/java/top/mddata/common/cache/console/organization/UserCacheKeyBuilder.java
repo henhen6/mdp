@@ -14,7 +14,7 @@ import java.time.Duration;
  * @date 2020/9/20 6:45 下午
  */
 public class UserCacheKeyBuilder implements CacheKeyBuilder {
-    public static CacheKey build(Long id) {
+    public static CacheKey builder(Long id) {
         return new UserCacheKeyBuilder().key(id);
     }
 

@@ -26,12 +26,16 @@ public enum MsgRecipientScopeEnum implements BaseEnum<Integer> {
     private Integer code;
     private String desc;
 
-    public static MsgRecipientScopeEnum getByCode(Integer code, MsgRecipientScopeEnum def) {
+    public static MsgRecipientScopeEnum match(Integer code, MsgRecipientScopeEnum def) {
         for (MsgRecipientScopeEnum value : values()) {
             if (value.code.equals(code)) {
                 return value;
             }
         }
         return def;
+    }
+
+    public static MsgRecipientScopeEnum of(Integer val) {
+        return match(val, null);
     }
 }

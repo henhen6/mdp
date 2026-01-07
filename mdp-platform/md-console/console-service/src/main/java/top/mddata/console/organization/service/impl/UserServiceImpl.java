@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
@@ -23,6 +24,9 @@ import top.mddata.base.mybatisflex.utils.BeanPageUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.DateUtils;
 import top.mddata.common.cache.console.organization.UserCacheKeyBuilder;
+import top.mddata.common.cache.workbench.SsoUserEmailCacheKeyBuilder;
+import top.mddata.common.cache.workbench.SsoUserPhoneCacheKeyBuilder;
+import top.mddata.common.cache.workbench.SsoUserUserNameCacheKeyBuilder;
 import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.entity.User;
@@ -44,6 +48,8 @@ import top.mddata.console.system.service.ConfigService;
 import top.mddata.console.system.service.FileService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,6 +117,18 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
                 .objectId(entity.getAvatar())
                 .objectType(FileObjectType.Console.USER_AVATAR)
                 .build().setKeepFileIds(dto.getAvatar()));
+
+        List<CacheKey> cacheKeys = new ArrayList<>();
+        if (StrUtil.isNotEmpty(dto.getUsername())) {
+            cacheKeys.add(SsoUserUserNameCacheKeyBuilder.builder(dto.getUsername()));
+        }
+        if (StrUtil.isNotEmpty(dto.getPhone())) {
+            cacheKeys.add(SsoUserPhoneCacheKeyBuilder.builder(dto.getPhone()));
+        }
+        if (StrUtil.isNotEmpty(dto.getEmail())) {
+            cacheKeys.add(SsoUserEmailCacheKeyBuilder.builder(dto.getEmail()));
+        }
+        cacheOps.del(cacheKeys);
     }
 
     private void saveOrg(User entity, List<Long> orgIdList) {
@@ -157,6 +175,18 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
                 .objectId(entity.getAvatar())
                 .objectType(FileObjectType.Console.USER_AVATAR)
                 .build().setKeepFileIds(dto.getAvatar()));
+
+        List<CacheKey> cacheKeys = new ArrayList<>();
+        if (StrUtil.isNotEmpty(dto.getUsername())) {
+            cacheKeys.add(SsoUserUserNameCacheKeyBuilder.builder(dto.getUsername()));
+        }
+        if (StrUtil.isNotEmpty(dto.getPhone())) {
+            cacheKeys.add(SsoUserPhoneCacheKeyBuilder.builder(dto.getPhone()));
+        }
+        if (StrUtil.isNotEmpty(dto.getEmail())) {
+            cacheKeys.add(SsoUserEmailCacheKeyBuilder.builder(dto.getEmail()));
+        }
+        cacheOps.del(cacheKeys);
     }
 
 

@@ -1,0 +1,83 @@
+package top.mddata.api.oepn.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import top.mddata.base.model.Kv;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 根据模版编码发送消息任务
+ *
+ * @author henhen6
+ * @since 2025-12-21 00:30:09
+ */
+@Accessors(chain = true)
+@Data
+@Schema(description = "消息发送抽象Dto")
+public abstract class MsgSendDto implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 模板标识
+     */
+    @NotEmpty(message = "请填写模板标识")
+    @Size(max = 255, message = "模板标识长度不能超过{max}")
+    @Schema(description = "模板标识")
+    private String templateKey;
+    /**
+     * 参数;
+     * <p>
+     * 需要封装为[{{‘key’:'', ’value’:''}, {'key2':'', 'value2':''}]格式
+     */
+    @Schema(description = "参数")
+    private List<Kv> paramList;
+
+    /**
+     * 是否定时发送
+     */
+    @Schema(description = "是否定时发送")
+    private Boolean isTiming;
+
+    /**
+     * 计划发送时间
+     */
+    @Schema(description = "计划发送时间")
+    private LocalDateTime scheduledSendTime;
+    /**
+     * 业务ID
+     */
+    @Schema(description = "业务ID")
+    private Long bizId;
+    /**
+     * 业务类型
+     */
+    @Schema(description = "业务类型")
+    @Size(max = 255, message = "业务类型长度不能超过{max}")
+    private String bizType;
+
+    /**
+     * 添加参数
+     *
+     * @param key   参数名
+     * @param value 参数值
+     * @return this
+     */
+    public <T extends MsgSendDto> T addParam(String key, String value) {
+        if (paramList == null) {
+            paramList = new ArrayList<>();
+        }
+        paramList.add(new Kv(key, value));
+        return (T) this;
+    }
+
+}

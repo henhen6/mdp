@@ -14,8 +14,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>top.mddata.console</groupId>
+            <artifactId>console-dao</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>top.mddata.api</groupId>
-            <artifactId>api-dao</artifactId>
+            <artifactId>api-pojo</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.console</groupId>
+            <artifactId>console-api</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

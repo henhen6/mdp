@@ -39,12 +39,13 @@ public enum MsgChannelEnum implements BaseEnum<Integer> {
     /**
      * 根据当前枚举的name匹配
      */
-    public static MsgChannelEnum match(String val, MsgChannelEnum def) {
-        return Stream.of(values()).parallel().filter(item -> item.name().equalsIgnoreCase(val)).findAny().orElse(def);
+    public static MsgChannelEnum match(Integer val, MsgChannelEnum def) {
+        return Stream.of(values()).parallel().filter(item -> item.getCode().equals(val)).findAny().orElse(def);
     }
 
-    public static MsgChannelEnum get(String val) {
+    public static MsgChannelEnum of(Integer val) {
         return match(val, null);
     }
+
 
 }

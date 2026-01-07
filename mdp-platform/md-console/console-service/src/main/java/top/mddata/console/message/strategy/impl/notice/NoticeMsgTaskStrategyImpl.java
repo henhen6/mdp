@@ -54,7 +54,7 @@ public class NoticeMsgTaskStrategyImpl extends AbstractMsgTaskStrategy {
 
         noticeFacade.save(notice);
 
-        MsgRecipientScopeEnum recipientScope = MsgRecipientScopeEnum.getByCode(msgTask.getRecipientScope(), MsgRecipientScopeEnum.USER);
+        MsgRecipientScopeEnum recipientScope = MsgRecipientScopeEnum.match(msgTask.getRecipientScope(), MsgRecipientScopeEnum.USER);
         List<Long> userIdList = null;
         List<User> userList = null;
         switch (recipientScope) {

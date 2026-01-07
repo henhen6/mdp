@@ -347,7 +347,13 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         user.setPhone(dto.getPhone());
         updateById(user);
 
-        cacheOps.del(cacheKey);
+
+        List<CacheKey> cacheKeyList = Arrays.asList(
+                cacheKey,
+                SsoUserPhoneCacheKeyBuilder.builder(dto.getOldPhone()),
+                SsoUserPhoneCacheKeyBuilder.builder(dto.getPhone()));
+        cacheOps.del(cacheKeyList);
+
         // TODO 广播修改用户信息 & 修改session 中的user
 
         return userId;
@@ -371,8 +377,13 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         user.setEmail(dto.getEmail());
         updateById(user);
 
-        cacheOps.del(cacheKey);
+        List<CacheKey> cacheKeyList = Arrays.asList(
+                cacheKey,
+                SsoUserEmailCacheKeyBuilder.builder(dto.getOldEmail()),
+                SsoUserEmailCacheKeyBuilder.builder(dto.getEmail()));
+        cacheOps.del(cacheKeyList);
         // TODO 广播修改用户信息 & 修改session 中的user
+
         return userId;
     }
 
