@@ -52,6 +52,11 @@
         <sms4j.version>3.3.5</sms4j.version>
         <!-- OSS存储 -->
         <x-file-storage.version>2.3.0</x-file-storage.version>
+        <aliyun-sdk-oss.version>3.18.4</aliyun-sdk-oss.version>
+        <bce-java-sdk.version>0.10.405</bce-java-sdk.version>
+        <esdk-obs-java.version>3.25.10</esdk-obs-java.version>
+        <qiniu-java-sdk.version>7.19.0</qiniu-java-sdk.version>
+        <minio.version>8.6.0</minio.version>
         <!-- 行为验证码 -->
         <aj-captcha.version>1.4.0</aj-captcha.version>
         <!-- 图片验证码 -->
@@ -410,7 +415,38 @@
                 <artifactId>x-file-storage-core</artifactId>
                 <version>${x-file-storage.version}</version>
             </dependency>
+            <!-- 阿里云OSS -->
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${aliyun-sdk-oss.version}</version>
+            </dependency>
+            <!-- 华为云OBS -->
+            <dependency>
+                <groupId>com.huaweicloud</groupId>
+                <artifactId>esdk-obs-java</artifactId>
+                <version>${esdk-obs-java.version}</version>
+            </dependency>
+            <!-- 百度OSS -->
+            <dependency>
+                <groupId>com.baidubce</groupId>
+                <artifactId>bce-java-sdk</artifactId>
+                <version>${bce-java-sdk.version}</version>
+            </dependency>
+            <!-- 七牛云OSS -->
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu-java-sdk.version}</version>
+            </dependency>
+            <!--minio文件系统 -->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
+            </dependency>
 
+            <!-- 服务监控 -->
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-server</artifactId>
@@ -749,6 +785,18 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+        </profile>
+        <profile>
+            <id>sop</id>
+            <properties>
+                <profile.active>sop</profile.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profile.active>test</profile.active>
+            </properties>
         </profile>
         <profile>
             <id>prod</id>
