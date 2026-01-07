@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import top.mddata.gateway.sop.config.GateApiConfig;
 import top.mddata.gateway.sop.request.ApiRequest;
 import top.mddata.gateway.sop.request.ApiRequestContext;
@@ -34,6 +35,7 @@ import java.util.UUID;
  * @author 六如
  */
 @Slf4j
+@Service
 public class ParamExecutorImpl implements ParamExecutor<HttpServletRequest, HttpServletResponse> {
 
     private static final String CONTENT_TYPE = "content-type";

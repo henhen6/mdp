@@ -139,15 +139,15 @@ public class ApiRegister {
     private RegisterDTO buildRegisterDTO(String appName, Class<?> interfaceClass, Method method, Open open) {
         List<ParamInfo> paramInfos = buildParamInfo(method);
         RegisterDTO registerDTO = new RegisterDTO();
-        registerDTO.setApplication(appName);
+        registerDTO.setAppName(appName);
         registerDTO.setApiName(getApiName(interfaceClass, open));
         registerDTO.setApiVersion(open.version());
         registerDTO.setInterfaceClassName(interfaceClass.getName());
         registerDTO.setMethodName(method.getName());
         registerDTO.setParamInfo(JSON.toJSONString(paramInfos));
-        registerDTO.setIsPermission(parseBoolean(open.permission()));
-        registerDTO.setIsNeedToken(parseBoolean(open.needToken()));
-        registerDTO.setHasCommonResponse(parseBoolean(open.hasCommonResponse()));
+        registerDTO.setPermission(parseBoolean(open.permission()));
+        registerDTO.setNeedToken(parseBoolean(open.needToken()));
+        registerDTO.setCommonResponse(parseBoolean(open.hasCommonResponse()));
         OpenGroup openGroup = interfaceClass.getAnnotation(OpenGroup.class);
         ApiModeEnum apiMode = openGroup == null ? ApiModeEnum.OPEN : ApiModeEnum.RESTFUL;
         registerDTO.setApiMode(apiMode.getCode());
@@ -157,15 +157,15 @@ public class ApiRegister {
     private void regApi(String appName, Class<?> interfaceClass, Method method, Open open) {
         List<ParamInfo> paramInfos = buildParamInfo(method);
         RegisterDTO registerDTO = new RegisterDTO();
-        registerDTO.setApplication(appName);
+        registerDTO.setAppName(appName);
         registerDTO.setApiName(getApiName(interfaceClass, open));
         registerDTO.setApiVersion(open.version());
         registerDTO.setInterfaceClassName(interfaceClass.getName());
         registerDTO.setMethodName(method.getName());
         registerDTO.setParamInfo(JSON.toJSONString(paramInfos));
-        registerDTO.setIsPermission(parseBoolean(open.permission()));
-        registerDTO.setIsNeedToken(parseBoolean(open.needToken()));
-        registerDTO.setHasCommonResponse(parseBoolean(open.hasCommonResponse()));
+        registerDTO.setPermission(parseBoolean(open.permission()));
+        registerDTO.setNeedToken(parseBoolean(open.needToken()));
+        registerDTO.setCommonResponse(parseBoolean(open.hasCommonResponse()));
         OpenGroup openGroup = interfaceClass.getAnnotation(OpenGroup.class);
         ApiModeEnum apiMode = openGroup == null ? ApiModeEnum.OPEN : ApiModeEnum.RESTFUL;
         registerDTO.setApiMode(apiMode.getCode());

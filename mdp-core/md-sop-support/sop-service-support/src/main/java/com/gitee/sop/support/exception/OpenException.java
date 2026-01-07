@@ -5,6 +5,7 @@ import com.gitee.sop.support.message.OpenMessage;
 import com.gitee.sop.support.message.OpenMessageFactory;
 import lombok.Getter;
 
+import java.io.Serial;
 import java.util.Locale;
 
 /**
@@ -12,6 +13,7 @@ import java.util.Locale;
  */
 @Getter
 public class OpenException extends RuntimeException {
+    @Serial
     private static final long serialVersionUID = -8059687941272829442L;
 
     private final String subCode;

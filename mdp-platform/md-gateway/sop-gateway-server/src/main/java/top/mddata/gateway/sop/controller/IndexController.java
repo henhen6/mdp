@@ -36,7 +36,7 @@ public class IndexController {
     @Qualifier("restRouteService")
     private RouteService restRouteService;
 
-    @Value("${gateway.rest}")
+    @Value("${mdp.gateway.rest}")
     private String restPrefix;
 
     @Resource
