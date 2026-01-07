@@ -177,3 +177,22 @@ logging:
   logback:
     rollingpolicy:
       max-file-size: 64MB
+
+dubbo:
+  protocol:
+    name: dubbo
+    port: -1
+    parameters:
+      sba: ignore
+  application:
+    qos-enable: false
+  # 提供方
+  provider:
+    validation: jvalidationNew
+  # 消费方
+  consumer:
+    check: false
+    validation: jvalidationNew
+  # 注册中心
+  registry:
+    check: false

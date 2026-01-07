@@ -1,3 +1,11 @@
+mdp:
+  nacos:
+    ip: '@config.nacos.ip@'
+    port: '@config.nacos.port@'
+    namespace: '@config.nacos.namespace@'
+    username: '@config.nacos.username@'
+    password: '@config.nacos.password@'
+
 spring:
   data:
     redis:
@@ -16,3 +24,9 @@ spring:
 logging:
   file:
     path: /data_mdp/logs
+
+
+dubbo:
+  registry:
+    # 使用nacos注册中心
+    address: nacos://${mdp.nacos.username}:${mdp.nacos.password}@${mdp.nacos.ip}:${mdp.nacos.port}?namespace=${mdp.nacos.namespace}

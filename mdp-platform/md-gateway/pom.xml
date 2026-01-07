@@ -19,6 +19,7 @@
     <modules>
         <!-- 开放平台网关 -->
         <module>sop-gateway-server</module>
+        <module>zookeeper-server</module>
     </modules>
 
 

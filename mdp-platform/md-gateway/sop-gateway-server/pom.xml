@@ -31,16 +31,6 @@
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-spring-boot-3-autoconfigure</artifactId>
         </dependency>
-        <!-- 注册中心：nacos 二选一 -->
-        <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
-        </dependency>
-        <!-- 注册中心：zookeeper 二选一 -->
-        <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo-zookeeper-curator5-spring-boot-starter</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>top.mddata.common</groupId>
@@ -82,7 +72,6 @@
             </exclusions>
         </dependency>
 
-
         <!-- 本项目特有的单体版通用组件 -->
         <dependency>
             <groupId>top.mddata.base</groupId>
@@ -100,14 +89,6 @@
             <groupId>top.mddata.base</groupId>
             <artifactId>md-db-uid</artifactId>
         </dependency>
-        <dependency>
-            <groupId>top.mddata.base</groupId>
-            <artifactId>md-db-mybatis-flex</artifactId>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>top.mddata.base</groupId>-->
-<!--            <artifactId>md-boot</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>top.mddata.base</groupId>
             <artifactId>md-mvc-flex</artifactId>
@@ -132,6 +113,58 @@
 
     </dependencies>
 
+    <!--
+     根据不同的配置环境，引入不同的依赖。
+     dev: 本地环境 使用 zookeeper
+     sop: 本地环境 使用 zookeeper
+     test: 测试环境 使用 nacos
+     prod: 生产环境 使用 nacos
+     -->
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <!-- zookeeper注册中心 -->
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-zookeeper-curator5-spring-boot-starter</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>sop</id>
+            <dependencies>
+                <!-- zookeeper注册中心 -->
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-zookeeper-curator5-spring-boot-starter</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>test</id>
+            <dependencies>
+                <!-- nacos注册中心 -->
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <dependencies>
+                <!-- nacos注册中心 -->
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
     <build>
         <filters>
             <filter>../../src/main/filters/config-${profile.active}.properties</filter>

@@ -21,11 +21,6 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>top.mddata.api</groupId>
-            <artifactId>api-controller</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
             <groupId>top.mddata.console</groupId>
             <artifactId>console-controller</artifactId>
             <version>${revision}</version>
@@ -153,8 +148,105 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+
+    <!--
+     根据不同的配置环境，引入不同的依赖。
+     dev: 本地环境，不集成开放平台功能（无需注册到 zookeeper 和 nacos），文件存储使用本地存储
+     sop: 本地环境，集成开放平台功能（注册到 zookeeper），文件存储使用 minio
+     test: 测试环境 集成开放平台功能（注册到 nacos），文件存储使用 minio
+     prod: 生产环境 集成开放平台功能（注册到 nacos），文件存储使用 minio
+     -->
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <!-- 设置为默认激活的环境 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>sop</id>
+            <dependencies>
+                <dependency>
+                    <groupId>top.mddata.base</groupId>
+                    <artifactId>sop-spring-boot-starter</artifactId>
+                </dependency>
+                <!-- zookeeper注册中心 -->
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-zookeeper-curator5-spring-boot-starter</artifactId>
+                </dependency>
+                <!-- 开发环境用本地存储，测试生产环境用minio -->
+                <dependency>
+                    <groupId>io.minio</groupId>
+                    <artifactId>minio</artifactId>
+                </dependency>
+                <!-- 默认情况下，开发环境不依赖api-controller，无法使用对外接口 -->
+                <dependency>
+                    <groupId>top.mddata.api</groupId>
+                    <artifactId>api-controller</artifactId>
+                    <version>${revision}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>test</id>
+            <dependencies>
+                <dependency>
+                    <groupId>top.mddata.base</groupId>
+                    <artifactId>sop-spring-boot-starter</artifactId>
+                </dependency>
+
+                <!-- nacos注册中心 -->
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
+                </dependency>
+                <!-- 开发环境用本地存储，测试生产环境用minio -->
+                <dependency>
+                    <groupId>io.minio</groupId>
+                    <artifactId>minio</artifactId>
+                </dependency>
+                <!-- 默认情况下，开发环境不依赖api-controller，无法使用对外接口 -->
+                <dependency>
+                    <groupId>top.mddata.api</groupId>
+                    <artifactId>api-controller</artifactId>
+                    <version>${revision}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <dependencies>
+                <dependency>
+                    <groupId>top.mddata.base</groupId>
+                    <artifactId>sop-spring-boot-starter</artifactId>
+                </dependency>
+
+                <!-- nacos注册中心 -->
+                <dependency>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
+                </dependency>
+
+                <!-- 开发环境用本地存储，测试生产环境用minio -->
+                <dependency>
+                    <groupId>io.minio</groupId>
+                    <artifactId>minio</artifactId>
+                </dependency>
+
+                <!-- 默认情况下，开发环境不依赖api-controller，无法使用对外接口 -->
+                <dependency>
+                    <groupId>top.mddata.api</groupId>
+                    <artifactId>api-controller</artifactId>
+                    <version>${revision}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <build>
         <filters>
