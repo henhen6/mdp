@@ -1,0 +1,17 @@
+spring:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 16379
+      password: 'SbtyMveYNfLzTks7H0apCmyStPzWJqjy'
+      database: 6
+  datasource:
+    druid:
+      username: 'root'
+      driverClassName: com.mysql.cj.jdbc.Driver
+      password: 'root'
+      url: jdbc:mysql://127.0.0.1:3306/mdp?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
+
+dubbo:
+  registry:
+    address: zookeeper://localhost:2181
