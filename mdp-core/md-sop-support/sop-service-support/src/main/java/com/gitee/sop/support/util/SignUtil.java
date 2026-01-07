@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * 签名工具
- * @author zuihou
+ * @author henhen
  */
 public class SignUtil {
 

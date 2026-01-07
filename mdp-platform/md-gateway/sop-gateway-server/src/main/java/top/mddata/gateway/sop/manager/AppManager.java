@@ -5,7 +5,7 @@ import top.mddata.gateway.sop.common.AppDto;
 
 /**
  *
- * @author tangyh
+ * @author henhen
  * @since 2026/1/6 16:44
  */
 public interface AppManager {

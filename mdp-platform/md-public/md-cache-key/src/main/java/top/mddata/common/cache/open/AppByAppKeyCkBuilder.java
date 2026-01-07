@@ -10,7 +10,7 @@ import java.time.Duration;
  * 开放应用
  * appKey -> id
  *
- * @author tangyh
+ * @author henhen
  * @since 2026/1/6 16:55
  */
 public class AppByAppKeyCkBuilder implements CacheKeyBuilder {

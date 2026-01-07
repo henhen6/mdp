@@ -5,7 +5,7 @@ import top.mddata.open.admin.entity.Api;
 
 /**
  *
- * @author tangyh
+ * @author henhen
  * @since 2026/1/6 16:44
  */
 public interface ApiManager {
