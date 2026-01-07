@@ -27,7 +27,7 @@ public class OpenConfig {
     /** 编码名称 */
     private String charsetName = "charset";
     /** appKey名称 */
-    private String appKeyName = "app_id";
+    private String appKeyName = "app_key";
     /** data名称 */
     private String dataName = "biz_content";
     /** 回调地址 */

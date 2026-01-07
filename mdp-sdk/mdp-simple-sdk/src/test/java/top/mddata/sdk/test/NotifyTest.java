@@ -2,11 +2,14 @@ package top.mddata.sdk.test;
 
 import com.alibaba.fastjson2.JSON;
 import junit.framework.TestCase;
-import top.mddata.sdk.simple.api.SaveBaseEmployeeApi;
-import top.mddata.sdk.simple.request.SaveBaseEmployeeRequest;
-import top.mddata.sdk.simple.response.GetBaseEmployeeResponse;
 import top.mddata.sdk.core.client.OpenClient;
 import top.mddata.sdk.core.common.Result;
+import top.mddata.sdk.simple.api.user.UserBatchSave;
+import top.mddata.sdk.simple.request.UserSaveDto;
+import top.mddata.sdk.simple.response.UserVo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 回调接口测试类
@@ -14,8 +17,8 @@ import top.mddata.sdk.core.common.Result;
  * @since 2025/12/18 00:21
  */
 public class NotifyTest extends TestCase {
-    String url = "http://localhost:18750/api";
-    String appId = "2019032617262200001";
+    String url = "http://localhost:23456/api";
+    String appKey = "ruoyi-vue-oauth";
     /**
      * 开发者私钥
      */
@@ -27,28 +30,33 @@ public class NotifyTest extends TestCase {
     String publicKeyPlatform = "";
 
     // 声明一个就行
-    OpenClient client = new OpenClient(url, appId, privateKeyIsv, publicKeyPlatform);
+    OpenClient client = new OpenClient(url, appKey, privateKeyIsv, publicKeyPlatform);
 
     /**
      * 测试 查询员工
      */
     public void testSaveBaseEmployee() {
+        List<UserSaveDto> list = new ArrayList<>();
+        UserSaveDto user1 = new UserSaveDto();
+        user1.setUsername("test1");
+        user1.setName("test1");
+        list.add(user1);
+        user1 = new UserSaveDto();
+        user1.setUsername("test2");
+        user1.setName("test2");
+        list.add(user1);
+
         // 创建请求对象
-        SaveBaseEmployeeApi param = new SaveBaseEmployeeApi();
-        // 请求参数
-        SaveBaseEmployeeRequest model = new SaveBaseEmployeeRequest();
-        model.setActiveStatus(1111);
-        model.setPositionStatus(222);
-        model.setName("我要新增一个用户");
-        param.setBizModel(model);
+        UserBatchSave param = new UserBatchSave();
+        param.setBizModel(list);
         // 这里提供了 mdp-openapi-server 的一个接口地址作为测试
         param.setNotifyUrl("http://localhost:18766/notify/callback22333");
 
         // 发送请求
-        Result<GetBaseEmployeeResponse> result = client.execute(param);
+        Result<UserVo> result = client.execute(param);
 
         if (result.isSuccess()) {
-            GetBaseEmployeeResponse response = result.getData();
+            UserVo response = result.getData();
             // 返回结果
             System.err.printf("调用成功:%s%n", JSON.toJSONString(result));
         } else {

@@ -3,6 +3,7 @@ package top.mddata.api.oepn.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.stereotype.Service;
 import top.mddata.api.oepn.MsgOpenService;
 import top.mddata.api.oepn.dto.SendMailDto;
 import top.mddata.api.oepn.dto.SendNoticeDto;
@@ -20,6 +21,7 @@ import top.mddata.console.message.facade.MsgFacade;
  * @since 2026/1/7 12:35
  */
 @DubboService
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class MsgOpenServiceImpl implements MsgOpenService {

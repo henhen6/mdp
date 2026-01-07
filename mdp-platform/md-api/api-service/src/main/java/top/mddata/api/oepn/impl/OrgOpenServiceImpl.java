@@ -7,6 +7,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.stereotype.Service;
 import top.mddata.api.oepn.OrgOpenService;
 import top.mddata.api.oepn.dto.OrgSaveDto;
 import top.mddata.api.oepn.dto.OrgUpdateDto;
@@ -33,6 +34,7 @@ import top.mddata.common.mapper.OrgNatureMapper;
  * @since 2026/1/7 12:25
  */
 @DubboService
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements OrgOpenService {

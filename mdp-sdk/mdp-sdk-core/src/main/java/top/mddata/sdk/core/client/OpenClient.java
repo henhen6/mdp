@@ -46,9 +46,9 @@ public class OpenClient {
     private final String url;
 
     /**
-     * 平台提供的appId
+     * 平台提供的appKey
      */
-    private final String appId;
+    private final String appKey;
 
     /**
      * 开放平台提供的私钥
@@ -79,23 +79,23 @@ public class OpenClient {
      * 构建请求客户端
      *
      * @param url           接口url
-     * @param appId         平台分配的appId
+     * @param appKey         平台分配的appKey
      * @param privateKeyIsv 平台分配的私钥
      */
-    public OpenClient(String url, String appId, String privateKeyIsv) {
-        this(url, appId, privateKeyIsv, DEFAULT_CONFIG);
+    public OpenClient(String url, String appKey, String privateKeyIsv) {
+        this(url, appKey, privateKeyIsv, DEFAULT_CONFIG);
     }
 
     /**
      * 构建请求客户端
      *
      * @param url               接口url
-     * @param appId             平台分配的appId
+     * @param appKey             平台分配的appKey
      * @param privateKeyIsv     平台分配的私钥
      * @param publicKeyPlatform 平台分配的公钥
      */
-    public OpenClient(String url, String appId, String privateKeyIsv, String publicKeyPlatform) {
-        this(url, appId, privateKeyIsv);
+    public OpenClient(String url, String appKey, String privateKeyIsv, String publicKeyPlatform) {
+        this(url, appKey, privateKeyIsv);
         this.publicKeyPlatform = publicKeyPlatform;
     }
 
@@ -103,16 +103,16 @@ public class OpenClient {
      * 构建请求客户端
      *
      * @param url           接口url
-     * @param appId         平台分配的appId
+     * @param appKey         平台分配的appKey
      * @param privateKeyIsv 平台分配的私钥
      * @param openConfig    配置项
      */
-    public OpenClient(String url, String appId, String privateKeyIsv, OpenConfig openConfig) {
+    public OpenClient(String url, String appKey, String privateKeyIsv, OpenConfig openConfig) {
         if (openConfig == null) {
             throw new IllegalArgumentException("openConfig不能为null");
         }
         this.url = url;
-        this.appId = appId;
+        this.appKey = appKey;
         this.privateKey = privateKeyIsv;
         this.openConfig = openConfig;
 
@@ -124,13 +124,13 @@ public class OpenClient {
      * 构建请求客户端
      *
      * @param url               接口url
-     * @param appId             平台分配的appId
+     * @param appKey             平台分配的appKey
      * @param privateKeyIsv     平台分配的私钥
      * @param publicKeyPlatform 平台分配的公钥
      * @param openConfig        配置项
      */
-    public OpenClient(String url, String appId, String privateKeyIsv, String publicKeyPlatform, OpenConfig openConfig) {
-        this(url, appId, privateKeyIsv, openConfig);
+    public OpenClient(String url, String appKey, String privateKeyIsv, String publicKeyPlatform, OpenConfig openConfig) {
+        this(url, appKey, privateKeyIsv, openConfig);
         this.publicKeyPlatform = publicKeyPlatform;
     }
 
@@ -172,7 +172,7 @@ public class OpenClient {
         if (accessToken != null) {
             form.put(this.openConfig.getAccessTokenName(), accessToken);
         }
-        form.put(this.openConfig.getAppKeyName(), this.appId);
+        form.put(this.openConfig.getAppKeyName(), this.appKey);
 
         String content = SignUtil.getSignContent(form);
         String sign;

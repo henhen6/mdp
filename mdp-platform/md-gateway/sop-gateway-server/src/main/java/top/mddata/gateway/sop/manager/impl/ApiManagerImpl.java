@@ -43,7 +43,7 @@ public class ApiManagerImpl implements ApiManager {
             return api != null ? api.getId() : null;
         });
 
-        if (apiIdCache.isNullVal()) {
+        if (apiIdCache.isNullVal() || apiIdCache.getValue() == null) {
             return null;
         }
         Long apiId = apiIdCache.asLong();

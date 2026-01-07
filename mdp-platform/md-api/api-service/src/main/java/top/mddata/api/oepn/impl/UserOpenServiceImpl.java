@@ -10,6 +10,7 @@ import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.stereotype.Service;
 import top.mddata.api.oepn.UserOpenService;
 import top.mddata.api.oepn.dto.UserSaveDto;
 import top.mddata.api.oepn.dto.UserUpdateDto;
@@ -44,6 +45,7 @@ import java.util.Map;
  */
 @DubboService
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> implements UserOpenService {
     private final SystemProperties systemProperties;

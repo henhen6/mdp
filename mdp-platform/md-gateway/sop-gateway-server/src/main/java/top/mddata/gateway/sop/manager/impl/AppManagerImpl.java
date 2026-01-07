@@ -55,7 +55,7 @@ public class AppManagerImpl implements AppManager {
             return app != null ? app.getId() : null;
         });
 
-        if (appIdCache.isNullVal()) {
+        if (appIdCache.isNullVal() || appIdCache.getValue() == null) {
             return null;
         }
         Long appId = appIdCache.asLong();
