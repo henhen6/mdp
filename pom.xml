@@ -13,9 +13,14 @@
     <description>主数据平台</description>
     <url>https://github.com/henhen6/mdp</url>
 
+    <!-- 以下每个模块都可以独立拆分成为一个独立项目 -->
     <modules>
+        <!-- 核心工具类 -->
         <module>mdp-core</module>
+        <!-- 后端业务代码 -->
         <module>mdp-platform</module>
+        <!-- 提供给第三方的sdk -->
+        <module>mdp-sdk</module>
     </modules>
 
 </project>
