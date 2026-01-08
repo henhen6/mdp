@@ -12,7 +12,6 @@ import top.mddata.api.oepn.OrgOpenService;
 import top.mddata.api.oepn.UserOpenService;
 import top.mddata.api.oepn.dto.OrgSaveDto;
 import top.mddata.api.oepn.dto.UserBatchSaveDto;
-import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 
 /**
