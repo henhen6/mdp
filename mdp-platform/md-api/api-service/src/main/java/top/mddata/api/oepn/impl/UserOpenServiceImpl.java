@@ -16,8 +16,8 @@ import top.mddata.api.oepn.dto.UserBatchSaveDto;
 import top.mddata.api.oepn.dto.UserSaveDto;
 import top.mddata.api.oepn.dto.UserUpdateDto;
 import top.mddata.api.oepn.query.UserQuery;
-import top.mddata.api.oepn.vo.UserListVo;
-import top.mddata.api.oepn.vo.UserVo;
+import top.mddata.api.oepn.resp.UserBatchSaveResp;
+import top.mddata.api.oepn.resp.UserResp;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.request.PageParams;
@@ -57,7 +57,7 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
     }
 
     @Override
-    public UserListVo batchSave(UserBatchSaveDto list) {
+    public UserBatchSaveResp batchSave(UserBatchSaveDto list) {
         List<UserSaveDto> dto = list.getList();
         ArgumentAssert.notEmpty(dto, "用户信息不能为空");
         ArgumentAssert.isFalse(dto.size() > 500, "每次保存的用户数量不能超过500条");
@@ -75,7 +75,7 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
         Map<String, User> userMap = CollHelper.buildMap(existUsernameList, User::getUsername, item -> item);
 
         // 用户名重复的数据
-        List<UserVo> existList = new ArrayList<>();
+        List<UserResp> existList = new ArrayList<>();
         List<User> saveList = new ArrayList<>();
         List<User> updateList = new ArrayList<>();
         for (UserSaveDto userDto : dto) {
@@ -95,7 +95,7 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
                     updateList.add(sysUser);
                 } else {
                     // 用户名相同，来源不同的数据不处理。
-                    existList.add(BeanUtil.toBean(userDto, UserVo.class));
+                    existList.add(BeanUtil.toBean(userDto, UserResp.class));
                 }
             } else {
                 // 新增
@@ -114,8 +114,8 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
 
         saveBatch(saveList);
         updateBatch(updateList);
-        UserListVo listVo = new UserListVo();
-        listVo.setExistList(existList).setSaveList(BeanUtil.copyToList(saveList, UserVo.class)).setUpdateList(BeanUtil.copyToList(updateList, UserVo.class));
+        UserBatchSaveResp listVo = new UserBatchSaveResp();
+        listVo.setExistList(existList).setSaveList(BeanUtil.copyToList(saveList, UserResp.class)).setUpdateList(BeanUtil.copyToList(updateList, UserResp.class));
 
         // 清理缓存
         List<CacheKey> idKeys = updateList.stream().map(User::getId).distinct().map(UserCacheKeyBuilder::builder).toList();
@@ -128,7 +128,7 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
     }
 
     @Override
-    public UserVo updateById(UserUpdateDto dto) {
+    public UserResp updateById(UserUpdateDto dto) {
         ArgumentAssert.notNull(dto, "用户信息不能为空");
         long existUsername = mapper.selectCountByQuery(QueryWrapper.create().eq(User::getUsername, dto.getUsername()).ne(User::getId, dto.getId()));
         ArgumentAssert.isTrue(existUsername <= 0, "用户名[{}]存在重复数据", dto.getUsername());
@@ -153,22 +153,22 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
         }
         cacheOps.del(cacheKeys);
 
-        return BeanUtil.toBean(sysUser, UserVo.class);
+        return BeanUtil.toBean(sysUser, UserResp.class);
     }
 
     @Override
-    public UserVo getById(Long id) {
+    public UserResp getById(Long id) {
         User sysUser = mapper.selectOneById(id);
-        return BeanUtil.toBean(sysUser, UserVo.class);
+        return BeanUtil.toBean(sysUser, UserResp.class);
     }
 
     @Override
-    public Page<UserVo> page(PageParams<UserQuery> params) {
+    public Page<UserResp> page(PageParams<UserQuery> params) {
         Page<User> page = Page.of(params.getCurrent(), params.getSize());
         User entity = BeanUtil.toBean(params.getModel(), User.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         mapper.paginate(page, wrapper);
-        return BeanPageUtil.toBeanPage(page, UserVo.class);
+        return BeanPageUtil.toBeanPage(page, UserResp.class);
     }
 }

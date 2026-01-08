@@ -5,7 +5,7 @@ import com.mybatisflex.core.paginate.Page;
 import top.mddata.api.oepn.dto.OrgSaveDto;
 import top.mddata.api.oepn.dto.OrgUpdateDto;
 import top.mddata.api.oepn.query.OrgQuery;
-import top.mddata.api.oepn.vo.OrgVo;
+import top.mddata.api.oepn.resp.OrgResp;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.Org;
@@ -23,7 +23,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @return 保存成功后的组织机构信息
      */
     @Open("org.save")
-    OrgVo save(OrgSaveDto dto);
+    OrgResp save(OrgSaveDto dto);
 
 
     /**
@@ -33,7 +33,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @return 修改成功后的组织机构信息
      */
     @Open("org.updateById")
-    OrgVo updateById(OrgUpdateDto dto);
+    OrgResp updateById(OrgUpdateDto dto);
 
     /**
      * 根据ID查询组织机构信息
@@ -42,7 +42,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @return 组织机构信息
      */
     @Open("org.getById")
-    OrgVo getVoById(Long id);
+    OrgResp getVoById(Long id);
 
     /**
      * 分页查询组织机构信息
@@ -51,5 +51,5 @@ public interface OrgOpenService extends SuperService<Org> {
      * @return 分页数据
      */
     @Open("org.page")
-    Page<OrgVo> page(PageParams<OrgQuery> params);
+    Page<OrgResp> page(PageParams<OrgQuery> params);
 }

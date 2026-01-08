@@ -12,7 +12,7 @@ import top.mddata.api.oepn.OrgOpenService;
 import top.mddata.api.oepn.dto.OrgSaveDto;
 import top.mddata.api.oepn.dto.OrgUpdateDto;
 import top.mddata.api.oepn.query.OrgQuery;
-import top.mddata.api.oepn.vo.OrgVo;
+import top.mddata.api.oepn.resp.OrgResp;
 import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
@@ -47,7 +47,7 @@ public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> impleme
     }
 
     @Override
-    public OrgVo save(OrgSaveDto dto) {
+    public OrgResp save(OrgSaveDto dto) {
         Org entity = BeanUtil.toBean(dto, Org.class);
         entity.setId(null);
 
@@ -73,7 +73,7 @@ public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> impleme
 
         delCache(entity);
 
-        return BeanUtil.toBean(entity, OrgVo.class);
+        return BeanUtil.toBean(entity, OrgResp.class);
     }
 
     private void fill(Org item, Org parent) {
@@ -87,7 +87,7 @@ public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> impleme
     }
 
     @Override
-    public OrgVo updateById(OrgUpdateDto data) {
+    public OrgResp updateById(OrgUpdateDto data) {
         Org org = super.updateBefore(data);
 
         Org parent = null;
@@ -103,21 +103,21 @@ public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> impleme
         fill(org, parent);
         updateById(org);
         delCache(org);
-        return BeanUtil.toBean(org, OrgVo.class);
+        return BeanUtil.toBean(org, OrgResp.class);
     }
 
     @Override
-    public OrgVo getVoById(Long id) {
-        return BeanUtil.toBean(getById(id), OrgVo.class);
+    public OrgResp getVoById(Long id) {
+        return BeanUtil.toBean(getById(id), OrgResp.class);
     }
 
     @Override
-    public Page<OrgVo> page(PageParams<OrgQuery> params) {
+    public Page<OrgResp> page(PageParams<OrgQuery> params) {
         Page<Org> page = Page.of(params.getCurrent(), params.getSize());
         Org entity = BeanUtil.toBean(params.getModel(), Org.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         mapper.paginate(page, wrapper);
-        return BeanPageUtil.toBeanPage(page, OrgVo.class);
+        return BeanPageUtil.toBeanPage(page, OrgResp.class);
     }
 }

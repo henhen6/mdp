@@ -5,8 +5,8 @@ import com.mybatisflex.core.paginate.Page;
 import top.mddata.api.oepn.dto.UserBatchSaveDto;
 import top.mddata.api.oepn.dto.UserUpdateDto;
 import top.mddata.api.oepn.query.UserQuery;
-import top.mddata.api.oepn.vo.UserListVo;
-import top.mddata.api.oepn.vo.UserVo;
+import top.mddata.api.oepn.resp.UserBatchSaveResp;
+import top.mddata.api.oepn.resp.UserResp;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.User;
@@ -27,7 +27,7 @@ public interface UserOpenService extends SuperService<User> {
      * 用户保存成功之后，返回用户列表（含用户ID）
      */
     @Open("user.batchSave")
-    UserListVo batchSave(UserBatchSaveDto dto);
+    UserBatchSaveResp batchSave(UserBatchSaveDto dto);
 
 
     /**
@@ -37,7 +37,7 @@ public interface UserOpenService extends SuperService<User> {
      * @return 修改成功后的用户信息
      */
     @Open("user.updateById")
-    UserVo updateById(UserUpdateDto dto);
+    UserResp updateById(UserUpdateDto dto);
 
     /**
      * 根据ID查询用户信息
@@ -46,7 +46,7 @@ public interface UserOpenService extends SuperService<User> {
      * @return 用户信息
      */
     @Open("user.getById")
-    UserVo getById(Long id);
+    UserResp getById(Long id);
 
     /**
      * 分页查询用户信息
@@ -55,5 +55,5 @@ public interface UserOpenService extends SuperService<User> {
      * @return 分页数据
      */
     @Open("user.page")
-    Page<UserVo> page(PageParams<UserQuery> params);
+    Page<UserResp> page(PageParams<UserQuery> params);
 }
