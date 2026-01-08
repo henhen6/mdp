@@ -11,6 +11,7 @@ public class Result<T> {
     private String msg;
     private String subCode;
     private String subMsg;
+    private String solution;
     private T data;
 
     @JSONField(serialize = false)
@@ -60,6 +61,15 @@ public class Result<T> {
 
     public Result<T> setData(T data) {
         this.data = data;
+        return this;
+    }
+
+    public String getSolution() {
+        return solution;
+    }
+
+    public Result<T> setSolution(String solution) {
+        this.solution = solution;
         return this;
     }
 }
