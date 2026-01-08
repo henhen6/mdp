@@ -8,7 +8,7 @@ import top.mddata.gateway.sop.request.ApiRequestContext;
  *
  * @author 六如
  */
-public interface Validator {
+public interface SopValidator {
     /**
      * 接口验证
      *

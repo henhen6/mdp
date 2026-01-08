@@ -27,7 +27,7 @@ import top.mddata.gateway.sop.request.UploadContext;
 import top.mddata.gateway.sop.response.FormatEnum;
 import top.mddata.gateway.sop.service.validate.Signer;
 import top.mddata.gateway.sop.service.validate.ValidateReturn;
-import top.mddata.gateway.sop.service.validate.Validator;
+import top.mddata.gateway.sop.service.validate.SopValidator;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
-public class ApiValidator implements Validator {
+public class ApiValidator implements SopValidator {
 
     private static final long MILLISECOND_OF_ONE_SECOND = 1000;
 

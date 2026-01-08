@@ -24,7 +24,7 @@ import top.mddata.base.validator.utils.ValidatorUtils;
 public class ValidatorConfiguration {
 
     @Bean
-    public Validator validator() {
+    public Validator getValidator() {
         ValidatorFactory validatorFactory = ValidatorUtils.warp(Validation.byProvider(HibernateValidator.class)
                         .configure()
                         //快速失败返回模式

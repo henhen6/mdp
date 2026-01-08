@@ -13,7 +13,7 @@ public class RestRouteServiceImpl extends RouteServiceImpl {
 
     @Override
     protected ValidateReturn validate(ApiRequestContext apiRequestContext) {
-        return validator.validateRest(apiRequestContext);
+        return sopValidator.validateRest(apiRequestContext);
     }
 
     @Override

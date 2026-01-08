@@ -8,13 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import top.mddata.base.annotation.constraints.NotEmptyPattern;
 
 import java.io.Serial;
 import java.io.Serializable;
-
-import static top.mddata.base.utils.ValidatorUtil.REGEX_EMAIL;
-import static top.mddata.base.utils.ValidatorUtil.REGEX_MOBILE;
 
 
 /**
@@ -55,7 +51,6 @@ public class UserSaveDto implements Serializable {
      */
     @Size(max = 20, message = "电话号码长度不能超过{max}")
     @Schema(description = "电话号码")
-    @NotEmptyPattern(regexp = REGEX_MOBILE, message = "请输入11位的手机号")
     private String phone;
 
     /**
@@ -70,7 +65,6 @@ public class UserSaveDto implements Serializable {
      */
     @Size(max = 128, message = "邮箱地址长度不能超过{max}")
     @Schema(description = "邮箱地址")
-    @NotEmptyPattern(regexp = REGEX_EMAIL, message = "邮箱格式不合法")
     private String email;
 
     @Schema(description = "用户来源")

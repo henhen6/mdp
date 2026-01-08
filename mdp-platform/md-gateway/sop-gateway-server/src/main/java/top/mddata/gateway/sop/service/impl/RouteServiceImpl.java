@@ -38,7 +38,7 @@ import top.mddata.gateway.sop.service.ResultWrapper;
 import top.mddata.gateway.sop.service.RouteService;
 import top.mddata.gateway.sop.service.Serde;
 import top.mddata.gateway.sop.service.validate.ValidateReturn;
-import top.mddata.gateway.sop.service.validate.Validator;
+import top.mddata.gateway.sop.service.validate.SopValidator;
 import top.mddata.gateway.sop.util.ClassUtil;
 
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class RouteServiceImpl implements RouteService {
 
 
     @Resource
-    protected Validator validator;
+    protected SopValidator sopValidator;
 
     @Resource
     protected GenericServiceInvoker genericServiceInvoker;
@@ -111,7 +111,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     protected ValidateReturn validate(ApiRequestContext apiRequestContext) {
-        return validator.validate(apiRequestContext);
+        return sopValidator.validate(apiRequestContext);
     }
 
     protected Object doRoute(RouteContext routeContext) {
