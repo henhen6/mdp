@@ -5,6 +5,7 @@ import cn.dev33.satoken.sso.model.SaCheckTicketResult;
 import cn.dev33.satoken.sso.processor.SaSsoClientProcessor;
 import cn.dev33.satoken.sso.processor.SaSsoServerProcessor;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.dev33.satoken.util.SaFoxUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.core.util.StrUtil;
@@ -84,7 +85,11 @@ public class SsoClientController {
     @GetMapping("/anyUser/sso/doLoginByTicket")
     public R<String> doLoginByTicket(String ticket) {
         SaCheckTicketResult ctr = SaSsoClientProcessor.instance.checkTicket(ticket);
-        return R.success(ctr.tokenValue);
+        StpUtil.login(ctr.loginId, new SaLoginParameter()
+                .setTimeout(ctr.remainTokenTimeout)
+                .setDeviceId(ctr.deviceId)
+        );
+        return R.success(StpUtil.getTokenValue());
     }
 
 
