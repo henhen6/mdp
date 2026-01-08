@@ -39,7 +39,7 @@ public class ApiManagerImpl implements ApiManager {
 //        todo 测试一下，先缓存一个空值， 然后新开发一个同名的方法，测试是否能正常调用
         CacheKey idKey = ApiByMethodVersionCkBuilder.builder(method, version);
         CacheResult<Long> apiIdCache = cacheOps.get(idKey, (k) -> {
-            Api api = apiMapper.selectOneByQuery(QueryWrapper.create().eq(Api::getMethodName, method).eq(Api::getApiVersion, version));
+            Api api = apiMapper.selectOneByQuery(QueryWrapper.create().eq(Api::getApiName, method).eq(Api::getApiVersion, version));
             return api != null ? api.getId() : null;
         });
 
@@ -59,7 +59,7 @@ public class ApiManagerImpl implements ApiManager {
     public void saveOrUpdate(Api apiInfo) {
         apiMapper.insertOrUpdate(apiInfo);
 
-        cacheOps.set(ApiByMethodVersionCkBuilder.builder(apiInfo.getMethodName(), apiInfo.getApiVersion()), apiInfo.getId());
+        cacheOps.set(ApiByMethodVersionCkBuilder.builder(apiInfo.getApiName(), apiInfo.getApiVersion()), apiInfo.getId());
         cacheOps.set(ApiCkBuilder.builder(apiInfo.getId()), apiInfo);
     }
 }

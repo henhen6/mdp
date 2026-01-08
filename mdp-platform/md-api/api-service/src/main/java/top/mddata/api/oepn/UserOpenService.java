@@ -2,7 +2,7 @@ package top.mddata.api.oepn;
 
 import com.gitee.sop.support.annotation.Open;
 import com.mybatisflex.core.paginate.Page;
-import top.mddata.api.oepn.dto.UserSaveDto;
+import top.mddata.api.oepn.dto.UserBatchSaveDto;
 import top.mddata.api.oepn.dto.UserUpdateDto;
 import top.mddata.api.oepn.query.UserQuery;
 import top.mddata.api.oepn.vo.UserListVo;
@@ -10,8 +10,6 @@ import top.mddata.api.oepn.vo.UserVo;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.User;
-
-import java.util.List;
 
 /**
  * 用户数据接口
@@ -29,7 +27,7 @@ public interface UserOpenService extends SuperService<User> {
      * 用户保存成功之后，返回用户列表（含用户ID）
      */
     @Open("user.batchSave")
-    UserListVo batchSave(List<UserSaveDto> dto);
+    UserListVo batchSave(UserBatchSaveDto dto);
 
 
     /**

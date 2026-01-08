@@ -24,7 +24,6 @@ import java.util.Objects;
 @DubboService
 public class ApiRegisterServiceImpl implements ApiRegisterService {
 
-    private static final int REG_SOURCE_SYS = 1;
     @Resource
     private ApiManager apiManager;
     @Resource

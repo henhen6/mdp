@@ -1,5 +1,6 @@
 package top.mddata.gateway.sop.exception.impl;
 
+import cn.hutool.core.util.StrUtil;
 import org.apache.dubbo.rpc.service.GenericException;
 import org.springframework.stereotype.Service;
 import top.mddata.gateway.sop.exception.ApiException;
@@ -48,6 +49,9 @@ public class ExceptionExecutorImpl implements ExceptionExecutor {
             }
             if (exceptionClass.contains(OPEN_EXCEPTION)) {
                 String exceptionMessage = genericException.getExceptionMessage();
+                if (StrUtil.isEmpty(exceptionMessage)) {
+                    exceptionMessage = genericException.getMessage();
+                }
 
                 Matcher matcher = PATTERN.matcher(exceptionMessage);
                 String errorMsg;

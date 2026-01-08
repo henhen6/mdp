@@ -10,11 +10,13 @@ import top.mddata.open.admin.service.NotifyInfoService;
 
 import java.time.LocalDateTime;
 
+import static top.mddata.base.constant.Constants.UTIL_PACKAGE;
+
 @Configuration
 // 仅当 spring.profiles.active = prod 时，该配置类才会被加载
 @Profile({"prod", "test", "sop"})
 //@ConditionalOnClass(DubboConfigConfiguration.class)
-@EnableDubbo
+@EnableDubbo(scanBasePackages = UTIL_PACKAGE)
 @Slf4j
 public class DubboConfiguration {
     public DubboConfiguration() {

@@ -95,7 +95,7 @@ public abstract class BaseParam<Req, Resp> {
 
     public RequestForm createRequestForm(OpenConfig openConfig) {
         // 公共请求参数
-        Map<String, String> params = new HashMap<String, String>(16);
+        Map<String, String> params = new SkipNullHashMap(20);
         params.put(openConfig.getMethodName(), this.method);
         params.put(openConfig.getFormatName(), openConfig.getFormatType());
         params.put(openConfig.getCharsetName(), openConfig.getCharset());
@@ -123,6 +123,22 @@ public abstract class BaseParam<Req, Resp> {
             return JSON.toJSONString(bizModel);
         } else {
             return this.bizContent;
+        }
+    }
+
+    static class SkipNullHashMap extends HashMap<String, String> {
+        private static final long serialVersionUID = -5660619374444097587L;
+
+        SkipNullHashMap(int initialCapacity) {
+            super(initialCapacity);
+        }
+
+        @Override
+        public String put(String key, String value) {
+            if (value == null) {
+                return null;
+            }
+            return super.put(key, value);
         }
     }
 

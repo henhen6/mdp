@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 import top.mddata.api.oepn.UserOpenService;
+import top.mddata.api.oepn.dto.UserBatchSaveDto;
 import top.mddata.api.oepn.dto.UserSaveDto;
 import top.mddata.api.oepn.dto.UserUpdateDto;
 import top.mddata.api.oepn.query.UserQuery;
@@ -56,7 +57,8 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
     }
 
     @Override
-    public UserListVo batchSave(List<UserSaveDto> dto) {
+    public UserListVo batchSave(UserBatchSaveDto list) {
+        List<UserSaveDto> dto = list.getList();
         ArgumentAssert.notEmpty(dto, "用户信息不能为空");
         ArgumentAssert.isFalse(dto.size() > 500, "每次保存的用户数量不能超过500条");
 

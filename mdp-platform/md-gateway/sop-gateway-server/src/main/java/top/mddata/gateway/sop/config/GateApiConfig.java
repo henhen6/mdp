@@ -9,7 +9,6 @@ import top.mddata.base.constant.Constants;
  * @author henhen
  */
 @Configuration
-
 @ConfigurationProperties(prefix = Constants.PROJECT_PREFIX + ".api")
 public class GateApiConfig extends ApiConfig {
 }

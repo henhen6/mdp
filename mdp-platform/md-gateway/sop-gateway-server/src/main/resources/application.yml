@@ -1,4 +1,6 @@
 mdp:
+  cache:
+    serializerType: jack_son
   database: # 字段介绍参考 DatabaseProperties
     flex:
       audit: true
@@ -191,8 +193,12 @@ dubbo:
     validation: jvalidationNew
   # 消费方
   consumer:
+    timeout: 30000  # 全局默认30秒
+    retries: 0     # 全局关闭重试（超时后重试会导致服务端处理多份相同请求）
     check: false
     validation: jvalidationNew
   # 注册中心
   registry:
     check: false
+    parameters:
+      sba: ignore

@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.util.StringUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -198,9 +199,9 @@ public class ApiRegister {
                     Type parameterizedType = parameter.getParameterizedType();
                     // 如果是集合
                     if (parameterizedType instanceof ParameterizedType) {
-                        if (!Collection.class.isAssignableFrom(parameter.getType())) {
-                            throw new IllegalArgumentException("开放接口参数不正确,只支持集合泛型, method={}" + method);
-                        }
+//                        if (!Collection.class.isAssignableFrom(parameter.getType())) {
+//                            throw new IllegalArgumentException("开放接口参数不正确,只支持集合泛型, method={}" + method);
+//                        }
                         ParameterizedType genericType = (ParameterizedType) parameterizedType;
                         Type[] actualTypeArguments = genericType.getActualTypeArguments();
                         Type actualTypeArgument = actualTypeArguments[0];
@@ -226,6 +227,7 @@ public class ApiRegister {
 
     @Data
     private static class ParamInfo implements Serializable {
+        @Serial
         private static final long serialVersionUID = -404173450677698875L;
 
         private String name;
