@@ -1,6 +1,7 @@
 package top.mddata.api.oepn.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,5 +30,6 @@ public class UserBatchSaveDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @Valid
     private List<UserSaveDto> list;
 }

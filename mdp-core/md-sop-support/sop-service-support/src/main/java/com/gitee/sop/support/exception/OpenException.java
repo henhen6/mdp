@@ -30,7 +30,7 @@ public class OpenException extends RuntimeException {
     }
 
     public OpenException(I18nMessage openError, Object... params) {
-        this(openError, Locale.ENGLISH, params);
+        this(openError, Locale.CHINA, params);
     }
 
     public OpenException(String subCode, String subMsg, String solution) {

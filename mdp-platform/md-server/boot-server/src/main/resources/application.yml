@@ -388,6 +388,7 @@ dubbo:
   # 提供方
   provider:
     validation: jvalidationNew
+    filter: globalExceptionFilter,exception
   # 消费方
   consumer:
     timeout: 30000  # 全局默认30秒
