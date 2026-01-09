@@ -25,7 +25,7 @@ public class OrgTest extends BaseTest {
 
     public void testGetById() {
         OrgGetByIdApi api = new OrgGetByIdApi();
-        api.setBizModel(new OrgGetByIdDto().setId(680083598598475778L));
+        api.setBizModel(new OrgGetByIdDto().setId(43373586232915972L));
         Result<OrgResp> result = client.execute(api);
         logResult(result);
     }
@@ -48,8 +48,9 @@ public class OrgTest extends BaseTest {
     public void testUpdate() {
         OrgUpdateByIdApi api = new OrgUpdateByIdApi();
         OrgUpdateDto dto = new OrgUpdateDto();
-        dto.setId(42814334246315008L);
+        dto.setId(43373586232915972L);
         dto.setName("13888888888" + new Random().nextInt(5000));
+        dto.setOrgType("20");
         api.setBizModel(dto);
         Result<OrgResp> result = client.execute(api);
         logResult(result);

@@ -41,10 +41,12 @@ public class UserTest extends BaseTest {
         UserSaveDto user1 = new UserSaveDto();
         user1.setUsername("test" + new Random().nextInt(5000));
         user1.setName("test1");
+        user1.setUserSource("t1");
         list.add(user1);
         user1 = new UserSaveDto();
         user1.setUsername("test" + new Random().nextInt(5000));
         user1.setName("test2");
+        user1.setUserSource("t1");
         list.add(user1);
 
         UserBatchSaveDto dto = new UserBatchSaveDto();
@@ -67,6 +69,8 @@ public class UserTest extends BaseTest {
         UserUpdateDto dto = new UserUpdateDto();
         dto.setId(42814334246315008L);
         dto.setPhone("13888888888" + new Random().nextInt(5000));
+        dto.setUsername("11222");
+        dto.setUserSource("test");
         api.setBizModel(dto);
         Result<UserResp> result = client.execute(api);
         logResult(result);
