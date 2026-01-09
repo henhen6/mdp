@@ -28,7 +28,7 @@ public class MsgTest extends BaseTest {
         SendSmsDto dto = new SendSmsDto();
         dto.setRecipientList(Arrays.asList("13800000001", "13800000002"))
                 .setTiming(false)
-                .setTemplateKey("ttt")
+                .setTemplateKey("PHONE_EDIT")
                 .setParamList(paramList);
 
         SendSmsApi api = new SendSmsApi();
@@ -40,12 +40,13 @@ public class MsgTest extends BaseTest {
 
     public void testSendEmail() {
         List<Kv> paramList = new ArrayList<>();
-        paramList.add(new Kv("code", "1113"));
+        paramList.add(new Kv("code", "1111"));
+        paramList.add(new Kv("validityPeriod", "2222"));
 
         SendMailDto dto = new SendMailDto();
         dto.setRecipientList(Arrays.asList("244387066@qq.com"))
                 .setTiming(false)
-                .setTemplateKey("ttt")
+                .setTemplateKey("EMAIL_EDIT")
                 .setParamList(paramList);
 
         SendMailApi api = new SendMailApi();
@@ -57,14 +58,15 @@ public class MsgTest extends BaseTest {
 
     public void testSendNotice() {
         List<Kv> paramList = new ArrayList<>();
-        paramList.add(new Kv("code", "1113"));
+        paramList.add(new Kv("title", "标题"));
+        paramList.add(new Kv("content", "内容"));
 
         SendNoticeDto dto = new SendNoticeDto();
         dto.setMsgCategory(1)
                 .setRecipientIdList(Arrays.asList(680083598598475778L, 680083598598475779L, 680083598598475780L))
                 .setRecipientScope(1)
                 .setTiming(false)
-                .setTemplateKey("ttt")
+                .setTemplateKey("NOTICE")
                 .setParamList(paramList);
 
         SendNoticeApi api = new SendNoticeApi();
