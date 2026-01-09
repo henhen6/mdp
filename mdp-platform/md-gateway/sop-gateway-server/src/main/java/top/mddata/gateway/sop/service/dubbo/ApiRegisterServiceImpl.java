@@ -44,7 +44,7 @@ public class ApiRegisterServiceImpl implements ApiRegisterService {
     }
 
     private void doReg(RegisterDTO registerDTO) {
-        Api apiInfo = apiMapper.selectOneByQuery(QueryWrapper.create().eq(Api::getMethodName, registerDTO.getMethodName())
+        Api apiInfo = apiMapper.selectOneByQuery(QueryWrapper.create().eq(Api::getApiName, registerDTO.getApiName())
                 .eq(Api::getApiVersion, registerDTO.getApiVersion()));
         if (apiInfo == null) {
             apiInfo = new Api();
