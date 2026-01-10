@@ -138,7 +138,7 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
             Config param = this.getOne(new QueryWrapper().eq(Config::getUniqKey, uniqKey));
             return param != null ? param.getId() : null;
         });
-        Long id = uniqKeyResult.getValue();
+        Long id = Convert.toLong(uniqKeyResult.getValue());
         return this.getByIdCache(id);
     }
 
