@@ -8,6 +8,7 @@ import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.dev33.satoken.util.SaFoxUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.mybatisflex.core.util.UpdateEntity;
@@ -92,10 +93,9 @@ public class AuthServiceImpl implements AuthService {
         TempOrg org = findOrg(ssoUser);
 
         // 创建Account-Session
-//        StpUtil.login(userId, "PC");
         StpUtil.login(userId, new SaLoginParameter()
                 .setDeviceType("PC")
-                .setDeviceId(SaFoxUtil.getRandomString(32)));
+                .setDeviceId(StrUtil.isEmpty(login.getDeviceInfo()) ? SaFoxUtil.getRandomString(32) : login.getDeviceInfo()));
 
         SaSession session = StpUtil.getSession();
         session.setLoginId(ssoUser.getId());

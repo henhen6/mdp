@@ -34,6 +34,8 @@ public class LoginDto {
     @Schema(description = "密码")
     private String password;
 
+    @Schema(description = "此次登录的客户端设备id")
+    private String deviceId;
     /**
      * 前端获取
      */

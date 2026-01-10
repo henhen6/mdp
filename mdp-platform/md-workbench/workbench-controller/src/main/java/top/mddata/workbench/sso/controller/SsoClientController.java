@@ -40,7 +40,7 @@ public class SsoClientController {
      * @return SSO服务端登录地址
      */
     @Operation(summary = "获取SSO服务端登录地址", description = "获取SSO服务端登录地址")
-    @GetMapping("/anyUser/sso/getSsoAuthUrl")
+    @GetMapping("/anyUser/client/getSsoAuthUrl")
     public R<String> getSsoAuthUrl(String clientLoginUrl, String clientId) {
         String serverAuthUrl = buildServerAuthUrl(clientLoginUrl, clientId);
         return R.success(serverAuthUrl);
@@ -82,7 +82,7 @@ public class SsoClientController {
      * @return token
      */
     @Operation(summary = "根据ticket获取token", description = "校验ticket有限性，并返回token")
-    @GetMapping("/anyUser/sso/doLoginByTicket")
+    @GetMapping("/anyUser/client/doLoginByTicket")
     public R<String> doLoginByTicket(String ticket) {
         SaCheckTicketResult ctr = SaSsoClientProcessor.instance.checkTicket(ticket);
         StpUtil.login(ctr.loginId, new SaLoginParameter()
