@@ -27,7 +27,6 @@
         is_public,
         allow_ip,
         sso_push,
-        sso_slo,
         sso_push_url,
         sso_allow_url,
         oauth2_allow_redirect_uris,
