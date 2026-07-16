@@ -40,15 +40,7 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT CASE log_type
-                     WHEN '1' THEN '查询'
-                     WHEN '2' THEN '新增'
-                     WHEN '3' THEN '修改'
-                     WHEN '4' THEN '删除'
-                     WHEN '9' THEN '其他'
-                     ELSE '其他'
-                   END AS name,
-                   COUNT(*) AS count
+            SELECT log_type AS code, COUNT(*) AS count
               FROM
             """
             + RequestLogBase.TABLE_NAME +

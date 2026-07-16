@@ -49,17 +49,7 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT file_type AS code,
-                   CASE file_type
-                       WHEN 0 THEN '目录'
-                       WHEN 1 THEN '图片'
-                       WHEN 2 THEN '文档'
-                       WHEN 3 THEN '视频'
-                       WHEN 4 THEN '音频'
-                       WHEN 99 THEN '其他'
-                       ELSE CONCAT('其他-', file_type)
-                   END AS name,
-                   COUNT(*) AS count
+            SELECT file_type AS code, COUNT(*) AS count
               FROM mdc_file
              WHERE file_type IS NOT NULL
              GROUP BY file_type

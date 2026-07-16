@@ -110,7 +110,7 @@ public class LoginLogDto implements Serializable {
                 .setStatus(LoginStatusEnum.SUCCESS)
                 .setStatusReason(statusReason)
                 .setAuthType(authType)
-                .setLoginChannel(LoginChannelEnum.PC_LOGIN)
+                .setLoginChannel(LoginChannelEnum.WEB_LOGIN)
                 .setDeviceInfo(deviceInfo)
                 .setTokenInfo(token)
                 .setInfo();
@@ -124,7 +124,7 @@ public class LoginLogDto implements Serializable {
                 .setStatus(LoginStatusEnum.FAIL)
                 .setStatusReason(statusReason)
                 .setAuthType(authType)
-                .setLoginChannel(LoginChannelEnum.PC_LOGIN)
+                .setLoginChannel(LoginChannelEnum.WEB_LOGIN)
                 .setDeviceInfo(deviceInfo)
                 .setInfo();
     }

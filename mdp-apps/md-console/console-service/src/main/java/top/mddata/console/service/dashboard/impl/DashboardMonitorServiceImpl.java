@@ -4,6 +4,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.console.mapper.message.InterfaceConfigMapper;
 import top.mddata.console.mapper.message.InterfaceStatMapper;
 import top.mddata.console.mapper.system.RequestLogMapper;
@@ -144,7 +145,7 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
         List<DistributionVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             DistributionVo vo = new DistributionVo();
-            vo.setName(toStr(raw.get("name")));
+            vo.setName(convertLogType(toStr(raw.get("code"))));
             long count = toLong(raw.get("count"));
             vo.setCount(count);
             if (total > 0) {
@@ -191,6 +192,18 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
             result.add(vo);
         }
         return result;
+    }
+
+    private String convertLogType(String value) {
+        if (value == null) {
+            return null;
+        }
+        for (RequestLog.LogType type : RequestLog.LogType.values()) {
+            if (type.getValue().equals(value)) {
+                return type.getDesc();
+            }
+        }
+        return value;
     }
 
     private static Long toLong(Object value) {

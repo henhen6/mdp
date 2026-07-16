@@ -21,7 +21,7 @@ import top.mddata.base.interfaces.BaseEnum;
 @NoArgsConstructor
 @Schema(title = "LoginChannelEnum", description = "登录渠道-枚举")
 public enum LoginChannelEnum implements BaseEnum<String> {
-    PC_LOGIN("01", "系统登录页"),
+    WEB_LOGIN("01", "WEB端登录"),
     UNIAPP_LOGIN("02", "移动端登录");
 
     @Schema(description = "code")

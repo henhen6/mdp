@@ -39,15 +39,17 @@ public @interface RequestLog {
 
     @Getter
     enum LogType {
-        QUERY("1"),
-        ADD("2"),
-        UPDATE("3"),
-        DELETE("4"),
-        OTHER("9");
+        QUERY("1", "查询"),
+        ADD("2", "新增"),
+        UPDATE("3", "修改"),
+        DELETE("4", "删除"),
+        OTHER("9", "其他");
         private final String value;
+        private final String desc;
 
-        LogType(String value) {
+        LogType(String value, String desc) {
             this.value = value;
+            this.desc = desc;
         }
 
     }

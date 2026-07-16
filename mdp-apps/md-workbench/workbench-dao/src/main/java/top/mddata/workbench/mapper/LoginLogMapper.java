@@ -122,15 +122,7 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT auth_type AS code,
-                   CASE auth_type
-                       WHEN '01' THEN '用户名密码验证码登录'
-                       WHEN '02' THEN '用户名密码登录'
-                       WHEN '03' THEN '手机短信验证码'
-                       WHEN '04' THEN '邮箱验证码登录'
-                       ELSE auth_type
-                   END AS name,
-                   COUNT(*) AS count
+            SELECT auth_type AS code, COUNT(*) AS count
               FROM mdw_login_log
              WHERE auth_type IS NOT NULL
                AND auth_type <> ''
@@ -145,13 +137,7 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT login_channel AS code,
-                   CASE login_channel
-                       WHEN '01' THEN '系统登录页'
-                       WHEN '02' THEN '移动端'
-                       ELSE login_channel
-                   END AS name,
-                   COUNT(*) AS count
+            SELECT login_channel AS code, COUNT(*) AS count
               FROM mdw_login_log
              WHERE login_channel IS NOT NULL
                AND login_channel <> ''
@@ -166,16 +152,7 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT event_type AS code,
-                   CASE event_type
-                       WHEN '01' THEN '登录'
-                       WHEN '02' THEN '退出'
-                       WHEN '03' THEN '注销'
-                       WHEN '04' THEN '切换'
-                       WHEN '05' THEN '扮演'
-                       ELSE event_type
-                   END AS name,
-                   COUNT(*) AS count
+            SELECT event_type AS code, COUNT(*) AS count
               FROM mdw_login_log
              WHERE event_type IS NOT NULL
                AND event_type <> ''

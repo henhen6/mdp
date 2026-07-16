@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.console.entity.message.MsgTask;
+import top.mddata.console.enumeration.message.MsgTypeEnum;
 import top.mddata.console.mapper.message.MsgTaskMapper;
 import top.mddata.console.service.dashboard.DashboardMessageService;
 import top.mddata.console.vo.dashboard.DistributionVo;
@@ -77,7 +78,47 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
     @Override
     public List<DistributionVo> getTypeDistribution() {
         List<Map<String, Object>> rawList = msgTaskMapper.countByType();
-        return toDistributionList(rawList);
+        return toMsgTypeDistributionList(rawList);
+    }
+
+    private List<DistributionVo> toMsgTypeDistributionList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = 0L;
+        for (Map<String, Object> raw : rawList) {
+            total += toLong(raw.get("count"));
+        }
+        List<DistributionVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            DistributionVo vo = new DistributionVo();
+            vo.setName(convertMsgType(toLong(raw.get("code"))));
+            long count = toLong(raw.get("count"));
+            vo.setCount(count);
+            if (total > 0) {
+                double percent = BigDecimal.valueOf(count)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                        .doubleValue();
+                vo.setPercent(percent);
+            } else {
+                vo.setPercent(0d);
+            }
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private String convertMsgType(Long code) {
+        if (code == null) {
+            return null;
+        }
+        for (MsgTypeEnum enumVal : MsgTypeEnum.values()) {
+            if (enumVal.getCode().equals(code.intValue())) {
+                return enumVal.getDesc();
+            }
+        }
+        return "其他-" + code;
     }
 
     @Override

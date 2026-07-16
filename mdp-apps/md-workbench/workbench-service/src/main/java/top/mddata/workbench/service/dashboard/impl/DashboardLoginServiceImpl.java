@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.workbench.entity.LoginLog;
+import top.mddata.workbench.enumeration.AuthTypeEnum;
+import top.mddata.workbench.enumeration.LoginChannelEnum;
+import top.mddata.workbench.enumeration.LoginEventTypeEnum;
 import top.mddata.workbench.mapper.LoginLogMapper;
 import top.mddata.workbench.service.dashboard.DashboardLoginService;
 import top.mddata.workbench.vo.dashboard.DailyLoginVo;
@@ -117,17 +120,140 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
 
     @Override
     public List<DashboardDistributionVo> getAuthTypeDistribution() {
-        return toDistributionList(loginLogMapper.countByAuthType());
+        return toAuthTypeDistributionList(loginLogMapper.countByAuthType());
+    }
+
+    private List<DashboardDistributionVo> toAuthTypeDistributionList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = 0L;
+        for (Map<String, Object> raw : rawList) {
+            total += toLong(raw.get("count"));
+        }
+        List<DashboardDistributionVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            DashboardDistributionVo vo = new DashboardDistributionVo();
+            String code = toStr(raw.get("code"));
+            vo.setName(convertAuthType(code));
+            long count = toLong(raw.get("count"));
+            vo.setCount(count);
+            if (total > 0) {
+                double percent = BigDecimal.valueOf(count)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                        .doubleValue();
+                vo.setPercent(percent);
+            } else {
+                vo.setPercent(0d);
+            }
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private String convertAuthType(String code) {
+        if (code == null) {
+            return null;
+        }
+        for (AuthTypeEnum enumVal : AuthTypeEnum.values()) {
+            if (enumVal.getCode().equals(code)) {
+                return enumVal.getDesc();
+            }
+        }
+        return code;
     }
 
     @Override
     public List<DashboardDistributionVo> getChannelDistribution() {
-        return toDistributionList(loginLogMapper.countByChannel());
+        return toChannelDistributionList(loginLogMapper.countByChannel());
     }
 
     @Override
     public List<DashboardDistributionVo> getEventTypeDistribution() {
-        return toDistributionList(loginLogMapper.countByEventType());
+        return toEventTypeDistributionList(loginLogMapper.countByEventType());
+    }
+
+    private List<DashboardDistributionVo> toChannelDistributionList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = 0L;
+        for (Map<String, Object> raw : rawList) {
+            total += toLong(raw.get("count"));
+        }
+        List<DashboardDistributionVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            DashboardDistributionVo vo = new DashboardDistributionVo();
+            String code = toStr(raw.get("code"));
+            vo.setName(convertChannel(code));
+            long count = toLong(raw.get("count"));
+            vo.setCount(count);
+            if (total > 0) {
+                double percent = BigDecimal.valueOf(count)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                        .doubleValue();
+                vo.setPercent(percent);
+            } else {
+                vo.setPercent(0d);
+            }
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private String convertChannel(String code) {
+        if (code == null) {
+            return null;
+        }
+        for (LoginChannelEnum enumVal : LoginChannelEnum.values()) {
+            if (enumVal.getCode().equals(code)) {
+                return enumVal.getDesc();
+            }
+        }
+        return code;
+    }
+
+    private List<DashboardDistributionVo> toEventTypeDistributionList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = 0L;
+        for (Map<String, Object> raw : rawList) {
+            total += toLong(raw.get("count"));
+        }
+        List<DashboardDistributionVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            DashboardDistributionVo vo = new DashboardDistributionVo();
+            String code = toStr(raw.get("code"));
+            vo.setName(convertEventType(code));
+            long count = toLong(raw.get("count"));
+            vo.setCount(count);
+            if (total > 0) {
+                double percent = BigDecimal.valueOf(count)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                        .doubleValue();
+                vo.setPercent(percent);
+            } else {
+                vo.setPercent(0d);
+            }
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private String convertEventType(String code) {
+        if (code == null) {
+            return null;
+        }
+        for (LoginEventTypeEnum enumVal : LoginEventTypeEnum.values()) {
+            if (enumVal.getCode().equals(code)) {
+                return enumVal.getDesc();
+            }
+        }
+        return code;
     }
 
     @Override

@@ -27,14 +27,7 @@ public interface MsgTaskMapper extends SuperMapper<MsgTask> {
      */
     @Select({
             """
-            SELECT type AS code,
-                   CASE type
-                       WHEN 1 THEN '站内信'
-                       WHEN 2 THEN '短信'
-                       WHEN 3 THEN '邮件'
-                       ELSE CONCAT('其他-', type)
-                   END AS name,
-                   COUNT(*) AS count
+            SELECT type AS code, COUNT(*) AS count
               FROM mdc_msg_task
              WHERE type IS NOT NULL
              GROUP BY type

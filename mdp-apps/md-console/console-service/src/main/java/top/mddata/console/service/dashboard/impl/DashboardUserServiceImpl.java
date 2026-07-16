@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
+import top.mddata.common.enumeration.organization.UserTypeEnum;
+import top.mddata.common.enumeration.StateEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.console.entity.permission.Role;
@@ -116,13 +118,88 @@ public class DashboardUserServiceImpl implements DashboardUserService {
     @Override
     public List<DistributionVo> getStatusDistribution() {
         List<Map<String, Object>> rawList = userMapper.countByState();
-        return toDistributionVoList(rawList);
+        return toStatusDistributionList(rawList);
     }
 
     @Override
     public List<DistributionVo> getTypeDistribution() {
         List<Map<String, Object>> rawList = userMapper.countByType();
-        return toDistributionVoList(rawList);
+        return toTypeDistributionList(rawList);
+    }
+
+    private List<DistributionVo> toStatusDistributionList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = 0L;
+        for (Map<String, Object> raw : rawList) {
+            total += toLong(raw.get("count"));
+        }
+        List<DistributionVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            DistributionVo vo = new DistributionVo();
+            vo.setName(convertUserStatus(toLong(raw.get("code"))));
+            long count = toLong(raw.get("count"));
+            vo.setCount(count);
+            if (total > 0) {
+                double percent = BigDecimal.valueOf(count)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                        .doubleValue();
+                vo.setPercent(percent);
+            } else {
+                vo.setPercent(0d);
+            }
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private String convertUserStatus(Long code) {
+        if (code == null) {
+            return null;
+        }
+        return StateEnum.of(code.intValue()).getDesc();
+    }
+
+    private List<DistributionVo> toTypeDistributionList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = 0L;
+        for (Map<String, Object> raw : rawList) {
+            total += toLong(raw.get("count"));
+        }
+        List<DistributionVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            DistributionVo vo = new DistributionVo();
+            vo.setName(convertUserType(toLong(raw.get("code"))));
+            long count = toLong(raw.get("count"));
+            vo.setCount(count);
+            if (total > 0) {
+                double percent = BigDecimal.valueOf(count)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                        .doubleValue();
+                vo.setPercent(percent);
+            } else {
+                vo.setPercent(0d);
+            }
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private String convertUserType(Long code) {
+        if (code == null) {
+            return null;
+        }
+        for (UserTypeEnum enumVal : UserTypeEnum.values()) {
+            if (enumVal.getCode().equals(code.intValue())) {
+                return enumVal.getDesc();
+            }
+        }
+        return String.valueOf(code);
     }
 
     private List<RankVo> toRankVoList(List<Map<String, Object>> rawList) {

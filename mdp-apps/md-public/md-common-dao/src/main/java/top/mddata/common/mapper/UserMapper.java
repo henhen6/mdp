@@ -85,8 +85,7 @@ public interface UserMapper extends SuperMapper<User> {
     @Select({
             """
             SELECT
-                CASE WHEN state = 1 THEN '正常' ELSE '禁用' END AS name,
-                state AS state,
+                state AS code,
                 COUNT(*) AS count
               FROM mdc_user
              WHERE deleted_at = 0
@@ -105,16 +104,11 @@ public interface UserMapper extends SuperMapper<User> {
     @Select({
             """
             SELECT
-                user_type AS userType,
-                CASE user_type
-                    WHEN 1 THEN '普通用户'
-                    WHEN 2 THEN '管理员'
-                    WHEN 99 THEN '运维管理员'
-                    ELSE '其他'
-                END AS name,
+                user_type AS code,
                 COUNT(*) AS count
               FROM mdc_user
              WHERE deleted_at = 0
+               AND user_type IS NOT NULL
              GROUP BY user_type
             """
     })
