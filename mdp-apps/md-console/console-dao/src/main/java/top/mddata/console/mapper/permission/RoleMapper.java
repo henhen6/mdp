@@ -35,7 +35,7 @@ public interface RoleMapper extends SuperMapper<Role> {
              WHERE r.deleted_at = 0
                AND r.state = 1
              GROUP BY r.id, r.name
-             ORDER BY value DESC
+             ORDER BY value DESC, r.created_at DESC
              LIMIT #{limit}
             """
     })

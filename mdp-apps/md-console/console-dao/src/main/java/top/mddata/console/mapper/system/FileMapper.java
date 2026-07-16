@@ -105,7 +105,7 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT bucket AS code, COUNT(*) AS count
+            SELECT bucket AS name, COUNT(*) AS count
               FROM (
                   SELECT CASE
                       WHEN file_size < 1048576 THEN '<1MB'

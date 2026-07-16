@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.User;
+import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.console.entity.permission.Role;
@@ -41,11 +42,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardUserServiceImpl implements DashboardUserService {
 
-    /** 单位类型：10 */
-    private static final String ORG_TYPE_COMPANY = "10";
-    /** 部门类型：20 */
-    private static final String ORG_TYPE_DEPT = "20";
-
     private final UserMapper userMapper;
     private final OrgMapper orgMapper;
     private final RoleMapper roleMapper;
@@ -62,17 +58,16 @@ public class DashboardUserServiceImpl implements DashboardUserService {
         vo.setCompanyCount(orgMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(Org::getState, true)
-                        .eq(Org::getOrgType, ORG_TYPE_COMPANY)));
+                        .eq(Org::getOrgType, OrgTypeEnum.COMPANY.getCode())));
 
         // 部门数量（org_type=20）
         vo.setDeptCount(orgMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(Org::getState, true)
-                        .eq(Org::getOrgType, ORG_TYPE_DEPT)));
+                        .eq(Org::getOrgType, OrgTypeEnum.DEPT.getCode())));
 
         // 启用状态角色总数
-        vo.setRoleCount(roleMapper.selectCountByQuery(
-                QueryWrapper.create().eq(Role::getState, true)));
+        vo.setRoleCount(roleMapper.selectCountByQuery(QueryWrapper.create().eq(Role::getState, true)));
 
         return vo;
     }

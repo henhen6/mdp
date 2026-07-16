@@ -47,7 +47,7 @@ public interface OrgMapper extends SuperMapper<Org> {
              WHERE o.deleted_at = 0
                AND o.state = 1
              GROUP BY o.id, o.name
-             ORDER BY value DESC
+             ORDER BY value DESC, o.weight  DESC, o.created_at  DESC
              LIMIT #{limit}
             """
     })
