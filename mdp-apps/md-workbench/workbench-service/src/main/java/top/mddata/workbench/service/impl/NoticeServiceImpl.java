@@ -13,7 +13,9 @@ import top.mddata.workbench.service.NoticeRecipientService;
 import top.mddata.workbench.service.NoticeService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 站内通知 服务层实现。
@@ -38,5 +40,37 @@ public class NoticeServiceImpl extends SuperServiceImpl<NoticeMapper, Notice> im
                 .eq(NoticeRecipient::getUserId, userId)
                 .in(NoticeRecipient::getNoticeId, ids);
         return noticeRecipientService.update(recipient, wrapper);
+    }
+
+    @Override
+    public Long countByCategory(LocalDateTime startTime, Integer msgCategory) {
+        QueryWrapper wrapper = QueryWrapper.create()
+                .eq(Notice::getMsgCategory, msgCategory)
+                .ge(Notice::getCreatedAt, startTime);
+        return mapper.selectCountByQuery(wrapper);
+    }
+
+    @Override
+    public List<Map<String, Object>> countByCategoryDistribution() {
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(Notice::getMsgCategory, Notice::getId)
+                .isNotNull(Notice::getMsgCategory);
+        List<Notice> list = mapper.selectListByQuery(wrapper);
+        if (CollectionUtil.isEmpty(list)) {
+            return Collections.emptyList();
+        }
+        java.util.Map<Integer, Long> countMap = new java.util.HashMap<>();
+        for (Notice n : list) {
+            Integer cat = n.getMsgCategory();
+            countMap.merge(cat, 1L, Long::sum);
+        }
+        List<Map<String, Object>> result = new java.util.ArrayList<>(countMap.size());
+        for (java.util.Map.Entry<Integer, Long> e : countMap.entrySet()) {
+            Map<String, Object> row = new java.util.HashMap<>(2);
+            row.put("msgCategory", e.getKey());
+            row.put("count", e.getValue());
+            result.add(row);
+        }
+        return result;
     }
 }

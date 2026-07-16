@@ -34,7 +34,7 @@
   - 返回：用户总数、组织总数、待办通知数、公告通知数、预警通知数、文件总数、文件总容量
 
 #### md-open 模块
-- `GET /dashboard/overview/open`
+- `GET /dashboard/open/overview`
   - 返回：应用总数、今日接口调用量
 
 #### md-workbench 模块

@@ -1,8 +1,15 @@
 package top.mddata.open.mapper.admin;
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 import top.mddata.base.mvcflex.mapper.SuperMapper;
 import top.mddata.open.entity.admin.ApiCallLog;
+import top.mddata.open.entity.admin.base.ApiCallLogBase;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 调用日志 映射层。
@@ -13,4 +20,83 @@ import top.mddata.open.entity.admin.ApiCallLog;
 @Repository
 public interface ApiCallLogMapper extends SuperMapper<ApiCallLog> {
 
+    /**
+     * 统计今日失败调用量（exec_status='2'）。
+     */
+    @Select({
+            """
+            SELECT COUNT(*) AS value
+              FROM
+            """
+            + ApiCallLogBase.TABLE_NAME +
+            """
+             WHERE exec_status = '2'
+               AND created_at >= #{startTime, jdbcType=TIMESTAMP}
+            """
+    })
+    Long countTodayFail(@Param("startTime") LocalDateTime startTime);
+
+    /**
+     * 按日统计调用总量与失败量（指定起始时间之后）。
+     *
+     * @return 每日统计，key=date、callCount、failCount
+     */
+    @Select({
+            """
+            SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date,
+                   COUNT(*) AS callCount,
+                   SUM(CASE WHEN exec_status = '2' THEN 1 ELSE 0 END) AS failCount
+              FROM
+            """
+            + ApiCallLogBase.TABLE_NAME +
+            """
+             WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
+             GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+             ORDER BY date ASC
+            """
+    })
+    List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
+
+    /**
+     * 按应用统计调用次数排行 TOP N。
+     *
+     * @return key=appId、appName、callCount
+     */
+    @Select({
+            """
+            SELECT app_id AS appId,
+                   MAX(app_name) AS appName,
+                   COUNT(*) AS callCount
+              FROM
+            """
+            + ApiCallLogBase.TABLE_NAME +
+            """
+             GROUP BY app_id
+             ORDER BY callCount DESC
+             LIMIT #{limit}
+            """
+    })
+    List<Map<String, Object>> rankByApp(@Param("limit") int limit);
+
+    /**
+     * 按 API 统计调用次数排行 TOP N。
+     *
+     * @return key=apiId、apiName、appName、callCount
+     */
+    @Select({
+            """
+            SELECT api_id AS apiId,
+                   MAX(api_name) AS apiName,
+                   MAX(app_name) AS appName,
+                   COUNT(*) AS callCount
+              FROM
+            """
+            + ApiCallLogBase.TABLE_NAME +
+            """
+             GROUP BY api_id
+             ORDER BY callCount DESC
+             LIMIT #{limit}
+            """
+    })
+    List<Map<String, Object>> rankByApi(@Param("limit") int limit);
 }

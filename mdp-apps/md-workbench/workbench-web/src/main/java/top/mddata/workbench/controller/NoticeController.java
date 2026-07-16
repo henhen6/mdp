@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.mvcflex.controller.SuperController;
@@ -29,7 +30,9 @@ import top.mddata.workbench.service.NoticeRecipientService;
 import top.mddata.workbench.service.NoticeService;
 import top.mddata.workbench.vo.NoticeVo;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 站内通知 控制层。
@@ -139,5 +142,28 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
         return R.success(superService.save(notice));
     }
 
+    /**
+     * 统计指定时间之后、按分类的通知数量
+     *
+     * @param startTime 开始时间（包含）
+     * @param msgCategory 消息分类（1-待办 2-公告 3-预警）
+     * @return 通知数量
+     */
+    @GetMapping("/countByCategory")
+    @Operation(hidden = true)
+    public R<Long> countByCategory(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam Integer msgCategory) {
+        return R.success(superService.countByCategory(startTime, msgCategory));
+    }
+
+    /**
+     * 按分类统计通知数量（用于大屏分类分布图）。
+     */
+    @GetMapping("/countByCategoryDistribution")
+    @Operation(hidden = true)
+    public R<List<Map<String, Object>>> countByCategoryDistribution() {
+        return R.success(superService.countByCategoryDistribution());
+    }
 
 }

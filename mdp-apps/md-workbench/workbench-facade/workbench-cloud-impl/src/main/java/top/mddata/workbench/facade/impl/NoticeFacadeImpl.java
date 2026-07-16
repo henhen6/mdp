@@ -7,7 +7,9 @@ import top.mddata.workbench.entity.NoticeRecipient;
 import top.mddata.workbench.facade.NoticeFacade;
 import top.mddata.workbench.facade.api.NoticeApi;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 跨服务-通知实现类
@@ -27,5 +29,15 @@ public class NoticeFacadeImpl implements NoticeFacade {
     @Override
     public void save(Notice notice) {
         noticeApi.save(notice);
+    }
+
+    @Override
+    public Long countByCategory(LocalDateTime startTime, Integer msgCategory) {
+        return noticeApi.countByCategory(startTime, msgCategory).getData();
+    }
+
+    @Override
+    public List<Map<String, Object>> countByCategoryDistribution() {
+        return noticeApi.countByCategoryDistribution().getData();
     }
 }
