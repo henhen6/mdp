@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.console.entity.message.MsgTask;
+import top.mddata.console.enumeration.message.MsgTaskStatusEnum;
 import top.mddata.console.enumeration.message.MsgTypeEnum;
 import top.mddata.console.mapper.message.MsgTaskMapper;
 import top.mddata.console.service.dashboard.DashboardMessageService;
@@ -42,14 +43,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardMessageServiceImpl implements DashboardMessageService {
 
-    /** 消息任务状态：草稿 */
-    private static final int MSG_TASK_STATUS_DRAFT = 0;
-    /** 消息任务状态：待执行 */
-    private static final int MSG_TASK_STATUS_PENDING = 1;
-    /** 消息任务状态：执行成功 */
-    private static final int MSG_TASK_STATUS_SUCCESS = 2;
-    /** 消息任务状态：执行失败 */
-    private static final int MSG_TASK_STATUS_FAIL = 3;
 
     private final MsgTaskMapper msgTaskMapper;
     private final NoticeFacade noticeFacade;
@@ -59,19 +52,19 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
         OverviewMessageVo vo = new OverviewMessageVo();
 
         // 消息任务总数（mdc_msg_task 没有 deleted_at 字段）
-        vo.setMsgCount((long) msgTaskMapper.selectCountByQuery(QueryWrapper.create()));
+        vo.setMsgCount(msgTaskMapper.selectCountByQuery(QueryWrapper.create()));
 
         // 今日发送消息数（执行成功）
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         vo.setTodaySendCount(msgTaskMapper.selectCountByQuery(
                 QueryWrapper.create()
-                        .eq(MsgTask::getStatus, MSG_TASK_STATUS_SUCCESS)
+                        .eq(MsgTask::getStatus, MsgTaskStatusEnum.SUCCESS.getCode())
                         .ge(MsgTask::getSendTime, todayStart)));
 
         // 待执行消息数
         vo.setPendingCount(msgTaskMapper.selectCountByQuery(
                 QueryWrapper.create()
-                        .eq(MsgTask::getStatus, MSG_TASK_STATUS_PENDING)));
+                        .eq(MsgTask::getStatus, MsgTaskStatusEnum.WAITING.getCode())));
         return vo;
     }
 
