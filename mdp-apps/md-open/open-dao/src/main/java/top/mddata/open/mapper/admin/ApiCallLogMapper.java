@@ -20,24 +20,9 @@ import java.util.Map;
 @Repository
 public interface ApiCallLogMapper extends SuperMapper<ApiCallLog> {
 
-    /**
-     * 统计今日失败调用量（exec_status='2'）。
-     */
-    @Select({
-            """
-            SELECT COUNT(*) AS value
-              FROM
-            """
-            + ApiCallLogBase.TABLE_NAME +
-            """
-             WHERE exec_status = '2'
-               AND created_at >= #{startTime, jdbcType=TIMESTAMP}
-            """
-    })
-    Long countTodayFail(@Param("startTime") LocalDateTime startTime);
 
     /**
-     * 按日统计调用总量与失败量（指定起始时间之后）。
+     * 按日统计调用总量与失败量（指定日期范围）。
      *
      * @return 每日统计，key=date、callCount、failCount
      */
@@ -51,11 +36,13 @@ public interface ApiCallLogMapper extends SuperMapper<ApiCallLog> {
             + ApiCallLogBase.TABLE_NAME +
             """
              WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
+               AND created_at < #{endTime, jdbcType=TIMESTAMP}
              GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
              ORDER BY date ASC
             """
     })
-    List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
+    List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime,
+                                               @Param("endTime") LocalDateTime endTime);
 
     /**
      * 按应用统计调用次数排行 TOP N。

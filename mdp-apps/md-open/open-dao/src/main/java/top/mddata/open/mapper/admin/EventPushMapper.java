@@ -22,18 +22,19 @@ import java.util.Map;
 public interface EventPushMapper extends SuperMapper<EventPush> {
 
     /**
-     * 按事件编码+应用分组统计推送次数（关联 event_type 取事件名称）。
+     * 按事件编码+应用分组统计推送次数（关联 event_type 取事件名称，关联 mdo_app 取应用名称）。
      *
      * <p>推送次数 = event_push 表中按 event_code+app_id 分组的记录数。
      * 由于一个事件触发可能推送给多个应用，所以此处的"推送"以 event_push 行数计。</p>
      *
-     * @return key=eventCode、eventName、appId、pushCount
+     * @return key=eventCode、eventName、appId、appName、pushCount
      */
     @Select({
             """
             SELECT p.event_code AS eventCode,
                    COALESCE(ty.name, p.event_code) AS eventName,
                    p.app_id AS appId,
+                   COALESCE(a.name, p.app_id) AS appName,
                    COUNT(*) AS pushCount
               FROM
             """
@@ -43,7 +44,8 @@ public interface EventPushMapper extends SuperMapper<EventPush> {
             """
             + EventTypeBase.TABLE_NAME + " ty ON ty.code = p.event_code AND ty.state = 1" +
             """
-             GROUP BY p.event_code, ty.name, p.app_id
+             LEFT JOIN mdo_app a ON a.id = p.app_id
+             GROUP BY p.event_code, ty.name, p.app_id, a.name
              ORDER BY pushCount DESC
             """
     })
@@ -66,9 +68,11 @@ public interface EventPushMapper extends SuperMapper<EventPush> {
             """
              INNER JOIN mdo_event_trigger t ON t.id = p.event_trigger_id
              WHERE t.trigger_at >= #{startTime, jdbcType=TIMESTAMP}
+               AND t.trigger_at < #{endTime, jdbcType=TIMESTAMP}
              GROUP BY DATE_FORMAT(t.trigger_at, '%Y-%m-%d')
              ORDER BY date ASC
             """
     })
-    List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
+    List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime,
+                                               @Param("endTime") LocalDateTime endTime);
 }

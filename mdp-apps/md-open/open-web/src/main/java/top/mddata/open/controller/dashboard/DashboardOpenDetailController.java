@@ -49,10 +49,12 @@ public class DashboardOpenDetailController {
     }
 
     @GetMapping("/callTrend")
-    @Operation(summary = "API调用趋势", description = "按天统计调用总数与失败数，仅支持 7 或 30 天")
+    @Operation(summary = "API调用趋势", description = "按天统计调用总数与失败数，支持日期区间查询（yyyy-MM-dd），默认最近7天")
     @RequestLog(value = "查询API调用趋势", response = false)
-    public R<List<CallTrendVo>> getCallTrend(@RequestParam(defaultValue = "7") int days) {
-        return R.success(dashboardOpenService.getCallTrend(days));
+    public R<List<CallTrendVo>> getCallTrend(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+        return R.success(dashboardOpenService.getCallTrend(startDate, endDate));
     }
 
     @GetMapping("/appRank")

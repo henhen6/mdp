@@ -25,6 +25,9 @@ public class EventPushStatisticsVo implements Serializable {
     @Schema(description = "应用ID")
     private Long appId;
 
+    @Schema(description = "应用名称")
+    private String appName;
+
     @Schema(description = "触发次数")
     private Long triggerCount;
 

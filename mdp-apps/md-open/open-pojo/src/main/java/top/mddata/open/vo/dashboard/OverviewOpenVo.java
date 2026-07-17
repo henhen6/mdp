@@ -36,4 +36,7 @@ public class OverviewOpenVo implements Serializable {
 
     @Schema(description = "应用待审批数")
     private Long pendingApplyCount;
+
+    @Schema(description = "应用申请退回数")
+    private Long rejectedApplyCount;
 }

@@ -29,9 +29,10 @@ public interface DashboardOpenService {
     /**
      * API 调用趋势
      *
-     * @param days 统计天数（7 或 30）
+     * @param startDate 起始日期（包含）
+     * @param endDate   截止日期（包含）
      */
-    List<CallTrendVo> getCallTrend(int days);
+    List<CallTrendVo> getCallTrend(String startDate, String endDate);
 
     /**
      * 应用调用排行

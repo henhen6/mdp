@@ -4,8 +4,13 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.mddata.common.enumeration.AuditStatusEnum;
+import top.mddata.open.entity.admin.Api;
 import top.mddata.open.entity.admin.ApiCallLog;
 import top.mddata.open.entity.admin.App;
+import top.mddata.open.entity.admin.AppApply;
+import top.mddata.open.enumeration.admin.AppTypeEnum;
+import top.mddata.open.enumeration.admin.ExecStatusEnum;
 import top.mddata.open.mapper.admin.ApiCallLogMapper;
 import top.mddata.open.mapper.admin.ApiMapper;
 import top.mddata.open.mapper.admin.AppApplyMapper;
@@ -29,6 +34,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +56,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardOpenServiceImpl implements DashboardOpenService {
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     private final AppMapper appMapper;
     private final ApiMapper apiMapper;
     private final ApiCallLogMapper apiCallLogMapper;
@@ -62,37 +70,33 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     public OverviewOpenVo getOverviewOpen() {
         OverviewOpenVo vo = new OverviewOpenVo();
 
-        vo.setAppCount(appMapper.selectCountByQuery(
-                QueryWrapper.create().eq(App::getState, true)));
+        vo.setAppCount(appMapper.selectCountByQuery(QueryWrapper.create().eq(App::getState, true)));
+        vo.setSelfBuildCount(appMapper.selectCountByQuery(QueryWrapper.create().eq(App::getState, true).eq(App::getType, AppTypeEnum.SELF_BUILT.getCode())));
+        vo.setThirdPartyCount(appMapper.selectCountByQuery(QueryWrapper.create().eq(App::getState, true).eq(App::getType, AppTypeEnum.THIRD_PARTY.getCode())));
 
-        Long selfBuild = appMapper.countSelfBuild();
-        vo.setSelfBuildCount(selfBuild != null ? selfBuild : 0L);
-
-        Long thirdParty = appMapper.countThirdParty();
-        vo.setThirdPartyCount(thirdParty != null ? thirdParty : 0L);
-
-        Long apiCount = apiMapper.countEnabled();
-        vo.setApiCount(apiCount != null ? apiCount : 0L);
+        vo.setApiCount(apiMapper.selectCountByQuery(QueryWrapper.create().eq(Api::getState, true)));
 
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        vo.setTodayApiCallCount(apiCallLogMapper.selectCountByQuery(
-                QueryWrapper.create().ge(ApiCallLog::getCreatedAt, todayStart)));
+        vo.setTodayApiCallCount(apiCallLogMapper.selectCountByQuery(QueryWrapper.create().ge(ApiCallLog::getCreatedAt, todayStart)));
 
-        Long todayFail = apiCallLogMapper.countTodayFail(todayStart);
-        vo.setTodayFailCount(todayFail != null ? todayFail : 0L);
+        vo.setTodayFailCount(apiCallLogMapper.selectCountByQuery(QueryWrapper.create().ge(ApiCallLog::getCreatedAt, todayStart).eq(ApiCallLog::getExecStatus, ExecStatusEnum.FAIL.getCode())));
 
-        Long pending = appApplyMapper.countPending();
-        vo.setPendingApplyCount(pending != null ? pending : 0L);
+        vo.setPendingApplyCount(appApplyMapper.selectCountByQuery(QueryWrapper.create().eq(AppApply::getAuditStatus, AuditStatusEnum.PENDING.getCode())));
+
+        vo.setRejectedApplyCount(appApplyMapper.selectCountByQuery(QueryWrapper.create().eq(AppApply::getAuditStatus, AuditStatusEnum.REJECTED.getCode())));
 
         return vo;
     }
 
     @Override
-    public List<CallTrendVo> getCallTrend(int days) {
-        int safeDays = (days != 7 && days != 30) ? 7 : days;
-        LocalDateTime startTime = LocalDateTime.of(LocalDate.now().minusDays(safeDays - 1L), LocalTime.MIN);
+    public List<CallTrendVo> getCallTrend(String startDate, String endDate) {
+        LocalDate start = parseDate(startDate);
+        LocalDate end = parseDate(endDate);
+        LocalDate[] range = normalizeRange(start, end);
+        LocalDateTime startTime = LocalDateTime.of(range[0], LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(range[1], LocalTime.MAX);
 
-        List<Map<String, Object>> rawList = apiCallLogMapper.countByDay(startTime);
+        List<Map<String, Object>> rawList = apiCallLogMapper.countByDayRange(startTime, endTime);
         Map<String, long[]> dateMap = new HashMap<>();
         for (Map<String, Object> raw : rawList) {
             String date = String.valueOf(raw.get("date"));
@@ -101,10 +105,10 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
             dateMap.put(date, new long[]{call, fail});
         }
 
-        List<CallTrendVo> result = new ArrayList<>(safeDays);
-        LocalDate today = LocalDate.now();
-        for (int i = safeDays - 1; i >= 0; i--) {
-            LocalDate d = today.minusDays(i);
+        List<CallTrendVo> result = new ArrayList<>();
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
+        for (int i = 0; i < daysBetween; i++) {
+            LocalDate d = start.plusDays(i);
             String key = d.toString();
             long[] arr = dateMap.getOrDefault(key, new long[]{0L, 0L});
             CallTrendVo vo = new CallTrendVo();
@@ -206,8 +210,9 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     public List<EventTriggerTrendVo> getEventTriggerTrend(LocalDate startDate, LocalDate endDate) {
         LocalDate[] range = normalizeRange(startDate, endDate);
         LocalDateTime startTime = LocalDateTime.of(range[0], LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(range[1], LocalTime.MAX);
 
-        List<Map<String, Object>> rawList = eventTriggerMapper.countByDay(startTime);
+        List<Map<String, Object>> rawList = eventTriggerMapper.countByDayRange(startTime, endTime);
         Map<String, Long> dateMap = new HashMap<>();
         for (Map<String, Object> raw : rawList) {
             dateMap.put(String.valueOf(raw.get("date")), toLong(raw.get("triggerCount")));
@@ -250,6 +255,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
             vo.setEventCode(toStr(raw.get("eventCode")));
             vo.setEventName(toStr(raw.get("eventName")));
             vo.setAppId(toLong(raw.get("appId")));
+            vo.setAppName(toStr(raw.get("appName")));
             vo.setPushCount(toLong(raw.get("pushCount")));
             result.add(vo);
         }
@@ -260,8 +266,9 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     public List<EventPushTrendVo> getEventPushTrend(LocalDate startDate, LocalDate endDate) {
         LocalDate[] range = normalizeRange(startDate, endDate);
         LocalDateTime startTime = LocalDateTime.of(range[0], LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(range[1], LocalTime.MAX);
 
-        List<Map<String, Object>> rawList = eventPushMapper.countByDay(startTime);
+        List<Map<String, Object>> rawList = eventPushMapper.countByDayRange(startTime, endTime);
         Map<String, long[]> dateMap = new HashMap<>();
         for (Map<String, Object> raw : rawList) {
             String date = String.valueOf(raw.get("date"));
@@ -302,7 +309,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     }
 
     private <T> List<T> fillDateRange(LocalDate start, LocalDate end, Map<String, Long> dateMap,
-                                       java.util.function.BiFunction<String, Long, T> creator) {
+                                      java.util.function.BiFunction<String, Long, T> creator) {
         int days = (int) (end.toEpochDay() - start.toEpochDay()) + 1;
         List<T> result = new ArrayList<>(days);
         for (int i = 0; i < days; i++) {
@@ -331,5 +338,16 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     private static String toStr(Object value) {
         return value == null ? null : String.valueOf(value);
+    }
+
+    private static LocalDate parseDate(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value.trim(), DATE_FORMATTER);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

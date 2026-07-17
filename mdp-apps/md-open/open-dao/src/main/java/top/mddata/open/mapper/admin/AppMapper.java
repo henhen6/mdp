@@ -30,45 +30,15 @@ public interface AppMapper extends SuperMapper<App> {
      */
     @Select({
             """
-            SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date, COUNT(*) AS value
-              FROM
-            """
+                    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date, COUNT(*) AS value
+                      FROM
+                    """
             + AppBase.TABLE_NAME +
             """
-             WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
-             GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
-             ORDER BY date ASC
-            """
+                     WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
+                     GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+                     ORDER BY date ASC
+                    """
     })
     List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
-
-    /**
-     * 统计自建应用数（type='10' 且 state=1）。
-     */
-    @Select({
-            """
-            SELECT COUNT(*) AS value
-              FROM
-            """
-            + AppBase.TABLE_NAME +
-            """
-             WHERE type = '10' AND state = 1
-            """
-    })
-    Long countSelfBuild();
-
-    /**
-     * 统计第三方应用数（type='20' 且 state=1）。
-     */
-    @Select({
-            """
-            SELECT COUNT(*) AS value
-              FROM
-            """
-            + AppBase.TABLE_NAME +
-            """
-             WHERE type = '20' AND state = 1
-            """
-    })
-    Long countThirdParty();
 }

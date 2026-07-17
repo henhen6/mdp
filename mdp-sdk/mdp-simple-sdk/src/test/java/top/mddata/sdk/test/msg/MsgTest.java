@@ -33,7 +33,7 @@ public class MsgTest extends BaseTest {
         paramList.add(new Kv("code", "1113"));
 
         SendSmsDto dto = new SendSmsDto();
-        dto.setRecipientList(Arrays.asList("13800000001", "13800000002"))
+        dto.setRecipientList(Arrays.asList("15218869970"))
                 .setTiming(false)
                 .setTemplateKey("PHONE_EDIT")
                 .setParamList(paramList);

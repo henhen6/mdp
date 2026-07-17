@@ -71,7 +71,7 @@ public interface EventTriggerMapper extends SuperMapper<EventTrigger> {
     List<Map<String, Object>> rankByEventCode(@Param("limit") int limit);
 
     /**
-     * 按天统计事件触发次数（指定起始时间之后）。
+     * 按天统计事件触发次数（指定日期范围）。
      */
     @Select({
             """
@@ -81,9 +81,11 @@ public interface EventTriggerMapper extends SuperMapper<EventTrigger> {
             + EventTriggerBase.TABLE_NAME +
             """
              WHERE trigger_at >= #{startTime, jdbcType=TIMESTAMP}
+               AND trigger_at < #{endTime, jdbcType=TIMESTAMP}
              GROUP BY DATE_FORMAT(trigger_at, '%Y-%m-%d')
              ORDER BY date ASC
             """
     })
-    List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
+    List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime,
+                                               @Param("endTime") LocalDateTime endTime);
 }
