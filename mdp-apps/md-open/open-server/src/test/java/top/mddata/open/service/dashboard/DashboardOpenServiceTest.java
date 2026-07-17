@@ -49,22 +49,15 @@ class DashboardOpenServiceTest {
     }
 
     @Test
-    void getCallTrend7Days() {
-        List<CallTrendVo> result = dashboardOpenService.getCallTrend(7);
+    void getCallTrendDefault() {
+        List<CallTrendVo> result = dashboardOpenService.getCallTrend(null, null);
         assertNotNull(result);
         assertEquals(7, result.size());
     }
 
     @Test
-    void getCallTrend30Days() {
-        List<CallTrendVo> result = dashboardOpenService.getCallTrend(30);
-        assertNotNull(result);
-        assertEquals(30, result.size());
-    }
-
-    @Test
-    void getCallTrendIllegalDaysDefaultsTo7() {
-        List<CallTrendVo> result = dashboardOpenService.getCallTrend(15);
+    void getCallTrendWithDateRange() {
+        List<CallTrendVo> result = dashboardOpenService.getCallTrend("2026-07-10", "2026-07-16");
         assertNotNull(result);
         assertEquals(7, result.size());
     }
