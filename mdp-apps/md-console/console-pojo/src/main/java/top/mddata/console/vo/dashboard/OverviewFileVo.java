@@ -27,4 +27,10 @@ public class OverviewFileVo implements Serializable {
 
     @Schema(description = "本月新增容量（字节）")
     private Long monthTotalSize;
+
+    @Schema(description = "临时文件数量")
+    private Long tempFileCount;
+
+    @Schema(description = "临时文件容量（字节）")
+    private Long tempFileSize;
 }

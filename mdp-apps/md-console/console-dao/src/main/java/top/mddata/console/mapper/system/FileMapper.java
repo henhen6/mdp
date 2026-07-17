@@ -129,9 +129,25 @@ public interface FileMapper extends SuperMapper<File> {
                    COALESCE(SUM(file_size), 0) AS totalSize
               FROM mdc_file
              WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
+               AND created_at < #{endTime, jdbcType=TIMESTAMP}
              GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
              ORDER BY date ASC
             """
     })
-    List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
+    List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime,
+                                               @Param("endTime") LocalDateTime endTime);
+
+    /**
+     * 统计临时文件数量和容量（object_type = 'temp'）。
+     *
+     * @return key=fileCount、totalSize
+     */
+    @Select({
+            """
+            SELECT COUNT(*) AS fileCount, COALESCE(SUM(file_size), 0) AS totalSize
+              FROM mdc_file
+             WHERE object_type = #{objectType}
+            """
+    })
+    Map<String, Object> statByObjectType(@Param("objectType") String objectType);
 }

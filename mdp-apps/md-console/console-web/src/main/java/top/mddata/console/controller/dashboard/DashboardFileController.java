@@ -31,7 +31,7 @@ public class DashboardFileController {
     private final DashboardFileService dashboardFileService;
 
     @GetMapping("/overview")
-    @Operation(summary = "文件存储概览", description = "文件总数、总容量、本月新增文件数、本月新增容量")
+    @Operation(summary = "文件存储概览", description = "文件总数、总容量、本月新增、本月新增容量、临时文件数量、临时文件容量")
     @RequestLog(value = "查询文件存储概览", response = false)
     public R<OverviewFileVo> getOverviewFile() {
         return R.success(dashboardFileService.getOverviewFile());
@@ -66,9 +66,11 @@ public class DashboardFileController {
     }
 
     @GetMapping("/trend")
-    @Operation(summary = "文件增长趋势", description = "按天统计新增文件数与新增容量，仅支持 7 或 30 天")
+    @Operation(summary = "文件增长趋势", description = "按天统计新增文件数与新增容量，支持任意日期区间，默认近7天")
     @RequestLog(value = "查询文件增长趋势", response = false)
-    public R<List<FileTrendVo>> getTrend(@RequestParam(defaultValue = "7") int days) {
-        return R.success(dashboardFileService.getTrend(days));
+    public R<List<FileTrendVo>> getTrend(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+        return R.success(dashboardFileService.getTrend(startDate, endDate));
     }
 }

@@ -42,7 +42,8 @@ public interface DashboardFileService {
     /**
      * 文件增长趋势
      *
-     * @param days 统计天数（7 或 30）
+     * @param startDate 开始日期（yyyy-MM-dd）
+     * @param endDate   结束日期（yyyy-MM-dd）
      */
-    List<FileTrendVo> getTrend(int days);
+    List<FileTrendVo> getTrend(String startDate, String endDate);
 }

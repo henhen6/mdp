@@ -61,21 +61,21 @@ class DashboardFileServiceTest {
 
     @Test
     void getTrend7Days() {
-        List<FileTrendVo> result = dashboardFileService.getTrend(7);
+        List<FileTrendVo> result = dashboardFileService.getTrend(null, null);
         assertNotNull(result);
         assertEquals(7, result.size());
     }
 
     @Test
     void getTrend30Days() {
-        List<FileTrendVo> result = dashboardFileService.getTrend(30);
+        List<FileTrendVo> result = dashboardFileService.getTrend("2026-06-17", "2026-07-17");
         assertNotNull(result);
-        assertEquals(30, result.size());
+        assertEquals(31, result.size());
     }
 
     @Test
     void getTrendIllegalDaysDefaultsTo7() {
-        List<FileTrendVo> result = dashboardFileService.getTrend(15);
+        List<FileTrendVo> result = dashboardFileService.getTrend("2026-07-10", "2026-07-16");
         assertNotNull(result);
         assertTrue(result.size() == 7);
     }
