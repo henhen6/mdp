@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.OverviewMessageVo;
 import top.mddata.console.vo.dashboard.RankVo;
-import top.mddata.console.vo.dashboard.TrendVo;
+import top.mddata.console.vo.dashboard.TrendLineVo;
 
 import java.util.List;
 
@@ -49,16 +49,16 @@ class DashboardMessageServiceTest {
 
     @Test
     void getTrend7Days() {
-        List<TrendVo> result = dashboardMessageService.getTrend(7);
+        List<TrendLineVo> result = dashboardMessageService.getTrend(null, null, null);
         assertNotNull(result);
         assertEquals(7, result.size());
     }
 
     @Test
     void getTrend30Days() {
-        List<TrendVo> result = dashboardMessageService.getTrend(30);
+        List<TrendLineVo> result = dashboardMessageService.getTrend("2026-06-17", "2026-07-17", null);
         assertNotNull(result);
-        assertEquals(30, result.size());
+        assertEquals(31, result.size());
     }
 
     @Test
