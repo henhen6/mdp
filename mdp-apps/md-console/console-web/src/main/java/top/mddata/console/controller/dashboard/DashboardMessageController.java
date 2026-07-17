@@ -13,7 +13,7 @@ import top.mddata.console.service.dashboard.DashboardMessageService;
 import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.OverviewMessageVo;
 import top.mddata.console.vo.dashboard.RankVo;
-import top.mddata.console.vo.dashboard.TrendVo;
+import top.mddata.console.vo.dashboard.TrendLineVo;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class DashboardMessageController {
     private final DashboardMessageService dashboardMessageService;
 
     @GetMapping("/overview")
-    @Operation(summary = "消息通知概览", description = "任务总数、今日发送数、待执行数")
+    @Operation(summary = "消息通知概览", description = "任务总数、今日发送数、待执行数、草稿数、成功数、失败数")
     @RequestLog(value = "查询消息通知概览", response = false)
     public R<OverviewMessageVo> getOverviewMessage() {
         return R.success(dashboardMessageService.getOverviewMessage());
@@ -46,21 +46,24 @@ public class DashboardMessageController {
     }
 
     @GetMapping("/categoryDistribution")
-    @Operation(summary = "消息分类分布", description = "待办/公告/预警")
+    @Operation(summary = "消息分类分布", description = "待办/公告/预警（本地查询 mdc_msg_task，条件 type=1 AND status=2）")
     @RequestLog(value = "查询消息分类分布", response = false)
     public R<List<DistributionVo>> getCategoryDistribution() {
         return R.success(dashboardMessageService.getCategoryDistribution());
     }
 
     @GetMapping("/trend")
-    @Operation(summary = "消息发送趋势", description = "按天统计成功发送数，仅支持 7 或 30 天")
+    @Operation(summary = "消息发送趋势", description = "按天统计成功发送数，支持日期区间筛选，返回各类型数量和总量")
     @RequestLog(value = "查询消息发送趋势", response = false)
-    public R<List<TrendVo>> getTrend(@RequestParam(defaultValue = "7") int days) {
-        return R.success(dashboardMessageService.getTrend(days));
+    public R<List<TrendLineVo>> getTrend(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer type) {
+        return R.success(dashboardMessageService.getTrend(startDate, endDate, type));
     }
 
     @GetMapping("/templateRank")
-    @Operation(summary = "消息模板使用排行")
+    @Operation(summary = "消息模板使用排行", description = "只统计 state=1 的模板")
     @RequestLog(value = "查询消息模板使用排行", response = false)
     public R<List<RankVo>> getTemplateRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardMessageService.getTemplateRank(limit));

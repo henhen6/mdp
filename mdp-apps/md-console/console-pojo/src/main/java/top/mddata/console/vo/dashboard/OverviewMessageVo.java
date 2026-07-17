@@ -24,4 +24,13 @@ public class OverviewMessageVo implements Serializable {
 
     @Schema(description = "待执行消息数")
     private Long pendingCount;
+
+    @Schema(description = "草稿消息数")
+    private Long draftCount;
+
+    @Schema(description = "执行成功消息数")
+    private Long successCount;
+
+    @Schema(description = "执行失败消息数")
+    private Long failCount;
 }
