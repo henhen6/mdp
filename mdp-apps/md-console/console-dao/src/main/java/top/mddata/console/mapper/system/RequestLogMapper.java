@@ -100,4 +100,73 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
             """
     })
     List<Map<String, Object>> countByConsumingRange();
+
+    /**
+     * 统计总请求量。
+     */
+    @Select({
+            """
+            SELECT COUNT(*) AS value
+              FROM
+            """
+            + RequestLogBase.TABLE_NAME
+    })
+    Long countTotal();
+
+    /**
+     * 统计成功请求数量（abnormal=0）。
+     */
+    @Select({
+            """
+            SELECT COUNT(*) AS value
+              FROM
+            """
+            + RequestLogBase.TABLE_NAME +
+            """
+             WHERE abnormal = 0
+            """
+    })
+    Long countSuccess();
+
+    /**
+     * 按IP地址统计请求次数排行。
+     */
+    @Select({
+            """
+            SELECT ip_address AS ipAddress, COUNT(*) AS count
+              FROM
+            """
+            + RequestLogBase.TABLE_NAME +
+            """
+             WHERE ip_address IS NOT NULL AND ip_address <> ''
+             GROUP BY ip_address
+             ORDER BY count DESC
+             LIMIT #{limit}
+            """
+    })
+    List<Map<String, Object>> countByIpRank(int limit);
+
+    /**
+     * 按请求接口（class_path + method_name）统计请求次数排行。
+     * <p>返回字段：classPath、methodName、httpUri、httpMethod、description、count</p>
+     */
+    @Select({
+            """
+            SELECT class_path AS classPath,
+                   method_name AS methodName,
+                   http_uri AS httpUri,
+                   http_method AS httpMethod,
+                   description,
+                   COUNT(*) AS count
+              FROM
+            """
+            + RequestLogBase.TABLE_NAME +
+            """
+             WHERE class_path IS NOT NULL AND method_name IS NOT NULL
+             GROUP BY class_path, method_name, http_uri, http_method, description
+             ORDER BY count DESC
+             LIMIT #{limit}
+            """
+    })
+    List<Map<String, Object>> countByInterfaceRank(int limit);
 }

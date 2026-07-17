@@ -8,7 +8,10 @@ import top.mddata.console.mapper.system.RequestLogMapper;
 import top.mddata.console.service.dashboard.DashboardRequestLogService;
 import top.mddata.console.vo.dashboard.ConsumingTimeVo;
 import top.mddata.console.vo.dashboard.DistributionVo;
+import top.mddata.console.vo.dashboard.IpRankVo;
+import top.mddata.console.vo.dashboard.OverviewRequestVo;
 import top.mddata.console.vo.dashboard.RegionDistributionVo;
+import top.mddata.console.vo.dashboard.RequestInterfaceRankVo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -97,9 +100,62 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
     }
 
     @Override
-    public Long getAbnormalCount() {
+    public OverviewRequestVo getOverview() {
+        OverviewRequestVo vo = new OverviewRequestVo();
+        Long total = requestLogMapper.countTotal();
         Long abnormal = requestLogMapper.countAbnormal();
-        return abnormal != null ? abnormal : 0L;
+        Long success = requestLogMapper.countSuccess();
+        vo.setTotalCount(total != null ? total : 0L);
+        vo.setAbnormalCount(abnormal != null ? abnormal : 0L);
+        vo.setSuccessCount(success != null ? success : 0L);
+        return vo;
+    }
+
+    @Override
+    public List<IpRankVo> getIpRank(int limit) {
+        if (limit <= 0) {
+            limit = 10;
+        }
+        List<Map<String, Object>> rawList = requestLogMapper.countByIpRank(limit);
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<IpRankVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            IpRankVo vo = new IpRankVo();
+            vo.setIpAddress(toStr(raw.get("ipAddress")));
+            vo.setCount(toLong(raw.get("count")));
+            result.add(vo);
+        }
+        return result;
+    }
+
+    @Override
+    public List<RequestInterfaceRankVo> getInterfaceRank(int limit) {
+        if (limit <= 0) {
+            limit = 10;
+        }
+        List<Map<String, Object>> rawList = requestLogMapper.countByInterfaceRank(limit);
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<RequestInterfaceRankVo> result = new ArrayList<>(rawList.size());
+        for (Map<String, Object> raw : rawList) {
+            RequestInterfaceRankVo vo = new RequestInterfaceRankVo();
+            String classPath = toStr(raw.get("classPath"));
+            String methodName = toStr(raw.get("methodName"));
+            String httpUri = toStr(raw.get("httpUri"));
+            String httpMethod = toStr(raw.get("httpMethod"));
+            String description = toStr(raw.get("description"));
+            vo.setInterfaceName(classPath + "." + methodName);
+            vo.setHttpUri(httpUri);
+            vo.setHttpMethod(httpMethod);
+            vo.setDescription(description);
+            vo.setCount(toLong(raw.get("count")));
+            vo.setFullName(classPath + "." + methodName + "(" + httpUri + " " + httpMethod + ")(" + description + ")");
+            result.add(vo);
+        }
+        return result;
     }
 
     private String convertLogType(String value) {
