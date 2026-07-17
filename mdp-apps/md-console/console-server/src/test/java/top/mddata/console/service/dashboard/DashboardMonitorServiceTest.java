@@ -3,11 +3,8 @@ package top.mddata.console.service.dashboard;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.mddata.console.vo.dashboard.ConsumingTimeVo;
-import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.InterfaceRankVo;
 import top.mddata.console.vo.dashboard.OverviewMonitorVo;
-import top.mddata.console.vo.dashboard.RegionDistributionVo;
 import top.mddata.console.vo.dashboard.SuccessRateVo;
 
 import java.util.List;
@@ -35,7 +32,9 @@ class DashboardMonitorServiceTest {
         assertNotNull(vo.getTodayCallCount());
         assertNotNull(vo.getTodaySuccessCount());
         assertNotNull(vo.getTodayFailCount());
-        assertNotNull(vo.getAbnormalCount());
+        assertNotNull(vo.getTotalCount());
+        assertNotNull(vo.getTotalSuccessCount());
+        assertNotNull(vo.getTotalFailCount());
         assertTrue(vo.getInterfaceCount() >= 0);
     }
 
@@ -65,24 +64,6 @@ class DashboardMonitorServiceTest {
     @Test
     void getFailRank() {
         List<InterfaceRankVo> result = dashboardMonitorService.getFailRank(10);
-        assertNotNull(result);
-    }
-
-    @Test
-    void getLogTypeDistribution() {
-        List<DistributionVo> result = dashboardMonitorService.getLogTypeDistribution();
-        assertNotNull(result);
-    }
-
-    @Test
-    void getRegionDistribution() {
-        List<RegionDistributionVo> result = dashboardMonitorService.getRegionDistribution();
-        assertNotNull(result);
-    }
-
-    @Test
-    void getConsumingTimeDistribution() {
-        List<ConsumingTimeVo> result = dashboardMonitorService.getConsumingTimeDistribution();
         assertNotNull(result);
     }
 }

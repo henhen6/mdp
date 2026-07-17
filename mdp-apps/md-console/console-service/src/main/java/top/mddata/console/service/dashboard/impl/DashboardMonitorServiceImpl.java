@@ -4,16 +4,12 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.console.mapper.message.InterfaceConfigMapper;
+import top.mddata.console.mapper.message.InterfaceLogMapper;
 import top.mddata.console.mapper.message.InterfaceStatMapper;
-import top.mddata.console.mapper.system.RequestLogMapper;
 import top.mddata.console.service.dashboard.DashboardMonitorService;
-import top.mddata.console.vo.dashboard.ConsumingTimeVo;
-import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.InterfaceRankVo;
 import top.mddata.console.vo.dashboard.OverviewMonitorVo;
-import top.mddata.console.vo.dashboard.RegionDistributionVo;
 import top.mddata.console.vo.dashboard.SuccessRateVo;
 
 import java.math.BigDecimal;
@@ -29,8 +25,7 @@ import java.util.Map;
 /**
  * 接口监控统计 服务层实现
  *
- * <p>说明：mdc_interface_config / mdc_interface_stat / mdc_request_log 表均没有 deleted_at 字段，
- * MyBatis-Flex 不会自动追加删除过滤条件。</p>
+ * <p>数据来源：mdc_interface_config / mdc_interface_stat / mdc_interface_log</p>
  *
  * @author henhen6
  * @since 2026-07-10
@@ -42,25 +37,27 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
 
     private final InterfaceConfigMapper interfaceConfigMapper;
     private final InterfaceStatMapper interfaceStatMapper;
-    private final RequestLogMapper requestLogMapper;
+    private final InterfaceLogMapper interfaceLogMapper;
 
     @Override
     public OverviewMonitorVo getOverview() {
         OverviewMonitorVo vo = new OverviewMonitorVo();
-        Long total = interfaceConfigMapper.selectCountByQuery(QueryWrapper.create());
-//        Long total = interfaceConfigMapper.countAll();
-        vo.setInterfaceCount(total != null ? total : 0L);
+        vo.setInterfaceCount(interfaceConfigMapper.selectCountByQuery(QueryWrapper.create()));
 
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        Map<String, Object> sumMap = interfaceStatMapper.sumAfter(todayStart);
-        long success = toLong(sumMap != null ? sumMap.get("successCount") : 0L);
-        long fail = toLong(sumMap != null ? sumMap.get("failCount") : 0L);
-        vo.setTodaySuccessCount(success);
-        vo.setTodayFailCount(fail);
-        vo.setTodayCallCount(success + fail);
+        Map<String, Object> todaySum = interfaceLogMapper.sumToday(todayStart);
+        long todaySuccess = toLong(todaySum != null ? todaySum.get("successCount") : 0L);
+        long todayFail = toLong(todaySum != null ? todaySum.get("failCount") : 0L);
+        vo.setTodaySuccessCount(todaySuccess);
+        vo.setTodayFailCount(todayFail);
+        vo.setTodayCallCount(todaySuccess + todayFail);
 
-        Long abnormal = requestLogMapper.countAbnormal();
-        vo.setAbnormalCount(abnormal != null ? abnormal : 0L);
+        Map<String, Object> totalSum = interfaceLogMapper.sumAll();
+        long totalSuccess = toLong(totalSum != null ? totalSum.get("successCount") : 0L);
+        long totalFail = toLong(totalSum != null ? totalSum.get("failCount") : 0L);
+        vo.setTotalSuccessCount(totalSuccess);
+        vo.setTotalFailCount(totalFail);
+        vo.setTotalCount(totalSuccess + totalFail);
 
         return vo;
     }
@@ -70,9 +67,9 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
         SuccessRateVo vo = new SuccessRateVo();
 
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        Map<String, Object> sumMap = interfaceStatMapper.sumAfter(todayStart);
-        long success = toLong(sumMap != null ? sumMap.get("successCount") : 0L);
-        long fail = toLong(sumMap != null ? sumMap.get("failCount") : 0L);
+        Map<String, Object> todaySum = interfaceLogMapper.sumToday(todayStart);
+        long success = toLong(todaySum != null ? todaySum.get("successCount") : 0L);
+        long fail = toLong(todaySum != null ? todaySum.get("failCount") : 0L);
         long total = success + fail;
 
         vo.setSuccessCount(success);
@@ -128,82 +125,6 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
             result.add(vo);
         }
         return result;
-    }
-
-    @Override
-    public List<DistributionVo> getLogTypeDistribution() {
-        List<Map<String, Object>> rawList = requestLogMapper.countByLogType();
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-
-        List<DistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            DistributionVo vo = new DistributionVo();
-            vo.setName(convertLogType(toStr(raw.get("code"))));
-            long count = toLong(raw.get("count"));
-            vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
-    }
-
-    @Override
-    public List<RegionDistributionVo> getRegionDistribution() {
-        List<Map<String, Object>> rawList = requestLogMapper.countByProvince();
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<RegionDistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            RegionDistributionVo vo = new RegionDistributionVo();
-            vo.setProvince(toStr(raw.get("province")));
-            vo.setCount(toLong(raw.get("count")));
-            result.add(vo);
-        }
-        return result;
-    }
-
-    @Override
-    public List<ConsumingTimeVo> getConsumingTimeDistribution() {
-        List<Map<String, Object>> rawList = requestLogMapper.countByConsumingRange();
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<ConsumingTimeVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            ConsumingTimeVo vo = new ConsumingTimeVo();
-            vo.setName(toStr(raw.get("name")));
-            vo.setCount(toLong(raw.get("count")));
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private String convertLogType(String value) {
-        if (value == null) {
-            return null;
-        }
-        for (RequestLog.LogType type : RequestLog.LogType.values()) {
-            if (type.getValue().equals(value)) {
-                return type.getDesc();
-            }
-        }
-        return value;
     }
 
     private static Long toLong(Object value) {

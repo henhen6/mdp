@@ -28,6 +28,12 @@ public class OverviewMonitorVo implements Serializable {
     @Schema(description = "今日失败次数")
     private Long todayFailCount;
 
-    @Schema(description = "异常请求数")
-    private Long abnormalCount;
+    @Schema(description = "总调用次数")
+    private Long totalCount;
+
+    @Schema(description = "总成功次数")
+    private Long totalSuccessCount;
+
+    @Schema(description = "总失败次数")
+    private Long totalFailCount;
 }
