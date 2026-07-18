@@ -47,7 +47,7 @@ public class InterfaceLogController extends SuperController<InterfaceLogService,
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除接口执行日志记录")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -61,7 +61,7 @@ public class InterfaceLogController extends SuperController<InterfaceLogService,
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取接口执行日志记录")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<InterfaceLogVo> get(@RequestParam Long id) {
         InterfaceLog entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, InterfaceLogVo.class));
@@ -75,7 +75,7 @@ public class InterfaceLogController extends SuperController<InterfaceLogService,
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询接口执行日志记录")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<InterfaceLogVo>> page(@RequestBody @Validated PageParams<InterfaceLogQuery> params) {
         Page<InterfaceLogVo> page = Page.of(params.getCurrent(), params.getSize());
         InterfaceLog entity = BeanUtil.toBean(params.getModel(), InterfaceLog.class);

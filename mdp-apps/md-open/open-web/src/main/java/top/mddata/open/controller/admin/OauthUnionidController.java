@@ -47,7 +47,7 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存unionid")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody OauthUnionidDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -60,7 +60,7 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除unionid")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -73,7 +73,7 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新unionid")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody OauthUnionidDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -86,7 +86,7 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取unionid")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<OauthUnionidVo> get(@RequestParam Long id) {
         OauthUnionid entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, OauthUnionidVo.class));
@@ -100,7 +100,7 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询unionid")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<OauthUnionidVo>> page(@RequestBody @Validated PageParams<OauthUnionidQuery> params) {
         Page<OauthUnionidVo> page = Page.of(params.getCurrent(), params.getSize());
         OauthUnionid entity = BeanUtil.toBean(params.getModel(), OauthUnionid.class);
@@ -118,7 +118,7 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<OauthUnionidVo>> list(@RequestBody @Validated OauthUnionidQuery params) {
         OauthUnionid entity = BeanUtil.toBean(params, OauthUnionid.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -129,7 +129,7 @@ public class OauthUnionidController extends SuperController<OauthUnionidService,
 
     @GetMapping("/getBySubjectIdAndUserId")
     @Operation(summary = "根据主体id和用户id单体查询", description = "根据主体id和用户id单体查询")
-    @RequestLog("'根据主体id和用户id单体查询:' + #subjectId + '---' + #userId")
+    @RequestLog(value = "'根据主体id和用户id单体查询:' + #subjectId + '---' + #userId", logType = RequestLog.LogType.QUERY)
     public R<OauthUnionidVo> getBySubjectIdAndUserId(@RequestParam Long subjectId, @RequestParam Long userId) {
         return R.success(superService.getBySubjectIdAndUserId(subjectId, userId));
     }

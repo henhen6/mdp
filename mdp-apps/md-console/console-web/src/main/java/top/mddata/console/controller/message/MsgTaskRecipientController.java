@@ -42,7 +42,7 @@ public class MsgTaskRecipientController extends SuperController<MsgTaskRecipient
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询任务接收人")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<MsgTaskRecipientVo>> page(@RequestBody @Validated PageParams<MsgTaskRecipientQuery> params) {
         Page<MsgTaskRecipientVo> page = Page.of(params.getCurrent(), params.getSize());
         MsgTaskRecipient entity = BeanUtil.toBean(params.getModel(), MsgTaskRecipient.class);

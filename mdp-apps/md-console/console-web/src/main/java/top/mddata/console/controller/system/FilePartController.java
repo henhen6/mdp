@@ -49,7 +49,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存文件分片")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody FilePartDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -63,7 +63,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除文件分片")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -77,7 +77,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新文件分片")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody FilePartDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -91,7 +91,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取文件分片")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<FilePartVo> get(@RequestParam Long id) {
         FilePart entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, FilePartVo.class));
@@ -106,7 +106,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询文件分片")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<FilePartVo>> page(@RequestBody @Validated PageParams<FilePartQuery> params) {
         Page<FilePartVo> page = Page.of(params.getCurrent(), params.getSize());
         FilePart entity = BeanUtil.toBean(params.getModel(), FilePart.class);
@@ -124,7 +124,7 @@ public class FilePartController extends SuperController<FilePartService, FilePar
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<FilePartVo>> list(@RequestBody @Validated FilePartQuery params) {
         FilePart entity = BeanUtil.toBean(params, FilePart.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

@@ -58,7 +58,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存应用")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody AppDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -71,7 +71,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除应用")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -84,7 +84,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新应用")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody AppDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -97,7 +97,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取应用")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<AppVo> get(@RequestParam Long id) {
         App entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, AppVo.class));
@@ -111,7 +111,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询应用")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<AppVo>> page(@RequestBody @Validated PageParams<AppQuery> params) {
         Page<AppVo> page = Page.of(params.getCurrent(), params.getSize());
         App entity = BeanUtil.toBean(params.getModel(), App.class);
@@ -129,7 +129,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<AppVo>> list(@RequestBody @Validated AppQuery params) {
         App entity = BeanUtil.toBean(params, App.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -145,7 +145,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @GetMapping("/getAppByAppKey")
     @Operation(summary = "单体查询-appKey", description = "根据应用id获取应用")
-    @RequestLog("'单体查询-appKey:' + #appKey")
+    @RequestLog(value = "'单体查询-appKey:' + #appKey", logType = RequestLog.LogType.QUERY)
     public R<AppVo> getAppByAppKey(@RequestParam String appKey) {
         return R.success(superService.getAppByAppKey(appKey));
     }
@@ -157,7 +157,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @GetMapping("/listNeedPushApp")
     @Operation(summary = "查询需要接收事件推送的应用", description = "查询需要接收事件推送的应用")
-    @RequestLog(value = "查询需要接收事件推送的应用")
+    @RequestLog(value = "查询需要接收事件推送的应用", logType = RequestLog.LogType.QUERY)
     public R<List<AppVo>> listNeedPushApp() {
         return R.success(superService.listNeedPushApp());
     }
@@ -169,7 +169,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("listMyApp")
     @Operation(summary = "查询用户能访问的应用", description = "查询用户能访问的应用")
-    @RequestLog(value = "查询用户能访问的应用")
+    @RequestLog(value = "查询用户能访问的应用", logType = RequestLog.LogType.QUERY)
     public R<List<AppVo>> listMyApp() {
         List<AppVo> list = superService.listMyApp(ContextUtil.getUserId());
         return R.success(list);
@@ -184,7 +184,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @GetMapping("/checkAppByUserId")
     @Operation(summary = "校验用户是否拥有该应用", description = "校验用户是否拥有该应用")
-    @RequestLog(value = "校验用户是否拥有该应用")
+    @RequestLog(value = "校验用户是否拥有该应用", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkAppByUserId(@RequestParam Long userId, @RequestParam Long appId) {
         return R.success(superService.checkAppByUserId(userId, appId));
     }
@@ -198,7 +198,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @GetMapping("getKeys")
     @Operation(summary = "获取秘钥信息", description = "获取秘钥信息")
-    @RequestLog(value = "获取秘钥信息")
+    @RequestLog(value = "获取秘钥信息", logType = RequestLog.LogType.QUERY)
     public R<AppKeysVo> getKeys(@RequestParam Long appId) {
         return R.success(appKeysService.getKeys(appId));
     }
@@ -212,7 +212,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @GetMapping("/getAppKeysByAppKey")
     @Operation(summary = "根据appKey查询秘钥", description = "根据appKey查询应用秘钥（含通知加密配置）")
-    @RequestLog("'根据appKey查询秘钥:' + #appKey")
+    @RequestLog(value = "'根据appKey查询秘钥:' + #appKey", logType = RequestLog.LogType.QUERY)
     public R<AppKeysVo> getAppKeysByAppKey(@RequestParam String appKey) {
         return R.success(appKeysService.getByAppKey(appKey));
     }
@@ -225,14 +225,14 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/updateKeys")
     @Operation(summary = "修改秘钥配置", description = "修改应用秘钥配置")
-    @RequestLog(value = "修改秘钥配置")
+    @RequestLog(value = "修改秘钥配置", logType = RequestLog.LogType.UPDATE)
     public R<AppKeys> updateKeys(@Validated @RequestBody AppKeysDto param) {
         return R.success(appKeysService.saveDto(param));
     }
 
 
     @Operation(summary = "查询拥有的权限组", description = "根据应用ID查询拥有的权限组")
-    @RequestLog(value = "查询拥有的权限组")
+    @RequestLog(value = "查询拥有的权限组", logType = RequestLog.LogType.QUERY)
     @GetMapping("/listGroupIdByAppId")
     public R<List<Long>> listGroupIdByAppId(@RequestParam Long appId) {
         return R.success(appGroupRelService.listGroupIdByAppId(appId));
@@ -245,7 +245,7 @@ public class AppController extends SuperController<AppService, App> {
      * @return 返回影响行数
      */
     @Operation(summary = "给应用授权权限组", description = "设置应用的权限组")
-    @RequestLog(value = "给应用授权权限组")
+    @RequestLog(value = "给应用授权权限组", logType = RequestLog.LogType.ADD)
     @PostMapping("/saveAppGroup")
     public R<AppGroupRel> saveAppGroup(@Validated @RequestBody AppGroupRelDto param) {
         return R.success(appGroupRelService.saveDto(param));
@@ -260,7 +260,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/pageByRoleTemplateId")
     @Operation(summary = "根据角色模板ID分页查询应用", description = "根据角色模板ID分页查询应用")
-    @RequestLog(value = "'根据角色模板ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'根据角色模板ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<AppVo>> pageByRoleTemplateId(@RequestBody @Validated(AppQuery.RolePage.class) PageParams<AppQuery> params) {
         Page<App> page = Page.of(params.getCurrent(), params.getSize());
         return R.success(superService.pageByRoleTemplateId(page, params.getModel()));
@@ -274,7 +274,7 @@ public class AppController extends SuperController<AppService, App> {
      */
     @PostMapping("/pageByRoleId")
     @Operation(summary = "根据角色ID分页查询应用", description = "根据角色ID分页查询应用")
-    @RequestLog(value = "'根据角色ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'根据角色ID分页查询应用:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<AppVo>> pageByRoleId(@RequestBody @Validated(AppQuery.RolePage.class) PageParams<AppQuery> params) {
         Page<App> page = Page.of(params.getCurrent(), params.getSize());
         return R.success(superService.pageByRoleId(page, params.getModel()));

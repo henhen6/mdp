@@ -49,7 +49,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存角色")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody RoleTemploateDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -62,7 +62,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除角色")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -75,7 +75,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新角色")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody RoleTemploateDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -88,7 +88,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取角色")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<RoleVo> get(@RequestParam Long id) {
         Role entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, RoleVo.class));
@@ -102,7 +102,7 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

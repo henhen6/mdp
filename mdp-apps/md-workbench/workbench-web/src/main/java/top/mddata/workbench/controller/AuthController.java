@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.exception.BizException;
 import top.mddata.workbench.dto.ForgetPasswordByEmailDto;
@@ -47,42 +48,49 @@ public class AuthController {
 
     @Operation(summary = "根据手机号注册", description = "根据手机号注册")
     @PostMapping(value = "/registerByPhone")
+    @RequestLog(value = "根据手机号注册", logType = RequestLog.LogType.ADD)
     public R<String> registerByPhone(@Validated @RequestBody RegisterByPhoneDto register) throws BizException {
         return R.success(authService.registerByPhone(register));
     }
 
     @Operation(summary = "根据邮箱注册", description = "根据邮箱注册")
     @PostMapping(value = "/registerByEmail")
+    @RequestLog(value = "根据邮箱注册", logType = RequestLog.LogType.ADD)
     public R<String> registerByEmail(@Validated @RequestBody RegisterByEmailDto register) throws BizException {
         return R.success(authService.registerByEmail(register));
     }
 
     @Operation(summary = "根据用户名注册", description = "根据用户名注册")
     @PostMapping(value = "/registerByUsername")
+    @RequestLog(value = "根据用户名注册", logType = RequestLog.LogType.ADD)
     public R<String> registerByUsername(@Validated @RequestBody RegisterByUsernameDto register) throws BizException {
         return R.success(authService.registerByUsername(register));
     }
 
     @Operation(summary = "忘记密码-发邮件", description = "忘记密码-发邮件")
     @PostMapping(value = "/forgetPassword")
+    @RequestLog(value = "忘记密码-发邮件", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> forgetPassword(@RequestParam @NotNull(message = "邮箱不能为空") String email) throws BizException {
         return R.success(authService.forgetPassword(email));
     }
 
     @Operation(summary = "忘记密码-检查token", description = "忘记密码-检查token")
     @PostMapping(value = "/checkToken")
+    @RequestLog(value = "忘记密码-检查token", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkToken(@RequestParam @NotNull(message = "token不能为空") String token) throws BizException {
         return R.success(authService.checkToken(token));
     }
 
     @Operation(summary = "忘记密码-重置密码", description = "忘记密码-重置密码")
     @PostMapping(value = "/updateEmailByToken")
+    @RequestLog(value = "忘记密码-重置密码", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> updateEmailByToken(@Validated @RequestBody ForgetPasswordByEmailDto email) throws BizException {
         return R.success(authService.updateEmailByToken(email));
     }
 
     @Operation(summary = "检测手机号是否存在")
     @GetMapping("/checkPhone")
+    @RequestLog(value = "检测手机号是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkPhone(@RequestParam String phone) {
         return R.success(ssoUserService.checkPhone(phone, null));
     }

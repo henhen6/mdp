@@ -40,6 +40,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RequestLogController extends SuperController<RequestLogService, top.mddata.console.entity.system.RequestLog> {
     private final RequestLogDetailService requestLogDetailService;
+
     /**
      * 添加请求日志。
      *
@@ -48,6 +49,7 @@ public class RequestLogController extends SuperController<RequestLogService, top
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存请求日志")
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD)
     public R<Long> save(@Validated @RequestBody RequestLogDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -74,6 +76,7 @@ public class RequestLogController extends SuperController<RequestLogService, top
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取请求日志")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<RequestLogVo> get(@RequestParam Long id) {
         top.mddata.console.entity.system.RequestLog entity = superService.getById(id);
         RequestLogVo vo = BeanUtil.toBean(entity, RequestLogVo.class);

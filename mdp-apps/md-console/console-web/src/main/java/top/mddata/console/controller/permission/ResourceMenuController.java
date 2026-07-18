@@ -64,7 +64,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存菜单")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody ResourceMenuDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -77,7 +77,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除菜单")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -90,7 +90,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新菜单")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ResourceMenuDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -103,7 +103,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取菜单")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<ResourceMenuVo> get(@RequestParam Long id) {
         ResourceMenu entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, ResourceMenuVo.class));
@@ -115,7 +115,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
      */
     @Operation(summary = "按照树结构查询系统的所有资源", description = "按照树结构查询系统的所有资源")
     @PostMapping("/tree")
-    @RequestLog("按照树结构查询系统的所有资源")
+    @RequestLog(value = "按照树结构查询系统的所有资源", logType = RequestLog.LogType.QUERY)
     public R<List<ResourceMenuVo>> tree(@RequestBody ResourceMenuQuery query) {
         List<ResourceMenu> list = superService.list(new QueryWrapper().eq(ResourceMenu::getAppId, query.getAppId())
                 .orderBy(ResourceMenu::getMenuType, true).orderBy(ResourceMenu::getWeight, true));
@@ -142,7 +142,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
      */
     @Operation(summary = "按照树结构查询系统的所有资源", description = "按照树结构查询系统的所有资源")
     @PostMapping("/treeByRoleId")
-    @RequestLog("按照树结构查询系统的所有资源")
+    @RequestLog(value = "按照树结构查询系统的所有资源", logType = RequestLog.LogType.QUERY)
     public R<List<ResourceMenuVo>> treeByRoleId(@Validated(ResourceMenuQuery.TreeByRoleId.class) @RequestBody ResourceMenuQuery query) {
 
         QueryWrapper queryWrapper = QueryWrapper.create().eq(ResourceMenu::getAppId, query.getAppId());
@@ -195,6 +195,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     })
     @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
     @GetMapping("/checkCode")
+    @RequestLog(value = "检测编码是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkCode(@RequestParam Long appId, @RequestParam String code, @RequestParam(required = false) Long id) {
         return R.success(superService.checkCode(appId, code, id));
     }
@@ -207,6 +208,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     })
     @Operation(summary = "检测路径是否存在", description = "检测路径是否存在")
     @GetMapping("/checkPath")
+    @RequestLog(value = "检测路径是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkPath(@RequestParam Long appId, @RequestParam String path, @RequestParam(required = false) Long id) {
         return R.success(superService.checkPath(appId, path, id));
     }
@@ -218,6 +220,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     })
     @Operation(summary = "检测名称是否存在", description = "检测名称是否存在")
     @GetMapping("/checkName")
+    @RequestLog(value = "检测名称是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkName(@RequestParam Long appId, @RequestParam String name, @RequestParam(required = false) Long id) {
         return R.success(superService.checkName(appId, name, id));
     }
@@ -228,6 +231,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     })
     @Operation(summary = "根据父ID获取菜单的默认值", description = "新增时，根据父ID获取菜单的默认值")
     @GetMapping("/getDefMenuByParentId")
+    @RequestLog(value = "根据父ID获取菜单默认值", logType = RequestLog.LogType.QUERY)
     public R<ResourceMenuVo> getDefMenuByParentId(@RequestParam Long appId, @RequestParam(required = false) Long id) {
         return R.success(superService.getDefMenuByParentId(appId, id));
     }
@@ -235,7 +239,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
 
     @Operation(summary = "移动菜单", description = "移动菜单")
     @PostMapping("/move")
-    @RequestLog("移动菜单")
+    @RequestLog(value = "移动菜单", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> move(@RequestParam Long sourceId, @RequestParam(required = false) Long targetId) {
         superService.move(sourceId, targetId);
         return R.success();

@@ -35,7 +35,7 @@ public class GroupApiRelController extends SuperController<GroupApiRelService, G
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存分组拥有的对外接口")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Boolean> save(@Validated @RequestBody GroupApiRelDto dto) {
         superService.saveDto(dto);
         return R.success();
@@ -49,7 +49,7 @@ public class GroupApiRelController extends SuperController<GroupApiRelService, G
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除分组拥有的对外接口")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@Validated @RequestBody GroupApiRelDto dto) {
         return R.success(superService.delete(dto.getGroupId(), dto.getApiIdList()));
     }

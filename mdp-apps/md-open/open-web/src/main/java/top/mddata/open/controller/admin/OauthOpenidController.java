@@ -47,7 +47,7 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存openid")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody OauthOpenidDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -60,7 +60,7 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除openid")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -73,7 +73,7 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新openid")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody OauthOpenidDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -86,7 +86,7 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取openid")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<OauthOpenidVo> get(@RequestParam Long id) {
         OauthOpenid entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, OauthOpenidVo.class));
@@ -100,7 +100,7 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询openid")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<OauthOpenidVo>> page(@RequestBody @Validated PageParams<OauthOpenidQuery> params) {
         Page<OauthOpenidVo> page = Page.of(params.getCurrent(), params.getSize());
         OauthOpenid entity = BeanUtil.toBean(params.getModel(), OauthOpenid.class);
@@ -118,7 +118,7 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<OauthOpenidVo>> list(@RequestBody @Validated OauthOpenidQuery params) {
         OauthOpenid entity = BeanUtil.toBean(params, OauthOpenid.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -129,7 +129,7 @@ public class OauthOpenidController extends SuperController<OauthOpenidService, O
 
     @GetMapping("/getByAppIdAndUserId")
     @Operation(summary = "根据应用标识查询用户的openid", description = "根据应用标识查询用户的openid")
-    @RequestLog("'根据应用标识查询用户的openid:' + #subjectId + '---' + #userId")
+    @RequestLog(value = "'根据应用标识查询用户的openid:' + #subjectId + '---' + #userId", logType = RequestLog.LogType.QUERY)
     public R<OauthOpenidVo> getByAppKeyAndUserId(@RequestParam String appKey, @RequestParam Long userId) {
         return R.success(superService.getByAppKeyAndUserId(appKey, userId));
     }

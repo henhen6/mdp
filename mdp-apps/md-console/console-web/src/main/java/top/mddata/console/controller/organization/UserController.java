@@ -54,7 +54,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存用户")
-    @RequestLog(value = "新增")
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD)
     public R<Long> save(@Validated @RequestBody UserDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -67,7 +67,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除用户")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -80,7 +80,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新用户")
-    @RequestLog(value = "修改")
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody UserUpdateDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -93,7 +93,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取用户")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<UserVo> get(@RequestParam Long id) {
         User entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, UserVo.class));
@@ -107,7 +107,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询用户")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'")
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY)
     public R<Page<UserVo>> page(@RequestBody @Validated PageParams<UserQuery> params) {
         Page<UserVo> page = superService.page(params);
         echoService.action(page);
@@ -121,7 +121,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询")
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY)
     public R<List<UserVo>> list(@RequestBody @Validated UserQuery params) {
         User entity = BeanUtil.toBean(params, User.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -137,7 +137,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @Operation(summary = "重置密码", description = "重置密码")
     @PostMapping("/resetPassword")
-    @RequestLog("重置密码")
+    @RequestLog(value = "重置密码", logType = RequestLog.LogType.ADD)
     public R<Boolean> resetPassword(@RequestBody @Validated UserResetPasswordDto data) {
         return R.success(superService.resetPassword(data));
     }
@@ -150,7 +150,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/unlock")
     @Operation(summary = "账号解锁", description = "根据主键账号解锁")
-    @RequestLog(value = "账号解锁")
+    @RequestLog(value = "账号解锁", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> unlock(@RequestParam Long id) {
         return R.success(superService.unlock(id));
     }
@@ -158,21 +158,21 @@ public class UserController extends SuperController<UserService, User> {
 
     @GetMapping("/checkUsername")
     @Operation(summary = "检测用户名是否存在", description = "检测用户名是否存在")
-    @RequestLog(value = "检测用户名是否存在")
+    @RequestLog(value = "检测用户名是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkUsername(@RequestParam String username, @RequestParam(required = false) Long id) {
         return R.success(superService.checkUsername(username, id));
     }
 
     @GetMapping("/checkEmail")
     @Operation(summary = "检测邮箱是否存在", description = "检测邮箱是否存在")
-    @RequestLog(value = "检测邮箱是否存在")
+    @RequestLog(value = "检测邮箱是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkEmail(@RequestParam String email, @RequestParam(required = false) Long id) {
         return R.success(superService.checkEmail(email, id));
     }
 
     @GetMapping("/checkPhone")
     @Operation(summary = "检测手机号是否存在", description = "检测手机号是否存在")
-    @RequestLog(value = "检测手机号是否存在")
+    @RequestLog(value = "检测手机号是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkPhone(@RequestParam String phone, @RequestParam(required = false) Long id) {
         return R.success(superService.checkPhone(phone, id));
     }
@@ -185,7 +185,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/pageByRoleId")
     @Operation(summary = "根据角色ID分页查询用户", description = "根据角色ID分页查询用户")
-    @RequestLog(value = "'根据角色ID分页查询用户:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'根据角色ID分页查询用户:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<UserVo>> pageByRoleId(@RequestBody @Validated(UserQuery.RolePage.class) PageParams<UserQuery> params) {
 
         Page<UserVo> page = Page.of(params.getCurrent(), params.getSize());
@@ -213,6 +213,7 @@ public class UserController extends SuperController<UserService, User> {
      * @param ssoUser 用户
      */
     @PostMapping("/registerByEmail")
+    @RequestLog(value = "根据邮箱注册账号", logType = RequestLog.LogType.ADD)
     public R<Boolean> registerByEmail(User ssoUser) {
         return R.success(superService.registerByEmail(ssoUser));
     }
@@ -222,6 +223,7 @@ public class UserController extends SuperController<UserService, User> {
      * @param ssoUser 用户
      */
     @PostMapping("/registerByPhone")
+    @RequestLog(value = "根据手机注册账号", logType = RequestLog.LogType.ADD)
     public R<Boolean> registerByPhone(User ssoUser) {
         return R.success(superService.registerByPhone(ssoUser));
     }
@@ -231,6 +233,7 @@ public class UserController extends SuperController<UserService, User> {
      * @param defUser 用户信息
      */
     @PostMapping("/registerByUsername")
+    @RequestLog(value = "根据用户名注册账号", logType = RequestLog.LogType.ADD)
     public R<Boolean> registerByUsername(User defUser) {
         return R.success(superService.registerByUsername(defUser));
     }

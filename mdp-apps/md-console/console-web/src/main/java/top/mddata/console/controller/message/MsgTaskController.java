@@ -46,6 +46,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
     private final MsgTaskMapper msgTaskMapper;
 
     @PostMapping("/listByTitle")
+    @RequestLog(value = "根据标题查询消息任务", logType = RequestLog.LogType.QUERY)
     public Object listByTitle(String title) {
         return R.success(msgTaskMapper.listByTitle(title));
     }
@@ -58,7 +59,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存消息任务")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody MsgTaskDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -71,7 +72,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除消息任务")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -84,7 +85,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新消息任务")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody MsgTaskDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -97,7 +98,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取消息任务")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<MsgTaskVo> get(@RequestParam Long id) {
         MsgTask entity = superService.getById(id);
         MsgTaskVo vo = BeanUtil.toBean(entity, MsgTaskVo.class);
@@ -116,7 +117,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询消息任务")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<MsgTaskVo>> page(@RequestBody @Validated PageParams<MsgTaskQuery> params) {
         Page<MsgTaskVo> page = Page.of(params.getCurrent(), params.getSize());
         MsgTask entity = BeanUtil.toBean(params.getModel(), MsgTask.class);
@@ -131,7 +132,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
 
     @Operation(summary = "发布站内信", description = "发布站内信")
     @PostMapping("/publish")
-    @RequestLog("发布站内信")
+    @RequestLog(value = "发布站内信", logType = RequestLog.LogType.ADD)
     public R<Boolean> publish(@RequestBody @Validated MsgTaskDto data) {
         return R.success(superService.publish(data));
     }
@@ -142,7 +143,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      * @param data 消息参数
      */
     @PostMapping("/sendByTemplateKey")
-    @RequestLog("发布站内信")
+    @RequestLog(value = "根据模板发送消息", logType = RequestLog.LogType.ADD)
     public R<Long> sendByTemplateKey(@RequestBody @Validated MsgSendDto data) {
         return R.success(superService.sendByTemplateKey(data));
     }

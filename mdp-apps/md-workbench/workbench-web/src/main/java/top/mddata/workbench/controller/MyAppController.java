@@ -36,7 +36,7 @@ public class MyAppController {
      */
     @GetMapping("/getAutoLoginUrl")
     @Operation(summary = "拼接应用自动登录地址", description = "拼接应用自动登录地址")
-    @RequestLog(value = "拼接应用自动登录地址")
+    @RequestLog(value = "拼接应用自动登录地址", logType = RequestLog.LogType.QUERY)
     public R<String> getAutoLoginUrl(String serverUrl, String ssoAutoLoginUrl, String appKey) {
         // TODO 还需测试 oauth2 方式的地址
         // 服务端认证地址

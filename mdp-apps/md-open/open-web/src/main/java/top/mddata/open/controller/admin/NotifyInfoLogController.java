@@ -46,7 +46,7 @@ public class NotifyInfoLogController extends SuperController<NotifyInfoLogServic
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除回调任务日志")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -59,7 +59,7 @@ public class NotifyInfoLogController extends SuperController<NotifyInfoLogServic
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取回调任务日志")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<NotifyInfoLogVo> get(@RequestParam Long id) {
         NotifyInfoLog entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, NotifyInfoLogVo.class));
@@ -73,7 +73,7 @@ public class NotifyInfoLogController extends SuperController<NotifyInfoLogServic
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询回调任务日志")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<NotifyInfoLogVo>> page(@RequestBody @Validated PageParams<NotifyInfoLogQuery> params) {
         Page<NotifyInfoLogVo> page = Page.of(params.getCurrent(), params.getSize());
         NotifyInfoLog entity = BeanUtil.toBean(params.getModel(), NotifyInfoLog.class);
@@ -91,7 +91,7 @@ public class NotifyInfoLogController extends SuperController<NotifyInfoLogServic
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<NotifyInfoLogVo>> list(@RequestBody @Validated NotifyInfoLogQuery params) {
         NotifyInfoLog entity = BeanUtil.toBean(params, NotifyInfoLog.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

@@ -55,7 +55,7 @@ public class DictItemController extends SuperController<DictItemService, DictIte
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存字典项")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody DictItemDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -68,7 +68,7 @@ public class DictItemController extends SuperController<DictItemService, DictIte
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除字典项")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -81,7 +81,7 @@ public class DictItemController extends SuperController<DictItemService, DictIte
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新字典项")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody DictItemDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -94,7 +94,7 @@ public class DictItemController extends SuperController<DictItemService, DictIte
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询字典项")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<DictItemVo>> page(@RequestBody @Validated PageParams<DictItemQuery> params) {
         Page<DictItemVo> page = Page.of(params.getCurrent(), params.getSize());
         DictItem entity = BeanUtil.toBean(params.getModel(), DictItem.class);
@@ -112,7 +112,7 @@ public class DictItemController extends SuperController<DictItemService, DictIte
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<DictItemVo>> list(@RequestBody DictItemQuery query) {
         QueryWrapper queryWrapper = new QueryWrapper();
         if (StrUtil.isNotEmpty(query.getDictUniqKey())) {
@@ -131,7 +131,7 @@ public class DictItemController extends SuperController<DictItemService, DictIte
      */
     @Operation(summary = "查询字典项-树结构", description = "查询字典项-树结构")
     @PostMapping("/tree")
-    @RequestLog("查询字典项-树结构")
+    @RequestLog(value = "查询字典项-树结构", logType = RequestLog.LogType.QUERY)
     public R<List<DictItemVo>> tree(@RequestBody @Validated DictItemQuery query) {
         List<DictItemVo> list = superService.listAs(new QueryWrapper().eq(DictItem::getDictId, query.getDictId()).orderBy(DictItem::getWeight, true), DictItemVo.class);
         List<DictItemVo> menuTreeList = MyTreeUtil.buildTreeEntity(list, DictItemVo::new);

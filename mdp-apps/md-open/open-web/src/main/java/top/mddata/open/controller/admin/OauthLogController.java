@@ -46,7 +46,7 @@ public class OauthLogController extends SuperController<OauthLogService, OauthLo
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存授权记录")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody OauthLogDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -59,7 +59,7 @@ public class OauthLogController extends SuperController<OauthLogService, OauthLo
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除授权记录")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -72,7 +72,7 @@ public class OauthLogController extends SuperController<OauthLogService, OauthLo
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取授权记录")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<OauthLogVo> get(@RequestParam Long id) {
         OauthLog entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, OauthLogVo.class));
@@ -86,7 +86,7 @@ public class OauthLogController extends SuperController<OauthLogService, OauthLo
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询授权记录")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<OauthLogVo>> page(@RequestBody @Validated PageParams<OauthLogQuery> params) {
         Page<OauthLogVo> page = Page.of(params.getCurrent(), params.getSize());
         OauthLog entity = BeanUtil.toBean(params.getModel(), OauthLog.class);

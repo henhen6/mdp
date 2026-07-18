@@ -35,7 +35,7 @@ public class GroupScopeRelController extends SuperController<GroupScopeRelServic
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存分组拥有的oauth2权限")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Boolean> save(@Validated @RequestBody GroupScopeRelDto dto) {
         superService.saveDto(dto);
         return R.success(true);
@@ -49,7 +49,7 @@ public class GroupScopeRelController extends SuperController<GroupScopeRelServic
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除分组拥有的oauth2权限")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@Validated @RequestBody GroupScopeRelDto dto) {
         return R.success(superService.delete(dto.getGroupId(), dto.getScopeIdList()));
     }

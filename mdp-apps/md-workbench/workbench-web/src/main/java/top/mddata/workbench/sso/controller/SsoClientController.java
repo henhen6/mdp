@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 
 /**
@@ -83,6 +84,7 @@ public class SsoClientController {
      */
     @Operation(summary = "客户端根据ticket获取token", description = "校验ticket有限性，并返回token")
     @GetMapping("/anyUser/client/doLoginByTicket")
+    @RequestLog(value = "SSO客户端根据ticket获取token", logType = RequestLog.LogType.QUERY)
     public R<String> doLoginByTicket(String clientId, String ticket) {
         SaCheckTicketResult ctr = SaSsoClientProcessor.getInstance().checkTicket(clientId, ticket);
         StpUtil.login(ctr.getLoginId(), new SaLoginParameter()
@@ -118,6 +120,7 @@ public class SsoClientController {
      */
     @Operation(summary = "客户端-退出当前应用", description = "客户端-退出当前应用")
     @PostMapping("/anyUser/client/logout")
+    @RequestLog(value = "SSO客户端退出当前应用", logType = RequestLog.LogType.DELETE)
     public R<Boolean> logout() {
         try {
             StpUtil.logout();
@@ -135,6 +138,7 @@ public class SsoClientController {
      */
     @Operation(summary = "接收单点登录的服务端接口调用", description = "接收单点登录的服务端接口调用，根据传递的 消息类型 决定处理逻辑")
     @GetMapping("/anyUser/client/pushC")
+    @RequestLog(value = "SSO客户端接收服务端推送", logType = RequestLog.LogType.OTHER)
     public Object push(String clientId) {
         try {
             return SaSsoClientProcessor.getInstance().ssoPushC(clientId);

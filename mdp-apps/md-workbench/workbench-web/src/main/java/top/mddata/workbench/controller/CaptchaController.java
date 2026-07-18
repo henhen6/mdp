@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.workbench.service.VerificationCodeService;
@@ -51,6 +52,7 @@ public class CaptchaController {
             @Parameter(name = "templateCode", description = "模板编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
     })
     @GetMapping(value = "/send/phone")
+    @RequestLog(value = "发送短信验证码", logType = RequestLog.LogType.OTHER)
     public R<String> sendPhoneCode(@RequestParam(value = "phone") String phone,
                                    @RequestParam(value = "templateCode") String templateCode,
                                    CaptchaVO captchaReq
@@ -68,6 +70,7 @@ public class CaptchaController {
     })
     @Operation(summary = "发送邮箱验证码", description = "发送邮箱验证码")
     @GetMapping(value = "/send/email")
+    @RequestLog(value = "发送邮箱验证码", logType = RequestLog.LogType.OTHER)
     public R<String> sendEmailCode(@RequestParam(value = "email") String email, @RequestParam(value = "templateCode") String templateCode, CaptchaVO captchaReq) {
         CaptchaService behaviorCaptchaService = SpringUtil.getBean(CaptchaService.class);
         ResponseModel verificationRes = behaviorCaptchaService.verification(captchaReq);
@@ -77,6 +80,7 @@ public class CaptchaController {
 
     @Operation(summary = "获取图片验证码", description = "获取图片验证码")
     @GetMapping(value = "/get/img")
+    @RequestLog(value = "获取图片验证码", logType = RequestLog.LogType.QUERY)
     public R<CaptchaVo> captcha() {
         return R.success(verificationCodeService.createImg());
     }
@@ -84,6 +88,7 @@ public class CaptchaController {
 
     @Operation(summary = "获取行为验证码", description = "获取行为验证码")
     @GetMapping("/get/behavior")
+    @RequestLog(value = "获取行为验证码", logType = RequestLog.LogType.QUERY)
     public R<Object> getBehaviorCaptcha(CaptchaVO captchaReq, HttpServletRequest request) {
         CaptchaService behaviorCaptchaService = SpringUtil.getBean(CaptchaService.class);
         captchaReq.setBrowserInfo(JakartaServletUtil.getClientIP(request) + request.getHeader(HttpHeaders.USER_AGENT));
@@ -94,6 +99,7 @@ public class CaptchaController {
 
     @Operation(summary = "校验行为验证码", description = "校验行为验证码")
     @PostMapping("/check/behavior")
+    @RequestLog(value = "校验行为验证码", logType = RequestLog.LogType.QUERY)
     public R<Object> checkBehaviorCaptcha(@RequestBody CaptchaVO captchaReq, HttpServletRequest request) {
         CaptchaService behaviorCaptchaService = SpringUtil.getBean(CaptchaService.class);
         captchaReq.setBrowserInfo(JakartaServletUtil.getClientIP(request) + request.getHeader(HttpHeaders.USER_AGENT));

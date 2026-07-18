@@ -42,7 +42,7 @@ public class DocGroupController extends SuperController<DocGroupService, DocGrou
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存文档分组")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody DocGroupDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -55,7 +55,7 @@ public class DocGroupController extends SuperController<DocGroupService, DocGrou
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除文档分组")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -68,7 +68,7 @@ public class DocGroupController extends SuperController<DocGroupService, DocGrou
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<DocGroupVo>> list(@RequestBody @Validated DocGroupQuery params) {
         DocGroup entity = BeanUtil.toBean(params, DocGroup.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

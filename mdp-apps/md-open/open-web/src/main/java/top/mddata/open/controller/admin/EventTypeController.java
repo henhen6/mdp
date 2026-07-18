@@ -47,7 +47,7 @@ public class EventTypeController extends SuperController<EventTypeService, Event
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存事件类型")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody EventTypeDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -60,7 +60,7 @@ public class EventTypeController extends SuperController<EventTypeService, Event
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除事件类型")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -73,7 +73,7 @@ public class EventTypeController extends SuperController<EventTypeService, Event
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新事件类型")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody EventTypeDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -87,7 +87,7 @@ public class EventTypeController extends SuperController<EventTypeService, Event
      */
     @PostMapping("/check")
     @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
-    @RequestLog(value = "检测编码是否存在", request = false)
+    @RequestLog(value = "检测编码是否存在", logType = RequestLog.LogType.QUERY, request = false)
     public R<Boolean> check(@RequestParam String code, @RequestParam(required = false) Long id) {
         return R.success(superService.check(code, id));
     }
@@ -100,7 +100,7 @@ public class EventTypeController extends SuperController<EventTypeService, Event
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取事件类型")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<EventTypeVo> get(@RequestParam Long id) {
         EventType entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, EventTypeVo.class));
@@ -114,7 +114,7 @@ public class EventTypeController extends SuperController<EventTypeService, Event
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询事件类型")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<EventTypeVo>> page(@RequestBody @Validated PageParams<EventTypeQuery> params) {
         Page<EventTypeVo> page = Page.of(params.getCurrent(), params.getSize());
         EventType entity = BeanUtil.toBean(params.getModel(), EventType.class);
@@ -132,7 +132,7 @@ public class EventTypeController extends SuperController<EventTypeService, Event
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventTypeVo>> list(@RequestBody @Validated EventTypeQuery params) {
         EventType entity = BeanUtil.toBean(params, EventType.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

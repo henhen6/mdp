@@ -54,7 +54,7 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存消息模板")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody MsgTemplateDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -67,7 +67,7 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除消息模板")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -80,7 +80,7 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新消息模板")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody MsgTemplateDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -93,7 +93,7 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取消息模板")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<MsgTemplateVo> get(@RequestParam Long id) {
         MsgTemplate entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, MsgTemplateVo.class));
@@ -107,7 +107,7 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询消息模板")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<MsgTemplateVo>> page(@RequestBody @Validated PageParams<MsgTemplateQuery> params) {
         Page<MsgTemplateVo> page = Page.of(params.getCurrent(), params.getSize());
         MsgTemplate entity = BeanUtil.toBean(params.getModel(), MsgTemplate.class);
@@ -125,7 +125,7 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<MsgTemplateVo>> list(@RequestBody @Validated MsgTemplateQuery params) {
         MsgTemplate entity = BeanUtil.toBean(params, MsgTemplate.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -139,6 +139,7 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
     })
     @Operation(summary = "检测模板标识是否可用", description = "检测模板标识是否可用")
     @GetMapping("/check")
+    @RequestLog(value = "检测模板标识是否可用", logType = RequestLog.LogType.QUERY)
     public R<Boolean> check(@RequestParam String key, @RequestParam(required = false) Long id) {
         return R.success(superService.check(key, id));
     }

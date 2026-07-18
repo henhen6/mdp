@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.common.entity.User;
 import top.mddata.common.properties.IgnoreProperties;
@@ -39,6 +40,7 @@ public class ResourceController {
      */
     @Operation(summary = "查询指定应用所有的菜单", description = "查询指定应用所有的菜单")
     @GetMapping("/anyUser/findAllMenu")
+    @RequestLog(value = "查询指定应用所有菜单", logType = RequestLog.LogType.QUERY)
     public R<List<ResourceMenuVo>> findAllMenu(@RequestParam(value = "appId") Long appId) {
         return R.success(resourceMenuService.findAllMenu(appId));
     }
@@ -49,6 +51,7 @@ public class ResourceController {
      */
     @Operation(summary = "查询用户可用的所有菜单路由", description = "查询用户可用的所有菜单路由")
     @GetMapping("/anyone/findUserRouter")
+    @RequestLog(value = "查询用户可用的所有菜单路由", logType = RequestLog.LogType.QUERY)
     public R<List<ResourceMenuVo>> findUserRouter(@RequestParam(value = "appId") Long appId) {
         long userId = StpUtil.getLoginIdAsLong();
         return R.success(resourceMenuService.findUserRouter(appId, userId));
@@ -60,6 +63,7 @@ public class ResourceController {
      */
     @Operation(summary = "查询用户可用的所有资源", description = "根据员工ID查询员工在某个应用下可用的资源")
     @GetMapping("/anyone/findUserResource")
+    @RequestLog(value = "查询用户可用的所有资源", logType = RequestLog.LogType.QUERY)
     public R<UserAccessInfoVo> findUserResource(@RequestParam(value = "appId") Long appId) {
         long userId = StpUtil.getLoginIdAsLong();
         return R.success(UserAccessInfoVo.builder()
@@ -76,6 +80,7 @@ public class ResourceController {
      */
     @Operation(summary = "查询当前请求中的用户信息", description = "查询当前请求中的用户信息")
     @GetMapping("/anyone/getUserinfo")
+    @RequestLog(value = "查询当前请求中的用户信息", logType = RequestLog.LogType.QUERY)
     public R<UserinfoVo> getUserinfo() {
         long userId = StpUtil.getLoginIdAsLong();
         User user = userService.getByIdCache(userId);

@@ -39,7 +39,7 @@ public class DocInfoController extends SuperController<DocInfoService, DocInfo> 
      */
     @Operation(summary = "按树结构查询", description = "按树结构查询")
     @PostMapping("/tree")
-    @RequestLog("按树结构查询")
+    @RequestLog(value = "按树结构查询", logType = RequestLog.LogType.QUERY)
     public R<List<DocInfoVo>> tree(@RequestParam Long docGroupId) {
         return R.success(superService.tree(docGroupId, null));
     }
@@ -47,14 +47,14 @@ public class DocInfoController extends SuperController<DocInfoService, DocInfo> 
 
     @Operation(summary = "修改文档状态", description = "修改文档状态")
     @PostMapping("updatePublish")
-    @RequestLog("修改文档状态")
+    @RequestLog(value = "修改文档状态", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> updatePublish(@RequestParam Long id, @RequestParam Integer publish) {
         return R.success(superService.updatePublish(id, publish));
     }
 
     @Operation(summary = "同步所有文档", description = "同步所有文档")
     @PostMapping("syncAllDoc")
-    @RequestLog("同步所有文档")
+    @RequestLog(value = "同步所有文档", logType = RequestLog.LogType.OTHER)
     public R<Boolean> syncAllDoc(@Validated @RequestBody IdDto param) {
         superService.syncAllDoc(param.getId());
         return R.success();
@@ -62,7 +62,7 @@ public class DocInfoController extends SuperController<DocInfoService, DocInfo> 
 
     @Operation(summary = "同步文档", description = "同步文档")
     @PostMapping("syncDoc")
-    @RequestLog("同步文档")
+    @RequestLog(value = "同步文档", logType = RequestLog.LogType.OTHER)
     public R<Boolean> syncDoc(@Validated @RequestBody IdDto param) {
         superService.syncDoc(param.getId());
         return R.success();

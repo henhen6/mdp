@@ -33,28 +33,28 @@ public class DashboardMessageController {
 
     @GetMapping("/overview")
     @Operation(summary = "消息通知概览", description = "任务总数、今日发送数、待执行数、草稿数、成功数、失败数")
-    @RequestLog(value = "查询消息通知概览", response = false)
+    @RequestLog(value = "查询消息通知概览", logType = RequestLog.LogType.QUERY, response = false)
     public R<OverviewMessageVo> getOverviewMessage() {
         return R.success(dashboardMessageService.getOverviewMessage());
     }
 
     @GetMapping("/typeDistribution")
     @Operation(summary = "消息类型分布", description = "站内信/短信/邮件")
-    @RequestLog(value = "查询消息类型分布", response = false)
+    @RequestLog(value = "查询消息类型分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<DistributionVo>> getTypeDistribution() {
         return R.success(dashboardMessageService.getTypeDistribution());
     }
 
     @GetMapping("/categoryDistribution")
     @Operation(summary = "消息分类分布", description = "待办/公告/预警（本地查询 mdc_msg_task，条件 type=1 AND status=2）")
-    @RequestLog(value = "查询消息分类分布", response = false)
+    @RequestLog(value = "查询消息分类分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<DistributionVo>> getCategoryDistribution() {
         return R.success(dashboardMessageService.getCategoryDistribution());
     }
 
     @GetMapping("/trend")
     @Operation(summary = "消息发送趋势", description = "按天统计成功发送数，支持日期区间筛选，返回各类型数量和总量")
-    @RequestLog(value = "查询消息发送趋势", response = false)
+    @RequestLog(value = "查询消息发送趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<TrendLineVo>> getTrend(
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
@@ -64,7 +64,7 @@ public class DashboardMessageController {
 
     @GetMapping("/templateRank")
     @Operation(summary = "消息模板使用排行", description = "只统计 state=1 的模板")
-    @RequestLog(value = "查询消息模板使用排行", response = false)
+    @RequestLog(value = "查询消息模板使用排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<RankVo>> getTemplateRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardMessageService.getTemplateRank(limit));
     }

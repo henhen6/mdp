@@ -35,42 +35,42 @@ public class DashboardRequestLogController {
 
     @GetMapping("/logTypeDistribution")
     @Operation(summary = "请求日志类型分布", description = "按日志类型（查询/新增/修改/删除/其他）统计请求次数")
-    @RequestLog(value = "查询请求日志类型分布", response = false)
+    @RequestLog(value = "查询请求日志类型分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<DistributionVo>> getLogTypeDistribution() {
         return R.success(dashboardRequestLogService.getLogTypeDistribution());
     }
 
     @GetMapping("/regionDistribution")
     @Operation(summary = "请求地域分布", description = "按省份统计请求次数，用于地图展示")
-    @RequestLog(value = "查询请求地域分布", response = false)
+    @RequestLog(value = "查询请求地域分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<RegionDistributionVo>> getRegionDistribution() {
         return R.success(dashboardRequestLogService.getRegionDistribution());
     }
 
     @GetMapping("/consumingTimeDistribution")
     @Operation(summary = "请求耗时分布", description = "<100ms / 100-500ms / 500ms-1s / 1s-3s / >=3s")
-    @RequestLog(value = "查询请求耗时分布", response = false)
+    @RequestLog(value = "查询请求耗时分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<ConsumingTimeVo>> getConsumingTimeDistribution() {
         return R.success(dashboardRequestLogService.getConsumingTimeDistribution());
     }
 
     @GetMapping("/overview")
     @Operation(summary = "请求日志概览", description = "总请求量、异常请求数量、成功请求数量")
-    @RequestLog(value = "查询请求日志概览", response = false)
+    @RequestLog(value = "查询请求日志概览", logType = RequestLog.LogType.QUERY, response = false)
     public R<OverviewRequestVo> getOverview() {
         return R.success(dashboardRequestLogService.getOverview());
     }
 
     @GetMapping("/ipRank")
     @Operation(summary = "IP地址请求排行", description = "按请求次数统计IP地址排行")
-    @RequestLog(value = "查询IP地址请求排行", response = false)
+    @RequestLog(value = "查询IP地址请求排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<IpRankVo>> getIpRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardRequestLogService.getIpRank(limit));
     }
 
     @GetMapping("/interfaceRank")
     @Operation(summary = "请求接口排行", description = "按请求次数统计接口排行，前端显示httpUri，hover显示完整信息")
-    @RequestLog(value = "查询请求接口排行", response = false)
+    @RequestLog(value = "查询请求接口排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<RequestInterfaceRankVo>> getInterfaceRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardRequestLogService.getInterfaceRank(limit));
     }

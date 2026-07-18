@@ -51,7 +51,7 @@ public class FileUploadController {
             @Parameter(name = "file", description = "附件", schema = @Schema(name = "file", format = "binary"), in = ParameterIn.DEFAULT, required = true),
     })
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @RequestLog(value = "上传文件", request = false)
+    @RequestLog(value = "上传文件", logType = RequestLog.LogType.ADD, request = false)
     public R<FileVo> upload(@RequestParam(value = "file") MultipartFile file, @Validated FileUploadDto fileUploadDto) {
         return R.success(fileService.upload(file, fileUploadDto));
     }
@@ -59,6 +59,7 @@ public class FileUploadController {
 
     @Operation(summary = "复制文件", description = "复制文件")
     @PostMapping(value = "/copyFile")
+    @RequestLog(value = "复制文件", logType = RequestLog.LogType.ADD)
     public R<Boolean> copyFile(@Validated @RequestBody CopyFilesDto copyFilesDto) {
         return R.success(fileService.copyFile(copyFilesDto));
     }
@@ -66,6 +67,7 @@ public class FileUploadController {
 
     @Operation(summary = "关联文件到业务", description = "关联文件到业务")
     @PostMapping(value = "/relateFilesToBiz")
+    @RequestLog(value = "关联文件到业务", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> relateFilesToBiz(@Validated @RequestBody RelateFilesToBizDto relateFilesToBizDto) {
         fileService.relateFilesToBiz(relateFilesToBizDto);
         return R.success();
@@ -78,6 +80,7 @@ public class FileUploadController {
      */
     @Operation(summary = "根据文件id查询文件的临时访问路径", description = "根据文件id查询文件的临时访问路径")
     @PostMapping(value = "/findUrlByIds")
+    @RequestLog(value = "根据文件id查询文件临时访问路径", logType = RequestLog.LogType.QUERY)
     public R<Map<Long, FileVo>> findUrlByIds(@RequestBody List<Long> ids) {
         return R.success(fileService.findUrlByIds(ids));
     }
@@ -90,6 +93,7 @@ public class FileUploadController {
      */
     @Operation(summary = "根据业务类型和业务id，获取文件的访问路径", description = "根据业务类型和业务id，获取文件的访问路径")
     @PostMapping(value = "/findUrlByObject")
+    @RequestLog(value = "根据业务类型和业务id获取文件访问路径", logType = RequestLog.LogType.QUERY)
     public R<Map<Long, FileVo>> findUrlByObject(@RequestParam String objectType, @RequestParam Long objectId) {
         return R.success(fileService.findUrlByObject(objectType, objectId));
     }

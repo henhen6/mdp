@@ -56,7 +56,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除站内通知")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -69,7 +69,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @PostMapping("/mark")
     @Operation(summary = "标记为已读", description = "标记为已读")
-    @RequestLog(value = "标记为已读", request = false)
+    @RequestLog(value = "标记为已读", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Boolean> mark(@RequestBody List<Long> ids) {
         return R.success(superService.mark(ids, ContextUtil.getUserId()));
     }
@@ -82,7 +82,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取站内通知")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<NoticeVo> get(@RequestParam Long id) {
         Notice entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, NoticeVo.class));
@@ -96,7 +96,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询站内通知")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<NoticeVo>> page(@RequestBody @Validated PageParams<NoticeQuery> params) {
         Page<NoticeVo> page = Page.of(params.getCurrent(), params.getSize());
         NoticeQuery query = params.getModel();
@@ -128,6 +128,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @PostMapping("/saveBatchNoticeRecipient")
     @Operation(hidden = true)
+    @RequestLog(value = "批量保存站内通知接收人", logType = RequestLog.LogType.ADD)
     public R<Boolean> saveBatchNoticeRecipient(@RequestBody @Validated List<NoticeRecipient> recipientList) {
         return R.success(noticeRecipientService.saveBatch(recipientList));
     }
@@ -138,6 +139,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @PostMapping("/save")
     @Operation(hidden = true)
+    @RequestLog(value = "保存通知", logType = RequestLog.LogType.ADD)
     public R<Boolean> save(@RequestBody @Validated Notice notice) {
         return R.success(superService.save(notice));
     }
@@ -151,6 +153,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @GetMapping("/countByCategory")
     @Operation(hidden = true)
+    @RequestLog(value = "统计指定时间之后按分类的通知数量", logType = RequestLog.LogType.QUERY)
     public R<Long> countByCategory(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam Integer msgCategory) {
@@ -162,6 +165,7 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
      */
     @GetMapping("/countByCategoryDistribution")
     @Operation(hidden = true)
+    @RequestLog(value = "按分类统计通知数量", logType = RequestLog.LogType.QUERY)
     public R<List<Map<String, Object>>> countByCategoryDistribution() {
         return R.success(superService.countByCategoryDistribution());
     }

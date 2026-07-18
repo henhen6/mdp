@@ -32,7 +32,7 @@ public class DashboardWorkbenchController {
      */
     @GetMapping("/workbench")
     @Operation(summary = "系统概览统计(workbench部分)", description = "获取今日登录次数等")
-    @RequestLog(value = "查询系统概览统计(workbench)", response = false)
+    @RequestLog(value = "查询系统概览统计(workbench)", logType = RequestLog.LogType.QUERY, response = false)
     public R<OverviewWorkbenchVo> getOverviewWorkbench() {
         return R.success(dashboardWorkbenchService.getOverviewWorkbench());
     }

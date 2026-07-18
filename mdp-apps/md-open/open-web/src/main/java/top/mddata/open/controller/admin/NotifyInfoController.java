@@ -49,7 +49,7 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除回调任务")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -63,7 +63,7 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取回调任务")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<NotifyInfoVo> get(@RequestParam Long id) {
         NotifyInfo entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, NotifyInfoVo.class));
@@ -77,7 +77,7 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询回调任务")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<NotifyInfoVo>> page(@RequestBody @Validated PageParams<NotifyInfoQuery> params) {
         Page<NotifyInfoVo> page = Page.of(params.getCurrent(), params.getSize());
         NotifyInfo entity = BeanUtil.toBean(params.getModel(), NotifyInfo.class);
@@ -96,7 +96,7 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
      */
     @PostMapping("/push")
     @Operation(summary = "重新推送", description = "重新推送")
-    @RequestLog("'重新推送:' + #param.id")
+    @RequestLog(value = "'重新推送:' + #param.id", logType = RequestLog.LogType.OTHER)
     public R<Boolean> push(@Validated @RequestBody IdDto param) {
         return R.success(superService.push(param.getId(), null));
     }
@@ -109,7 +109,7 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
      */
     @Operation(summary = "结束重试", description = "结束重试")
     @PostMapping("/end")
-    @RequestLog("'结束重试:' + #param.id")
+    @RequestLog(value = "'结束重试:' + #param.id", logType = RequestLog.LogType.OTHER)
     public R<Boolean> end(@Validated @RequestBody IdDto param) {
         return R.success(superService.end(param.getId()));
     }
@@ -122,6 +122,7 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
      */
     @Operation(hidden = true)
     @PostMapping("/notify")
+    @RequestLog(value = "回调", logType = RequestLog.LogType.OTHER)
     public R<Long> notify(@Validated @RequestBody NotifyInfoDto request) {
         return superService.notify(request);
     }

@@ -54,7 +54,7 @@ public class OrgController extends SuperController<OrgService, Org> {
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存组织")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody OrgDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -67,7 +67,7 @@ public class OrgController extends SuperController<OrgService, Org> {
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除组织")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -80,7 +80,7 @@ public class OrgController extends SuperController<OrgService, Org> {
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新组织")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody OrgDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -93,7 +93,7 @@ public class OrgController extends SuperController<OrgService, Org> {
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取组织")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<OrgVo> get(@RequestParam Long id) {
         Org entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, OrgVo.class));
@@ -107,7 +107,7 @@ public class OrgController extends SuperController<OrgService, Org> {
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询组织")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<OrgVo>> page(@RequestBody @Validated PageParams<OrgQuery> params) {
         Page<OrgVo> page = Page.of(params.getCurrent(), params.getSize());
         Org entity = BeanUtil.toBean(params.getModel(), Org.class);
@@ -125,7 +125,7 @@ public class OrgController extends SuperController<OrgService, Org> {
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<OrgVo>> list(@RequestBody @Validated OrgQuery params) {
         Org entity = BeanUtil.toBean(params, Org.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -138,7 +138,7 @@ public class OrgController extends SuperController<OrgService, Org> {
      */
     @Operation(summary = "查询组织树", description = "查询组织树")
     @PostMapping("/tree")
-    @RequestLog("查询组织树")
+    @RequestLog(value = "查询组织树", logType = RequestLog.LogType.QUERY)
     public R<List<OrgVo>> tree(@RequestBody @Validated OrgQuery query) {
         /*
         TODO 控制权限
@@ -155,7 +155,7 @@ public class OrgController extends SuperController<OrgService, Org> {
 
     @Operation(summary = "移动组织架构", description = "移动组织架构")
     @PostMapping("/move")
-    @RequestLog("移动组织架构")
+    @RequestLog(value = "移动组织架构", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> move(@RequestParam Long sourceId, @RequestParam(required = false) Long targetId) {
         superService.move(sourceId, targetId);
         return R.success();

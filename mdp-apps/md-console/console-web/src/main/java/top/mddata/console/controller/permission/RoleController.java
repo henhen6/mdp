@@ -62,7 +62,7 @@ public class RoleController extends SuperController<RoleService, Role> {
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存角色")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody RoleDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -75,7 +75,7 @@ public class RoleController extends SuperController<RoleService, Role> {
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除角色")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -88,7 +88,7 @@ public class RoleController extends SuperController<RoleService, Role> {
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新角色")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody RoleDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -101,7 +101,7 @@ public class RoleController extends SuperController<RoleService, Role> {
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取角色")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<RoleVo> get(@RequestParam Long id) {
         Role entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, RoleVo.class));
@@ -114,7 +114,7 @@ public class RoleController extends SuperController<RoleService, Role> {
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<RoleVo>> list(@RequestBody @Validated RoleQuery params) {
         Role entity = BeanUtil.toBean(params, Role.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -134,7 +134,7 @@ public class RoleController extends SuperController<RoleService, Role> {
     })
     @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
     @GetMapping("/checkCode")
-    @RequestLog(value = "检测编码是否存在")
+    @RequestLog(value = "检测编码是否存在", logType = RequestLog.LogType.QUERY)
     public R<Boolean> checkCode(@RequestParam String roleCategory, @RequestParam String code, @RequestParam(required = false) Long id) {
         return R.success(superService.checkCode(roleCategory, code, id));
     }
@@ -147,7 +147,7 @@ public class RoleController extends SuperController<RoleService, Role> {
      */
     @Operation(summary = "查询角色拥有的资源集合")
     @GetMapping("/findResourceIdByRoleId")
-    @RequestLog("查询角色拥有的资源集合")
+    @RequestLog(value = "查询角色拥有的资源集合", logType = RequestLog.LogType.QUERY)
     public R<Map<Long, Collection<Long>>> findResourceIdByRoleId(@RequestParam Long roleId) {
         return R.success(roleResourceRelService.findResourceIdByRoleId(roleId));
     }
@@ -160,7 +160,7 @@ public class RoleController extends SuperController<RoleService, Role> {
      */
     @PostMapping("/saveRoleResource")
     @Operation(summary = "新增角色资源", description = "新增角色资源")
-    @RequestLog(value = "新增角色资源", request = false)
+    @RequestLog(value = "新增角色资源", logType = RequestLog.LogType.ADD, request = false)
     public R<Boolean> saveRoleResource(@Validated @RequestBody RoleResourceRelDto dto) {
         return R.success(roleResourceRelService.saveRoleResource(dto));
     }

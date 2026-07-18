@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.console.service.system.ConfigService;
 import top.mddata.console.service.system.DictItemService;
@@ -35,12 +36,14 @@ public class GeneralController {
 
     @Operation(summary = "根据参数标识，查询参数值", description = "根据参数标识，查询参数值")
     @PostMapping("/param/findConfigByUniqKey")
+    @RequestLog(value = "根据参数标识查询参数值", logType = RequestLog.LogType.QUERY)
     public R<Map<String, ConfigVo>> findConfigByUniqKey(@RequestBody List<String> uniqKeys) {
         return R.success(configService.findConfigByUniqKey(uniqKeys));
     }
 
     @Operation(summary = "根据字典类型编码批量查询字典项", description = "根据字典类型编码批量查询字典项")
     @PostMapping("/dict/findDictItemByUniqKey")
+    @RequestLog(value = "根据字典类型编码批量查询字典项", logType = RequestLog.LogType.QUERY)
     public R<Map<String, List<DictItemVo>>> findDictItemByUniqKey(@RequestBody List<String> query) {
         return R.success(dictItemService.findDictItemByUniqKey(query));
     }

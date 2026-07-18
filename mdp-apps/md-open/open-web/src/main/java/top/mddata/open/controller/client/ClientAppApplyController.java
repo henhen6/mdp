@@ -49,14 +49,14 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存应用申请")
-    @RequestLog(value = "新增")
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD)
     public R<Long> save(@Validated @RequestBody AppApplyDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
 
     @PostMapping("/submit")
     @Operation(summary = "提交", description = "提交申请")
-    @RequestLog(value = "提交")
+    @RequestLog(value = "提交", logType = RequestLog.LogType.ADD)
     public R<Long> submit(@Validated @RequestBody AppApplyDto dto) {
         return R.success(superService.submit(dto));
     }
@@ -64,7 +64,7 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
 
     @PostMapping("/withdraw")
     @Operation(summary = "撤回", description = "撤回申请")
-    @RequestLog(value = "撤回")
+    @RequestLog(value = "撤回", logType = RequestLog.LogType.UPDATE)
     public R<Long> withdraw(@Validated @RequestBody IdDto dto) {
         return R.success(superService.withdraw(dto));
     }
@@ -78,7 +78,7 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新应用申请")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody AppApplyDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -91,7 +91,7 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除应用申请")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -105,7 +105,7 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取应用申请")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<AppApplyVo> get(@RequestParam Long id) {
         AppApply entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, AppApplyVo.class));
@@ -119,7 +119,7 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询应用申请")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<AppApplyVo>> page(@RequestBody @Validated PageParams<AppApplyQuery> params) {
         Page<AppApplyVo> page = Page.of(params.getCurrent(), params.getSize());
         AppApply entity = BeanUtil.toBean(params.getModel(), AppApply.class);

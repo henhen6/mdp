@@ -47,7 +47,7 @@ public class EventPushController extends SuperController<EventPushService, Event
      */
     @PostMapping("/push")
     @Operation(summary = "重新推送", description = "重新推送")
-    @RequestLog("'重新推送:' + #param.id")
+    @RequestLog(value = "'重新推送:' + #param.id", logType = RequestLog.LogType.OTHER)
     public R<Long> push(@Validated @RequestBody IdDto param) {
         return R.success(superService.executeImmediately(param.getId()));
     }
@@ -60,7 +60,7 @@ public class EventPushController extends SuperController<EventPushService, Event
      */
     @Operation(summary = "结束重试", description = "结束重试")
     @PostMapping("/end")
-    @RequestLog("'结束重试:' + #param.id")
+    @RequestLog(value = "'结束重试:' + #param.id", logType = RequestLog.LogType.OTHER)
     public R<Boolean> end(@Validated @RequestBody IdDto param) {
         return R.success(superService.end(param.getId()));
     }
@@ -73,7 +73,7 @@ public class EventPushController extends SuperController<EventPushService, Event
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除事件推送任务")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -87,7 +87,7 @@ public class EventPushController extends SuperController<EventPushService, Event
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取事件推送任务")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<EventPushVo> get(@RequestParam Long id) {
         EventPush entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, EventPushVo.class));
@@ -101,7 +101,7 @@ public class EventPushController extends SuperController<EventPushService, Event
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询事件推送任务")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<EventPushVo>> page(@RequestBody @Validated PageParams<EventPushQuery> params) {
         Page<EventPushVo> page = Page.of(params.getCurrent(), params.getSize());
         EventPush entity = BeanUtil.toBean(params.getModel(), EventPush.class);
@@ -119,7 +119,7 @@ public class EventPushController extends SuperController<EventPushService, Event
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventPushVo>> list(@RequestBody @Validated EventPushQuery params) {
         EventPush entity = BeanUtil.toBean(params, EventPush.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

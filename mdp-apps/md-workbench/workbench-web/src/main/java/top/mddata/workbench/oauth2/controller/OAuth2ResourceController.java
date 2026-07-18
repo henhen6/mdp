@@ -27,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.common.entity.User;
 import top.mddata.workbench.oauth2.dto.ClientTokenDto;
@@ -59,6 +60,7 @@ public class OAuth2ResourceController {
      * @return
      */
     @PostMapping("/oauth2/userinfo")
+    @RequestLog(value = "OAuth2获取用户信息", logType = RequestLog.LogType.QUERY)
     public R<SsoUserVo> getUserinfo() {
         // 校验 Access-Token 是否具有 "userinfo" 权限
         String accessToken = SaOAuth2Manager.getDataResolver().readAccessToken(SaHolder.getRequest());
@@ -81,6 +83,7 @@ public class OAuth2ResourceController {
      * @return
      */
     @PostMapping("/oauth2/token")
+    @RequestLog(value = "OAuth2获取Token", logType = RequestLog.LogType.QUERY)
     public R<TokenVo> token() {
         AccessTokenModel at = SaOAuth2Strategy.instance.grantTypeAuth.apply(SaHolder.getRequest());
 
@@ -95,6 +98,7 @@ public class OAuth2ResourceController {
      * @return
      */
     @PostMapping("/oauth2/refresh")
+    @RequestLog(value = "OAuth2刷新Token", logType = RequestLog.LogType.QUERY)
     public R<TokenVo> refresh(@Validated RefreshDto param) {
         // 校验 grant_type 必须为 refresh_token
         String grantType = param.getGrantType();
@@ -142,6 +146,7 @@ public class OAuth2ResourceController {
      * @return
      */
     @PostMapping("/oauth2/revoke")
+    @RequestLog(value = "OAuth2回收Token", logType = RequestLog.LogType.OTHER)
     public R<Boolean> revoke(@Validated RevokeDto param) {
         // 获取变量
         SaOAuth2Template oauth2Template = SaOAuth2Manager.getTemplate();
@@ -175,6 +180,7 @@ public class OAuth2ResourceController {
      * @return
      */
     @PostMapping("/oauth2/client_token")
+    @RequestLog(value = "OAuth2客户端凭证模式获取Token", logType = RequestLog.LogType.QUERY)
     public R<ClientTokenVo> clientToken(@Validated ClientTokenDto param) {
         // 获取变量
 //        SaRequest req = SaHolder.getRequest();

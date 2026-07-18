@@ -47,7 +47,7 @@ public class OpenDocController {
     /**
      * 获取文档分组列表
      */
-    @RequestLog("获取文档分组列表")
+    @RequestLog(value = "获取文档分组列表", logType = RequestLog.LogType.QUERY)
     @Operation(summary = "获取文档分组列表", description = "获取文档分组列表")
     @GetMapping(value = "/docGroup/list")
     public R<List<DocGroupVo>> findDocGroupList() {
@@ -60,7 +60,7 @@ public class OpenDocController {
      *
      * @param docGroupId 文档分组ID
      */
-    @RequestLog("获取树型文档数据")
+    @RequestLog(value = "获取树型文档数据", logType = RequestLog.LogType.QUERY)
     @Operation(summary = "获取树型文档数据", description = "获取树型文档数据")
     @GetMapping(value = "/docInfo/tree")
     public R<List<DocInfoVo>> findDocTree(@RequestParam Long docGroupId) {
@@ -74,6 +74,7 @@ public class OpenDocController {
      */
     @Operation(summary = "按树结构查询")
     @GetMapping("/help/tree")
+    @RequestLog(value = "按树结构查询", logType = RequestLog.LogType.QUERY)
     public R<List<HelpDocVo>> tree() {
         List<HelpDoc> list = helpDocService.list(QueryWrapper.create().eq(HelpDoc::getState, true).orderBy(HelpDoc::getWeight, true));
         List<HelpDocVo> voList = BeanUtil.copyToList(list, HelpDocVo.class);
@@ -85,7 +86,7 @@ public class OpenDocController {
      *
      * @param id 文档id
      */
-    @RequestLog("获取文档详情")
+    @RequestLog(value = "获取文档详情", logType = RequestLog.LogType.QUERY)
     @Operation(summary = "获取文档详情", description = "获取文档详情")
     @GetMapping("/docInfo/detail")
     public R<DocInfoViewVo> getDocDetail(@RequestParam Long id) {

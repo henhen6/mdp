@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.utils.IpUtil;
 import top.mddata.open.facade.admin.AppFacade;
@@ -123,6 +124,7 @@ public class SsoServerController {
      */
     @Operation(summary = "服务端-全端退出", description = "服务端-全端退出")
     @RequestMapping("/anyUser/sso/signout")
+    @RequestLog(value = "SSO服务端全端退出", logType = RequestLog.LogType.OTHER)
     public R<Boolean> ssoSignout() {
         try {
             SaResult result = (SaResult) SaSsoServerProcessor.getInstance().ssoSignout();
@@ -144,6 +146,7 @@ public class SsoServerController {
      */
     @Operation(summary = "接收单点登录的客户端接口调用", description = "接收单点登录的客户端接口调用，根据传递的 消息类型 决定处理逻辑")
     @GetMapping("/anyUser/sso/pushS")
+    @RequestLog(value = "SSO服务端接收客户端推送", logType = RequestLog.LogType.OTHER)
     public Object push(HttpServletRequest request) {
         try {
             /*
@@ -182,6 +185,7 @@ public class SsoServerController {
     /** 退出登录当前应用 */
     @PostMapping("/anyUser/sso/logout")
     @Operation(summary = "服务端-退出当前应用", description = "服务端-退出当前应用")
+    @RequestLog(value = "SSO服务端退出当前应用", logType = RequestLog.LogType.DELETE)
     public R<Boolean> logout() {
         try {
             StpUtil.logout();

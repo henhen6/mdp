@@ -36,7 +36,7 @@ public class DashboardUserController {
      */
     @GetMapping("/overview")
     @Operation(summary = "用户与组织概览统计", description = "用户总数、单位数量、部门数量、角色数量")
-    @RequestLog(value = "查询用户与组织概览", response = false)
+    @RequestLog(value = "查询用户与组织概览", logType = RequestLog.LogType.QUERY, response = false)
     public R<OverviewUserVo> getOverviewUser() {
         return R.success(dashboardUserService.getOverviewUser());
     }
@@ -46,7 +46,7 @@ public class DashboardUserController {
      */
     @GetMapping("/trend")
     @Operation(summary = "用户增长趋势", description = "按天统计新增用户数，仅支持 7 或 30 天")
-    @RequestLog(value = "查询用户增长趋势", response = false)
+    @RequestLog(value = "查询用户增长趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<TrendVo>> getUserTrend(@RequestParam(defaultValue = "7") int days) {
         return R.success(dashboardUserService.getUserTrend(days));
     }
@@ -56,7 +56,7 @@ public class DashboardUserController {
      */
     @GetMapping("/orgRank")
     @Operation(summary = "部门用户排行", description = "各部门下的用户数量排行")
-    @RequestLog(value = "查询部门用户排行", response = false)
+    @RequestLog(value = "查询部门用户排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<RankVo>> getOrgRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardUserService.getOrgRank(limit));
     }
@@ -66,7 +66,7 @@ public class DashboardUserController {
      */
     @GetMapping("/roleRank")
     @Operation(summary = "角色用户排行", description = "各角色下的用户数量排行")
-    @RequestLog(value = "查询角色用户排行", response = false)
+    @RequestLog(value = "查询角色用户排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<RankVo>> getRoleRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardUserService.getRoleRank(limit));
     }
@@ -76,7 +76,7 @@ public class DashboardUserController {
      */
     @GetMapping("/statusDistribution")
     @Operation(summary = "用户状态分布", description = "正常/禁用用户占比")
-    @RequestLog(value = "查询用户状态分布", response = false)
+    @RequestLog(value = "查询用户状态分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<DistributionVo>> getStatusDistribution() {
         return R.success(dashboardUserService.getStatusDistribution());
     }
@@ -86,7 +86,7 @@ public class DashboardUserController {
      */
     @GetMapping("/typeDistribution")
     @Operation(summary = "用户类型分布", description = "普通用户/管理员/开发者/运维占比")
-    @RequestLog(value = "查询用户类型分布", response = false)
+    @RequestLog(value = "查询用户类型分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<DistributionVo>> getTypeDistribution() {
         return R.success(dashboardUserService.getTypeDistribution());
     }

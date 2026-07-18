@@ -32,7 +32,7 @@ public class DashboardConsoleController {
      */
     @GetMapping("/console")
     @Operation(summary = "系统概览统计(console部分)", description = "获取用户数、组织数、通知数、文件统计等")
-    @RequestLog(value = "查询系统概览统计(console)", response = false)
+    @RequestLog(value = "查询系统概览统计(console)", logType = RequestLog.LogType.QUERY, response = false)
     public R<OverviewConsoleVo> getOverviewConsole() {
         return R.success(dashboardConsoleService.getOverviewConsole());
     }

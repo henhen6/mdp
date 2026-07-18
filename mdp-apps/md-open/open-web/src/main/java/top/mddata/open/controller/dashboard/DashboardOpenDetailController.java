@@ -43,14 +43,14 @@ public class DashboardOpenDetailController {
 
     @GetMapping("/open/overview")
     @Operation(summary = "开放平台概览", description = "应用总数、自建应用数、第三方应用数、API总数、今日调用量、今日失败数、待审批数")
-    @RequestLog(value = "查询开放平台概览", response = false)
+    @RequestLog(value = "查询开放平台概览", logType = RequestLog.LogType.QUERY, response = false)
     public R<OverviewOpenVo> getOverviewOpen() {
         return R.success(dashboardOpenService.getOverviewOpen());
     }
 
     @GetMapping("/callTrend")
     @Operation(summary = "API调用趋势", description = "按天统计调用总数与失败数，支持日期区间查询（yyyy-MM-dd），默认最近7天")
-    @RequestLog(value = "查询API调用趋势", response = false)
+    @RequestLog(value = "查询API调用趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<CallTrendVo>> getCallTrend(
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate) {
@@ -59,35 +59,35 @@ public class DashboardOpenDetailController {
 
     @GetMapping("/appRank")
     @Operation(summary = "应用调用排行", description = "按调用次数统计应用排行 TOP N")
-    @RequestLog(value = "查询应用调用排行", response = false)
+    @RequestLog(value = "查询应用调用排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<AppRankVo>> getAppRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardOpenService.getAppRank(limit));
     }
 
     @GetMapping("/apiRank")
     @Operation(summary = "API调用排行", description = "按调用次数统计接口排行 TOP N")
-    @RequestLog(value = "查询API调用排行", response = false)
+    @RequestLog(value = "查询API调用排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<ApiRankVo>> getApiRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardOpenService.getApiRank(limit));
     }
 
     @GetMapping("/oauthDistribution")
     @Operation(summary = "OAuth授权分布", description = "按 grant_type 分组统计授权次数")
-    @RequestLog(value = "查询OAuth授权分布", response = false)
+    @RequestLog(value = "查询OAuth授权分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<OauthDistributionVo>> getOauthDistribution() {
         return R.success(dashboardOpenService.getOauthDistribution());
     }
 
     @GetMapping("/event/trigger/statistics")
     @Operation(summary = "事件触发统计", description = "按事件类型分组统计触发次数")
-    @RequestLog(value = "查询事件触发统计", response = false)
+    @RequestLog(value = "查询事件触发统计", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventTriggerStatisticsVo>> getEventTriggerStatistics() {
         return R.success(dashboardOpenService.getEventTriggerStatistics());
     }
 
     @GetMapping("/event/trigger/trend")
     @Operation(summary = "事件触发趋势", description = "按天统计事件触发次数，支持日期区间查询（yyyy-MM-dd），默认最近7天")
-    @RequestLog(value = "查询事件触发趋势", response = false)
+    @RequestLog(value = "查询事件触发趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventTriggerTrendVo>> getEventTriggerTrend(
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate) {
@@ -96,21 +96,21 @@ public class DashboardOpenDetailController {
 
     @GetMapping("/event/trigger/rank")
     @Operation(summary = "事件触发排行榜", description = "按事件类型分组统计触发次数 TOP N")
-    @RequestLog(value = "查询事件触发排行", response = false)
+    @RequestLog(value = "查询事件触发排行", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventTriggerStatisticsVo>> getEventTriggerRank(@RequestParam(defaultValue = "10") int limit) {
         return R.success(dashboardOpenService.getEventTriggerRank(limit));
     }
 
     @GetMapping("/event/push/statistics")
     @Operation(summary = "事件应用推送统计", description = "按事件类型+应用分组，统计推送次数")
-    @RequestLog(value = "查询事件应用推送统计", response = false)
+    @RequestLog(value = "查询事件应用推送统计", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventPushStatisticsVo>> getEventPushStatistics() {
         return R.success(dashboardOpenService.getEventPushStatistics());
     }
 
     @GetMapping("/event/push/trend")
     @Operation(summary = "事件推送趋势", description = "按天统计触发次数与推送请求次数，支持日期区间查询（yyyy-MM-dd），默认最近7天")
-    @RequestLog(value = "查询事件推送趋势", response = false)
+    @RequestLog(value = "查询事件推送趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventPushTrendVo>> getEventPushTrend(
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate) {

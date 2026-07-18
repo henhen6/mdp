@@ -46,7 +46,7 @@ public class HelpDocController extends SuperController<HelpDocService, HelpDoc> 
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存帮助文档")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody HelpDocDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -59,7 +59,7 @@ public class HelpDocController extends SuperController<HelpDocService, HelpDoc> 
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除帮助文档")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -72,7 +72,7 @@ public class HelpDocController extends SuperController<HelpDocService, HelpDoc> 
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新帮助文档")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody HelpDocDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -85,7 +85,7 @@ public class HelpDocController extends SuperController<HelpDocService, HelpDoc> 
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取帮助文档")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<HelpDocVo> get(@RequestParam Long id) {
         HelpDoc entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, HelpDocVo.class));
@@ -93,7 +93,7 @@ public class HelpDocController extends SuperController<HelpDocService, HelpDoc> 
 
     @Operation(summary = "调整节点", description = "调整节点")
     @PostMapping("/move")
-    @RequestLog("调整节点")
+    @RequestLog(value = "调整节点", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> move(@RequestParam Long sourceId, @RequestParam(required = false) Long targetId) {
         superService.move(sourceId, targetId);
         return R.success();
@@ -107,7 +107,7 @@ public class HelpDocController extends SuperController<HelpDocService, HelpDoc> 
      */
     @Operation(summary = "按树结构查询")
     @PostMapping("/tree")
-    @RequestLog("按树结构查询")
+    @RequestLog(value = "按树结构查询", logType = RequestLog.LogType.QUERY)
     public R<List<HelpDocVo>> tree(@RequestBody @Validated HelpDocQuery params) {
         HelpDoc entity = BeanUtil.toBean(params, HelpDoc.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

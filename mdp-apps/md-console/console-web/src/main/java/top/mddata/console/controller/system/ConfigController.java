@@ -42,6 +42,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
     private final ConfigService configService;
 
     @GetMapping("/listtest")
+    @RequestLog(value = "测试查询配置列表", logType = RequestLog.LogType.QUERY)
     public R<List<Config>> listtest(String name) {
         QueryWrapper queryWrapper = QueryWrapper.create();
         queryWrapper.like(Config::getName, name);
@@ -57,7 +58,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存系统配置")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody ConfigDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -70,7 +71,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除系统配置")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -83,7 +84,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新系统配置")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody ConfigDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -96,7 +97,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询系统配置")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<ConfigVo>> page(@RequestBody @Validated PageParams<ConfigQuery> params) {
         Page<ConfigVo> page = Page.of(params.getCurrent(), params.getSize());
         Config entity = BeanUtil.toBean(params.getModel(), Config.class);
@@ -115,7 +116,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      */
     @PostMapping("/check")
     @Operation(summary = "检查参数标识是否重复", description = "检查参数标识是否重复")
-    @RequestLog(value = "检查参数标识是否重复")
+    @RequestLog(value = "检查参数标识是否重复", logType = RequestLog.LogType.QUERY)
     public R<Boolean> check(@RequestParam String uniqKey, @RequestParam(required = false) Long id) {
         return R.success(superService.check(uniqKey, null, id));
     }
@@ -127,6 +128,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      * @return 系统参数
      */
     @GetMapping("/getConfig")
+    @RequestLog(value = "查询系统参数", logType = RequestLog.LogType.QUERY)
     public R<ConfigVo> getConfig(@RequestParam String uniqKey) {
         return R.success(superService.getConfig(uniqKey));
     }
@@ -137,6 +139,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      * @return 参数值
      */
     @GetMapping("/getLong")
+    @RequestLog(value = "查询长整型系统参数", logType = RequestLog.LogType.QUERY)
     public R<Long> getLong(@RequestParam String uniqKey, @RequestParam(required = false) Long defaultValue) {
         return R.success(superService.getLong(uniqKey, defaultValue));
     }
@@ -147,6 +150,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      * @return 参数值
      */
     @GetMapping("/getInteger")
+    @RequestLog(value = "查询整型系统参数", logType = RequestLog.LogType.QUERY)
     public R<Integer> getInteger(@RequestParam String uniqKey, @RequestParam(required = false) Integer defaultValue) {
         return R.success(superService.getInteger(uniqKey, defaultValue));
     }
@@ -157,6 +161,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      * @return 参数值
      */
     @GetMapping("/getString")
+    @RequestLog(value = "查询字符型系统参数", logType = RequestLog.LogType.QUERY)
     public R<String> getString(@RequestParam String uniqKey, @RequestParam(required = false) String defaultValue) {
         return R.success(superService.getString(uniqKey, defaultValue));
     }
@@ -167,6 +172,7 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      * @return 参数值
      */
     @GetMapping("/getBoolean")
+    @RequestLog(value = "查询布尔型系统参数", logType = RequestLog.LogType.QUERY)
     public R<Boolean> getBoolean(@RequestParam String uniqKey, @RequestParam(required = false) Boolean defaultValue) {
         return R.success(superService.getBoolean(uniqKey, defaultValue));
     }

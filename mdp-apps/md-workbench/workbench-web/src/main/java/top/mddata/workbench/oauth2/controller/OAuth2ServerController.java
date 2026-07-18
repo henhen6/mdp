@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.utils.ArgumentAssert;
@@ -76,6 +77,7 @@ public class OAuth2ServerController {
      * @return
      */
     @PostMapping("/oauth2/getRedirectUri")
+    @RequestLog(value = "OAuth2获取授权重定向地址", logType = RequestLog.LogType.QUERY)
     public R<String> getRedirectUri(@Validated RedirectUriDto param) {
         // 获取变量
         SaOAuth2ServerConfig cfg = SaOAuth2Manager.getServerConfig();
@@ -198,6 +200,7 @@ public class OAuth2ServerController {
      * 【ua-center】登录后，确认授权页面调用
      */
     @PostMapping("/oauth2/getConfirmInfo")
+    @RequestLog(value = "OAuth2获取授权确认信息", logType = RequestLog.LogType.QUERY)
     public R<ConfirmInfoVo> getConfirmInfo(@RequestParam(value = "client_id") String clientId, @RequestParam String scope) {
 
         // 查询应用信息
@@ -229,6 +232,7 @@ public class OAuth2ServerController {
      * @return 重定向到客户端的地址
      */
     @PostMapping("/oauth2/confirm")
+    @RequestLog(value = "OAuth2确认授权", logType = RequestLog.LogType.UPDATE)
     public R<ConfirmVo> confirm(@Validated ConfirmDto param) {
         // 获取变量
         Object loginId = SaOAuth2Manager.getStpLogic().getLoginId();

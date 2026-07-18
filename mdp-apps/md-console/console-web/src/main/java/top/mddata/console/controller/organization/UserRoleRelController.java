@@ -35,7 +35,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存用户角色关联")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Boolean> save(@Validated @RequestBody UserRoleRelDto dto) {
         return R.success(superService.saveByDto(dto));
     }
@@ -48,7 +48,7 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除用户角色关联")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@Validated @RequestBody UserRoleRelDto dto) {
         return R.success(superService.delete(dto));
     }

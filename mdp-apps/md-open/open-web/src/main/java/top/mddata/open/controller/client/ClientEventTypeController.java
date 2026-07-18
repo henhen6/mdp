@@ -40,7 +40,7 @@ public class ClientEventTypeController extends SuperController<EventTypeService,
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventTypeVo>> list(@RequestBody @Validated EventTypeQuery params) {
         EventType entity = BeanUtil.toBean(params, EventType.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

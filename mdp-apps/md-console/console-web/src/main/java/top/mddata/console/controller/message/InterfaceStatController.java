@@ -46,7 +46,7 @@ public class InterfaceStatController extends SuperController<InterfaceStatServic
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取接口统计")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<InterfaceStatVo> get(@RequestParam Long id) {
         InterfaceStat entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, InterfaceStatVo.class));
@@ -60,7 +60,7 @@ public class InterfaceStatController extends SuperController<InterfaceStatServic
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询接口统计")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<InterfaceStatVo>> page(@RequestBody @Validated PageParams<InterfaceStatQuery> params) {
         Page<InterfaceStatVo> page = Page.of(params.getCurrent(), params.getSize());
         InterfaceStat entity = BeanUtil.toBean(params.getModel(), InterfaceStat.class);
@@ -79,7 +79,7 @@ public class InterfaceStatController extends SuperController<InterfaceStatServic
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<InterfaceStatVo>> list(@RequestBody @Validated InterfaceStatQuery params) {
         InterfaceStat entity = BeanUtil.toBean(params, InterfaceStat.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));

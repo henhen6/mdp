@@ -53,7 +53,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存接口")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody InterfaceConfigDto dto) {
         return R.success(superService.saveDto(dto).getId());
     }
@@ -66,7 +66,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "根据主键删除接口")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@RequestBody List<Long> ids) {
         return R.success(superService.removeByIds(ids));
     }
@@ -79,7 +79,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
      */
     @PostMapping("/update")
     @Operation(summary = "修改", description = "根据主键更新接口")
-    @RequestLog(value = "修改", request = false)
+    @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody InterfaceConfigDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
@@ -92,7 +92,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
      */
     @PostMapping("/updateConfig")
     @Operation(summary = "修改配置", description = "根据主键修改配置")
-    @RequestLog(value = "修改配置", request = false)
+    @RequestLog(value = "修改配置", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> updateConfig(@RequestBody InterfaceConfigSettingDto dto) {
         return R.success(superService.updateConfigById(dto));
     }
@@ -105,7 +105,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
      */
     @GetMapping("/getById")
     @Operation(summary = "单体查询", description = "根据主键获取接口")
-    @RequestLog("'单体查询:' + #id")
+    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<InterfaceConfigVo> get(@RequestParam Long id) {
         InterfaceConfig entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, InterfaceConfigVo.class));
@@ -119,7 +119,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
      */
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询接口")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", response = false)
+    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<InterfaceConfigVo>> page(@RequestBody @Validated PageParams<InterfaceConfigQuery> params) {
         Page<InterfaceConfigVo> page = Page.of(params.getCurrent(), params.getSize());
         InterfaceConfig entity = BeanUtil.toBean(params.getModel(), InterfaceConfig.class);
@@ -137,7 +137,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
      */
     @PostMapping("/list")
     @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", response = false)
+    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<InterfaceConfigVo>> list(@RequestBody @Validated InterfaceConfigQuery params) {
         InterfaceConfig entity = BeanUtil.toBean(params, InterfaceConfig.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
@@ -147,7 +147,7 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
 
     @PostMapping("/listImplClass")
     @Operation(summary = "获取接口实现类", description = "获取系统中存在的接口实现类")
-    @RequestLog(value = "获取接口实现类", response = false)
+    @RequestLog(value = "获取接口实现类", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<Option>> listImplClass() {
         Map<String, MsgTaskStrategy> beansOfType = SpringUtil.getBeansOfType(MsgTaskStrategy.class);
         List<Option> list = new ArrayList<>();

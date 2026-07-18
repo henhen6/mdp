@@ -36,7 +36,7 @@ public class RoleAppRelController extends SuperController<RoleAppRelService, Rol
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存角色应用关联")
-    @RequestLog(value = "新增", request = false)
+    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Boolean> save(@Validated @RequestBody RoleAppRelDto dto) {
         return R.success(superService.saveByDto(dto));
     }
@@ -49,7 +49,7 @@ public class RoleAppRelController extends SuperController<RoleAppRelService, Rol
      */
     @PostMapping("/delete")
     @Operation(summary = "删除", description = "删除角色应用关联")
-    @RequestLog("'删除:' + #ids")
+    @RequestLog(value = "'删除:' + #ids", logType = RequestLog.LogType.DELETE)
     public R<Boolean> delete(@Validated @RequestBody RoleAppRelDto dto) {
         return R.success(superService.delete(dto));
     }
