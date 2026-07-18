@@ -41,26 +41,33 @@ class DashboardUserServiceTest {
     }
 
     @Test
-    void getUserTrend7Days() {
-        List<TrendVo> trend = dashboardUserService.getUserTrend(7);
+    void getUserTrendWithDateRange() {
+        // 指定日期范围
+        List<TrendVo> trend = dashboardUserService.getUserTrend("2026-07-01", "2026-07-07");
         assertNotNull(trend);
-        // 包含今天的 7 个日期点（含今天）
         assertEquals(7, trend.size());
     }
 
     @Test
-    void getUserTrend30Days() {
-        List<TrendVo> trend = dashboardUserService.getUserTrend(30);
+    void getUserTrendNullDefaultsToLast7Days() {
+        // null 参数应默认近7天
+        List<TrendVo> trend = dashboardUserService.getUserTrend(null, null);
         assertNotNull(trend);
-        assertEquals(30, trend.size());
+        assertEquals(7, trend.size());
     }
 
     @Test
-    void getUserTrendIllegalDaysDefaultsTo7() {
-        // 非法值（不是 7 也不是 30）应默认为 7
-        List<TrendVo> trend = dashboardUserService.getUserTrend(15);
+    void getUserTrendOnlyStartDate() {
+        // 只有开始日期
+        List<TrendVo> trend = dashboardUserService.getUserTrend("2026-07-01", null);
         assertNotNull(trend);
-        assertEquals(7, trend.size());
+    }
+
+    @Test
+    void getUserTrendOnlyEndDate() {
+        // 只有结束日期
+        List<TrendVo> trend = dashboardUserService.getUserTrend(null, "2026-07-07");
+        assertNotNull(trend);
     }
 
     @Test

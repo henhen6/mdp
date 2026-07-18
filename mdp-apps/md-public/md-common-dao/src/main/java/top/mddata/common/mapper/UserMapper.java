@@ -56,11 +56,12 @@ public interface UserMapper extends SuperMapper<User> {
     void incrPwErrorNumById(@Param("id") Long id, @Param("now") LocalDateTime now);
 
     /**
-     * 按日统计新增用户数（指定起始时间之后）。
+     * 按日统计新增用户数（指定日期区间）。
      *
      * <p>手写 SQL，已手动过滤 deleted_at = 0。</p>
      *
-     * @param startTime 起始时间（包含）
+     * @param startTime 开始日期时间（包含），格式：yyyy-MM-dd 00:00:00
+     * @param endTime   截止日期时间（包含），格式：yyyy-MM-dd 23:59:59
      * @return 每日新增用户数，key=date(yyyy-MM-dd)、value=count
      */
     @Select({
@@ -69,11 +70,12 @@ public interface UserMapper extends SuperMapper<User> {
               FROM mdc_user
              WHERE deleted_at = 0
                AND created_at >= #{startTime, jdbcType=TIMESTAMP}
+               AND created_at <= #{endTime, jdbcType=TIMESTAMP}
              GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
              ORDER BY date ASC
             """
     })
-    List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
+    List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     /**
      * 按状态统计用户数。

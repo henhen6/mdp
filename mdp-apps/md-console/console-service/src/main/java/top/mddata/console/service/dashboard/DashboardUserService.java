@@ -25,10 +25,11 @@ public interface DashboardUserService {
     /**
      * 获取用户增长趋势
      *
-     * @param days 统计天数（7 或 30）
+     * @param startDate 开始日期（yyyy-MM-dd）
+     * @param endDate   截止日期（yyyy-MM-dd）
      * @return 用户增长趋势数据
      */
-    List<TrendVo> getUserTrend(int days);
+    List<TrendVo> getUserTrend(String startDate, String endDate);
 
     /**
      * 获取部门用户排行

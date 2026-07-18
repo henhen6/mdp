@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.User;
+import top.mddata.common.enumeration.StateEnum;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.enumeration.organization.UserTypeEnum;
-import top.mddata.common.enumeration.StateEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.console.entity.permission.Role;
@@ -75,11 +75,15 @@ public class DashboardUserServiceImpl implements DashboardUserService {
     }
 
     @Override
-    public List<TrendVo> getUserTrend(int days) {
-        int safeDays = (days != 7 && days != 30) ? 7 : days;
-        LocalDateTime startTime = LocalDateTime.of(LocalDate.now().minusDays(safeDays - 1L), LocalTime.MIN);
+    public List<TrendVo> getUserTrend(String startDate, String endDate) {
+        // 解析日期，默认近7天
+        LocalDate start = startDate != null ? LocalDate.parse(startDate) : LocalDate.now().minusDays(6);
+        LocalDate end = endDate != null ? LocalDate.parse(endDate) : LocalDate.now();
 
-        List<Map<String, Object>> rawList = userMapper.countByDay(startTime);
+        LocalDateTime startTime = start.atStartOfDay();
+        LocalDateTime endTime = end.atTime(LocalTime.MAX);
+
+        List<Map<String, Object>> rawList = userMapper.countByDayRange(startTime, endTime);
 
         // 用 Map 缓存查询结果，便于补全缺失日期
         Map<String, Long> dateCountMap = new java.util.HashMap<>();
@@ -89,11 +93,11 @@ public class DashboardUserServiceImpl implements DashboardUserService {
             dateCountMap.put(date, count);
         }
 
-        // 按日期连续生成区间（包含今天），缺失日期补 0
-        List<TrendVo> result = new ArrayList<>(safeDays);
-        LocalDate today = LocalDate.now();
-        for (int i = safeDays - 1; i >= 0; i--) {
-            LocalDate d = today.minusDays(i);
+        // 按日期连续生成区间，缺失日期补 0
+        List<TrendVo> result = new ArrayList<>();
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
+        for (int i = 0; i < daysBetween; i++) {
+            LocalDate d = start.plusDays(i);
             String key = d.toString();
             TrendVo vo = new TrendVo();
             vo.setDate(key);
@@ -138,7 +142,7 @@ public class DashboardUserServiceImpl implements DashboardUserService {
         List<DistributionVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             DistributionVo vo = new DistributionVo();
-            vo.setName(convertUserStatus(toLong(raw.get("code"))));
+            vo.setName(convertUserStatus(toBoolean(raw.get("code"))));
             long count = toLong(raw.get("count"));
             vo.setCount(count);
             if (total > 0) {
@@ -155,11 +159,11 @@ public class DashboardUserServiceImpl implements DashboardUserService {
         return result;
     }
 
-    private String convertUserStatus(Long code) {
-        if (code == null) {
+    private String convertUserStatus(Boolean enabled) {
+        if (enabled == null) {
             return null;
         }
-        return StateEnum.of(code.intValue()).getDesc();
+        return enabled ? StateEnum.ENABLE.getDesc() : StateEnum.DISABLE.getDesc();
     }
 
     private List<DistributionVo> toTypeDistributionList(List<Map<String, Object>> rawList) {
@@ -261,5 +265,18 @@ public class DashboardUserServiceImpl implements DashboardUserService {
 
     private static String toStr(Object value) {
         return value == null ? null : String.valueOf(value);
+    }
+
+    private static Boolean toBoolean(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Boolean b) {
+            return b;
+        }
+        if (value instanceof Number n) {
+            return n.longValue() != 0;
+        }
+        return Boolean.parseBoolean(String.valueOf(value));
     }
 }

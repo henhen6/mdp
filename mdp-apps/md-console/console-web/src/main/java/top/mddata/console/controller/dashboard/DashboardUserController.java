@@ -43,12 +43,17 @@ public class DashboardUserController {
 
     /**
      * 用户增长趋势
+     *
+     * @param startDate 开始日期（yyyy-MM-dd），默认近7天
+     * @param endDate   截止日期（yyyy-MM-dd），默认今天
      */
     @GetMapping("/trend")
-    @Operation(summary = "用户增长趋势", description = "按天统计新增用户数，仅支持 7 或 30 天")
+    @Operation(summary = "用户增长趋势", description = "按天统计指定日期区间内的新增用户数")
     @RequestLog(value = "查询用户增长趋势", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<TrendVo>> getUserTrend(@RequestParam(defaultValue = "7") int days) {
-        return R.success(dashboardUserService.getUserTrend(days));
+    public R<List<TrendVo>> getUserTrend(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+        return R.success(dashboardUserService.getUserTrend(startDate, endDate));
     }
 
     /**
