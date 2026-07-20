@@ -2,5 +2,9 @@
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
   },
-  "autoCheckpoint": true
+  "autoCheckpoint": true,
+  "permissions": {
+    "allow": ["WebFetch", "WebSearch"]
+  },
+  "skipWebFetchPreflight": true
 }
