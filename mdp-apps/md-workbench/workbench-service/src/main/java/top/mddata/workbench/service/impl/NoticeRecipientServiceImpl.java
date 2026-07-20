@@ -19,4 +19,8 @@ import top.mddata.workbench.service.NoticeRecipientService;
 @RequiredArgsConstructor
 public class NoticeRecipientServiceImpl extends SuperServiceImpl<NoticeRecipientMapper, NoticeRecipient> implements NoticeRecipientService {
 
+    @Override
+    public Long countUnreadByUserId(Long userId) {
+        return mapper.countUnreadByUserId(userId);
+    }
 }

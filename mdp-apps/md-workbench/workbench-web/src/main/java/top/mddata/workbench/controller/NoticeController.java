@@ -170,4 +170,14 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
         return R.success(superService.countByCategoryDistribution());
     }
 
+    /**
+     * 统计指定用户的站内通知未读数（用于大屏）。
+     */
+    @GetMapping("/countUnread")
+    @Operation(hidden = true)
+    @RequestLog(value = "统计站内通知未读数", logType = RequestLog.LogType.QUERY)
+    public R<Long> countUnread(@RequestParam Long userId) {
+        return R.success(noticeRecipientService.countUnreadByUserId(userId));
+    }
+
 }

@@ -2,6 +2,7 @@ package top.mddata.workbench.facade.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.mddata.base.util.ContextUtil;
 import top.mddata.workbench.entity.Notice;
 import top.mddata.workbench.entity.NoticeRecipient;
 import top.mddata.workbench.facade.NoticeFacade;
@@ -39,5 +40,14 @@ public class NoticeFacadeImpl implements NoticeFacade {
     @Override
     public List<Map<String, Object>> countByCategoryDistribution() {
         return noticeApi.countByCategoryDistribution().getData();
+    }
+
+    @Override
+    public Long countUnread() {
+        Long userId = ContextUtil.getUserId();
+        if (userId == null) {
+            return 0L;
+        }
+        return noticeApi.countUnread(userId).getData();
     }
 }

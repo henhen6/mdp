@@ -66,8 +66,7 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
     public SuccessRateVo getSuccessRate() {
         SuccessRateVo vo = new SuccessRateVo();
 
-        LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        Map<String, Object> todaySum = interfaceLogMapper.sumToday(todayStart);
+        Map<String, Object> todaySum = interfaceLogMapper.sumAll();
         long success = toLong(todaySum != null ? todaySum.get("successCount") : 0L);
         long fail = toLong(todaySum != null ? todaySum.get("failCount") : 0L);
         long total = success + fail;

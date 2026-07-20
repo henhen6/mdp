@@ -41,4 +41,11 @@ public interface NoticeFacade {
      * @return key=msgCategory、value=count
      */
     List<Map<String, Object>> countByCategoryDistribution();
+
+    /**
+     * 统计当前用户的站内通知未读数。
+     *
+     * @return 未读通知数量
+     */
+    Long countUnread();
 }

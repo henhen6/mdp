@@ -3,20 +3,76 @@
 ## 定位
 首页核心指标，一屏展示系统全貌
 
+## 卡片分类布局
+
+系统概览数字卡片按业务类型分为三大类：**总量统计**、**待办事项**、**质量指标**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 总量统计                                                     │
+│ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐      │
+│ │用户总数│ │组织总数│ │本月新增│ │应用总数│ │文件总数│      │
+│ └────────┘ └────────┘ └────────┘ └────────┘ └────────┘      │
+│ ┌────────┐                                                    │
+│ │文件容量│                                                    │
+│ └────────┘                                                    │
+├─────────────────────────────────────────────────────────────┤
+│ 待办事项                                                     │
+│ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐      │
+│ │待办通知│ │公告通知│ │预警通知│ │未读通知│ │待审批应用│      │
+│ └────────┘ └────────┘ └────────┘ └────────┘ └────────┘      │
+├─────────────────────────────────────────────────────────────┤
+│ 质量指标                                                     │
+│ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐         │
+│ │  消息成功率   │ │  接口成功率   │ │  回调成功率   │         │
+│ │    98.5%     │ │    99.2%     │ │    95.0%     │         │
+│ └──────────────┘ └──────────────┘ └──────────────┘         │
+│ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐         │
+│ │ API调用成功率 │ │事件通知成功率 │ │  今日登录次数  │         │
+│ │    98.0%     │ │    97.5%     │ │    1,234     │         │
+│ └──────────────┘ └──────────────┘ └──────────────┘         │
+│ ┌──────────────┐ ┌──────────────┐                           │
+│ │  今日API调用   │ │ 临时文件占用率 │                           │
+│ │    56,789    │ │    12.5%     │                           │
+│ └──────────────┘ └──────────────┘                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## 数据项
+
+### 总量统计
 
 | 指标 | 数据来源 | 统计口径 | 展示形式 | 所属模块 |
 |-----|---------|---------|---------|---------|
 | 用户总数 | `mdc_user` | `deleted_at=0` 且 `state=1` | 数字卡片 | md-console |
 | 组织总数 | `mdc_org` | `deleted_at=0` 且 `state=1` | 数字卡片 | md-console |
+| 本月新增用户数 | `mdc_user` | `created_at` 在本月 | 数字卡片 | md-console |
 | 应用总数 | `mdo_app` | `state=1`（正常状态） | 数字卡片 | md-open |
-| 今日登录次数 | `mdw_login_log` | `login_date=今天` 且 `status=01` | 数字卡片 | md-workbench |
-| 今日接口调用量 | `mdo_api_call_log` | `created_at=今天` | 数字卡片 | md-open |
+| 文件总数 | `mdc_file` | `count(id)` | 数字卡片 | md-console |
+| 文件总容量 | `mdc_file` | `sum(file_size)` | 数字卡片（带单位） | md-console |
+
+### 待办事项
+
+| 指标 | 数据来源 | 统计口径 | 展示形式 | 所属模块 |
+|-----|---------|---------|---------|---------|
 | 待办通知数 | `mdc_notice` | `msg_category=1`（待办）且今日创建 | 数字卡片 | md-console |
 | 公告通知数 | `mdc_notice` | `msg_category=2`（公告）且今日创建 | 数字卡片 | md-console |
 | 预警通知数 | `mdc_notice` | `msg_category=3`（预警）且今日创建 | 数字卡片 | md-console |
-| 文件总数 | `mdc_file` | `count(id)` | 数字卡片 | md-console |
-| 文件总容量 | `mdc_file` | `sum(file_size)` | 数字卡片（带单位） | md-console |
+| 站内通知未读数 | `mdc_notice` + `mdc_notice_recipient` | `recipient_id=当前用户` 且 `read_status=0` | 数字卡片 | md-console |
+| 待审批应用数 | `mdo_app` | `state=0`（待审批） | 数字卡片 | md-open |
+
+### 质量指标
+
+| 指标       | 数据来源 | 统计口径                               | 展示形式 | 所属模块 |
+|----------|---------|------------------------------------|---------|---------|
+| 消息成功率    | `mdc_notice_send_log` | `success_count / total_count`      | 百分比数字卡片 | md-console |
+| 接口成功率    | `mdc_interface_log` | `success_count / total_count`      | 百分比数字卡片 | md-console |
+| 回调成功率    | `mdo_callback_log` | `success_count / total_count`      | 百分比数字卡片 | md-open |
+| API调用成功率  | `mdo_api_call_log` | `success_count / total_count`      | 百分比数字卡片 | md-open |
+| 事件通知成功率  | `mdo_event_push_log` | `success_count / total_count`      | 百分比数字卡片 | md-open |
+| 今日登录次数   | `mdw_login_log` | `login_date=今天` 且 `status=01`      | 数字卡片 | md-workbench |
+| 今日API调用量 | `mdo_api_call_log` | `created_at=今天`                    | 数字卡片 | md-open |
+| 临时文件占用率  | `mdc_file` | `temp_file_rate` | 百分比数字卡片 | md-console |
 
 ## 接口设计
 
@@ -30,16 +86,27 @@
 ### 接口清单
 
 #### md-console 模块
-- `GET /dashboard/overview/console`
-  - 返回：用户总数、组织总数、待办通知数、公告通知数、预警通知数、文件总数、文件总容量
+- `GET /api/console/dashboard/overview/console`
+  - 返回：用户总数、组织总数、本月新增用户数、待办通知数、公告通知数、预警通知数、站内通知未读数、文件总数、文件总容量、临时文件占用率、消息成功率
+- `GET /api/console/dashboard/monitor/successRate`
+  - 返回：接口成功率（rate 字段）
 
 #### md-open 模块
-- `GET /dashboard/open/overview`
-  - 返回：应用总数、今日接口调用量
+- `GET /api/open/dashboard/open/overview`
+  - 返回：应用总数、待审批应用数、今日API调用量
+- `GET /api/open/dashboard/open/stat/success-rates`
+  - 返回：回调成功率、API调用成功率、事件通知成功率（callback、apiCall、eventPush 三个业务的 successCount/totalCount）
 
 #### md-workbench 模块
-- `GET /dashboard/overview/workbench`
+- `GET /api/workbench/dashboard/overview/workbench`
   - 返回：今日登录次数
 
 ## 数据实时性
 准实时（5分钟缓存）
+
+## 更新日志
+
+### 2026-07-19
+- 删除 API调用失败率指标
+- 修复接口成功率数据来源：从 `/dashboard/monitor/successRate` 获取
+- 新增回调成功率、API调用成功率、事件通知成功率，从 `/dashboard/open/stat/success-rates` 获取

@@ -15,8 +15,10 @@ import top.mddata.open.mapper.admin.ApiCallLogMapper;
 import top.mddata.open.mapper.admin.ApiMapper;
 import top.mddata.open.mapper.admin.AppApplyMapper;
 import top.mddata.open.mapper.admin.AppMapper;
+import top.mddata.open.mapper.admin.EventPushLogMapper;
 import top.mddata.open.mapper.admin.EventPushMapper;
 import top.mddata.open.mapper.admin.EventTriggerMapper;
+import top.mddata.open.mapper.admin.NotifyInfoLogMapper;
 import top.mddata.open.mapper.admin.OauthLogMapper;
 import top.mddata.open.service.dashboard.DashboardOpenService;
 import top.mddata.open.vo.dashboard.ApiRankVo;
@@ -65,6 +67,8 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     private final OauthLogMapper oauthLogMapper;
     private final EventTriggerMapper eventTriggerMapper;
     private final EventPushMapper eventPushMapper;
+    private final NotifyInfoLogMapper notifyInfoLogMapper;
+    private final EventPushLogMapper eventPushLogMapper;
 
     @Override
     public OverviewOpenVo getOverviewOpen() {
@@ -289,6 +293,35 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
             vo.setPushCount(arr[1]);
             result.add(vo);
         }
+        return result;
+    }
+
+    @Override
+    public Map<String, Map<String, Long>> getSuccessRates() {
+
+        Map<String, Map<String, Long>> result = new HashMap<>();
+
+        // 1. 回调成功率（mdo_notify_info_log 表，exec_status = 1）
+        Map<String, Object> callbackStat = notifyInfoLogMapper.sumAll();
+        result.put("callback", Map.of(
+                "successCount", toLong(callbackStat != null ? callbackStat.get("successCount") : 0L),
+                "totalCount", toLong(callbackStat != null ? callbackStat.get("totalCount") : 0L)
+        ));
+
+        // 2. API调用成功率（mdo_api_call_log 表，exec_status = 1）
+        Map<String, Object> apiCallStat = apiCallLogMapper.sumAll();
+        result.put("apiCall", Map.of(
+                "successCount", toLong(apiCallStat != null ? apiCallStat.get("successCount") : 0L),
+                "totalCount", toLong(apiCallStat != null ? apiCallStat.get("totalCount") : 0L)
+        ));
+
+        // 3. 事件通知成功率（mdo_event_push_log 表，exec_status = 1）
+        Map<String, Object> eventPushStat = eventPushLogMapper.sumAll();
+        result.put("eventPush", Map.of(
+                "successCount", toLong(eventPushStat != null ? eventPushStat.get("successCount") : 0L),
+                "totalCount", toLong(eventPushStat != null ? eventPushStat.get("totalCount") : 0L)
+        ));
+
         return result;
     }
 

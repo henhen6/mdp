@@ -12,6 +12,7 @@ import top.mddata.open.vo.dashboard.OverviewOpenVo;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 开放平台统计 服务层
@@ -85,4 +86,12 @@ public interface DashboardOpenService {
      * @param endDate   截止日期（包含）
      */
     List<EventPushTrendVo> getEventPushTrend(LocalDate startDate, LocalDate endDate);
+
+    /**
+     * 获取各项业务成功率统计
+     *
+     * @return key=successCount、totalCount
+     *         分别包含 interface、callback、apiCall、eventPush 四个业务类型
+     */
+    Map<String, Map<String, Long>> getSuccessRates();
 }

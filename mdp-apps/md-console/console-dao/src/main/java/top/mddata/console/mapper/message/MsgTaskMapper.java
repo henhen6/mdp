@@ -107,4 +107,20 @@ public interface MsgTaskMapper extends SuperMapper<MsgTask> {
             """
     })
     List<Map<String, Object>> templateRank(@Param("limit") int limit);
+
+    /**
+     * 统计消息发送成功率和总消息数。
+     *
+     * <p>mdc_msg_task 没有 deleted_at 字段。</p>
+     *
+     * @return key=successCount、totalCount、rate(百分比)
+     */
+    @Select({
+            """
+            SELECT COUNT(CASE WHEN status = 2 THEN 1 END) AS successCount,
+                   COUNT(*) AS totalCount
+              FROM mdc_msg_task
+            """
+    })
+    Map<String, Object> statSuccessRate();
 }

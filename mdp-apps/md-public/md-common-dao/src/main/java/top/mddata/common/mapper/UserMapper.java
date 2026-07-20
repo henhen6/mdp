@@ -115,4 +115,24 @@ public interface UserMapper extends SuperMapper<User> {
             """
     })
     List<Map<String, Object>> countByType();
+
+    /**
+     * 统计本月新增用户数。
+     *
+     * <p>手写 SQL，已手动过滤 deleted_at = 0。</p>
+     *
+     * @param startTime 本月开始时间
+     * @param endTime   本月结束时间
+     * @return 用户数量
+     */
+    @Select({
+            """
+            SELECT COUNT(*) AS value
+              FROM mdc_user
+             WHERE deleted_at = 0
+               AND created_at >= #{startTime, jdbcType=TIMESTAMP}
+               AND created_at <= #{endTime, jdbcType=TIMESTAMP}
+            """
+    })
+    Long countNewUsersInMonth(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 }

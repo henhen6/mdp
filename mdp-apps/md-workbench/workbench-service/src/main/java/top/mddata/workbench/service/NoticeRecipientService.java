@@ -11,4 +11,11 @@ import top.mddata.workbench.entity.NoticeRecipient;
  */
 public interface NoticeRecipientService extends SuperService<NoticeRecipient> {
 
+    /**
+     * 统计指定用户的站内通知未读数。
+     *
+     * @param userId 用户ID
+     * @return 未读通知数量
+     */
+    Long countUnreadByUserId(Long userId);
 }

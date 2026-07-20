@@ -1,8 +1,12 @@
 package top.mddata.open.mapper.admin;
 
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 import top.mddata.base.mvcflex.mapper.SuperMapper;
 import top.mddata.open.entity.admin.NotifyInfoLog;
+import top.mddata.open.entity.admin.base.NotifyInfoLogBase;
+
+import java.util.Map;
 
 /**
  * 回调任务日志 映射层。
@@ -13,4 +17,19 @@ import top.mddata.open.entity.admin.NotifyInfoLog;
 @Repository
 public interface NotifyInfoLogMapper extends SuperMapper<NotifyInfoLog> {
 
+    /**
+     * 汇总今日成功次数与总次数（created_at 在指定时间之后）。
+     * execStatus: 1-执行成功 2-执行失败
+     *
+     * @return key=successCount、totalCount
+     */
+    @Select({
+            """
+                    SELECT COALESCE(SUM(CASE WHEN exec_status = '1' THEN 1 ELSE 0 END), 0) AS successCount,
+                           COALESCE(SUM(CASE WHEN exec_status IN ('1', '2') THEN 1 ELSE 0 END), 0) AS totalCount
+                      FROM
+                    """
+            + NotifyInfoLogBase.TABLE_NAME
+    })
+    Map<String, Object> sumAll();
 }

@@ -55,4 +55,13 @@ public interface NoticeApi {
      */
     @GetMapping("/countByCategoryDistribution")
     R<List<Map<String, Object>>> countByCategoryDistribution();
+
+    /**
+     * 统计当前用户的站内通知未读数。
+     *
+     * @param userId 用户ID（从请求头获取）
+     * @return 未读通知数量
+     */
+    @GetMapping("/countUnread")
+    R<Long> countUnread(@RequestParam Long userId);
 }
