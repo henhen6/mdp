@@ -6,11 +6,14 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.console.dto.system.CopyFilesDto;
 import top.mddata.console.dto.system.FileUploadDto;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
@@ -98,5 +102,30 @@ public class FileUploadController {
         return R.success(fileService.findUrlByObject(objectType, objectId));
     }
 
+    /**
+     * 下载一个文件或多个文件打包下载
+     *
+     * @param ids 文件id
+     */
+    @Operation(summary = "根据文件id打包下载文件", description = "根据文件id打包下载文件")
+    @GetMapping(value = "/download", produces = "application/octet-stream")
+    @RequestLog(value = "批量下载附件", logType = RequestLog.LogType.QUERY)
+    public void download(@RequestParam List<Long> ids, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ArgumentAssert.notEmpty(ids, "请选择至少一个附件");
+        fileService.download(request, response, ids);
+    }
+
+    /**
+     * 根据文件id下载文件
+     *
+     * @param id 文件id
+     */
+    @Operation(summary = "根据文件id下载文件", description = "根据文件id下载文件")
+    @GetMapping(value = "/down", produces = "application/octet-stream")
+    @RequestLog(value = "下载附件", logType = RequestLog.LogType.QUERY)
+    public void download(@RequestParam Long id, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ArgumentAssert.notNull(id, "请选择至少一个附件");
+        fileService.download(request, response, id);
+    }
 
 }

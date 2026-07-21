@@ -1,5 +1,7 @@
 package top.mddata.console.service.system;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.dto.system.CopyFilesDto;
@@ -55,4 +57,22 @@ public interface FileService extends SuperService<File> {
      * @return 文件集合
      */
     Map<Long, FileVo> findUrlByObject(String objectType, Long objectId);
+
+    /**
+     * 下载一个文件或多个文件打包下载
+     *
+     * @param request  请求
+     * @param response 响应
+     * @param ids      文件id
+     */
+    void download(HttpServletRequest request, HttpServletResponse response, List<Long> ids) throws Exception;
+
+    /**
+     * 根据文件id下载文件
+     *
+     * @param request  请求
+     * @param response 响应
+     * @param id       文件id
+     */
+    void download(HttpServletRequest request, HttpServletResponse response, Long id) throws Exception;
 }

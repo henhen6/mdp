@@ -14,6 +14,10 @@ public interface FileObjectType {
      * 文件临时对象类型
      */
     String TEMP_OBJECT_TYPE = "temp";
+    /**
+     * 后台管理上传的对象类型
+     */
+    String UPLOAD_OBJECT_TYPE = "upload";
 
     interface Console {
         /**

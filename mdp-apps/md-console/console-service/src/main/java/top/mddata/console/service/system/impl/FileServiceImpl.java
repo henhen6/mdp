@@ -7,6 +7,8 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.mybatisflex.core.query.QueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.x.file.storage.core.FileInfo;
@@ -279,5 +281,55 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
      */
     protected String getDateFolder() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern(SLASH_DATE_FORMAT + "/"));
+    }
+
+    @Override
+    public void download(HttpServletRequest request, HttpServletResponse response, List<Long> ids) throws Exception {
+        List<File> files = listByIds(ids);
+        if (files.size() == 1) {
+            download(response, files.get(0));
+        } else {
+            // 多个文件打包下载
+            String zipName = files.size() + "个文件.zip";
+            response.setContentType("application/octet-stream;charset=UTF-8");
+            response.setHeader("Content-Disposition", "attachment; filename=" + zipName);
+            java.io.OutputStream outputStream = response.getOutputStream();
+            java.util.zip.ZipOutputStream zipOut = new java.util.zip.ZipOutputStream(outputStream);
+            for (File file : files) {
+                addFileToZip(file, zipOut);
+            }
+            zipOut.finish();
+            zipOut.flush();
+        }
+    }
+
+    @Override
+    public void download(HttpServletRequest request, HttpServletResponse response, Long id) throws Exception {
+        File file = getById(id);
+        if (file == null) {
+            throw new BizException("文件不存在");
+        }
+        download(response, file);
+    }
+
+    private void download(HttpServletResponse response, File file) throws Exception {
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
+        String name = file.getFilename();
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=" + java.net.URLEncoder.encode(name, "UTF-8"));
+        fileStorageService.download(fileInfo).outputStream(response.getOutputStream());
+    }
+
+    private void addFileToZip(File file, java.util.zip.ZipOutputStream zipOut) {
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
+        try {
+            zipOut.putNextEntry(new java.util.zip.ZipEntry(file.getFilename()));
+            fileStorageService.download(fileInfo).outputStream(zipOut);
+            zipOut.closeEntry();
+        } catch (Exception e) {
+            log.error("添加文件到压缩包失败: {}", file.getId(), e);
+        }
     }
 }

@@ -111,18 +111,4 @@ public class FileController extends SuperController<FileService, File> {
         return R.success(page);
     }
 
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<FileVo>> list(@RequestBody @Validated FileQuery params) {
-        File entity = BeanUtil.toBean(params, File.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<FileVo> listVo = superService.listAs(wrapper, FileVo.class);
-        return R.success(listVo);
-    }
 }
