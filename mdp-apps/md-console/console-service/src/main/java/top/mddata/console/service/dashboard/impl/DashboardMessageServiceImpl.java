@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import cn.hutool.core.convert.Convert;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 消息通知统计 服务层实现
@@ -43,6 +45,14 @@ import java.util.Map;
 public class DashboardMessageServiceImpl implements DashboardMessageService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    /** 默认分页大小 */
+    private static final int DEFAULT_LIMIT = 10;
+    /** 最大分页大小 */
+    private static final int MAX_LIMIT = 100;
+    /** 默认日期范围 */
+    private static final int DEFAULT_DAYS = 6;
+    /** 百分比计算精度 */
+    private static final int PERCENT_SCALE = 2;
 
     private final MsgTaskMapper msgTaskMapper;
 
@@ -50,32 +60,26 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
     public OverviewMessageVo getOverviewMessage() {
         OverviewMessageVo vo = new OverviewMessageVo();
 
-        // 消息任务总数
         vo.setMsgCount(msgTaskMapper.selectCountByQuery(QueryWrapper.create()));
 
-        // 今日发送消息数（执行成功）
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         vo.setTodaySendCount(msgTaskMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(MsgTask::getStatus, MsgTaskStatusEnum.SUCCESS.getCode())
                         .ge(MsgTask::getSendTime, todayStart)));
 
-        // 待执行消息数
         vo.setPendingCount(msgTaskMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(MsgTask::getStatus, MsgTaskStatusEnum.WAITING.getCode())));
 
-        // 草稿消息数
         vo.setDraftCount(msgTaskMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(MsgTask::getStatus, MsgTaskStatusEnum.DRAFT.getCode())));
 
-        // 执行成功消息数
         vo.setSuccessCount(msgTaskMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(MsgTask::getStatus, MsgTaskStatusEnum.SUCCESS.getCode())));
 
-        // 执行失败消息数
         vo.setFailCount(msgTaskMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(MsgTask::getStatus, MsgTaskStatusEnum.FAIL.getCode())));
@@ -86,47 +90,7 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
     @Override
     public List<DistributionVo> getTypeDistribution() {
         List<Map<String, Object>> rawList = msgTaskMapper.countByType();
-        return toMsgTypeDistributionList(rawList);
-    }
-
-    private List<DistributionVo> toMsgTypeDistributionList(List<Map<String, Object>> rawList) {
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            DistributionVo vo = new DistributionVo();
-            vo.setName(convertMsgType(toLong(raw.get("code"))));
-            long count = toLong(raw.get("count"));
-            vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private String convertMsgType(Long code) {
-        if (code == null) {
-            return null;
-        }
-        for (MsgTypeEnum enumVal : MsgTypeEnum.values()) {
-            if (enumVal.getCode().equals(code.intValue())) {
-                return enumVal.getDesc();
-            }
-        }
-        return "其他-" + code;
+        return convertDistributionList(rawList, code -> convertMsgType(Convert.toLong(code)));
     }
 
     @Override
@@ -136,10 +100,9 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
             return Collections.emptyList();
         }
 
-        // 转换 msgCategory 数字到中文名
         List<Map<String, Object>> translated = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
-            Long category = toLong(raw.get("code"));
+            Long category = Convert.toLong(raw.get("code"));
             Map<String, Object> row = new HashMap<>(3);
             row.put("name", convertMsgCategory(category));
             row.put("count", raw.get("count"));
@@ -150,12 +113,11 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
 
     @Override
     public List<TrendLineVo> getTrend(String startDate, String endDate, Integer type) {
-        // 默认近7天
         LocalDate end = (endDate == null || endDate.isBlank())
                 ? LocalDate.now()
                 : LocalDate.parse(endDate, DATE_FORMATTER);
         LocalDate start = (startDate == null || startDate.isBlank())
-                ? end.minusDays(6)
+                ? end.minusDays(DEFAULT_DAYS)
                 : LocalDate.parse(startDate, DATE_FORMATTER);
 
         LocalDateTime startTime = LocalDateTime.of(start, LocalTime.MIN);
@@ -164,17 +126,16 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
         List<Map<String, Object>> rawList = msgTaskMapper.countTrendByDayRange(startTime, endTime);
         Map<String, TrendLineVo> dateMap = new HashMap<>();
         for (Map<String, Object> raw : rawList) {
-            String date = toStr(raw.get("date"));
+            String date = Convert.toStr(raw.get("date"));
             TrendLineVo vo = new TrendLineVo();
             vo.setDate(date);
-            vo.setNoticeCount(toLong(raw.get("noticeCount")));
-            vo.setSmsCount(toLong(raw.get("smsCount")));
-            vo.setMailCount(toLong(raw.get("mailCount")));
-            vo.setTotalCount(toLong(raw.get("totalCount")));
+            vo.setNoticeCount(Convert.toLong(raw.get("noticeCount")));
+            vo.setSmsCount(Convert.toLong(raw.get("smsCount")));
+            vo.setMailCount(Convert.toLong(raw.get("mailCount")));
+            vo.setTotalCount(Convert.toLong(raw.get("totalCount")));
             dateMap.put(date, vo);
         }
 
-        // 补全缺失日期
         List<TrendLineVo> result = new ArrayList<>();
         long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
         for (int i = 0; i < daysBetween; i++) {
@@ -194,6 +155,89 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
         return result;
     }
 
+    @Override
+    public List<RankVo> getTemplateRank(int limit) {
+        List<Map<String, Object>> rawList = msgTaskMapper.templateRank(normalizeLimit(limit));
+        return toRankList(rawList);
+    }
+
+    /** 归一化分页大小 */
+    private int normalizeLimit(int limit) {
+        if (limit <= 0) {
+            return DEFAULT_LIMIT;
+        }
+        return Math.min(limit, MAX_LIMIT);
+    }
+
+    /** 计算百分比 */
+    private double calcPercent(long count, long total) {
+        if (total <= 0) {
+            return 0d;
+        }
+        return BigDecimal.valueOf(count)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+    /** 转换分发列表（带名称转换器） */
+    private List<DistributionVo> convertDistributionList(List<Map<String, Object>> rawList,
+                                                        java.util.function.Function<Object, String> nameConverter) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
+            DistributionVo vo = new DistributionVo();
+            vo.setName(nameConverter.apply(raw.get("code")));
+            long count = Convert.toLong(raw.get("count"));
+            vo.setCount(count);
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    /** 转换为分发列表（无转换器，直接用name字段） */
+    private List<DistributionVo> toDistributionList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
+            DistributionVo vo = new DistributionVo();
+            vo.setName(Convert.toStr(raw.get("name")));
+            long count = Convert.toLong(raw.get("count"));
+            vo.setCount(count);
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    /** 转换为排行列表 */
+    private List<RankVo> toRankList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return rawList.stream().map(raw -> {
+            RankVo vo = new RankVo();
+            vo.setName(Convert.toStr(raw.get("name")));
+            vo.setValue(Convert.toLong(raw.get("value")));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    private String convertMsgType(Long code) {
+        if (code == null) {
+            return null;
+        }
+        for (MsgTypeEnum enumVal : MsgTypeEnum.values()) {
+            if (enumVal.getCode().equals(code.intValue())) {
+                return enumVal.getDesc();
+            }
+        }
+        return "其他-" + code;
+    }
+
     private String convertMsgCategory(Long code) {
         if (code == null) {
             return "未知";
@@ -204,94 +248,5 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
             }
         }
         return "其他-" + code;
-    }
-
-    @Override
-    public List<RankVo> getTemplateRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        List<Map<String, Object>> rawList = msgTaskMapper.templateRank(safeLimit);
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<RankVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            RankVo vo = new RankVo();
-            vo.setName(toStr(raw.get("name")));
-            vo.setValue(toLong(raw.get("value")));
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private List<DistributionVo> toDistributionList(List<Map<String, Object>> rawList) {
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            DistributionVo vo = new DistributionVo();
-            vo.setName(toStr(raw.get("name")));
-            long count = toLong(raw.get("count"));
-            vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private static String categoryName(Integer category) {
-        if (category == null) {
-            return "未知";
-        }
-        return switch (category) {
-            case 1 -> "待办";
-            case 2 -> "公告";
-            case 3 -> "预警";
-            default -> "其他-" + category;
-        };
-    }
-
-    private static Long toLong(Object value) {
-        if (value == null) {
-            return 0L;
-        }
-        if (value instanceof Number n) {
-            return n.longValue();
-        }
-        try {
-            return Long.parseLong(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return 0L;
-        }
-    }
-
-    private static Integer toInt(Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (value instanceof Number n) {
-            return n.intValue();
-        }
-        try {
-            return Integer.parseInt(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    private static String toStr(Object value) {
-        return value == null ? null : String.valueOf(value);
     }
 }

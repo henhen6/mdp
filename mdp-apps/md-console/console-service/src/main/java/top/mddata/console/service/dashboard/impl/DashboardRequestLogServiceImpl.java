@@ -15,10 +15,11 @@ import top.mddata.console.vo.dashboard.RequestInterfaceRankVo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import cn.hutool.core.convert.Convert;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 请求日志统计 服务层实现
@@ -33,6 +34,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardRequestLogServiceImpl implements DashboardRequestLogService {
 
+    /** 默认分页大小 */
+    private static final int DEFAULT_LIMIT = 10;
+    /** 最大分页大小 */
+    private static final int MAX_LIMIT = 100;
+    /** 百分比计算精度 */
+    private static final int PERCENT_SCALE = 2;
+
     private final RequestLogMapper requestLogMapper;
 
     @Override
@@ -41,30 +49,15 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-
-        List<DistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
             DistributionVo vo = new DistributionVo();
-            vo.setName(convertLogType(toStr(raw.get("code"))));
-            long count = toLong(raw.get("count"));
+            vo.setName(convertLogType(Convert.toStr(raw.get("code"))));
+            long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -73,14 +66,12 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<RegionDistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        return rawList.stream().map(raw -> {
             RegionDistributionVo vo = new RegionDistributionVo();
-            vo.setProvince(toStr(raw.get("province")));
-            vo.setCount(toLong(raw.get("count")));
-            result.add(vo);
-        }
-        return result;
+            vo.setProvince(Convert.toStr(raw.get("province")));
+            vo.setCount(Convert.toLong(raw.get("count")));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -89,14 +80,12 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<ConsumingTimeVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        return rawList.stream().map(raw -> {
             ConsumingTimeVo vo = new ConsumingTimeVo();
-            vo.setName(toStr(raw.get("name")));
-            vo.setCount(toLong(raw.get("count")));
-            result.add(vo);
-        }
-        return result;
+            vo.setName(Convert.toStr(raw.get("name")));
+            vo.setCount(Convert.toLong(raw.get("count")));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -105,57 +94,85 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
         Long total = requestLogMapper.countTotal();
         Long abnormal = requestLogMapper.countAbnormal();
         Long success = requestLogMapper.countSuccess();
-        vo.setTotalCount(total != null ? total : 0L);
-        vo.setAbnormalCount(abnormal != null ? abnormal : 0L);
-        vo.setSuccessCount(success != null ? success : 0L);
+        vo.setTotalCount(nvl(total, 0L));
+        vo.setAbnormalCount(nvl(abnormal, 0L));
+        vo.setSuccessCount(nvl(success, 0L));
         return vo;
     }
 
     @Override
     public List<IpRankVo> getIpRank(int limit) {
-        if (limit <= 0) {
-            limit = 10;
-        }
-        List<Map<String, Object>> rawList = requestLogMapper.countByIpRank(limit);
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<IpRankVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            IpRankVo vo = new IpRankVo();
-            vo.setIpAddress(toStr(raw.get("ipAddress")));
-            vo.setCount(toLong(raw.get("count")));
-            result.add(vo);
-        }
-        return result;
+        List<Map<String, Object>> rawList = requestLogMapper.countByIpRank(normalizeLimit(limit));
+        return toIpRankList(rawList);
     }
 
     @Override
     public List<RequestInterfaceRankVo> getInterfaceRank(int limit) {
+        List<Map<String, Object>> rawList = requestLogMapper.countByInterfaceRank(normalizeLimit(limit));
+        return toInterfaceRankList(rawList);
+    }
+
+    /** 空值返回默认值 */
+    private static long nvl(Long value, long defaultVal) {
+        return value != null ? value : defaultVal;
+    }
+
+    /** 归一化分页大小 */
+    private int normalizeLimit(int limit) {
         if (limit <= 0) {
-            limit = 10;
+            return DEFAULT_LIMIT;
         }
-        List<Map<String, Object>> rawList = requestLogMapper.countByInterfaceRank(limit);
+        return Math.min(limit, MAX_LIMIT);
+    }
+
+    /** 计算百分比 */
+    private double calcPercent(long count, long total) {
+        if (total <= 0) {
+            return 0d;
+        }
+        return BigDecimal.valueOf(count)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+    /** 转换为IP排行列表 */
+    private List<IpRankVo> toIpRankList(List<Map<String, Object>> rawList) {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<RequestInterfaceRankVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        return rawList.stream().map(raw -> {
+            IpRankVo vo = new IpRankVo();
+            vo.setIpAddress(Convert.toStr(raw.get("ipAddress")));
+            vo.setCount(Convert.toLong(raw.get("count")));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    /** 转换为接口排行列表 */
+    private List<RequestInterfaceRankVo> toInterfaceRankList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return rawList.stream().map(raw -> {
             RequestInterfaceRankVo vo = new RequestInterfaceRankVo();
-            String classPath = toStr(raw.get("classPath"));
-            String methodName = toStr(raw.get("methodName"));
-            String httpUri = toStr(raw.get("httpUri"));
-            String httpMethod = toStr(raw.get("httpMethod"));
-            String description = toStr(raw.get("description"));
+            String classPath = Convert.toStr(raw.get("classPath"));
+            String methodName = Convert.toStr(raw.get("methodName"));
+            String httpUri = Convert.toStr(raw.get("httpUri"));
+            String httpMethod = Convert.toStr(raw.get("httpMethod"));
+            String description = Convert.toStr(raw.get("description"));
             vo.setInterfaceName(classPath + "." + methodName);
             vo.setHttpUri(httpUri);
             vo.setHttpMethod(httpMethod);
             vo.setDescription(description);
-            vo.setCount(toLong(raw.get("count")));
-            vo.setFullName(classPath + "." + methodName + "(" + httpUri + " " + httpMethod + ")(" + description + ")");
-            result.add(vo);
-        }
-        return result;
+            vo.setCount(Convert.toLong(raw.get("count")));
+            vo.setFullName(buildFullName(classPath, methodName, httpUri, httpMethod, description));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    private String buildFullName(String classPath, String methodName, String httpUri, String httpMethod, String description) {
+        return classPath + "." + methodName + "(" + httpUri + " " + httpMethod + ")(" + description + ")";
     }
 
     private String convertLogType(String value) {
@@ -168,23 +185,5 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
             }
         }
         return value;
-    }
-
-    private static Long toLong(Object value) {
-        if (value == null) {
-            return 0L;
-        }
-        if (value instanceof Number n) {
-            return n.longValue();
-        }
-        try {
-            return Long.parseLong(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return 0L;
-        }
-    }
-
-    private static String toStr(Object value) {
-        return value == null ? null : String.valueOf(value);
     }
 }

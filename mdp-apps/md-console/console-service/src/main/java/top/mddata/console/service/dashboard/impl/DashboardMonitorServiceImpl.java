@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import cn.hutool.core.convert.Convert;
 import java.util.Map;
 
 /**
@@ -35,6 +36,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardMonitorServiceImpl implements DashboardMonitorService {
 
+    /** 默认分页大小 */
+    private static final int DEFAULT_LIMIT = 10;
+    /** 最大分页大小 */
+    private static final int MAX_LIMIT = 100;
+    /** 百分比计算精度 */
+    private static final int PERCENT_SCALE = 2;
+
     private final InterfaceConfigMapper interfaceConfigMapper;
     private final InterfaceStatMapper interfaceStatMapper;
     private final InterfaceLogMapper interfaceLogMapper;
@@ -46,15 +54,15 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
 
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         Map<String, Object> todaySum = interfaceLogMapper.sumToday(todayStart);
-        long todaySuccess = toLong(todaySum != null ? todaySum.get("successCount") : 0L);
-        long todayFail = toLong(todaySum != null ? todaySum.get("failCount") : 0L);
+        long todaySuccess = Convert.toLong(todaySum != null ? todaySum.get("successCount") : null);
+        long todayFail = Convert.toLong(todaySum != null ? todaySum.get("failCount") : null);
         vo.setTodaySuccessCount(todaySuccess);
         vo.setTodayFailCount(todayFail);
         vo.setTodayCallCount(todaySuccess + todayFail);
 
         Map<String, Object> totalSum = interfaceLogMapper.sumAll();
-        long totalSuccess = toLong(totalSum != null ? totalSum.get("successCount") : 0L);
-        long totalFail = toLong(totalSum != null ? totalSum.get("failCount") : 0L);
+        long totalSuccess = Convert.toLong(totalSum != null ? totalSum.get("successCount") : null);
+        long totalFail = Convert.toLong(totalSum != null ? totalSum.get("failCount") : null);
         vo.setTotalSuccessCount(totalSuccess);
         vo.setTotalFailCount(totalFail);
         vo.setTotalCount(totalSuccess + totalFail);
@@ -67,80 +75,63 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
         SuccessRateVo vo = new SuccessRateVo();
 
         Map<String, Object> todaySum = interfaceLogMapper.sumAll();
-        long success = toLong(todaySum != null ? todaySum.get("successCount") : 0L);
-        long fail = toLong(todaySum != null ? todaySum.get("failCount") : 0L);
+        long success = Convert.toLong(todaySum != null ? todaySum.get("successCount") : null);
+        long fail = Convert.toLong(todaySum != null ? todaySum.get("failCount") : null);
         long total = success + fail;
 
         vo.setSuccessCount(success);
         vo.setFailCount(fail);
         vo.setTotalCount(total);
-        if (total > 0) {
-            double rate = BigDecimal.valueOf(success)
-                    .multiply(BigDecimal.valueOf(100))
-                    .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                    .doubleValue();
-            vo.setRate(rate);
-        } else {
-            vo.setRate(0d);
-        }
+        vo.setRate(calcPercent(success, total));
         return vo;
     }
 
     @Override
     public List<InterfaceRankVo> getCallRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        List<Map<String, Object>> rawList = interfaceStatMapper.rankByTotalCount(safeLimit);
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<InterfaceRankVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            InterfaceRankVo vo = new InterfaceRankVo();
-            vo.setId(toLong(raw.get("id")));
-            vo.setName(toStr(raw.get("name")));
-            vo.setSuccessCount(toLong(raw.get("successCount")));
-            vo.setFailCount(toLong(raw.get("failCount")));
-            vo.setTotalCount(toLong(raw.get("totalCount")));
-            result.add(vo);
-        }
-        return result;
+        List<Map<String, Object>> rawList = interfaceStatMapper.rankByTotalCount(normalizeLimit(limit));
+        return toInterfaceRankList(rawList);
     }
 
     @Override
     public List<InterfaceRankVo> getFailRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        List<Map<String, Object>> rawList = interfaceStatMapper.rankByFailCount(safeLimit);
+        List<Map<String, Object>> rawList = interfaceStatMapper.rankByFailCount(normalizeLimit(limit));
+        return toInterfaceRankList(rawList);
+    }
+
+    /** 归一化分页大小 */
+    private int normalizeLimit(int limit) {
+        if (limit <= 0) {
+            return DEFAULT_LIMIT;
+        }
+        return Math.min(limit, MAX_LIMIT);
+    }
+
+    /** 计算百分比 */
+    private double calcPercent(long successCount, long totalCount) {
+        if (totalCount <= 0) {
+            return 0d;
+        }
+        return BigDecimal.valueOf(successCount)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(totalCount), PERCENT_SCALE, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+    /** 转换为接口排行列表 */
+    private List<InterfaceRankVo> toInterfaceRankList(List<Map<String, Object>> rawList) {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
         List<InterfaceRankVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             InterfaceRankVo vo = new InterfaceRankVo();
-            vo.setId(toLong(raw.get("id")));
-            vo.setName(toStr(raw.get("name")));
-            vo.setSuccessCount(toLong(raw.get("successCount")));
-            vo.setFailCount(toLong(raw.get("failCount")));
-            vo.setTotalCount(toLong(raw.get("totalCount")));
+            vo.setId(Convert.toLong(raw.get("id")));
+            vo.setName(Convert.toStr(raw.get("name")));
+            vo.setSuccessCount(Convert.toLong(raw.get("successCount")));
+            vo.setFailCount(Convert.toLong(raw.get("failCount")));
+            vo.setTotalCount(Convert.toLong(raw.get("totalCount")));
             result.add(vo);
         }
         return result;
-    }
-
-    private static Long toLong(Object value) {
-        if (value == null) {
-            return 0L;
-        }
-        if (value instanceof Number n) {
-            return n.longValue();
-        }
-        try {
-            return Long.parseLong(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return 0L;
-        }
-    }
-
-    private static String toStr(Object value) {
-        return value == null ? null : String.valueOf(value);
     }
 }

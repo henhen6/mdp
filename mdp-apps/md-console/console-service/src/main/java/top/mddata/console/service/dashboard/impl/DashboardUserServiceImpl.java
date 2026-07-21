@@ -27,7 +27,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import cn.hutool.core.convert.Convert;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 用户与组织统计 服务层实现
@@ -44,6 +46,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardUserServiceImpl implements DashboardUserService {
 
+    /** 默认分页大小 */
+    private static final int DEFAULT_LIMIT = 10;
+    /** 最大分页大小 */
+    private static final int MAX_LIMIT = 100;
+    /** 默认日期范围：6天前到今天 */
+    private static final int DEFAULT_DAYS = 6;
+    /** 百分比计算精度 */
+    private static final int PERCENT_SCALE = 2;
+
     private final UserMapper userMapper;
     private final OrgMapper orgMapper;
     private final RoleMapper roleMapper;
@@ -52,23 +63,19 @@ public class DashboardUserServiceImpl implements DashboardUserService {
     public OverviewUserVo getOverviewUser() {
         OverviewUserVo vo = new OverviewUserVo();
 
-        // 启用状态用户总数（MyBatis-Flex 自动过滤已删除数据）
         vo.setUserCount(userMapper.selectCountByQuery(
                 QueryWrapper.create().eq(User::getState, true)));
 
-        // 单位数量（org_type=10）
         vo.setCompanyCount(orgMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(Org::getState, true)
                         .eq(Org::getOrgType, OrgTypeEnum.COMPANY.getCode())));
 
-        // 部门数量（org_type=20）
         vo.setDeptCount(orgMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(Org::getState, true)
                         .eq(Org::getOrgType, OrgTypeEnum.DEPT.getCode())));
 
-        // 启用状态角色总数
         vo.setRoleCount(roleMapper.selectCountByQuery(QueryWrapper.create().eq(Role::getState, true)));
 
         return vo;
@@ -76,8 +83,7 @@ public class DashboardUserServiceImpl implements DashboardUserService {
 
     @Override
     public List<TrendVo> getUserTrend(String startDate, String endDate) {
-        // 解析日期，默认近7天
-        LocalDate start = startDate != null ? LocalDate.parse(startDate) : LocalDate.now().minusDays(6);
+        LocalDate start = startDate != null ? LocalDate.parse(startDate) : LocalDate.now().minusDays(DEFAULT_DAYS);
         LocalDate end = endDate != null ? LocalDate.parse(endDate) : LocalDate.now();
 
         LocalDateTime startTime = start.atStartOfDay();
@@ -85,15 +91,13 @@ public class DashboardUserServiceImpl implements DashboardUserService {
 
         List<Map<String, Object>> rawList = userMapper.countByDayRange(startTime, endTime);
 
-        // 用 Map 缓存查询结果，便于补全缺失日期
         Map<String, Long> dateCountMap = new java.util.HashMap<>();
         for (Map<String, Object> raw : rawList) {
             String date = String.valueOf(raw.get("date"));
-            Long count = toLong(raw.get("value"));
+            Long count = Convert.toLong(raw.get("value"));
             dateCountMap.put(date, count);
         }
 
-        // 按日期连续生成区间，缺失日期补 0
         List<TrendVo> result = new ArrayList<>();
         long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
         for (int i = 0; i < daysBetween; i++) {
@@ -109,54 +113,78 @@ public class DashboardUserServiceImpl implements DashboardUserService {
 
     @Override
     public List<RankVo> getOrgRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        return toRankVoList(orgMapper.rankByUserCount(safeLimit));
+        return toRankVoList(orgMapper.rankByUserCount(normalizeLimit(limit)));
     }
 
     @Override
     public List<RankVo> getRoleRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        return toRankVoList(roleMapper.rankByUserCount(safeLimit));
+        return toRankVoList(roleMapper.rankByUserCount(normalizeLimit(limit)));
     }
 
     @Override
     public List<DistributionVo> getStatusDistribution() {
         List<Map<String, Object>> rawList = userMapper.countByState();
-        return toStatusDistributionList(rawList);
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
+            DistributionVo vo = new DistributionVo();
+            vo.setName(convertUserStatus(toBoolean(raw.get("code"))));
+            long count = Convert.toLong(raw.get("count"));
+            vo.setCount(count);
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     @Override
     public List<DistributionVo> getTypeDistribution() {
         List<Map<String, Object>> rawList = userMapper.countByType();
-        return toTypeDistributionList(rawList);
-    }
-
-    private List<DistributionVo> toStatusDistributionList(List<Map<String, Object>> rawList) {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
             DistributionVo vo = new DistributionVo();
-            vo.setName(convertUserStatus(toBoolean(raw.get("code"))));
-            long count = toLong(raw.get("count"));
+            vo.setName(convertUserType(Convert.toLong(raw.get("code"))));
+            long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    /** 归一化分页大小 */
+    private int normalizeLimit(int limit) {
+        if (limit <= 0) {
+            return DEFAULT_LIMIT;
         }
-        return result;
+        return Math.min(limit, MAX_LIMIT);
+    }
+
+    /** 计算百分比 */
+    private double calcPercent(long count, long total) {
+        if (total <= 0) {
+            return 0d;
+        }
+        return BigDecimal.valueOf(count)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+    /** 转换为排行列表 */
+    private List<RankVo> toRankVoList(List<Map<String, Object>> rawList) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return rawList.stream().map(raw -> {
+            RankVo vo = new RankVo();
+            vo.setName(Convert.toStr(raw.get("name")));
+            vo.setValue(Convert.toLong(raw.get("value")));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     private String convertUserStatus(Boolean enabled) {
@@ -164,34 +192,6 @@ public class DashboardUserServiceImpl implements DashboardUserService {
             return null;
         }
         return enabled ? StateEnum.ENABLE.getDesc() : StateEnum.DISABLE.getDesc();
-    }
-
-    private List<DistributionVo> toTypeDistributionList(List<Map<String, Object>> rawList) {
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            DistributionVo vo = new DistributionVo();
-            vo.setName(convertUserType(toLong(raw.get("code"))));
-            long count = toLong(raw.get("count"));
-            vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
     }
 
     private String convertUserType(Long code) {
@@ -206,77 +206,11 @@ public class DashboardUserServiceImpl implements DashboardUserService {
         return String.valueOf(code);
     }
 
-    private List<RankVo> toRankVoList(List<Map<String, Object>> rawList) {
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<RankVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            RankVo vo = new RankVo();
-            vo.setName(toStr(raw.get("name")));
-            vo.setValue(toLong(raw.get("value")));
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private List<DistributionVo> toDistributionVoList(List<Map<String, Object>> rawList) {
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-
-        List<DistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            DistributionVo vo = new DistributionVo();
-            vo.setName(toStr(raw.get("name")));
-            long count = toLong(raw.get("count"));
-            vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private static Long toLong(Object value) {
-        if (value == null) {
-            return 0L;
-        }
-        if (value instanceof Number n) {
-            return n.longValue();
-        }
-        try {
-            return Long.parseLong(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return 0L;
-        }
-    }
-
-    private static String toStr(Object value) {
-        return value == null ? null : String.valueOf(value);
-    }
-
+    /** Boolean转换，null返回null（区别于Hutool的false） */
     private static Boolean toBoolean(Object value) {
         if (value == null) {
             return null;
         }
-        if (value instanceof Boolean b) {
-            return b;
-        }
-        if (value instanceof Number n) {
-            return n.longValue() != 0;
-        }
-        return Boolean.parseBoolean(String.valueOf(value));
+        return Convert.toBool(value);
     }
 }

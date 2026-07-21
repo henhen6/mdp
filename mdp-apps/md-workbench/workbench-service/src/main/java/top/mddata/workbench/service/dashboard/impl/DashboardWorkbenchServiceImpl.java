@@ -23,23 +23,21 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class DashboardWorkbenchServiceImpl implements DashboardWorkbenchService {
 
-    /** loginDate 字段格式：yyyy-MM-dd */
+    /** loginDate 字段格式 */
     private static final DateTimeFormatter LOGIN_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    /** 登录状态：成功 */
+    private static final String LOGIN_STATUS_SUCCESS = "01";
 
     private final LoginLogMapper loginLogMapper;
 
     @Override
     public OverviewWorkbenchVo getOverviewWorkbench() {
         OverviewWorkbenchVo vo = new OverviewWorkbenchVo();
-
-        // 统计今日登录次数 (登录成功)
-        // loginDate 字段是 char(10) 类型，格式 yyyy-MM-dd
         String today = LocalDate.now().format(LOGIN_DATE_FORMAT);
         QueryWrapper wrapper = QueryWrapper.create()
                 .eq(LoginLog::getLoginDate, today)
-                .eq(LoginLog::getStatus, "01");
+                .eq(LoginLog::getStatus, LOGIN_STATUS_SUCCESS);
         vo.setTodayLoginCount(loginLogMapper.selectCountByQuery(wrapper));
-
         return vo;
     }
 }

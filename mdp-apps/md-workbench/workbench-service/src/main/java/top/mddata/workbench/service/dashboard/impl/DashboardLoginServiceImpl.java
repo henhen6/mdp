@@ -23,9 +23,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import cn.hutool.core.convert.Convert;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 登录与安全统计 服务层实现
@@ -45,9 +46,16 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
     private static final String LOGIN_STATUS_SUCCESS = "01";
     /** 登录状态：失败 */
     private static final String LOGIN_STATUS_FAIL = "02";
-
-    /** loginDate 字段格式：yyyy-MM-dd */
+    /** loginDate 字段格式 */
     private static final DateTimeFormatter LOGIN_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    /** 默认分页大小 */
+    private static final int DEFAULT_LIMIT = 10;
+    /** 最大分页大小 */
+    private static final int MAX_LIMIT = 100;
+    /** 默认查询天数 */
+    private static final int DEFAULT_DAYS = 7;
+    /** 百分比计算精度 */
+    private static final int PERCENT_SCALE = 2;
 
     private final LoginLogMapper loginLogMapper;
 
@@ -56,13 +64,11 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
         OverviewLoginVo vo = new OverviewLoginVo();
         String today = LocalDate.now().format(LOGIN_DATE_FORMAT);
 
-        // 今日登录成功次数（mdw_login_log 没有 deletedAt 字段，QueryWrapper 不会自动追加过滤条件）
         vo.setTodayLoginCount(loginLogMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(LoginLog::getLoginDate, today)
                         .eq(LoginLog::getStatus, LOGIN_STATUS_SUCCESS)));
 
-        // 今日登录失败次数
         vo.setTodayFailCount(loginLogMapper.selectCountByQuery(
                 QueryWrapper.create()
                         .eq(LoginLog::getLoginDate, today)
@@ -77,35 +83,27 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<RegionDistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        return rawList.stream().map(raw -> {
             RegionDistributionVo vo = new RegionDistributionVo();
-            vo.setProvince(toStr(raw.get("name")));
-            vo.setCount(toLong(raw.get("value")));
-            result.add(vo);
-        }
-        return result;
+            vo.setProvince(Convert.toStr(raw.get("name")));
+            vo.setCount(Convert.toLong(raw.get("value")));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     @Override
     public List<DashboardRankVo> getProvinceRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        String today = LocalDate.now().format(LOGIN_DATE_FORMAT);
-        return toRankList(loginLogMapper.rankByProvince(today, safeLimit));
+        return toRankList(loginLogMapper.rankByProvince(LocalDate.now().format(LOGIN_DATE_FORMAT), normalizeLimit(limit)));
     }
 
     @Override
     public List<DashboardRankVo> getIpRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        String today = LocalDate.now().format(LOGIN_DATE_FORMAT);
-        return toRankList(loginLogMapper.rankByIp(today, safeLimit));
+        return toRankList(loginLogMapper.rankByIp(LocalDate.now().format(LOGIN_DATE_FORMAT), normalizeLimit(limit)));
     }
 
     @Override
     public List<DashboardRankVo> getNameRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-        String today = LocalDate.now().format(LOGIN_DATE_FORMAT);
-        return toRankList(loginLogMapper.rankByName(today, safeLimit));
+        return toRankList(loginLogMapper.rankByName(LocalDate.now().format(LOGIN_DATE_FORMAT), normalizeLimit(limit)));
     }
 
     @Override
@@ -120,153 +118,44 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
 
     @Override
     public List<DashboardDistributionVo> getAuthTypeDistribution() {
-        return toAuthTypeDistributionList(loginLogMapper.countByAuthType());
-    }
-
-    private List<DashboardDistributionVo> toAuthTypeDistributionList(List<Map<String, Object>> rawList) {
+        List<Map<String, Object>> rawList = loginLogMapper.countByAuthType();
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DashboardDistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
             DashboardDistributionVo vo = new DashboardDistributionVo();
-            String code = toStr(raw.get("code"));
-            vo.setName(convertAuthType(code));
-            long count = toLong(raw.get("count"));
+            vo.setName(convertAuthType(Convert.toStr(raw.get("code"))));
+            long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private String convertAuthType(String code) {
-        if (code == null) {
-            return null;
-        }
-        for (AuthTypeEnum enumVal : AuthTypeEnum.values()) {
-            if (enumVal.getCode().equals(code)) {
-                return enumVal.getDesc();
-            }
-        }
-        return code;
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     @Override
     public List<DashboardDistributionVo> getChannelDistribution() {
-        return toChannelDistributionList(loginLogMapper.countByChannel());
+        List<Map<String, Object>> rawList = loginLogMapper.countByChannel();
+        return convertDistributionList(rawList, this::convertChannel);
     }
 
     @Override
     public List<DashboardDistributionVo> getEventTypeDistribution() {
-        return toEventTypeDistributionList(loginLogMapper.countByEventType());
-    }
-
-    private List<DashboardDistributionVo> toChannelDistributionList(List<Map<String, Object>> rawList) {
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DashboardDistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            DashboardDistributionVo vo = new DashboardDistributionVo();
-            String code = toStr(raw.get("code"));
-            vo.setName(convertChannel(code));
-            long count = toLong(raw.get("count"));
-            vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private String convertChannel(String code) {
-        if (code == null) {
-            return null;
-        }
-        for (LoginChannelEnum enumVal : LoginChannelEnum.values()) {
-            if (enumVal.getCode().equals(code)) {
-                return enumVal.getDesc();
-            }
-        }
-        return code;
-    }
-
-    private List<DashboardDistributionVo> toEventTypeDistributionList(List<Map<String, Object>> rawList) {
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DashboardDistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
-            DashboardDistributionVo vo = new DashboardDistributionVo();
-            String code = toStr(raw.get("code"));
-            vo.setName(convertEventType(code));
-            long count = toLong(raw.get("count"));
-            vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
-            result.add(vo);
-        }
-        return result;
-    }
-
-    private String convertEventType(String code) {
-        if (code == null) {
-            return null;
-        }
-        for (LoginEventTypeEnum enumVal : LoginEventTypeEnum.values()) {
-            if (enumVal.getCode().equals(code)) {
-                return enumVal.getDesc();
-            }
-        }
-        return code;
+        List<Map<String, Object>> rawList = loginLogMapper.countByEventType();
+        return convertDistributionList(rawList, this::convertEventType);
     }
 
     @Override
     public List<DailyLoginVo> getDailyStatistics(int days) {
-        int safeDays = (days != 7 && days != 30) ? 7 : days;
+        int safeDays = (days != 7 && days != 30) ? DEFAULT_DAYS : days;
         String startDate = LocalDate.now().minusDays(safeDays - 1L).format(LOGIN_DATE_FORMAT);
         List<Map<String, Object>> rawList = loginLogMapper.dailyStatistics(startDate);
 
-        Map<String, long[]> dateMap = new HashMap<>();
+        Map<String, long[]> dateMap = new java.util.HashMap<>();
         for (Map<String, Object> raw : rawList) {
-            String date = toStr(raw.get("date"));
-            long loginCount = toLong(raw.get("loginCount"));
-            long userCount = toLong(raw.get("userCount"));
+            String date = Convert.toStr(raw.get("date"));
+            long loginCount = Convert.toLong(raw.get("loginCount"));
+            long userCount = Convert.toLong(raw.get("userCount"));
             dateMap.put(date, new long[]{loginCount, userCount});
         }
 
@@ -287,9 +176,8 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
 
     @Override
     public List<DashboardRankVo> getActiveUserRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
         String startDate = LocalDate.now().minusDays(6L).format(LOGIN_DATE_FORMAT);
-        return toRankList(loginLogMapper.activeUserRank(startDate, safeLimit));
+        return toRankList(loginLogMapper.activeUserRank(startDate, normalizeLimit(limit)));
     }
 
     @Override
@@ -299,10 +187,10 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
                 : date;
         List<Map<String, Object>> rawList = loginLogMapper.hourlyDistribution(targetDate);
 
-        Map<Integer, Long> hourMap = new HashMap<>();
+        Map<Integer, Long> hourMap = new java.util.HashMap<>();
         if (rawList != null) {
             for (Map<String, Object> raw : rawList) {
-                hourMap.put(toInt(raw.get("hour")), toLong(raw.get("count")));
+                hourMap.put(Convert.toInt(raw.get("hour")), Convert.toLong(raw.get("count")));
             }
         }
 
@@ -316,77 +204,104 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
         return result;
     }
 
+    /** 归一化分页大小 */
+    private int normalizeLimit(int limit) {
+        if (limit <= 0) {
+            return DEFAULT_LIMIT;
+        }
+        return Math.min(limit, MAX_LIMIT);
+    }
+
+    /** 计算百分比 */
+    private double calcPercent(long count, long total) {
+        if (total <= 0) {
+            return 0d;
+        }
+        return BigDecimal.valueOf(count)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+    /** 转换分发列表（通用模板） */
+    private List<DashboardDistributionVo> convertDistributionList(List<Map<String, Object>> rawList,
+                                                                   java.util.function.Function<String, String> converter) {
+        if (rawList == null || rawList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
+            DashboardDistributionVo vo = new DashboardDistributionVo();
+            vo.setName(converter.apply(Convert.toStr(raw.get("code"))));
+            long count = Convert.toLong(raw.get("count"));
+            vo.setCount(count);
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    /** 转换为排行列表 */
     private List<DashboardRankVo> toRankList(List<Map<String, Object>> rawList) {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<DashboardRankVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        return rawList.stream().map(raw -> {
             DashboardRankVo vo = new DashboardRankVo();
-            vo.setName(toStr(raw.get("name")));
-            vo.setValue(toLong(raw.get("value")));
-            result.add(vo);
-        }
-        return result;
+            vo.setName(Convert.toStr(raw.get("name")));
+            vo.setValue(Convert.toLong(raw.get("value")));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
+    /** 转换为分发列表（无转换器，直接用name字段） */
     private List<DashboardDistributionVo> toDistributionList(List<Map<String, Object>> rawList) {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
-        List<DashboardDistributionVo> result = new ArrayList<>(rawList.size());
-        for (Map<String, Object> raw : rawList) {
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
+        return rawList.stream().map(raw -> {
             DashboardDistributionVo vo = new DashboardDistributionVo();
-            vo.setName(toStr(raw.get("name")));
-            long count = toLong(raw.get("count"));
+            vo.setName(Convert.toStr(raw.get("name")));
+            long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
+            vo.setPercent(calcPercent(count, total));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    private String convertAuthType(String code) {
+        if (code == null) {
+            return null;
+        }
+        for (AuthTypeEnum enumVal : AuthTypeEnum.values()) {
+            if (enumVal.getCode().equals(code)) {
+                return enumVal.getDesc();
             }
-            result.add(vo);
         }
-        return result;
+        return code;
     }
 
-    private static Long toLong(Object value) {
-        if (value == null) {
-            return 0L;
+    private String convertChannel(String code) {
+        if (code == null) {
+            return null;
         }
-        if (value instanceof Number n) {
-            return n.longValue();
+        for (LoginChannelEnum enumVal : LoginChannelEnum.values()) {
+            if (enumVal.getCode().equals(code)) {
+                return enumVal.getDesc();
+            }
         }
-        try {
-            return Long.parseLong(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return 0L;
-        }
+        return code;
     }
 
-    private static Integer toInt(Object value) {
-        if (value == null) {
-            return 0;
+    private String convertEventType(String code) {
+        if (code == null) {
+            return null;
         }
-        if (value instanceof Number n) {
-            return n.intValue();
+        for (LoginEventTypeEnum enumVal : LoginEventTypeEnum.values()) {
+            if (enumVal.getCode().equals(code)) {
+                return enumVal.getDesc();
+            }
         }
-        try {
-            return Integer.parseInt(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    private static String toStr(Object value) {
-        return value == null ? null : String.valueOf(value);
+        return code;
     }
 }

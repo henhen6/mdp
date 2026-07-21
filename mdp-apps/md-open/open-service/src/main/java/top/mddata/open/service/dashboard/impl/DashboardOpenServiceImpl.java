@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import cn.hutool.core.convert.Convert;
 import java.util.Map;
 
 /**
@@ -59,6 +60,16 @@ import java.util.Map;
 public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    /** 默认查询范围：近7天 */
+    private static final int DEFAULT_DAYS = 6;
+    /** 最大日期范围跨度：90天 */
+    private static final int MAX_RANGE_DAYS = 90;
+    /** 默认分页大小 */
+    private static final int DEFAULT_LIMIT = 10;
+    /** 最大分页大小 */
+    private static final int MAX_LIMIT = 100;
+    /** 百分比计算精度 */
+    private static final int PERCENT_SCALE = 2;
 
     private final AppMapper appMapper;
     private final ApiMapper apiMapper;
@@ -104,8 +115,8 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         Map<String, long[]> dateMap = new HashMap<>();
         for (Map<String, Object> raw : rawList) {
             String date = String.valueOf(raw.get("date"));
-            long call = toLong(raw.get("callCount"));
-            long fail = toLong(raw.get("failCount"));
+            long call = Convert.toLong(raw.get("callCount"));
+            long fail = Convert.toLong(raw.get("failCount"));
             dateMap.put(date, new long[]{call, fail});
         }
 
@@ -126,7 +137,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     @Override
     public List<AppRankVo> getAppRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
+        int safeLimit = normalizeLimit(limit);
         List<Map<String, Object>> rawList = apiCallLogMapper.rankByApp(safeLimit);
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
@@ -134,9 +145,9 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         List<AppRankVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             AppRankVo vo = new AppRankVo();
-            vo.setAppId(toLong(raw.get("appId")));
-            vo.setAppName(toStr(raw.get("appName")));
-            vo.setCallCount(toLong(raw.get("callCount")));
+            vo.setAppId(Convert.toLong(raw.get("appId")));
+            vo.setAppName(Convert.toStr(raw.get("appName")));
+            vo.setCallCount(Convert.toLong(raw.get("callCount")));
             result.add(vo);
         }
         return result;
@@ -144,7 +155,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     @Override
     public List<ApiRankVo> getApiRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
+        int safeLimit = normalizeLimit(limit);
         List<Map<String, Object>> rawList = apiCallLogMapper.rankByApi(safeLimit);
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
@@ -152,10 +163,10 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         List<ApiRankVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             ApiRankVo vo = new ApiRankVo();
-            vo.setApiId(toLong(raw.get("apiId")));
-            vo.setApiName(toStr(raw.get("apiName")));
-            vo.setAppName(toStr(raw.get("appName")));
-            vo.setCallCount(toLong(raw.get("callCount")));
+            vo.setApiId(Convert.toLong(raw.get("apiId")));
+            vo.setApiName(Convert.toStr(raw.get("apiName")));
+            vo.setAppName(Convert.toStr(raw.get("appName")));
+            vo.setCallCount(Convert.toLong(raw.get("callCount")));
             result.add(vo);
         }
         return result;
@@ -168,26 +179,15 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
             return Collections.emptyList();
         }
 
-        long total = 0L;
-        for (Map<String, Object> raw : rawList) {
-            total += toLong(raw.get("count"));
-        }
+        long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
 
         List<OauthDistributionVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             OauthDistributionVo vo = new OauthDistributionVo();
-            vo.setGrantType(toStr(raw.get("name")));
-            long count = toLong(raw.get("count"));
+            vo.setGrantType(Convert.toStr(raw.get("name")));
+            long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            if (total > 0) {
-                double percent = BigDecimal.valueOf(count)
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        .doubleValue();
-                vo.setPercent(percent);
-            } else {
-                vo.setPercent(0d);
-            }
+            vo.setPercent(calcPercent(count, total));
             result.add(vo);
         }
         return result;
@@ -202,9 +202,9 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         List<EventTriggerStatisticsVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             EventTriggerStatisticsVo vo = new EventTriggerStatisticsVo();
-            vo.setEventCode(toStr(raw.get("eventCode")));
-            vo.setEventName(toStr(raw.get("eventName")));
-            vo.setTriggerCount(toLong(raw.get("triggerCount")));
+            vo.setEventCode(Convert.toStr(raw.get("eventCode")));
+            vo.setEventName(Convert.toStr(raw.get("eventName")));
+            vo.setTriggerCount(Convert.toLong(raw.get("triggerCount")));
             result.add(vo);
         }
         return result;
@@ -219,7 +219,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         List<Map<String, Object>> rawList = eventTriggerMapper.countByDayRange(startTime, endTime);
         Map<String, Long> dateMap = new HashMap<>();
         for (Map<String, Object> raw : rawList) {
-            dateMap.put(String.valueOf(raw.get("date")), toLong(raw.get("triggerCount")));
+            dateMap.put(String.valueOf(raw.get("date")), Convert.toLong(raw.get("triggerCount")));
         }
         return fillDateRange(range[0], range[1], dateMap, (date, count) -> {
             EventTriggerTrendVo vo = new EventTriggerTrendVo();
@@ -231,7 +231,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     @Override
     public List<EventTriggerStatisticsVo> getEventTriggerRank(int limit) {
-        int safeLimit = limit <= 0 ? 10 : Math.min(limit, 100);
+        int safeLimit = normalizeLimit(limit);
         List<Map<String, Object>> rawList = eventTriggerMapper.rankByEventCode(safeLimit);
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
@@ -239,9 +239,9 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         List<EventTriggerStatisticsVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             EventTriggerStatisticsVo vo = new EventTriggerStatisticsVo();
-            vo.setEventCode(toStr(raw.get("eventCode")));
-            vo.setEventName(toStr(raw.get("eventName")));
-            vo.setTriggerCount(toLong(raw.get("triggerCount")));
+            vo.setEventCode(Convert.toStr(raw.get("eventCode")));
+            vo.setEventName(Convert.toStr(raw.get("eventName")));
+            vo.setTriggerCount(Convert.toLong(raw.get("triggerCount")));
             result.add(vo);
         }
         return result;
@@ -256,11 +256,11 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         List<EventPushStatisticsVo> result = new ArrayList<>(rawList.size());
         for (Map<String, Object> raw : rawList) {
             EventPushStatisticsVo vo = new EventPushStatisticsVo();
-            vo.setEventCode(toStr(raw.get("eventCode")));
-            vo.setEventName(toStr(raw.get("eventName")));
-            vo.setAppId(toLong(raw.get("appId")));
-            vo.setAppName(toStr(raw.get("appName")));
-            vo.setPushCount(toLong(raw.get("pushCount")));
+            vo.setEventCode(Convert.toStr(raw.get("eventCode")));
+            vo.setEventName(Convert.toStr(raw.get("eventName")));
+            vo.setAppId(Convert.toLong(raw.get("appId")));
+            vo.setAppName(Convert.toStr(raw.get("appName")));
+            vo.setPushCount(Convert.toLong(raw.get("pushCount")));
             result.add(vo);
         }
         return result;
@@ -276,8 +276,8 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         Map<String, long[]> dateMap = new HashMap<>();
         for (Map<String, Object> raw : rawList) {
             String date = String.valueOf(raw.get("date"));
-            long trigger = toLong(raw.get("triggerCount"));
-            long push = toLong(raw.get("pushCount"));
+            long trigger = Convert.toLong(raw.get("triggerCount"));
+            long push = Convert.toLong(raw.get("pushCount"));
             dateMap.put(date, new long[]{trigger, push});
         }
 
@@ -298,36 +298,54 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     @Override
     public Map<String, Map<String, Long>> getSuccessRates() {
-
         Map<String, Map<String, Long>> result = new HashMap<>();
 
         // 1. 回调成功率（mdo_notify_info_log 表，exec_status = 1）
         Map<String, Object> callbackStat = notifyInfoLogMapper.sumAll();
         result.put("callback", Map.of(
-                "successCount", toLong(callbackStat != null ? callbackStat.get("successCount") : 0L),
-                "totalCount", toLong(callbackStat != null ? callbackStat.get("totalCount") : 0L)
+                "successCount", Convert.toLong(callbackStat != null ? callbackStat.get("successCount") : 0L),
+                "totalCount", Convert.toLong(callbackStat != null ? callbackStat.get("totalCount") : 0L)
         ));
 
         // 2. API调用成功率（mdo_api_call_log 表，exec_status = 1）
         Map<String, Object> apiCallStat = apiCallLogMapper.sumAll();
         result.put("apiCall", Map.of(
-                "successCount", toLong(apiCallStat != null ? apiCallStat.get("successCount") : 0L),
-                "totalCount", toLong(apiCallStat != null ? apiCallStat.get("totalCount") : 0L)
+                "successCount", Convert.toLong(apiCallStat != null ? apiCallStat.get("successCount") : 0L),
+                "totalCount", Convert.toLong(apiCallStat != null ? apiCallStat.get("totalCount") : 0L)
         ));
 
         // 3. 事件通知成功率（mdo_event_push_log 表，exec_status = 1）
         Map<String, Object> eventPushStat = eventPushLogMapper.sumAll();
         result.put("eventPush", Map.of(
-                "successCount", toLong(eventPushStat != null ? eventPushStat.get("successCount") : 0L),
-                "totalCount", toLong(eventPushStat != null ? eventPushStat.get("totalCount") : 0L)
+                "successCount", Convert.toLong(eventPushStat != null ? eventPushStat.get("successCount") : 0L),
+                "totalCount", Convert.toLong(eventPushStat != null ? eventPushStat.get("totalCount") : 0L)
         ));
 
         return result;
     }
 
+    /** 归一化分页大小 */
+    private int normalizeLimit(int limit) {
+        if (limit <= 0) {
+            return DEFAULT_LIMIT;
+        }
+        return Math.min(limit, MAX_LIMIT);
+    }
+
+    /** 计算百分比 */
+    private double calcPercent(long count, long total) {
+        if (total <= 0) {
+            return 0d;
+        }
+        return BigDecimal.valueOf(count)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
     private static LocalDate[] normalizeRange(LocalDate startDate, LocalDate endDate) {
         LocalDate today = LocalDate.now();
-        LocalDate start = startDate != null ? startDate : today.minusDays(6);
+        LocalDate start = startDate != null ? startDate : today.minusDays(DEFAULT_DAYS);
         LocalDate end = endDate != null ? endDate : today;
         if (start.isAfter(end)) {
             LocalDate tmp = start;
@@ -335,8 +353,8 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
             end = tmp;
         }
         long span = end.toEpochDay() - start.toEpochDay();
-        if (span > 90) {
-            start = end.minusDays(90);
+        if (span > MAX_RANGE_DAYS) {
+            start = end.minusDays(MAX_RANGE_DAYS);
         }
         return new LocalDate[]{start, end};
     }
@@ -353,24 +371,6 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
             result.add(vo);
         }
         return result;
-    }
-
-    private static Long toLong(Object value) {
-        if (value == null) {
-            return 0L;
-        }
-        if (value instanceof Number n) {
-            return n.longValue();
-        }
-        try {
-            return Long.parseLong(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return 0L;
-        }
-    }
-
-    private static String toStr(Object value) {
-        return value == null ? null : String.valueOf(value);
     }
 
     private static LocalDate parseDate(String value) {
