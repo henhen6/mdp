@@ -21,7 +21,6 @@ import top.mddata.open.vo.dashboard.OauthDistributionVo;
 import top.mddata.open.vo.dashboard.OverviewOpenVo;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -35,8 +34,6 @@ import java.util.List;
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor
 public class DashboardOpenDetailController {
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final DashboardOpenService dashboardOpenService;
 
@@ -86,12 +83,12 @@ public class DashboardOpenDetailController {
     }
 
     @GetMapping("/event/trigger/trend")
-    @Operation(summary = "事件触发趋势", description = "按天统计事件触发次数，支持日期区间查询（yyyy-MM-dd），默认最近7天")
+    @Operation(summary = "事件触发趋势", description = "按天统计事件触发次数，支持日期区间查询，默认最近7天")
     @RequestLog(value = "查询事件触发趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventTriggerTrendVo>> getEventTriggerTrend(
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
-        return R.success(dashboardOpenService.getEventTriggerTrend(parseDate(startDate), parseDate(endDate)));
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        return R.success(dashboardOpenService.getEventTriggerTrend(startDate, endDate));
     }
 
     @GetMapping("/event/trigger/rank")
@@ -109,22 +106,11 @@ public class DashboardOpenDetailController {
     }
 
     @GetMapping("/event/push/trend")
-    @Operation(summary = "事件推送趋势", description = "按天统计触发次数与推送请求次数，支持日期区间查询（yyyy-MM-dd），默认最近7天")
+    @Operation(summary = "事件推送趋势", description = "按天统计触发次数与推送请求次数，支持日期区间查询，默认最近7天")
     @RequestLog(value = "查询事件推送趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<EventPushTrendVo>> getEventPushTrend(
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
-        return R.success(dashboardOpenService.getEventPushTrend(parseDate(startDate), parseDate(endDate)));
-    }
-
-    private static LocalDate parseDate(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(value.trim(), DATE_FORMATTER);
-        } catch (Exception e) {
-            return null;
-        }
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        return R.success(dashboardOpenService.getEventPushTrend(startDate, endDate));
     }
 }

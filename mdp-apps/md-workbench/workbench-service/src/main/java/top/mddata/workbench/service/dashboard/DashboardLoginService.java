@@ -7,6 +7,7 @@ import top.mddata.workbench.vo.dashboard.HourlyDistributionVo;
 import top.mddata.workbench.vo.dashboard.OverviewLoginVo;
 import top.mddata.workbench.vo.dashboard.RegionDistributionVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -82,7 +83,7 @@ public interface DashboardLoginService {
     /**
      * 登录时段分布（按小时统计指定日期）
      *
-     * @param date 日期 yyyy-MM-dd；为空则统计今天
+     * @param date 日期；为空则统计今天
      */
-    List<HourlyDistributionVo> getHourlyDistribution(String date);
+    List<HourlyDistributionVo> getHourlyDistribution(LocalDate date);
 }

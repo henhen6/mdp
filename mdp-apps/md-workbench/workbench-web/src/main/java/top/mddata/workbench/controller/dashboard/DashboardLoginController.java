@@ -17,6 +17,7 @@ import top.mddata.workbench.vo.dashboard.HourlyDistributionVo;
 import top.mddata.workbench.vo.dashboard.OverviewLoginVo;
 import top.mddata.workbench.vo.dashboard.RegionDistributionVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -121,7 +122,7 @@ public class DashboardLoginController {
     @Operation(summary = "登录时段分布", description = "按小时统计登录次数；date 为空则统计今天")
     @RequestLog(value = "查询登录时段分布", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<HourlyDistributionVo>> getHourlyDistribution(
-            @RequestParam(required = false) String date) {
+            @RequestParam(required = false) LocalDate date) {
         return R.success(dashboardLoginService.getHourlyDistribution(date));
     }
 }

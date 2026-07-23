@@ -181,11 +181,9 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
     }
 
     @Override
-    public List<HourlyDistributionVo> getHourlyDistribution(String date) {
-        String targetDate = (date == null || date.isBlank())
-                ? LocalDate.now().format(LOGIN_DATE_FORMAT)
-                : date;
-        List<Map<String, Object>> rawList = loginLogMapper.hourlyDistribution(targetDate);
+    public List<HourlyDistributionVo> getHourlyDistribution(LocalDate date) {
+        LocalDate targetDate = date != null ? date : LocalDate.now();
+        List<Map<String, Object>> rawList = loginLogMapper.hourlyDistribution(targetDate.format(LOGIN_DATE_FORMAT));
 
         Map<Integer, Long> hourMap = new java.util.HashMap<>();
         if (rawList != null) {
