@@ -17,9 +17,9 @@ import top.mddata.console.service.dashboard.DashboardConsoleService;
 import top.mddata.console.vo.dashboard.OverviewConsoleVo;
 import top.mddata.open.facade.admin.DashboardOpenFacade;
 import top.mddata.workbench.facade.NoticeFacade;
+import top.mddata.base.utils.DefValueHelper;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,9 +40,6 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class DashboardConsoleServiceImpl implements DashboardConsoleService {
-
-    /** 百分比计算精度 */
-    private static final int PERCENT_SCALE = 2;
 
     private final UserMapper userMapper;
     private final OrgMapper orgMapper;
@@ -67,7 +64,7 @@ public class DashboardConsoleServiceImpl implements DashboardConsoleService {
 
         // 统计本月新增用户数
         Long userNewCount = userMapper.countNewUsersInMonth(monthStart, monthEnd);
-        vo.setUserNewCount(nvl(userNewCount, 0L));
+        vo.setUserNewCount(DefValueHelper.nvl(userNewCount, 0L));
 
         // 统计启用状态的组织总数
         vo.setOrgCount(orgMapper.selectCountByQuery(
@@ -78,7 +75,7 @@ public class DashboardConsoleServiceImpl implements DashboardConsoleService {
 
         // 统计文件总容量
         Long totalSize = fileMapper.sumFileSize();
-        vo.setFileTotalSize(nvl(totalSize, 0L));
+        vo.setFileTotalSize(DefValueHelper.nvl(totalSize, 0L));
 
         // 统计今日通知数
         vo.setTodoNoticeCount(noticeFacade.countByCategory(todayStart, MsgCategoryEnum.TO_DO.getCode()));
@@ -87,7 +84,7 @@ public class DashboardConsoleServiceImpl implements DashboardConsoleService {
 
         // 统计站内通知未读数
         Long unreadCount = noticeFacade.countUnread();
-        vo.setUnreadNoticeCount(nvl(unreadCount, 0L));
+        vo.setUnreadNoticeCount(DefValueHelper.nvl(unreadCount, 0L));
 
         // 统计临时文件占用率
         vo.setTempFileRate(calcTempFileRate(totalSize));
@@ -105,38 +102,35 @@ public class DashboardConsoleServiceImpl implements DashboardConsoleService {
     }
 
     /** 计算临时文件占用率 */
-    private double calcTempFileRate(Long totalSize) {
+    private BigDecimal calcTempFileRate(Long totalSize) {
         Map<String, Object> tempFileStat = fileMapper.statByObjectType(FileObjectType.TEMP_OBJECT_TYPE);
         if (tempFileStat == null || totalSize == null || totalSize <= 0) {
-            return 0d;
+            return BigDecimal.ZERO;
         }
         Long tempFileSize = Convert.toLong(tempFileStat.get("totalSize"));
-        return BigDecimal.valueOf(tempFileSize)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(totalSize), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
+        return DefValueHelper.calcPercent(tempFileSize, totalSize);
     }
 
     /** 计算消息成功率 */
-    private double calcMessageSuccessRate() {
+    private BigDecimal calcMessageSuccessRate() {
         Map<String, Object> msgStat = msgTaskMapper.statSuccessRate();
         if (msgStat == null) {
-            return 0d;
+            return BigDecimal.ZERO;
         }
         long successCount = Convert.toLong(msgStat.get("successCount"));
         long totalCount = Convert.toLong(msgStat.get("totalCount"));
-        return calcPercent(successCount, totalCount);
+        return DefValueHelper.calcPercent(successCount, totalCount);
     }
 
     /** 计算接口成功率 */
-    private double calcInterfaceSuccessRate() {
+    private BigDecimal calcInterfaceSuccessRate() {
         Map<String, Object> interfaceStat = interfaceLogMapper.sumAll();
         if (interfaceStat == null) {
-            return 0d;
+            return BigDecimal.ZERO;
         }
         long successCount = Convert.toLong(interfaceStat.get("successCount"));
         long totalCount = Convert.toLong(interfaceStat.get("totalCount"));
-        return calcPercent(successCount, totalCount);
+        return DefValueHelper.calcPercent(successCount, totalCount);
     }
 
     /** 计算 open 模块的三个成功率 */
@@ -144,9 +138,9 @@ public class DashboardConsoleServiceImpl implements DashboardConsoleService {
         try {
             Map<String, Map<String, Long>> openRates = dashboardOpenFacade.getSuccessRates().getData();
             if (openRates == null) {
-                vo.setCallbackSuccessRate(0d);
-                vo.setApiCallSuccessRate(0d);
-                vo.setEventPushSuccessRate(0d);
+                vo.setCallbackSuccessRate(BigDecimal.ZERO);
+                vo.setApiCallSuccessRate(BigDecimal.ZERO);
+                vo.setEventPushSuccessRate(BigDecimal.ZERO);
                 return;
             }
             vo.setCallbackSuccessRate(calcSuccessRate(openRates.get("callback")));
@@ -154,33 +148,17 @@ public class DashboardConsoleServiceImpl implements DashboardConsoleService {
             vo.setEventPushSuccessRate(calcSuccessRate(openRates.get("eventPush")));
         } catch (Exception e) {
             log.error("调用open模块获取成功率统计失败", e);
-            vo.setCallbackSuccessRate(0d);
-            vo.setApiCallSuccessRate(0d);
-            vo.setEventPushSuccessRate(0d);
+            vo.setCallbackSuccessRate(BigDecimal.ZERO);
+            vo.setApiCallSuccessRate(BigDecimal.ZERO);
+            vo.setEventPushSuccessRate(BigDecimal.ZERO);
         }
     }
 
     /** 从 Map 中计算成功率 */
-    private double calcSuccessRate(Map<String, Long> rateMap) {
+    private BigDecimal calcSuccessRate(Map<String, Long> rateMap) {
         if (rateMap == null || rateMap.get("totalCount") == null || rateMap.get("totalCount") <= 0) {
-            return 0d;
+            return BigDecimal.ZERO;
         }
-        return calcPercent(rateMap.get("successCount"), rateMap.get("totalCount"));
-    }
-
-    /** 计算百分比 */
-    private double calcPercent(long successCount, long totalCount) {
-        if (totalCount <= 0) {
-            return 0d;
-        }
-        return BigDecimal.valueOf(successCount)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(totalCount), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
-    }
-
-    /** 空值返回默认值 */
-    private static long nvl(Long value, long defaultVal) {
-        return value != null ? value : defaultVal;
+        return DefValueHelper.calcPercent(rateMap.get("successCount"), rateMap.get("totalCount"));
     }
 }

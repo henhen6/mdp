@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * OAuth授权分布 VO
@@ -23,5 +24,5 @@ public class OauthDistributionVo implements Serializable {
     private Long count;
 
     @Schema(description = "占比（百分比）")
-    private Double percent;
+    private BigDecimal percent;
 }

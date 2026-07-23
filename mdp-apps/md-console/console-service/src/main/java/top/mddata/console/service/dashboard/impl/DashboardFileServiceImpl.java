@@ -11,12 +11,11 @@ import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.FileTrendVo;
 import top.mddata.console.vo.dashboard.OverviewFileVo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import top.mddata.base.utils.DefValueHelper;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,15 +38,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DashboardFileServiceImpl implements DashboardFileService {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    /** 默认分页大小 */
-    private static final int DEFAULT_LIMIT = 10;
-    /** 最大分页大小 */
-    private static final int MAX_LIMIT = 100;
     /** 默认日期范围 */
     private static final int DEFAULT_DAYS = 6;
-    /** 百分比计算精度 */
-    private static final int PERCENT_SCALE = 2;
 
     private final FileMapper fileMapper;
 
@@ -58,7 +50,7 @@ public class DashboardFileServiceImpl implements DashboardFileService {
         vo.setFileCount(fileMapper.selectCountByQuery(com.mybatisflex.core.query.QueryWrapper.create()));
 
         Long totalSize = fileMapper.sumFileSize();
-        vo.setFileTotalSize(nvl(totalSize, 0L));
+        vo.setFileTotalSize(DefValueHelper.nvl(totalSize, 0L));
 
         LocalDate firstDay = LocalDate.now().withDayOfMonth(1);
         LocalDateTime monthStart = LocalDateTime.of(firstDay, LocalTime.MIN);
@@ -127,22 +119,6 @@ public class DashboardFileServiceImpl implements DashboardFileService {
         return result;
     }
 
-    /** 空值返回默认值 */
-    private static long nvl(Long value, long defaultVal) {
-        return value != null ? value : defaultVal;
-    }
-
-    /** 计算百分比 */
-    private double calcPercent(long count, long total) {
-        if (total <= 0) {
-            return 0d;
-        }
-        return BigDecimal.valueOf(count)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
-    }
-
     /** 转换分发列表（带名称转换器） */
     private List<DistributionVo> convertDistributionList(List<Map<String, Object>> rawList,
                                                          java.util.function.Function<Object, String> nameConverter) {
@@ -155,7 +131,7 @@ public class DashboardFileServiceImpl implements DashboardFileService {
             vo.setName(nameConverter.apply(raw.get("code")));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
     }
@@ -171,7 +147,7 @@ public class DashboardFileServiceImpl implements DashboardFileService {
             vo.setName(Convert.toStr(raw.get("name")));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
     }

@@ -16,9 +16,8 @@ import top.mddata.workbench.vo.dashboard.DashboardRankVo;
 import top.mddata.workbench.vo.dashboard.HourlyDistributionVo;
 import top.mddata.workbench.vo.dashboard.OverviewLoginVo;
 import top.mddata.workbench.vo.dashboard.RegionDistributionVo;
+import top.mddata.base.utils.DefValueHelper;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -46,16 +45,14 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
     private static final String LOGIN_STATUS_SUCCESS = "01";
     /** 登录状态：失败 */
     private static final String LOGIN_STATUS_FAIL = "02";
+    /** 默认查询天数 */
+    private static final int DEFAULT_DAYS = 7;
     /** loginDate 字段格式 */
     private static final DateTimeFormatter LOGIN_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     /** 默认分页大小 */
     private static final int DEFAULT_LIMIT = 10;
     /** 最大分页大小 */
     private static final int MAX_LIMIT = 100;
-    /** 默认查询天数 */
-    private static final int DEFAULT_DAYS = 7;
-    /** 百分比计算精度 */
-    private static final int PERCENT_SCALE = 2;
 
     private final LoginLogMapper loginLogMapper;
 
@@ -93,17 +90,17 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
 
     @Override
     public List<DashboardRankVo> getProvinceRank(int limit) {
-        return toRankList(loginLogMapper.rankByProvince(LocalDate.now().format(LOGIN_DATE_FORMAT), normalizeLimit(limit)));
+        return toRankList(loginLogMapper.rankByProvince(LocalDate.now().format(LOGIN_DATE_FORMAT), DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT)));
     }
 
     @Override
     public List<DashboardRankVo> getIpRank(int limit) {
-        return toRankList(loginLogMapper.rankByIp(LocalDate.now().format(LOGIN_DATE_FORMAT), normalizeLimit(limit)));
+        return toRankList(loginLogMapper.rankByIp(LocalDate.now().format(LOGIN_DATE_FORMAT), DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT)));
     }
 
     @Override
     public List<DashboardRankVo> getNameRank(int limit) {
-        return toRankList(loginLogMapper.rankByName(LocalDate.now().format(LOGIN_DATE_FORMAT), normalizeLimit(limit)));
+        return toRankList(loginLogMapper.rankByName(LocalDate.now().format(LOGIN_DATE_FORMAT), DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT)));
     }
 
     @Override
@@ -128,7 +125,7 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
             vo.setName(convertAuthType(Convert.toStr(raw.get("code"))));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
     }
@@ -177,7 +174,7 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
     @Override
     public List<DashboardRankVo> getActiveUserRank(int limit) {
         String startDate = LocalDate.now().minusDays(6L).format(LOGIN_DATE_FORMAT);
-        return toRankList(loginLogMapper.activeUserRank(startDate, normalizeLimit(limit)));
+        return toRankList(loginLogMapper.activeUserRank(startDate, DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT)));
     }
 
     @Override
@@ -202,25 +199,6 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
         return result;
     }
 
-    /** 归一化分页大小 */
-    private int normalizeLimit(int limit) {
-        if (limit <= 0) {
-            return DEFAULT_LIMIT;
-        }
-        return Math.min(limit, MAX_LIMIT);
-    }
-
-    /** 计算百分比 */
-    private double calcPercent(long count, long total) {
-        if (total <= 0) {
-            return 0d;
-        }
-        return BigDecimal.valueOf(count)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
-    }
-
     /** 转换分发列表（通用模板） */
     private List<DashboardDistributionVo> convertDistributionList(List<Map<String, Object>> rawList,
                                                                    java.util.function.Function<String, String> converter) {
@@ -233,7 +211,7 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
             vo.setName(converter.apply(Convert.toStr(raw.get("code"))));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
     }
@@ -262,7 +240,7 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
             vo.setName(Convert.toStr(raw.get("name")));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
     }

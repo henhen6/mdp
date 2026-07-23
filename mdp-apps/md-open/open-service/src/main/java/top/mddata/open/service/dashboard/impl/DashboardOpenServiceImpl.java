@@ -31,9 +31,8 @@ import top.mddata.open.vo.dashboard.EventTriggerStatisticsVo;
 import top.mddata.open.vo.dashboard.EventTriggerTrendVo;
 import top.mddata.open.vo.dashboard.OauthDistributionVo;
 import top.mddata.open.vo.dashboard.OverviewOpenVo;
+import top.mddata.base.utils.DefValueHelper;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -68,8 +67,6 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     private static final int DEFAULT_LIMIT = 10;
     /** 最大分页大小 */
     private static final int MAX_LIMIT = 100;
-    /** 百分比计算精度 */
-    private static final int PERCENT_SCALE = 2;
 
     private final AppMapper appMapper;
     private final ApiMapper apiMapper;
@@ -135,7 +132,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     @Override
     public List<AppRankVo> getAppRank(int limit) {
-        int safeLimit = normalizeLimit(limit);
+        int safeLimit = DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT);
         List<Map<String, Object>> rawList = apiCallLogMapper.rankByApp(safeLimit);
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
@@ -153,7 +150,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     @Override
     public List<ApiRankVo> getApiRank(int limit) {
-        int safeLimit = normalizeLimit(limit);
+        int safeLimit = DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT);
         List<Map<String, Object>> rawList = apiCallLogMapper.rankByApi(safeLimit);
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
@@ -185,7 +182,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
             vo.setGrantType(Convert.toStr(raw.get("name")));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             result.add(vo);
         }
         return result;
@@ -229,7 +226,7 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
 
     @Override
     public List<EventTriggerStatisticsVo> getEventTriggerRank(int limit) {
-        int safeLimit = normalizeLimit(limit);
+        int safeLimit = DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT);
         List<Map<String, Object>> rawList = eventTriggerMapper.rankByEventCode(safeLimit);
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
@@ -320,25 +317,6 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         ));
 
         return result;
-    }
-
-    /** 归一化分页大小 */
-    private int normalizeLimit(int limit) {
-        if (limit <= 0) {
-            return DEFAULT_LIMIT;
-        }
-        return Math.min(limit, MAX_LIMIT);
-    }
-
-    /** 计算百分比 */
-    private double calcPercent(long count, long total) {
-        if (total <= 0) {
-            return 0d;
-        }
-        return BigDecimal.valueOf(count)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
     }
 
     private static LocalDate[] normalizeRange(LocalDate startDate, LocalDate endDate) {

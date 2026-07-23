@@ -12,8 +12,8 @@ import top.mddata.console.vo.dashboard.InterfaceRankVo;
 import top.mddata.console.vo.dashboard.OverviewMonitorVo;
 import top.mddata.console.vo.dashboard.SuccessRateVo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import top.mddata.base.utils.DefValueHelper;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,8 +40,6 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
     private static final int DEFAULT_LIMIT = 10;
     /** 最大分页大小 */
     private static final int MAX_LIMIT = 100;
-    /** 百分比计算精度 */
-    private static final int PERCENT_SCALE = 2;
 
     private final InterfaceConfigMapper interfaceConfigMapper;
     private final InterfaceStatMapper interfaceStatMapper;
@@ -82,39 +80,20 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
         vo.setSuccessCount(success);
         vo.setFailCount(fail);
         vo.setTotalCount(total);
-        vo.setRate(calcPercent(success, total));
+        vo.setRate(DefValueHelper.calcPercent(success, total));
         return vo;
     }
 
     @Override
     public List<InterfaceRankVo> getCallRank(int limit) {
-        List<Map<String, Object>> rawList = interfaceStatMapper.rankByTotalCount(normalizeLimit(limit));
+        List<Map<String, Object>> rawList = interfaceStatMapper.rankByTotalCount(DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT));
         return toInterfaceRankList(rawList);
     }
 
     @Override
     public List<InterfaceRankVo> getFailRank(int limit) {
-        List<Map<String, Object>> rawList = interfaceStatMapper.rankByFailCount(normalizeLimit(limit));
+        List<Map<String, Object>> rawList = interfaceStatMapper.rankByFailCount(DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT));
         return toInterfaceRankList(rawList);
-    }
-
-    /** 归一化分页大小 */
-    private int normalizeLimit(int limit) {
-        if (limit <= 0) {
-            return DEFAULT_LIMIT;
-        }
-        return Math.min(limit, MAX_LIMIT);
-    }
-
-    /** 计算百分比 */
-    private double calcPercent(long successCount, long totalCount) {
-        if (totalCount <= 0) {
-            return 0d;
-        }
-        return BigDecimal.valueOf(successCount)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(totalCount), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
     }
 
     /** 转换为接口排行列表 */

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 系统概览统计 VO (console部分)
@@ -44,20 +45,20 @@ public class OverviewConsoleVo implements Serializable {
     private Long fileTotalSize;
 
     @Schema(description = "临时文件占用率(百分比)")
-    private Double tempFileRate;
+    private BigDecimal tempFileRate;
 
     @Schema(description = "消息成功率(百分比)")
-    private Double messageSuccessRate;
+    private BigDecimal messageSuccessRate;
 
     @Schema(description = "接口成功率(百分比)")
-    private Double interfaceSuccessRate;
+    private BigDecimal interfaceSuccessRate;
 
     @Schema(description = "回调成功率(百分比)")
-    private Double callbackSuccessRate;
+    private BigDecimal callbackSuccessRate;
 
     @Schema(description = "API调用成功率(百分比)")
-    private Double apiCallSuccessRate;
+    private BigDecimal apiCallSuccessRate;
 
     @Schema(description = "事件通知成功率(百分比)")
-    private Double eventPushSuccessRate;
+    private BigDecimal eventPushSuccessRate;
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 接口成功率 VO
@@ -26,5 +27,5 @@ public class SuccessRateVo implements Serializable {
     private Long totalCount;
 
     @Schema(description = "成功率（百分比）")
-    private Double rate;
+    private BigDecimal rate;
 }

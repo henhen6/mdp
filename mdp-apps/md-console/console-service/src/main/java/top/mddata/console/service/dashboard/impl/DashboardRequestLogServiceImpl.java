@@ -13,8 +13,8 @@ import top.mddata.console.vo.dashboard.OverviewRequestVo;
 import top.mddata.console.vo.dashboard.RegionDistributionVo;
 import top.mddata.console.vo.dashboard.RequestInterfaceRankVo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import top.mddata.base.utils.DefValueHelper;
+
 import java.util.Collections;
 import java.util.List;
 import cn.hutool.core.convert.Convert;
@@ -38,8 +38,6 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
     private static final int DEFAULT_LIMIT = 10;
     /** 最大分页大小 */
     private static final int MAX_LIMIT = 100;
-    /** 百分比计算精度 */
-    private static final int PERCENT_SCALE = 2;
 
     private final RequestLogMapper requestLogMapper;
 
@@ -55,7 +53,7 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
             vo.setName(convertLogType(Convert.toStr(raw.get("code"))));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
     }
@@ -94,46 +92,22 @@ public class DashboardRequestLogServiceImpl implements DashboardRequestLogServic
         Long total = requestLogMapper.countTotal();
         Long abnormal = requestLogMapper.countAbnormal();
         Long success = requestLogMapper.countSuccess();
-        vo.setTotalCount(nvl(total, 0L));
-        vo.setAbnormalCount(nvl(abnormal, 0L));
-        vo.setSuccessCount(nvl(success, 0L));
+        vo.setTotalCount(DefValueHelper.nvl(total, 0L));
+        vo.setAbnormalCount(DefValueHelper.nvl(abnormal, 0L));
+        vo.setSuccessCount(DefValueHelper.nvl(success, 0L));
         return vo;
     }
 
     @Override
     public List<IpRankVo> getIpRank(int limit) {
-        List<Map<String, Object>> rawList = requestLogMapper.countByIpRank(normalizeLimit(limit));
+        List<Map<String, Object>> rawList = requestLogMapper.countByIpRank(DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT));
         return toIpRankList(rawList);
     }
 
     @Override
     public List<RequestInterfaceRankVo> getInterfaceRank(int limit) {
-        List<Map<String, Object>> rawList = requestLogMapper.countByInterfaceRank(normalizeLimit(limit));
+        List<Map<String, Object>> rawList = requestLogMapper.countByInterfaceRank(DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT));
         return toInterfaceRankList(rawList);
-    }
-
-    /** 空值返回默认值 */
-    private static long nvl(Long value, long defaultVal) {
-        return value != null ? value : defaultVal;
-    }
-
-    /** 归一化分页大小 */
-    private int normalizeLimit(int limit) {
-        if (limit <= 0) {
-            return DEFAULT_LIMIT;
-        }
-        return Math.min(limit, MAX_LIMIT);
-    }
-
-    /** 计算百分比 */
-    private double calcPercent(long count, long total) {
-        if (total <= 0) {
-            return 0d;
-        }
-        return BigDecimal.valueOf(count)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
     }
 
     /** 转换为IP排行列表 */

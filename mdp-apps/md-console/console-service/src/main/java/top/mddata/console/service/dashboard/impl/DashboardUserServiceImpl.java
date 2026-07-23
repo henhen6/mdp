@@ -19,8 +19,8 @@ import top.mddata.console.vo.dashboard.OverviewUserVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendVo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import top.mddata.base.utils.DefValueHelper;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -42,14 +42,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DashboardUserServiceImpl implements DashboardUserService {
 
+    /** 默认日期范围：6天前到今天 */
+    private static final int DEFAULT_DAYS = 6;
     /** 默认分页大小 */
     private static final int DEFAULT_LIMIT = 10;
     /** 最大分页大小 */
     private static final int MAX_LIMIT = 100;
-    /** 默认日期范围：6天前到今天 */
-    private static final int DEFAULT_DAYS = 6;
-    /** 百分比计算精度 */
-    private static final int PERCENT_SCALE = 2;
 
     private final UserMapper userMapper;
     private final OrgMapper orgMapper;
@@ -109,12 +107,12 @@ public class DashboardUserServiceImpl implements DashboardUserService {
 
     @Override
     public List<RankVo> getOrgRank(int limit) {
-        return toRankVoList(orgMapper.rankByUserCount(normalizeLimit(limit)));
+        return toRankVoList(orgMapper.rankByUserCount(DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT)));
     }
 
     @Override
     public List<RankVo> getRoleRank(int limit) {
-        return toRankVoList(roleMapper.rankByUserCount(normalizeLimit(limit)));
+        return toRankVoList(roleMapper.rankByUserCount(DefValueHelper.normalizeLimit(limit, DEFAULT_LIMIT, MAX_LIMIT)));
     }
 
     @Override
@@ -129,7 +127,7 @@ public class DashboardUserServiceImpl implements DashboardUserService {
             vo.setName(convertUserStatus(toBoolean(raw.get("code"))));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
     }
@@ -146,28 +144,9 @@ public class DashboardUserServiceImpl implements DashboardUserService {
             vo.setName(convertUserType(Convert.toLong(raw.get("code"))));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
-            vo.setPercent(calcPercent(count, total));
+            vo.setPercent(DefValueHelper.calcPercent(count, total));
             return vo;
         }).collect(Collectors.toList());
-    }
-
-    /** 归一化分页大小 */
-    private int normalizeLimit(int limit) {
-        if (limit <= 0) {
-            return DEFAULT_LIMIT;
-        }
-        return Math.min(limit, MAX_LIMIT);
-    }
-
-    /** 计算百分比 */
-    private double calcPercent(long count, long total) {
-        if (total <= 0) {
-            return 0d;
-        }
-        return BigDecimal.valueOf(count)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(total), PERCENT_SCALE, RoundingMode.HALF_UP)
-                .doubleValue();
     }
 
     /** 转换为排行列表 */
