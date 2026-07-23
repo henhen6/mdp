@@ -1,5 +1,6 @@
 package top.mddata.open.service.dashboard.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import cn.hutool.core.convert.Convert;
 import java.util.Map;
 
 /**
@@ -104,10 +104,8 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     }
 
     @Override
-    public List<CallTrendVo> getCallTrend(String startDate, String endDate) {
-        LocalDate start = parseDate(startDate);
-        LocalDate end = parseDate(endDate);
-        LocalDate[] range = normalizeRange(start, end);
+    public List<CallTrendVo> getCallTrend(LocalDate startDate, LocalDate endDate) {
+        LocalDate[] range = normalizeRange(startDate, endDate);
         LocalDateTime startTime = LocalDateTime.of(range[0], LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(range[1], LocalTime.MAX);
 
@@ -121,9 +119,9 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         }
 
         List<CallTrendVo> result = new ArrayList<>();
-        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(range[0], range[1]) + 1;
         for (int i = 0; i < daysBetween; i++) {
-            LocalDate d = start.plusDays(i);
+            LocalDate d = range[0].plusDays(i);
             String key = d.toString();
             long[] arr = dateMap.getOrDefault(key, new long[]{0L, 0L});
             CallTrendVo vo = new CallTrendVo();
@@ -373,14 +371,4 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         return result;
     }
 
-    private static LocalDate parseDate(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(value.trim(), DATE_FORMATTER);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

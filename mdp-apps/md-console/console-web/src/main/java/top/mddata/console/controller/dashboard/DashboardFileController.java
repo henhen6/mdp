@@ -14,6 +14,7 @@ import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.FileTrendVo;
 import top.mddata.console.vo.dashboard.OverviewFileVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -69,8 +70,8 @@ public class DashboardFileController {
     @Operation(summary = "文件增长趋势", description = "按天统计新增文件数与新增容量，支持任意日期区间，默认近7天")
     @RequestLog(value = "查询文件增长趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<FileTrendVo>> getTrend(
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
         return R.success(dashboardFileService.getTrend(startDate, endDate));
     }
 }

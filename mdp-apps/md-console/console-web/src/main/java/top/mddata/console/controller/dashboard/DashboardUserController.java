@@ -15,6 +15,7 @@ import top.mddata.console.vo.dashboard.OverviewUserVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -51,8 +52,8 @@ public class DashboardUserController {
     @Operation(summary = "用户增长趋势", description = "按天统计指定日期区间内的新增用户数")
     @RequestLog(value = "查询用户增长趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<TrendVo>> getUserTrend(
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
         return R.success(dashboardUserService.getUserTrend(startDate, endDate));
     }
 

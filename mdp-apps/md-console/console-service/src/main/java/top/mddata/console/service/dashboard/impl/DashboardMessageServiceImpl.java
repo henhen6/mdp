@@ -112,13 +112,9 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
     }
 
     @Override
-    public List<TrendLineVo> getTrend(String startDate, String endDate, Integer type) {
-        LocalDate end = (endDate == null || endDate.isBlank())
-                ? LocalDate.now()
-                : LocalDate.parse(endDate, DATE_FORMATTER);
-        LocalDate start = (startDate == null || startDate.isBlank())
-                ? end.minusDays(DEFAULT_DAYS)
-                : LocalDate.parse(startDate, DATE_FORMATTER);
+    public List<TrendLineVo> getTrend(LocalDate startDate, LocalDate endDate, Integer type) {
+        LocalDate end = endDate != null ? endDate : LocalDate.now();
+        LocalDate start = startDate != null ? startDate : end.minusDays(DEFAULT_DAYS);
 
         LocalDateTime startTime = LocalDateTime.of(start, LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);

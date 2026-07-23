@@ -34,10 +34,6 @@ import java.util.stream.Collectors;
 /**
  * 用户与组织统计 服务层实现
  *
- * <p>说明：MyBatis-Flex 内置处理 deletedAt 逻辑删除字段，
- * 无需在 QueryWrapper 中手动添加 .eq(Xxx::getDeletedAt, 0L)。
- * 但手写 SQL（UserMapper.countByDay/countByState/countByType）已显式添加 deleted_at = 0 过滤条件。</p>
- *
  * @author henhen6
  * @since 2026-07-10
  */
@@ -82,9 +78,9 @@ public class DashboardUserServiceImpl implements DashboardUserService {
     }
 
     @Override
-    public List<TrendVo> getUserTrend(String startDate, String endDate) {
-        LocalDate start = startDate != null ? LocalDate.parse(startDate) : LocalDate.now().minusDays(DEFAULT_DAYS);
-        LocalDate end = endDate != null ? LocalDate.parse(endDate) : LocalDate.now();
+    public List<TrendVo> getUserTrend(LocalDate startDate, LocalDate endDate) {
+        LocalDate end = endDate != null ? endDate : LocalDate.now();
+        LocalDate start = startDate != null ? startDate : end.minusDays(DEFAULT_DAYS);
 
         LocalDateTime startTime = start.atStartOfDay();
         LocalDateTime endTime = end.atTime(LocalTime.MAX);
@@ -198,7 +194,8 @@ public class DashboardUserServiceImpl implements DashboardUserService {
         if (code == null) {
             return null;
         }
-        for (UserTypeEnum enumVal : UserTypeEnum.values()) {
+        UserTypeEnum[] values = UserTypeEnum.values();
+        for (UserTypeEnum enumVal : values) {
             if (enumVal.getCode().equals(code.intValue())) {
                 return enumVal.getDesc();
             }

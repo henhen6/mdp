@@ -4,6 +4,7 @@ import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.FileTrendVo;
 import top.mddata.console.vo.dashboard.OverviewFileVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -42,8 +43,8 @@ public interface DashboardFileService {
     /**
      * 文件增长趋势
      *
-     * @param startDate 开始日期（yyyy-MM-dd）
-     * @param endDate   结束日期（yyyy-MM-dd）
+     * @param startDate 开始日期（默认近7天）
+     * @param endDate   结束日期（默认今天）
      */
-    List<FileTrendVo> getTrend(String startDate, String endDate);
+    List<FileTrendVo> getTrend(LocalDate startDate, LocalDate endDate);
 }

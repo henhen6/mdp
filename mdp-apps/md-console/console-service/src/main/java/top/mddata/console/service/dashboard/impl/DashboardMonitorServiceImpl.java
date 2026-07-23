@@ -74,9 +74,9 @@ public class DashboardMonitorServiceImpl implements DashboardMonitorService {
     public SuccessRateVo getSuccessRate() {
         SuccessRateVo vo = new SuccessRateVo();
 
-        Map<String, Object> todaySum = interfaceLogMapper.sumAll();
-        long success = Convert.toLong(todaySum != null ? todaySum.get("successCount") : null);
-        long fail = Convert.toLong(todaySum != null ? todaySum.get("failCount") : null);
+        Map<String, Object> allSum = interfaceLogMapper.sumAll();
+        long success = Convert.toLong(allSum != null ? allSum.get("successCount") : null);
+        long fail = Convert.toLong(allSum != null ? allSum.get("failCount") : null);
         long total = success + fail;
 
         vo.setSuccessCount(success);

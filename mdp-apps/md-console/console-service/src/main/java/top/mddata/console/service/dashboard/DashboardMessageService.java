@@ -5,6 +5,7 @@ import top.mddata.console.vo.dashboard.OverviewMessageVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendLineVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -33,12 +34,12 @@ public interface DashboardMessageService {
     /**
      * 消息发送趋势（按天统计成功发送数，支持日期区间和消息类型筛选）
      *
-     * @param startDate 开始日期（yyyy-MM-dd，默认近7天）
-     * @param endDate   结束日期（yyyy-MM-dd，默认今天）
+     * @param startDate 开始日期（默认近7天）
+     * @param endDate   结束日期（默认今天）
      * @param type      消息类型（1-站内信 2-短信 3-邮件，不传查所有）
      * @return 趋势数据（包含各类型数量和总量）
      */
-    List<TrendLineVo> getTrend(String startDate, String endDate, Integer type);
+    List<TrendLineVo> getTrend(LocalDate startDate, LocalDate endDate, Integer type);
 
     /**
      * 消息模板使用排行

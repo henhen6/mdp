@@ -5,6 +5,7 @@ import top.mddata.console.vo.dashboard.OverviewUserVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -25,11 +26,11 @@ public interface DashboardUserService {
     /**
      * 获取用户增长趋势
      *
-     * @param startDate 开始日期（yyyy-MM-dd）
-     * @param endDate   截止日期（yyyy-MM-dd）
+     * @param startDate 开始日期（默认近7天）
+     * @param endDate   截止日期（默认今天）
      * @return 用户增长趋势数据
      */
-    List<TrendVo> getUserTrend(String startDate, String endDate);
+    List<TrendVo> getUserTrend(LocalDate startDate, LocalDate endDate);
 
     /**
      * 获取部门用户排行

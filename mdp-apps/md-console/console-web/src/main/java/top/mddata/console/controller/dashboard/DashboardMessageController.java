@@ -15,6 +15,7 @@ import top.mddata.console.vo.dashboard.OverviewMessageVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendLineVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -56,8 +57,8 @@ public class DashboardMessageController {
     @Operation(summary = "消息发送趋势", description = "按天统计成功发送数，支持日期区间筛选，返回各类型数量和总量")
     @RequestLog(value = "查询消息发送趋势", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<TrendLineVo>> getTrend(
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Integer type) {
         return R.success(dashboardMessageService.getTrend(startDate, endDate, type));
     }

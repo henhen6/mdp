@@ -96,13 +96,9 @@ public class DashboardFileServiceImpl implements DashboardFileService {
     }
 
     @Override
-    public List<FileTrendVo> getTrend(String startDate, String endDate) {
-        LocalDate end = (endDate == null || endDate.isBlank())
-                ? LocalDate.now()
-                : LocalDate.parse(endDate, DATE_FORMATTER);
-        LocalDate start = (startDate == null || startDate.isBlank())
-                ? end.minusDays(DEFAULT_DAYS)
-                : LocalDate.parse(startDate, DATE_FORMATTER);
+    public List<FileTrendVo> getTrend(LocalDate startDate, LocalDate endDate) {
+        LocalDate end = endDate != null ? endDate : LocalDate.now();
+        LocalDate start = startDate != null ? startDate : end.minusDays(DEFAULT_DAYS);
 
         LocalDateTime startTime = LocalDateTime.of(start, LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
@@ -134,14 +130,6 @@ public class DashboardFileServiceImpl implements DashboardFileService {
     /** 空值返回默认值 */
     private static long nvl(Long value, long defaultVal) {
         return value != null ? value : defaultVal;
-    }
-
-    /** 归一化分页大小 */
-    private int normalizeLimit(int limit) {
-        if (limit <= 0) {
-            return DEFAULT_LIMIT;
-        }
-        return Math.min(limit, MAX_LIMIT);
     }
 
     /** 计算百分比 */
