@@ -83,7 +83,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
                 .setPlatform(StrUtil.isNotEmpty(fileUploadDto.getPlatform()), fileUploadDto.getPlatform())
                 .setHashCalculatorSha256(true)
                 .setPath(path)
-                .setObjectType(TEMP_OBJECT_TYPE);
+                .setObjectType(StrUtil.isEmpty(fileUploadDto.getObjectType()) ? TEMP_OBJECT_TYPE : fileUploadDto.getObjectType());
 
         uploadPretreatment.setProgressMonitor(new ProgressListener() {
             @Override

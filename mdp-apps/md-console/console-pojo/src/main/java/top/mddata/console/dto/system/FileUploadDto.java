@@ -21,6 +21,8 @@ public class FileUploadDto implements Serializable {
 
     @Schema(description = "存储平台")
     private String platform;
+    @Schema(description = "对象类型")
+    private String objectType;
 
     @Schema(description = "是否生成缩略图")
     private Boolean thumbnail;
