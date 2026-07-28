@@ -43,8 +43,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -299,8 +301,9 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(zipName, StandardCharsets.UTF_8));
             OutputStream outputStream = response.getOutputStream();
             ZipOutputStream zipOut = new ZipOutputStream(outputStream);
+            Set<String> usedNames = new HashSet<>();
             for (File file : files) {
-                addFileToZip(file, zipOut);
+                addFileToZip(file, zipOut, usedNames);
             }
             zipOut.finish();
             zipOut.flush();
@@ -319,21 +322,54 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
     private void download(HttpServletResponse response, File file) throws Exception {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setPlatform(file.getPlatform()).setBasePath(file.getBasePath()).setPath(file.getPath()).setFilename(file.getFilename());
-        String name = file.getOriginalFilename();
+        String name = sanitizeFileName(file.getOriginalFilename());
         response.setContentType("application/octet-stream;charset=UTF-8");
         response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(name, StandardCharsets.UTF_8));
         fileStorageService.download(fileInfo).outputStream(response.getOutputStream());
     }
 
-    private void addFileToZip(File file, ZipOutputStream zipOut) {
+    private void addFileToZip(File file, ZipOutputStream zipOut, Set<String> usedNames) {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setPlatform(file.getPlatform()).setBasePath(file.getBasePath()).setPath(file.getPath()).setFilename(file.getFilename());
         try {
-            zipOut.putNextEntry(new ZipEntry(file.getOriginalFilename()));
+            String originalName = sanitizeFileName(file.getOriginalFilename());
+            String entryName = getUniqueFileName(originalName, usedNames);
+            usedNames.add(entryName);
+            zipOut.putNextEntry(new ZipEntry(entryName));
             fileStorageService.download(fileInfo).outputStream(zipOut);
             zipOut.closeEntry();
         } catch (Exception e) {
             log.error("添加文件到压缩包失败: {}", file.getId(), e);
         }
+    }
+
+    private String getUniqueFileName(String fileName, Set<String> usedNames) {
+        if (!usedNames.contains(fileName)) {
+            return fileName;
+        }
+        int dotIndex = fileName.lastIndexOf('.');
+        String name;
+        String ext;
+        if (dotIndex > 0) {
+            name = fileName.substring(0, dotIndex);
+            ext = fileName.substring(dotIndex);
+        } else {
+            name = fileName;
+            ext = "";
+        }
+        int index = 1;
+        String newName;
+        do {
+            newName = name + "(" + index + ")" + ext;
+            index++;
+        } while (usedNames.contains(newName));
+        return newName;
+    }
+
+    private String sanitizeFileName(String fileName) {
+        if (fileName == null) {
+            return "unnamed";
+        }
+        return fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
     }
 }
