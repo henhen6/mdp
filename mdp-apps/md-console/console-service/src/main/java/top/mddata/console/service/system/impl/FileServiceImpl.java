@@ -34,6 +34,9 @@ import top.mddata.console.service.system.convert.FileConvert;
 import top.mddata.console.service.system.properties.FileProperties;
 import top.mddata.console.vo.system.FileVo;
 
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,6 +45,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static top.mddata.base.utils.DateUtils.SLASH_DATE_FORMAT;
 import static top.mddata.common.constant.FileObjectType.TEMP_OBJECT_TYPE;
@@ -289,12 +294,11 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         if (files.size() == 1) {
             download(response, files.get(0));
         } else {
-            // 多个文件打包下载
-            String zipName = files.size() + "个文件.zip";
+            String zipName = "批量下载_共" + files.size() + "条_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".zip";
             response.setContentType("application/octet-stream;charset=UTF-8");
-            response.setHeader("Content-Disposition", "attachment; filename=" + zipName);
-            java.io.OutputStream outputStream = response.getOutputStream();
-            java.util.zip.ZipOutputStream zipOut = new java.util.zip.ZipOutputStream(outputStream);
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(zipName, StandardCharsets.UTF_8));
+            OutputStream outputStream = response.getOutputStream();
+            ZipOutputStream zipOut = new ZipOutputStream(outputStream);
             for (File file : files) {
                 addFileToZip(file, zipOut);
             }
@@ -314,18 +318,18 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
 
     private void download(HttpServletResponse response, File file) throws Exception {
         FileInfo fileInfo = new FileInfo();
-        fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
-        String name = file.getFilename();
+        fileInfo.setPlatform(file.getPlatform()).setBasePath(file.getBasePath()).setPath(file.getPath()).setFilename(file.getFilename());
+        String name = file.getOriginalFilename();
         response.setContentType("application/octet-stream;charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=" + java.net.URLEncoder.encode(name, "UTF-8"));
+        response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(name, StandardCharsets.UTF_8));
         fileStorageService.download(fileInfo).outputStream(response.getOutputStream());
     }
 
-    private void addFileToZip(File file, java.util.zip.ZipOutputStream zipOut) {
+    private void addFileToZip(File file, ZipOutputStream zipOut) {
         FileInfo fileInfo = new FileInfo();
-        fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
+        fileInfo.setPlatform(file.getPlatform()).setBasePath(file.getBasePath()).setPath(file.getPath()).setFilename(file.getFilename());
         try {
-            zipOut.putNextEntry(new java.util.zip.ZipEntry(file.getFilename()));
+            zipOut.putNextEntry(new ZipEntry(file.getOriginalFilename()));
             fileStorageService.download(fileInfo).outputStream(zipOut);
             zipOut.closeEntry();
         } catch (Exception e) {

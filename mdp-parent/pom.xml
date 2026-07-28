@@ -378,16 +378,106 @@
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-spring-boot-starter</artifactId>
                 <version>${sms4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hutool-core</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-log</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-json</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-http</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-crypto</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-cron</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-setting</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-core</artifactId>
                 <version>${sms4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hutool-core</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-log</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-json</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-http</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-crypto</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-cron</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-setting</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-provider</artifactId>
                 <version>${sms4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hutool-core</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-log</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-json</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-http</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-crypto</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-cron</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-setting</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- 邮件 -->
@@ -395,6 +485,36 @@
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-email-jakarta-core</artifactId>
                 <version>${sms4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hutool-core</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-log</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-json</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-http</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-crypto</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-cron</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hutool-setting</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.dromara.sms4j</groupId>
@@ -428,11 +548,23 @@
                 <groupId>org.dromara.x-file-storage</groupId>
                 <artifactId>x-file-storage-spring</artifactId>
                 <version>${x-file-storage.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hutool-core</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.dromara.x-file-storage</groupId>
                 <artifactId>x-file-storage-core</artifactId>
                 <version>${x-file-storage.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hutool-core</artifactId>
+                        <groupId>cn.hutool</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- 阿里云OSS -->
             <dependency>
