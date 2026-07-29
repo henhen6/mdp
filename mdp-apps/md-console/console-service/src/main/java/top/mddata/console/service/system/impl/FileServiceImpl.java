@@ -43,6 +43,7 @@ import java.io.RandomAccessFile;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -349,11 +350,11 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             throw new BizException("保存分片失败: " + e.getMessage());
         }
 
-        // 保存分片信息
+        // 保存分片信息（使用 partFile.length() 而不是 file.getSize()，因为 transferTo 后临时文件可能被删除）
         FilePart filePart = new FilePart();
         filePart.setUploadId(uploadId);
         filePart.setPartNumber(partNumber);
-        filePart.setPartSize(file.getSize());
+        filePart.setPartSize(partFile.length());
         filePart.setETag(String.valueOf(partNumber));
         filePartService.save(filePart);
 
@@ -435,6 +436,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         // 上传到文件存储服务
         FileInfo fileInfo = fileStorageService.of(mergedFile)
                 .setPath(getDateFolder())
+                .setObjectType(StrUtil.isEmpty(dto.getObjectType()) ? TEMP_OBJECT_TYPE : dto.getObjectType())
                 .setOriginalFilename(getOriginalFilenameFromParts(parts))
                 .upload();
 
@@ -466,9 +468,9 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
 
     private String getTempDir(String uploadId) {
         String basePath = StrUtil.isNotEmpty(fileProperties.getTempStoragePath())
-            ? fileProperties.getTempStoragePath()
-            : System.getProperty("java.io.tmpdir");
-        return basePath + "/file-parts/" + uploadId;
+                ? fileProperties.getTempStoragePath()
+                : System.getProperty("java.io.tmpdir");
+        return Paths.get(basePath, "/file-parts/", uploadId).toString();
     }
 
     private String getOriginalFilenameFromParts(List<FilePart> parts) {

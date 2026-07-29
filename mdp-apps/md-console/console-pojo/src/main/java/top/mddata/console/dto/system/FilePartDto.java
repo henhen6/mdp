@@ -144,6 +144,10 @@ public class FilePartDto implements Serializable {
     public static class CompletePartUploadDto implements Serializable {
         @Schema(description = "上传ID")
         private String uploadId;
+
+        @Schema(description = "对象类型")
+        private String objectType;
+
     }
 
     @Data
