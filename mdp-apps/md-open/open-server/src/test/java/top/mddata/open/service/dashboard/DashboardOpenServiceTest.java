@@ -57,7 +57,9 @@ class DashboardOpenServiceTest {
 
     @Test
     void getCallTrendWithDateRange() {
-        List<CallTrendVo> result = dashboardOpenService.getCallTrend("2026-07-10", "2026-07-16");
+        LocalDate start = LocalDate.of(2026, 7, 10);
+        LocalDate end = LocalDate.of(2026, 7, 16);
+        List<CallTrendVo> result = dashboardOpenService.getCallTrend(start, end);
         assertNotNull(result);
         assertEquals(7, result.size());
     }

@@ -12,6 +12,7 @@ import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 文件分片
@@ -77,5 +78,88 @@ public class FilePartDto implements Serializable {
     @Size(max = 16383, message = "哈希信息长度不能超过{max}")
     @Schema(description = "哈希信息")
     private String hashInfo;
+
+    @Data
+    @Schema(description = "初始化分片上传请求")
+    public static class InitPartUploadDto implements Serializable {
+        @Schema(description = "文件名")
+        private String fileName;
+        @Schema(description = "文件大小(字节)")
+        private Long fileSize;
+        @Schema(description = "文件哈希(可选)")
+        private String fileHash;
+    }
+
+    @Data
+    @Schema(description = "初始化分片上传响应")
+    public static class InitPartUploadResp implements Serializable {
+        @Schema(description = "上传ID")
+        private String uploadId;
+        @Schema(description = "分片大小(字节)")
+        private Long chunkSize;
+        @Schema(description = "总分片数")
+        private Integer totalChunks;
+    }
+
+    @Data
+    @Schema(description = "分片上传请求")
+    public static class UploadPartDto implements Serializable {
+        @Schema(description = "上传ID")
+        private String uploadId;
+        @Schema(description = "分片号(从1开始)")
+        private Integer partNumber;
+    }
+
+    @Data
+    @Schema(description = "分片上传响应")
+    public static class UploadPartResp implements Serializable {
+        @Schema(description = "分片号")
+        private Integer partNumber;
+        @Schema(description = "分片标识")
+        private String eTag;
+    }
+
+    @Data
+    @Schema(description = "已上传分片信息")
+    public static class UploadedPart implements Serializable {
+        @Schema(description = "分片号")
+        private Integer partNumber;
+        @Schema(description = "分片标识")
+        private String eTag;
+    }
+
+    @Data
+    @Schema(description = "查询上传进度响应")
+    public static class UploadProgressResp implements Serializable {
+        @Schema(description = "上传ID")
+        private String uploadId;
+        @Schema(description = "已上传分片列表")
+        private List<UploadedPart> uploadedParts;
+        @Schema(description = "是否完成")
+        private Boolean isComplete;
+    }
+
+    @Data
+    @Schema(description = "完成合并请求")
+    public static class CompletePartUploadDto implements Serializable {
+        @Schema(description = "上传ID")
+        private String uploadId;
+    }
+
+    @Data
+    @Schema(description = "完成合并响应")
+    public static class CompletePartUploadResp implements Serializable {
+        @Schema(description = "文件ID")
+        private Long fileId;
+        @Schema(description = "访问URL")
+        private String url;
+    }
+
+    @Data
+    @Schema(description = "取消上传请求")
+    public static class AbortPartUploadDto implements Serializable {
+        @Schema(description = "上传ID")
+        private String uploadId;
+    }
 
 }

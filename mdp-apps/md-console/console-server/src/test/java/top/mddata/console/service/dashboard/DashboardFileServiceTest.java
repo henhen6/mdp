@@ -7,6 +7,7 @@ import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.FileTrendVo;
 import top.mddata.console.vo.dashboard.OverviewFileVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,14 +69,18 @@ class DashboardFileServiceTest {
 
     @Test
     void getTrend30Days() {
-        List<FileTrendVo> result = dashboardFileService.getTrend("2026-06-17", "2026-07-17");
+        LocalDate start = LocalDate.of(2026, 6, 17);
+        LocalDate end = LocalDate.of(2026, 7, 17);
+        List<FileTrendVo> result = dashboardFileService.getTrend(start, end);
         assertNotNull(result);
         assertEquals(31, result.size());
     }
 
     @Test
     void getTrendIllegalDaysDefaultsTo7() {
-        List<FileTrendVo> result = dashboardFileService.getTrend("2026-07-10", "2026-07-16");
+        LocalDate start = LocalDate.of(2026, 7, 10);
+        LocalDate end = LocalDate.of(2026, 7, 16);
+        List<FileTrendVo> result = dashboardFileService.getTrend(start, end);
         assertNotNull(result);
         assertTrue(result.size() == 7);
     }

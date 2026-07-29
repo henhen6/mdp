@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.dto.system.CopyFilesDto;
+import top.mddata.console.dto.system.FilePartDto;
 import top.mddata.console.dto.system.FileUploadDto;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.entity.system.File;
@@ -75,4 +76,40 @@ public interface FileService extends SuperService<File> {
      * @param id       文件id
      */
     void download(HttpServletRequest request, HttpServletResponse response, Long id) throws Exception;
+
+    /**
+     * 初始化分片上传
+     * @param dto 初始化参数
+     * @return 初始化响应
+     */
+    FilePartDto.InitPartUploadResp initPartUpload(FilePartDto.InitPartUploadDto dto);
+
+    /**
+     * 上传分片
+     * @param uploadId 上传ID
+     * @param partNumber 分片号
+     * @param file 分片文件
+     * @return 分片响应
+     */
+    FilePartDto.UploadPartResp uploadPart(String uploadId, Integer partNumber, MultipartFile file);
+
+    /**
+     * 完成分片上传并合并
+     * @param dto 完成合并请求
+     * @return 合并结果
+     */
+    FilePartDto.CompletePartUploadResp completePartUpload(FilePartDto.CompletePartUploadDto dto);
+
+    /**
+     * 取消分片上传
+     * @param dto 取消请求
+     */
+    void abortPartUpload(FilePartDto.AbortPartUploadDto dto);
+
+    /**
+     * 查询上传进度
+     * @param uploadId 上传ID
+     * @return 上传进度
+     */
+    FilePartDto.UploadProgressResp getUploadProgress(String uploadId);
 }

@@ -40,6 +40,15 @@ public class FileProperties {
      * 支持的文件后缀
      */
     private String suffix;
+    /**
+     * 分片大小，单位 MB，默认 5MB
+     */
+    private Integer chunkSize = 5;
+    /**
+     * 临时存放分片文件的目录
+     */
+    private String tempStoragePath;
+
 
     public boolean validSuffix(String name) {
         if (StrUtil.isEmpty(suffix)) {

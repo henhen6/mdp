@@ -2,6 +2,7 @@ package top.mddata.console.service.system.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
@@ -24,19 +25,24 @@ import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.console.dto.system.CopyFilesDto;
+import top.mddata.console.dto.system.FilePartDto;
 import top.mddata.console.dto.system.FileUploadDto;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.entity.system.File;
+import top.mddata.console.entity.system.FilePart;
 import top.mddata.console.enumeration.system.FileTypeEnum;
 import top.mddata.console.mapper.system.FileMapper;
+import top.mddata.console.service.system.FilePartService;
 import top.mddata.console.service.system.FileService;
 import top.mddata.console.service.system.convert.FileConvert;
 import top.mddata.console.service.system.properties.FileProperties;
 import top.mddata.console.vo.system.FileVo;
 
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,6 +53,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -67,6 +74,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
     private final FileStorageService fileStorageService;
     private final FileProperties fileProperties;
     private final FileConvert fileConvert;
+    private final FilePartService filePartService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -279,6 +287,206 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             deleteIds.add(file.getId());
         });
         removeByIds(deleteIds);
+    }
+
+    @Override
+    public FilePartDto.InitPartUploadResp initPartUpload(FilePartDto.InitPartUploadDto dto) {
+        // 验证文件后缀
+        if (!fileProperties.validSuffix(dto.getFileName())) {
+            throw new BizException("文件后缀不支持");
+        }
+        if (StrUtil.containsAny(dto.getFileName(), "../", "./")) {
+            throw new BizException("文件名不能含有特殊字符");
+        }
+
+        // 生成 uploadId
+        String uploadId = UUID.randomUUID().toString().replace("-", "");
+
+        // 计算分片大小和总分片数
+        long chunkSize = fileProperties.getChunkSize() * 1024 * 1024L;
+        int totalChunks = (int) Math.ceil((double) dto.getFileSize() / chunkSize);
+
+        // 创建临时目录存储分片
+        String tempDir = getTempDir(uploadId);
+        FileUtil.mkdir(new java.io.File(tempDir));
+
+        // 保存原始文件名到元数据文件
+        java.io.File metaFile = new java.io.File(tempDir, ".filename");
+        try {
+            FileUtil.writeString(dto.getFileName(), metaFile, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            log.warn("保存文件名元数据失败: {}", e.getMessage());
+        }
+
+        // 返回初始化信息
+        FilePartDto.InitPartUploadResp resp = new FilePartDto.InitPartUploadResp();
+        resp.setUploadId(uploadId);
+        resp.setChunkSize(chunkSize);
+        resp.setTotalChunks(totalChunks);
+        return resp;
+    }
+
+    @Override
+    public FilePartDto.UploadPartResp uploadPart(String uploadId, Integer partNumber, MultipartFile file) {
+        if (StrUtil.isEmpty(uploadId)) {
+            throw new BizException("上传ID不能为空");
+        }
+        if (partNumber == null || partNumber < 1) {
+            throw new BizException("分片号必须大于0");
+        }
+        if (file.isEmpty()) {
+            throw new BizException("分片文件不能为空");
+        }
+
+        // 保存分片到临时目录
+        String tempDir = getTempDir(uploadId);
+        String partFileName = String.format("%05d", partNumber);
+        java.io.File partFile = new java.io.File(tempDir, partFileName);
+
+        try {
+            file.transferTo(partFile);
+        } catch (Exception e) {
+            throw new BizException("保存分片失败: " + e.getMessage());
+        }
+
+        // 保存分片信息
+        FilePart filePart = new FilePart();
+        filePart.setUploadId(uploadId);
+        filePart.setPartNumber(partNumber);
+        filePart.setPartSize(file.getSize());
+        filePart.setETag(String.valueOf(partNumber));
+        filePartService.save(filePart);
+
+        // 返回响应
+        FilePartDto.UploadPartResp resp = new FilePartDto.UploadPartResp();
+        resp.setPartNumber(partNumber);
+        resp.setETag(String.valueOf(partNumber));
+        return resp;
+    }
+
+    @Override
+    public FilePartDto.UploadProgressResp getUploadProgress(String uploadId) {
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .eq(FilePart::getUploadId, uploadId)
+                .orderBy(FilePart::getPartNumber, true);
+        List<FilePart> parts = filePartService.list(queryWrapper);
+
+        List<FilePartDto.UploadedPart> uploadedParts = parts.stream().map(p -> {
+            FilePartDto.UploadedPart up = new FilePartDto.UploadedPart();
+            up.setPartNumber(p.getPartNumber());
+            up.setETag(p.getETag());
+            return up;
+        }).toList();
+
+        FilePartDto.UploadProgressResp resp = new FilePartDto.UploadProgressResp();
+        resp.setUploadId(uploadId);
+        resp.setUploadedParts(uploadedParts);
+        resp.setIsComplete(false);
+        return resp;
+    }
+
+    @Override
+    public FilePartDto.CompletePartUploadResp completePartUpload(FilePartDto.CompletePartUploadDto dto) {
+        String uploadId = dto.getUploadId();
+        if (StrUtil.isEmpty(uploadId)) {
+            throw new BizException("上传ID不能为空");
+        }
+
+        // 查询所有分片
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .eq(FilePart::getUploadId, uploadId)
+                .orderBy(FilePart::getPartNumber, true);
+        List<FilePart> parts = filePartService.list(queryWrapper);
+        if (parts.isEmpty()) {
+            throw new BizException("未找到上传分片");
+        }
+
+        // 合并分片
+        String tempDir = getTempDir(uploadId);
+        java.io.File[] partFiles = new java.io.File(tempDir).listFiles();
+        if (partFiles == null || partFiles.length == 0) {
+            throw new BizException("分片文件不存在");
+        }
+
+        // 按分片号排序
+        List<java.io.File> sortedFiles = new ArrayList<>();
+        for (int i = 1; i <= parts.size(); i++) {
+            for (java.io.File f : partFiles) {
+                if (f.getName().equals(String.format("%05d", i))) {
+                    sortedFiles.add(f);
+                    break;
+                }
+            }
+        }
+
+        // 创建合并后的临时文件
+        String mergedFileName = "merged_" + uploadId;
+        java.io.File mergedFile = new java.io.File(tempDir, mergedFileName);
+
+        try (RandomAccessFile raf = new RandomAccessFile(mergedFile, "rw")) {
+            for (java.io.File partFile : sortedFiles) {
+                byte[] bytes = Files.readAllBytes(partFile.toPath());
+                raf.write(bytes);
+            }
+        } catch (Exception e) {
+            throw new BizException("合并分片失败: " + e.getMessage());
+        }
+
+        // 上传到文件存储服务
+        FileInfo fileInfo = fileStorageService.of(mergedFile)
+                .setPath(getDateFolder())
+                .setOriginalFilename(getOriginalFilenameFromParts(parts))
+                .upload();
+
+        // 清理临时文件
+        FileUtil.del(new java.io.File(tempDir));
+        filePartService.remove(QueryWrapper.create().eq(FilePart::getUploadId, uploadId));
+
+        // 构建响应
+        FilePartDto.CompletePartUploadResp resp = new FilePartDto.CompletePartUploadResp();
+        resp.setFileId(Long.valueOf(fileInfo.getId()));
+        resp.setUrl(fileInfo.getUrl());
+        return resp;
+    }
+
+    @Override
+    public void abortPartUpload(FilePartDto.AbortPartUploadDto dto) {
+        String uploadId = dto.getUploadId();
+        if (StrUtil.isEmpty(uploadId)) {
+            throw new BizException("上传ID不能为空");
+        }
+
+        // 删除临时目录
+        String tempDir = getTempDir(uploadId);
+        FileUtil.del(new java.io.File(tempDir));
+
+        // 删除分片记录
+        filePartService.remove(QueryWrapper.create().eq(FilePart::getUploadId, uploadId));
+    }
+
+    private String getTempDir(String uploadId) {
+        String basePath = StrUtil.isNotEmpty(fileProperties.getTempStoragePath())
+            ? fileProperties.getTempStoragePath()
+            : System.getProperty("java.io.tmpdir");
+        return basePath + "/file-parts/" + uploadId;
+    }
+
+    private String getOriginalFilenameFromParts(List<FilePart> parts) {
+        if (parts == null || parts.isEmpty()) {
+            return "unknownfile";
+        }
+        // 从临时目录读取文件名元数据文件
+        String uploadId = parts.get(0).getUploadId();
+        String tempDir = getTempDir(uploadId);
+        java.io.File metaFile = new java.io.File(tempDir, ".filename");
+        if (metaFile.exists()) {
+            try {
+                return FileUtil.readString(metaFile, StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                log.warn("读取文件名元数据失败: {}", e.getMessage());
+            }
+        }
+        return "unknownfile";
     }
 
     /**

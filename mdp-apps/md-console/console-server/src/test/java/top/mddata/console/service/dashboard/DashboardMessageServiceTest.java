@@ -8,6 +8,7 @@ import top.mddata.console.vo.dashboard.OverviewMessageVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendLineVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,7 +57,9 @@ class DashboardMessageServiceTest {
 
     @Test
     void getTrend30Days() {
-        List<TrendLineVo> result = dashboardMessageService.getTrend("2026-06-17", "2026-07-17", null);
+        LocalDate start = LocalDate.of(2026, 6, 17);
+        LocalDate end = LocalDate.of(2026, 7, 17);
+        List<TrendLineVo> result = dashboardMessageService.getTrend(start, end, null);
         assertNotNull(result);
         assertEquals(31, result.size());
     }

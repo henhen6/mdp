@@ -14,7 +14,8 @@ mdp:
     ipv6:
       enabled: true
       xdbPath: file:/data_mdp/target/ip2region_v6.xdb
-
+  file:
+    tempStoragePath: /data_mdp/temp/
 spring:
   data:
     redis:

@@ -7,6 +7,7 @@ import top.mddata.console.vo.dashboard.InterfaceRankVo;
 import top.mddata.console.vo.dashboard.OverviewMonitorVo;
 import top.mddata.console.vo.dashboard.SuccessRateVo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,7 +47,7 @@ class DashboardMonitorServiceTest {
         assertNotNull(vo.getFailCount());
         assertNotNull(vo.getTotalCount());
         assertNotNull(vo.getRate());
-        assertTrue(vo.getRate() >= 0 && vo.getRate() <= 100);
+        assertTrue(vo.getRate().compareTo(BigDecimal.ZERO) >= 0 && vo.getRate().compareTo(new BigDecimal("100")) <= 0);
     }
 
     @Test

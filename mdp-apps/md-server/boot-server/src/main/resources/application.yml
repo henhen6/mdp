@@ -135,7 +135,8 @@ mdp:
         defaultValue: "test"
   file:
     delFile: false
-    suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db
+    suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db,mp3,mp4
+    tempStoragePath: /Users/tangyh/data/mdp/temp/
 
 spring:
   main:

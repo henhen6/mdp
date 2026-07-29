@@ -8,6 +8,7 @@ import top.mddata.console.vo.dashboard.OverviewUserVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendVo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +44,9 @@ class DashboardUserServiceTest {
     @Test
     void getUserTrendWithDateRange() {
         // 指定日期范围
-        List<TrendVo> trend = dashboardUserService.getUserTrend("2026-07-01", "2026-07-07");
+        LocalDate start = LocalDate.of(2026, 7, 1);
+        LocalDate end = LocalDate.of(2026, 7, 7);
+        List<TrendVo> trend = dashboardUserService.getUserTrend(start, end);
         assertNotNull(trend);
         assertEquals(7, trend.size());
     }
@@ -59,14 +62,16 @@ class DashboardUserServiceTest {
     @Test
     void getUserTrendOnlyStartDate() {
         // 只有开始日期
-        List<TrendVo> trend = dashboardUserService.getUserTrend("2026-07-01", null);
+        LocalDate start = LocalDate.of(2026, 7, 1);
+        List<TrendVo> trend = dashboardUserService.getUserTrend(start, null);
         assertNotNull(trend);
     }
 
     @Test
     void getUserTrendOnlyEndDate() {
         // 只有结束日期
-        List<TrendVo> trend = dashboardUserService.getUserTrend(null, "2026-07-07");
+        LocalDate end = LocalDate.of(2026, 7, 7);
+        List<TrendVo> trend = dashboardUserService.getUserTrend(null, end);
         assertNotNull(trend);
     }
 
