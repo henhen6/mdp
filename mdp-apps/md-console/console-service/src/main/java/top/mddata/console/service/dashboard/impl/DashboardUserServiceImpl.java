@@ -1,9 +1,11 @@
 package top.mddata.console.service.dashboard.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.mddata.base.utils.DefValueHelper;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.StateEnum;
@@ -19,15 +21,12 @@ import top.mddata.console.vo.dashboard.OverviewUserVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendVo;
 
-import top.mddata.base.utils.DefValueHelper;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import cn.hutool.core.convert.Convert;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -52,6 +51,14 @@ public class DashboardUserServiceImpl implements DashboardUserService {
     private final UserMapper userMapper;
     private final OrgMapper orgMapper;
     private final RoleMapper roleMapper;
+
+    /** Boolean转换，null返回null（区别于Hutool的false） */
+    private static Boolean toBoolean(Object value) {
+        if (value == null) {
+            return null;
+        }
+        return Convert.toBool(value);
+    }
 
     @Override
     public OverviewUserVo getOverviewUser() {
@@ -180,13 +187,5 @@ public class DashboardUserServiceImpl implements DashboardUserService {
             }
         }
         return String.valueOf(code);
-    }
-
-    /** Boolean转换，null返回null（区别于Hutool的false） */
-    private static Boolean toBoolean(Object value) {
-        if (value == null) {
-            return null;
-        }
-        return Convert.toBool(value);
     }
 }

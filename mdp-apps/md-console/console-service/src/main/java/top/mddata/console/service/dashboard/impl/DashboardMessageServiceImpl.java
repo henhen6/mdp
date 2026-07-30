@@ -1,9 +1,11 @@
 package top.mddata.console.service.dashboard.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.mddata.base.utils.DefValueHelper;
 import top.mddata.console.entity.message.MsgTask;
 import top.mddata.console.enumeration.message.MsgCategoryEnum;
 import top.mddata.console.enumeration.message.MsgTaskStatusEnum;
@@ -15,8 +17,6 @@ import top.mddata.console.vo.dashboard.OverviewMessageVo;
 import top.mddata.console.vo.dashboard.RankVo;
 import top.mddata.console.vo.dashboard.TrendLineVo;
 
-import top.mddata.base.utils.DefValueHelper;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import cn.hutool.core.convert.Convert;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -157,7 +156,7 @@ public class DashboardMessageServiceImpl implements DashboardMessageService {
 
     /** 转换分发列表（带名称转换器） */
     private List<DistributionVo> convertDistributionList(List<Map<String, Object>> rawList,
-                                                        java.util.function.Function<Object, String> nameConverter) {
+                                                         java.util.function.Function<Object, String> nameConverter) {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }

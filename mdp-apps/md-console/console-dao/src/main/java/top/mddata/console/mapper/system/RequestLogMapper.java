@@ -23,13 +23,13 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS value
-              FROM
-            """
+                    SELECT COUNT(*) AS value
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME +
             """
-             WHERE abnormal = 1
-            """
+                     WHERE abnormal = 1
+                    """
     })
     Long countAbnormal();
 
@@ -40,14 +40,14 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT log_type AS code, COUNT(*) AS count
-              FROM
-            """
+                    SELECT log_type AS code, COUNT(*) AS count
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME +
             """
-             GROUP BY log_type
-             ORDER BY count DESC
-            """
+                     GROUP BY log_type
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByLogType();
 
@@ -56,16 +56,16 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT ip_province AS province, COUNT(*) AS count
-              FROM
-            """
+                    SELECT ip_province AS province, COUNT(*) AS count
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME +
             """
-             WHERE ip_province IS NOT NULL AND ip_province <> ''
-             GROUP BY ip_province
-             ORDER BY count DESC
-             LIMIT 50
-            """
+                     WHERE ip_province IS NOT NULL AND ip_province <> ''
+                     GROUP BY ip_province
+                     ORDER BY count DESC
+                     LIMIT 50
+                    """
     })
     List<Map<String, Object>> countByProvince();
 
@@ -76,28 +76,28 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT CASE
-                     WHEN consuming_time < 100 THEN '<100ms'
-                     WHEN consuming_time < 500 THEN '100-500ms'
-                     WHEN consuming_time < 1000 THEN '500ms-1s'
-                     WHEN consuming_time < 3000 THEN '1s-3s'
-                     ELSE '>=3s'
-                   END AS name,
-                   COUNT(*) AS count
-              FROM
-            """
+                    SELECT CASE
+                             WHEN consuming_time < 100 THEN '<100ms'
+                             WHEN consuming_time < 500 THEN '100-500ms'
+                             WHEN consuming_time < 1000 THEN '500ms-1s'
+                             WHEN consuming_time < 3000 THEN '1s-3s'
+                             ELSE '>=3s'
+                           END AS name,
+                           COUNT(*) AS count
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME +
             """
-             WHERE consuming_time IS NOT NULL
-             GROUP BY CASE
-                     WHEN consuming_time < 100 THEN '<100ms'
-                     WHEN consuming_time < 500 THEN '100-500ms'
-                     WHEN consuming_time < 1000 THEN '500ms-1s'
-                     WHEN consuming_time < 3000 THEN '1s-3s'
-                     ELSE '>=3s'
-                   END
-             ORDER BY MIN(consuming_time)
-            """
+                     WHERE consuming_time IS NOT NULL
+                     GROUP BY CASE
+                             WHEN consuming_time < 100 THEN '<100ms'
+                             WHEN consuming_time < 500 THEN '100-500ms'
+                             WHEN consuming_time < 1000 THEN '500ms-1s'
+                             WHEN consuming_time < 3000 THEN '1s-3s'
+                             ELSE '>=3s'
+                           END
+                     ORDER BY MIN(consuming_time)
+                    """
     })
     List<Map<String, Object>> countByConsumingRange();
 
@@ -106,9 +106,9 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS value
-              FROM
-            """
+                    SELECT COUNT(*) AS value
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME
     })
     Long countTotal();
@@ -118,13 +118,13 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS value
-              FROM
-            """
+                    SELECT COUNT(*) AS value
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME +
             """
-             WHERE abnormal = 0
-            """
+                     WHERE abnormal = 0
+                    """
     })
     Long countSuccess();
 
@@ -133,16 +133,16 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT ip_address AS ipAddress, COUNT(*) AS count
-              FROM
-            """
+                    SELECT ip_address AS ipAddress, COUNT(*) AS count
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME +
             """
-             WHERE ip_address IS NOT NULL AND ip_address <> ''
-             GROUP BY ip_address
-             ORDER BY count DESC
-             LIMIT #{limit}
-            """
+                     WHERE ip_address IS NOT NULL AND ip_address <> ''
+                     GROUP BY ip_address
+                     ORDER BY count DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> countByIpRank(int limit);
 
@@ -152,21 +152,21 @@ public interface RequestLogMapper extends SuperMapper<RequestLog> {
      */
     @Select({
             """
-            SELECT class_path AS classPath,
-                   method_name AS methodName,
-                   http_uri AS httpUri,
-                   http_method AS httpMethod,
-                   description,
-                   COUNT(*) AS count
-              FROM
-            """
+                    SELECT class_path AS classPath,
+                           method_name AS methodName,
+                           http_uri AS httpUri,
+                           http_method AS httpMethod,
+                           description,
+                           COUNT(*) AS count
+                      FROM
+                    """
             + RequestLogBase.TABLE_NAME +
             """
-             WHERE class_path IS NOT NULL AND method_name IS NOT NULL
-             GROUP BY class_path, method_name, http_uri, http_method, description
-             ORDER BY count DESC
-             LIMIT #{limit}
-            """
+                     WHERE class_path IS NOT NULL AND method_name IS NOT NULL
+                     GROUP BY class_path, method_name, http_uri, http_method, description
+                     ORDER BY count DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> countByInterfaceRank(int limit);
 }

@@ -213,8 +213,8 @@ class GlueFactoryTest {
         @DisplayName("漏洞报告原始 payload（.execute + new File）被拦截")
         void originalRcePayload() {
             String payload = "def p='/tmp/LAMP_SELFTEST_001';"
-                    + "new File(p+'.uid').text='id'.execute().text+'LAMP_GLUE_RCE_MARKER';"
-                    + "new File(p).text='1';[:]";
+                             + "new File(p+'.uid').text='id'.execute().text+'LAMP_GLUE_RCE_MARKER';"
+                             + "new File(p).text='1';[:]";
             assertThrows(SecurityException.class,
                     () -> glueFactory.exeGroovyScript(payload, Map.of()));
         }
@@ -339,8 +339,8 @@ class GlueFactoryTest {
         void astTestAnnotation() {
             // 使用短名 @ASTTest（不带完整包名）才能被 Token 扫描命中
             String payload = "import groovy.transform.ASTTest\n"
-                    + "@ASTTest(value = { assert true })\n"
-                    + "class Foo {}\n[:]";
+                             + "@ASTTest(value = { assert true })\n"
+                             + "class Foo {}\n[:]";
             assertThrows(SecurityException.class,
                     () -> glueFactory.exeGroovyScript(payload, Map.of()));
         }
@@ -349,7 +349,7 @@ class GlueFactoryTest {
         @DisplayName("@Grab 注解被拦截")
         void grabAnnotation() {
             String payload = "@Grab('commons-lang:commons-lang:2.6')\n"
-                    + "import org.apache.commons.lang.StringUtils\n[:]";
+                             + "import org.apache.commons.lang.StringUtils\n[:]";
             assertThrows(SecurityException.class,
                     () -> glueFactory.exeGroovyScript(payload, Map.of()));
         }
@@ -527,15 +527,6 @@ class GlueFactoryTest {
             );
         }
 
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("dangerousPayloads")
-        @DisplayName("危险 payload 必须全部被拦截")
-        void allDangerousPayloadsBlocked(String description, String payload) {
-            assertThrows(SecurityException.class,
-                    () -> glueFactory.exeGroovyScript(payload, Map.of()),
-                    "Payload 应被拦截: " + description);
-        }
-
         static Stream<Arguments> safeScripts() {
             return Stream.of(
                     Arguments.of("简单 Map", "[:]"),
@@ -551,6 +542,15 @@ class GlueFactoryTest {
                     Arguments.of("字符串包含 File 字面量", "def s = 'File'; s"),
                     Arguments.of("字符串包含 Runtime 字面量", "def s = 'Runtime'; s")
             );
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("dangerousPayloads")
+        @DisplayName("危险 payload 必须全部被拦截")
+        void allDangerousPayloadsBlocked(String description, String payload) {
+            assertThrows(SecurityException.class,
+                    () -> glueFactory.exeGroovyScript(payload, Map.of()),
+                    "Payload 应被拦截: " + description);
         }
 
         @ParameterizedTest(name = "{0}")

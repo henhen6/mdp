@@ -26,15 +26,15 @@ public interface InterfaceLogMapper extends SuperMapper<InterfaceLog> {
      */
     @Select({
             """
-            SELECT COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END), 0) AS successCount,
-                   COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END), 0) AS failCount,
-                   COALESCE(SUM(CASE WHEN status IN (2, 3) THEN 1 ELSE 0 END), 0) AS totalCount
-              FROM
-            """
+                    SELECT COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END), 0) AS successCount,
+                           COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END), 0) AS failCount,
+                           COALESCE(SUM(CASE WHEN status IN (2, 3) THEN 1 ELSE 0 END), 0) AS totalCount
+                      FROM
+                    """
             + InterfaceLog.TABLE_NAME +
             """
-             WHERE exec_start_time >= #{startTime, jdbcType=TIMESTAMP}
-            """
+                     WHERE exec_start_time >= #{startTime, jdbcType=TIMESTAMP}
+                    """
     })
     Map<String, Object> sumToday(@Param("startTime") LocalDateTime startTime);
 
@@ -46,11 +46,11 @@ public interface InterfaceLogMapper extends SuperMapper<InterfaceLog> {
      */
     @Select({
             """
-            SELECT COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END), 0) AS successCount,
-                   COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END), 0) AS failCount,
-                   COALESCE(SUM(CASE WHEN status IN (2, 3) THEN 1 ELSE 0 END), 0) AS totalCount
-              FROM
-            """
+                    SELECT COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END), 0) AS successCount,
+                           COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END), 0) AS failCount,
+                           COALESCE(SUM(CASE WHEN status IN (2, 3) THEN 1 ELSE 0 END), 0) AS totalCount
+                      FROM
+                    """
             + InterfaceLog.TABLE_NAME
     })
     Map<String, Object> sumAll();

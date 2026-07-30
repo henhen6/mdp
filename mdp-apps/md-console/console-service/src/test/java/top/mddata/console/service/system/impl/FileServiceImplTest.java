@@ -42,23 +42,18 @@ import static org.mockito.Mockito.when;
  */
 class FileServiceImplTest {
 
-    @Mock
-    private FileStorageService fileStorageService;
-
-    @Mock
-    private FileProperties fileProperties;
-
-    @Mock
-    private FileConvert fileConvert;
-
-    @Mock
-    private FilePartService filePartService;
-
-    private FileServiceImpl fileService;
-    private AutoCloseable mocks;
-
     @TempDir
     Path tempDir;
+    @Mock
+    private FileStorageService fileStorageService;
+    @Mock
+    private FileProperties fileProperties;
+    @Mock
+    private FileConvert fileConvert;
+    @Mock
+    private FilePartService filePartService;
+    private FileServiceImpl fileService;
+    private AutoCloseable mocks;
 
     @BeforeEach
     void setUp() {
@@ -87,9 +82,6 @@ class FileServiceImplTest {
             FilePartDto.InitPartUploadDto dto = new FilePartDto.InitPartUploadDto();
             dto.setFileName("test.pdf");
             dto.setFileSize(10 * 1024 * 1024L); // 10MB
-            dto.setObjectType("contract");
-            dto.setObjectId(123L);
-            dto.setPlatform("local");
 
             FilePartDto.InitPartUploadResp resp = fileService.initPartUpload(dto);
 

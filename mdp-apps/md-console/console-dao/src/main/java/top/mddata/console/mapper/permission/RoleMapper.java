@@ -28,16 +28,16 @@ public interface RoleMapper extends SuperMapper<Role> {
      */
     @Select({
             """
-            SELECT r.id AS roleId, r.name AS name, COUNT(urr.user_id) AS value
-              FROM mdc_role r
-              LEFT JOIN mdc_user_role_rel urr ON urr.role_id = r.id
-              LEFT JOIN mdc_user u ON u.id = urr.user_id AND u.deleted_at = 0
-             WHERE r.deleted_at = 0
-               AND r.state = 1
-             GROUP BY r.id, r.name
-             ORDER BY value DESC, r.created_at DESC
-             LIMIT #{limit}
-            """
+                    SELECT r.id AS roleId, r.name AS name, COUNT(urr.user_id) AS value
+                      FROM mdc_role r
+                      LEFT JOIN mdc_user_role_rel urr ON urr.role_id = r.id
+                      LEFT JOIN mdc_user u ON u.id = urr.user_id AND u.deleted_at = 0
+                     WHERE r.deleted_at = 0
+                       AND r.state = 1
+                     GROUP BY r.id, r.name
+                     ORDER BY value DESC, r.created_at DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByUserCount(@Param("limit") int limit);
 }

@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import top.mddata.base.base.R;
 import top.mddata.common.constant.AppConstants;
-import top.mddata.console.facade.api.system.fallback.RequestLogApiFallback;
 import top.mddata.console.dto.system.RequestLogDto;
+import top.mddata.console.facade.api.system.fallback.RequestLogApiFallback;
 
 /**
  *

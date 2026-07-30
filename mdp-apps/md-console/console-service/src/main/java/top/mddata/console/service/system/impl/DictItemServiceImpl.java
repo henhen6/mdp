@@ -63,6 +63,25 @@ public class DictItemServiceImpl extends SuperServiceImpl<DictItemMapper, DictIt
     private final UidGenerator uidGenerator;
     private final EchoProperties ips;
 
+    private static void execI18n(Map<Serializable, DictItem> defMap, String locale, Map<Serializable, Object> map) {
+        defMap.forEach((key, value) -> {
+            String name = value.getName();
+            if (StrUtil.isNotEmpty(locale)) {
+                String i18nJson = value.getI18nJson();
+                try {
+                    JSONObject i18n = JSONUtil.parseObj(i18nJson);
+                    String i18nValue = i18n.getStr(locale);
+                    if (StrUtil.isNotEmpty(i18nValue)) {
+                        name = i18nValue;
+                    }
+                } catch (Exception e) {
+                    log.debug("字典翻译失败: {}=={} ", value.getUniqKey(), value.getName());
+                }
+            }
+            map.put(key, name);
+        });
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Map<Serializable, Object> findByIds(Set<Serializable> dictKeys) {
@@ -100,26 +119,6 @@ public class DictItemServiceImpl extends SuperServiceImpl<DictItemMapper, DictIt
         execI18n(codeValueMap, locale, echoMap);
 
         return echoMap;
-    }
-
-
-    private static void execI18n(Map<Serializable, DictItem> defMap, String locale, Map<Serializable, Object> map) {
-        defMap.forEach((key, value) -> {
-            String name = value.getName();
-            if (StrUtil.isNotEmpty(locale)) {
-                String i18nJson = value.getI18nJson();
-                try {
-                    JSONObject i18n = JSONUtil.parseObj(i18nJson);
-                    String i18nValue = i18n.getStr(locale);
-                    if (StrUtil.isNotEmpty(i18nValue)) {
-                        name = i18nValue;
-                    }
-                } catch (Exception e) {
-                    log.debug("字典翻译失败: {}=={} ", value.getUniqKey(), value.getName());
-                }
-            }
-            map.put(key, name);
-        });
     }
 
     @Override

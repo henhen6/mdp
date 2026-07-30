@@ -22,9 +22,9 @@ public interface InterfaceConfigMapper extends SuperMapper<InterfaceConfig> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS value
-              FROM
-            """
+                    SELECT COUNT(*) AS value
+                      FROM
+                    """
             + InterfaceConfigBase.TABLE_NAME
     })
     Long countAll();

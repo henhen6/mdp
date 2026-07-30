@@ -37,10 +37,10 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS fileCount, COALESCE(SUM(file_size), 0) AS totalSize
-              FROM mdc_file
-             WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
-            """
+                    SELECT COUNT(*) AS fileCount, COALESCE(SUM(file_size), 0) AS totalSize
+                      FROM mdc_file
+                     WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
+                    """
     })
     Map<String, Object> statAfter(@Param("startTime") LocalDateTime startTime);
 
@@ -49,12 +49,12 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT file_type AS code, COUNT(*) AS count
-              FROM mdc_file
-             WHERE file_type IS NOT NULL
-             GROUP BY file_type
-             ORDER BY count DESC
-            """
+                    SELECT file_type AS code, COUNT(*) AS count
+                      FROM mdc_file
+                     WHERE file_type IS NOT NULL
+                     GROUP BY file_type
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByFileType();
 
@@ -63,13 +63,13 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT object_type AS name, COUNT(*) AS count
-              FROM mdc_file
-             WHERE object_type IS NOT NULL
-               AND object_type <> ''
-             GROUP BY object_type
-             ORDER BY count DESC
-            """
+                    SELECT object_type AS name, COUNT(*) AS count
+                      FROM mdc_file
+                     WHERE object_type IS NOT NULL
+                       AND object_type <> ''
+                     GROUP BY object_type
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByObjectType();
 
@@ -78,13 +78,13 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT platform AS name, COUNT(*) AS count
-              FROM mdc_file
-             WHERE platform IS NOT NULL
-               AND platform <> ''
-             GROUP BY platform
-             ORDER BY count DESC
-            """
+                    SELECT platform AS name, COUNT(*) AS count
+                      FROM mdc_file
+                     WHERE platform IS NOT NULL
+                       AND platform <> ''
+                     GROUP BY platform
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByPlatform();
 
@@ -95,27 +95,27 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT bucket AS name, COUNT(*) AS count
-              FROM (
-                  SELECT CASE
-                      WHEN file_size < 1048576 THEN '<1MB'
-                      WHEN file_size < 10485760 THEN '1-10MB'
-                      WHEN file_size < 104857600 THEN '10-100MB'
-                      WHEN file_size < 1073741824 THEN '100MB-1GB'
-                      ELSE '>=1GB'
-                  END AS bucket
-                  FROM mdc_file
-                  WHERE file_size IS NOT NULL
-              ) t
-             GROUP BY bucket
-             ORDER BY MIN(CASE bucket
-                            WHEN '<1MB' THEN 1
-                            WHEN '1-10MB' THEN 2
-                            WHEN '10-100MB' THEN 3
-                            WHEN '100MB-1GB' THEN 4
-                            ELSE 5
-                         END)
-            """
+                    SELECT bucket AS name, COUNT(*) AS count
+                      FROM (
+                          SELECT CASE
+                              WHEN file_size < 1048576 THEN '<1MB'
+                              WHEN file_size < 10485760 THEN '1-10MB'
+                              WHEN file_size < 104857600 THEN '10-100MB'
+                              WHEN file_size < 1073741824 THEN '100MB-1GB'
+                              ELSE '>=1GB'
+                          END AS bucket
+                          FROM mdc_file
+                          WHERE file_size IS NOT NULL
+                      ) t
+                     GROUP BY bucket
+                     ORDER BY MIN(CASE bucket
+                                    WHEN '<1MB' THEN 1
+                                    WHEN '1-10MB' THEN 2
+                                    WHEN '10-100MB' THEN 3
+                                    WHEN '100MB-1GB' THEN 4
+                                    ELSE 5
+                                 END)
+                    """
     })
     List<Map<String, Object>> countBySizeRange();
 
@@ -124,18 +124,18 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date,
-                   COUNT(*) AS fileCount,
-                   COALESCE(SUM(file_size), 0) AS totalSize
-              FROM mdc_file
-             WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
-               AND created_at < #{endTime, jdbcType=TIMESTAMP}
-             GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
-             ORDER BY date ASC
-            """
+                    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date,
+                           COUNT(*) AS fileCount,
+                           COALESCE(SUM(file_size), 0) AS totalSize
+                      FROM mdc_file
+                     WHERE created_at >= #{startTime, jdbcType=TIMESTAMP}
+                       AND created_at < #{endTime, jdbcType=TIMESTAMP}
+                     GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+                     ORDER BY date ASC
+                    """
     })
     List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime,
-                                               @Param("endTime") LocalDateTime endTime);
+                                              @Param("endTime") LocalDateTime endTime);
 
     /**
      * 统计临时文件数量和容量（object_type = 'temp'）。
@@ -144,10 +144,10 @@ public interface FileMapper extends SuperMapper<File> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS fileCount, COALESCE(SUM(file_size), 0) AS totalSize
-              FROM mdc_file
-             WHERE object_type = #{objectType}
-            """
+                    SELECT COUNT(*) AS fileCount, COALESCE(SUM(file_size), 0) AS totalSize
+                      FROM mdc_file
+                     WHERE object_type = #{objectType}
+                    """
     })
     Map<String, Object> statByObjectType(@Param("objectType") String objectType);
 }

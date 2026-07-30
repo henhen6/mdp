@@ -27,15 +27,15 @@ public interface InterfaceStatMapper extends SuperMapper<InterfaceStat> {
      */
     @Select({
             """
-            SELECT COALESCE(SUM(success_count), 0) AS successCount,
-                   COALESCE(SUM(fail_count), 0) AS failCount,
-                   COALESCE(SUM(success_count + fail_count), 0) AS totalCount
-              FROM
-            """
+                    SELECT COALESCE(SUM(success_count), 0) AS successCount,
+                           COALESCE(SUM(fail_count), 0) AS failCount,
+                           COALESCE(SUM(success_count + fail_count), 0) AS totalCount
+                      FROM
+                    """
             + InterfaceStatBase.TABLE_NAME +
             """
-             WHERE last_exec_at >= #{startTime, jdbcType=TIMESTAMP}
-            """
+                     WHERE last_exec_at >= #{startTime, jdbcType=TIMESTAMP}
+                    """
     })
     Map<String, Object> sumAfter(@Param("startTime") LocalDateTime startTime);
 
@@ -44,17 +44,17 @@ public interface InterfaceStatMapper extends SuperMapper<InterfaceStat> {
      */
     @Select({
             """
-            SELECT id, name,
-                   success_count AS successCount,
-                   fail_count AS failCount,
-                   (success_count + fail_count) AS totalCount
-              FROM
-            """
+                    SELECT id, name,
+                           success_count AS successCount,
+                           fail_count AS failCount,
+                           (success_count + fail_count) AS totalCount
+                      FROM
+                    """
             + InterfaceStatBase.TABLE_NAME +
             """
-             ORDER BY (success_count + fail_count) DESC
-             LIMIT #{limit}
-            """
+                     ORDER BY (success_count + fail_count) DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByTotalCount(@Param("limit") int limit);
 
@@ -63,17 +63,17 @@ public interface InterfaceStatMapper extends SuperMapper<InterfaceStat> {
      */
     @Select({
             """
-            SELECT id, name,
-                   success_count AS successCount,
-                   fail_count AS failCount,
-                   (success_count + fail_count) AS totalCount
-              FROM
-            """
+                    SELECT id, name,
+                           success_count AS successCount,
+                           fail_count AS failCount,
+                           (success_count + fail_count) AS totalCount
+                      FROM
+                    """
             + InterfaceStatBase.TABLE_NAME +
             """
-             ORDER BY fail_count DESC
-             LIMIT #{limit}
-            """
+                     ORDER BY fail_count DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByFailCount(@Param("limit") int limit);
 }

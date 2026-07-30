@@ -19,13 +19,13 @@ import top.mddata.console.entity.message.MsgTemplate;
 import top.mddata.console.enumeration.message.InterfaceExecModeEnum;
 import top.mddata.console.enumeration.message.MsgInterfaceLogStatusEnum;
 import top.mddata.console.enumeration.message.MsgTaskStatusEnum;
-import top.mddata.console.service.message.glue.GlueFactory;
 import top.mddata.console.service.message.InterfaceConfigService;
 import top.mddata.console.service.message.InterfaceLogService;
 import top.mddata.console.service.message.InterfaceStatService;
 import top.mddata.console.service.message.MsgTaskRecipientService;
 import top.mddata.console.service.message.MsgTaskService;
 import top.mddata.console.service.message.MsgTemplateService;
+import top.mddata.console.service.message.glue.GlueFactory;
 import top.mddata.console.service.message.strategy.dto.MsgResult;
 import top.mddata.console.service.message.strategy.dto.MsgTaskParam;
 

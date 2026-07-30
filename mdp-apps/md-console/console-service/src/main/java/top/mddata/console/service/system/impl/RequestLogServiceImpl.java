@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.util.StrPool;
 import top.mddata.common.entity.User;
-import top.mddata.console.service.organization.UserService;
 import top.mddata.console.entity.system.RequestLog;
 import top.mddata.console.entity.system.RequestLogDetail;
 import top.mddata.console.mapper.system.RequestLogMapper;
+import top.mddata.console.service.organization.UserService;
 import top.mddata.console.service.system.RequestLogDetailService;
 import top.mddata.console.service.system.RequestLogService;
 
@@ -37,15 +37,15 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class RequestLogServiceImpl extends SuperServiceImpl<RequestLogMapper, RequestLog> implements RequestLogService {
 
-    private final RequestLogDetailService requestLogDetailService;
-    private final UserService userService;
-    private final Ip2Region ip2Region;
     private static final Supplier<Stream<String>> BROWSER = () -> Stream.of(
             "Chrome", "Firefox", "Microsoft Edge", "Safari", "Opera"
     );
     private static final Supplier<Stream<String>> OPERATING_SYSTEM = () -> Stream.of(
             "Android", "Linux", "Mac OS X", "Ubuntu", "Windows 10", "Windows 8", "Windows 7", "Windows XP", "Windows Vista"
     );
+    private final RequestLogDetailService requestLogDetailService;
+    private final UserService userService;
+    private final Ip2Region ip2Region;
 
     private static String simplifyOperatingSystem(String operatingSystem) {
         return OPERATING_SYSTEM.get().parallel().filter(b -> StrUtil.containsIgnoreCase(operatingSystem, b)).findAny().orElse(operatingSystem);

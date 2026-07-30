@@ -28,8 +28,6 @@ public class GlueFactory {
     private static final Logger log = LoggerFactory.getLogger(GlueFactory.class);
 
     private static final ConcurrentMap<String, Class<?>> CLASS_CACHE = new ConcurrentHashMap<>();
-    private static GlueFactory glueFactory = new SpringGlueFactory();
-
     /**
      * 危险 Token 黑名单。
      * 脚本源码被剥离空白和字符串字面量后，如果仍包含以下任意 Token 则拒绝执行。
@@ -65,7 +63,6 @@ public class GlueFactory {
             // ---- 通用危险方法名 ----
             "exec", "execute"
     );
-
     /**
      * 危险调用模式（正则匹配，覆盖 Token 扫描可能遗漏的组合写法）
      */
@@ -81,7 +78,7 @@ public class GlueFactory {
             Pattern.compile("@ASTTest"),
             Pattern.compile("@Grab\\b")
     };
-
+    private static GlueFactory glueFactory = new SpringGlueFactory();
     /**
      * groovy class loader
      */
@@ -110,6 +107,52 @@ public class GlueFactory {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
         return DatatypeConverter.printHexBinary(digest).toLowerCase();
+    }
+
+    /**
+     * 脚本安全校验（多层防御）：
+     * <ol>
+     *   <li>剥离字符串字面量和空白 → Token 黑名单扫描</li>
+     *   <li>危险调用模式正则匹配（覆盖字符串插值等组合写法）</li>
+     * </ol>
+     *
+     * @param script 脚本源码
+     */
+    private static void checkScriptSafety(String script) {
+        // -------- 第 1 层：Token 黑名单扫描（先剥离字符串字面量，防止误报） --------
+        String cleaned = stripStringLiterals(script);
+        for (String token : DANGEROUS_TOKENS) {
+            if (cleaned.contains(token)) {
+                log.warn("Groovy 脚本安全校验未通过, 检测到危险 Token: {}", token);
+                throw new SecurityException("脚本包含不允许的危险操作: " + token);
+            }
+        }
+        // -------- 第 2 层：危险调用模式正则匹配（在原始脚本上扫描） --------
+        for (Pattern pattern : DANGEROUS_CALL_PATTERNS) {
+            if (pattern.matcher(script).find()) {
+                log.warn("Groovy 脚本安全校验未通过, 匹配到危险模式: {}", pattern.pattern());
+                throw new SecurityException("脚本包含不允许的危险操作: " + pattern.pattern());
+            }
+        }
+    }
+
+    /**
+     * 剥离 Groovy 脚本中的字符串字面量（单引号、双引号、三引号）和注释，
+     * 仅保留代码结构用于 Token 扫描，避免字符串内容引起误报。
+     */
+    private static String stripStringLiterals(String script) {
+        // 去除三引号字符串（"""...""" 和 '''...'''）
+        String result = script.replaceAll("\"\"\"[\\s\\S]*?\"\"\"", " ");
+        result = result.replaceAll("'''[\\s\\S]*?'''", " ");
+        // 去除双引号字符串（支持转义）
+        result = result.replaceAll("\"(?:[^\"\\\\]|\\\\.)*\"", " ");
+        // 去除单引号字符串（支持转义）
+        result = result.replaceAll("'(?:[^'\\\\]|\\\\.)*'", " ");
+        // 去除行注释和块注释
+        result = result.replaceAll("//[^\\n]*", " ");
+        result = result.replaceAll("/\\*[\\s\\S]*?\\*/", " ");
+        // 压缩空白
+        return result.replaceAll("\\s+", " ");
     }
 
     /**
@@ -170,52 +213,6 @@ public class GlueFactory {
             // 编译失败直接抛异常，禁止静默回退
             throw BizException.wrap("脚本编译失败: {}", e.getMessage());
         }
-    }
-
-    /**
-     * 脚本安全校验（多层防御）：
-     * <ol>
-     *   <li>剥离字符串字面量和空白 → Token 黑名单扫描</li>
-     *   <li>危险调用模式正则匹配（覆盖字符串插值等组合写法）</li>
-     * </ol>
-     *
-     * @param script 脚本源码
-     */
-    private static void checkScriptSafety(String script) {
-        // -------- 第 1 层：Token 黑名单扫描（先剥离字符串字面量，防止误报） --------
-        String cleaned = stripStringLiterals(script);
-        for (String token : DANGEROUS_TOKENS) {
-            if (cleaned.contains(token)) {
-                log.warn("Groovy 脚本安全校验未通过, 检测到危险 Token: {}", token);
-                throw new SecurityException("脚本包含不允许的危险操作: " + token);
-            }
-        }
-        // -------- 第 2 层：危险调用模式正则匹配（在原始脚本上扫描） --------
-        for (Pattern pattern : DANGEROUS_CALL_PATTERNS) {
-            if (pattern.matcher(script).find()) {
-                log.warn("Groovy 脚本安全校验未通过, 匹配到危险模式: {}", pattern.pattern());
-                throw new SecurityException("脚本包含不允许的危险操作: " + pattern.pattern());
-            }
-        }
-    }
-
-    /**
-     * 剥离 Groovy 脚本中的字符串字面量（单引号、双引号、三引号）和注释，
-     * 仅保留代码结构用于 Token 扫描，避免字符串内容引起误报。
-     */
-    private static String stripStringLiterals(String script) {
-        // 去除三引号字符串（"""...""" 和 '''...'''）
-        String result = script.replaceAll("\"\"\"[\\s\\S]*?\"\"\"", " ");
-        result = result.replaceAll("'''[\\s\\S]*?'''", " ");
-        // 去除双引号字符串（支持转义）
-        result = result.replaceAll("\"(?:[^\"\\\\]|\\\\.)*\"", " ");
-        // 去除单引号字符串（支持转义）
-        result = result.replaceAll("'(?:[^'\\\\]|\\\\.)*'", " ");
-        // 去除行注释和块注释
-        result = result.replaceAll("//[^\\n]*", " ");
-        result = result.replaceAll("/\\*[\\s\\S]*?\\*/", " ");
-        // 压缩空白
-        return result.replaceAll("\\s+", " ");
     }
 
     /**
