@@ -87,7 +87,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         if (!fileProperties.validSuffix(file.getOriginalFilename())) {
             throw new BizException("文件后缀不支持");
         }
-        if (StrUtil.containsAny(file.getOriginalFilename(), "../", "./")) {
+        if (isFileNameInvalid(file.getOriginalFilename())) {
             throw new BizException("文件名不能含有特殊字符");
         }
 
@@ -296,7 +296,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         if (!fileProperties.validSuffix(dto.getFileName())) {
             throw new BizException("文件后缀不支持");
         }
-        if (StrUtil.containsAny(dto.getFileName(), "../", "./")) {
+        if (isFileNameInvalid(dto.getFileName())) {
             throw new BizException("文件名不能含有特殊字符");
         }
 
@@ -581,5 +581,28 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             return "unnamed";
         }
         return fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
+    }
+
+    /**
+     * 验证文件名是否非法
+     * 不允许包含：\ / : * ? " < > | 以及控制字符和路径遍历
+     */
+    private boolean isFileNameInvalid(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return true;
+        }
+        // 禁止路径遍历
+        if (fileName.contains("../") || fileName.contains("./") || fileName.contains("..\\")) {
+            return true;
+        }
+        // 禁止包含非法字符: \ / : * ? " < > |
+        for (int i = 0; i < fileName.length(); i++) {
+            char c = fileName.charAt(i);
+            // 控制字符 (0-31) 和非法字符
+            if (c < 32 || c == '\\' || c == '/' || c == ':' || c == '*' || c == '?' || c == '"' || c == '<' || c == '>' || c == '|') {
+                return true;
+            }
+        }
+        return false;
     }
 }
