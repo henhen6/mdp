@@ -147,6 +147,8 @@ public class FilePartDto implements Serializable {
 
         @Schema(description = "对象类型")
         private String objectType;
+        @Schema(description = "存储平台")
+        private String platform;
 
     }
 

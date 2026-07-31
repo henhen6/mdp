@@ -91,30 +91,30 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             throw new BizException("文件名不能含有特殊字符");
         }
 
-
         // 相对路径
         String path = getDateFolder();
 
         UploadPretreatment uploadPretreatment = fileStorageService.of(file)
                 .setPlatform(StrUtil.isNotEmpty(fileUploadDto.getPlatform()), fileUploadDto.getPlatform())
                 .setHashCalculatorSha256(true)
+                .setHashCalculatorMd5()
                 .setPath(path)
                 .setObjectType(StrUtil.isEmpty(fileUploadDto.getObjectType()) ? TEMP_OBJECT_TYPE : fileUploadDto.getObjectType());
 
-        uploadPretreatment.setProgressMonitor(new ProgressListener() {
+        uploadPretreatment.setProgressListener(new ProgressListener() {
             @Override
             public void start() {
-                log.info("开始上传");
+                log.info("[{}] 开始上传", file.getOriginalFilename());
             }
 
             @Override
             public void progress(long progressSize, Long allSize) {
-                log.info("已上传 [{}]，总大小 [{}]", progressSize, allSize);
+                log.info("[{}] 已上传 [{}]，总大小 [{}]", file.getOriginalFilename(), progressSize, allSize);
             }
 
             @Override
             public void finish() {
-                log.info("上传结束");
+                log.info("[{}] 上传结束", file.getOriginalFilename());
             }
         });
 
@@ -367,9 +367,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
 
     @Override
     public FilePartDto.UploadProgressResp getUploadProgress(String uploadId) {
-        QueryWrapper queryWrapper = QueryWrapper.create()
-                .eq(FilePart::getUploadId, uploadId)
-                .orderBy(FilePart::getPartNumber, true);
+        QueryWrapper queryWrapper = QueryWrapper.create().eq(FilePart::getUploadId, uploadId).orderBy(FilePart::getPartNumber, true);
         List<FilePart> parts = filePartService.list(queryWrapper);
 
         List<FilePartDto.UploadedPart> uploadedParts = parts.stream().map(p -> {
@@ -394,9 +392,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         }
 
         // 查询所有分片
-        QueryWrapper queryWrapper = QueryWrapper.create()
-                .eq(FilePart::getUploadId, uploadId)
-                .orderBy(FilePart::getPartNumber, true);
+        QueryWrapper queryWrapper = QueryWrapper.create().eq(FilePart::getUploadId, uploadId).orderBy(FilePart::getPartNumber, true);
         List<FilePart> parts = filePartService.list(queryWrapper);
         if (parts.isEmpty()) {
             throw new BizException("未找到上传分片");
@@ -433,11 +429,32 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             throw new BizException("合并分片失败: " + e.getMessage());
         }
 
+        String filename = getOriginalFilenameFromParts(parts);
+
         // 上传到文件存储服务
         FileInfo fileInfo = fileStorageService.of(mergedFile)
-                .setPath(getDateFolder())
+                .setPlatform(StrUtil.isNotEmpty(dto.getPlatform()), dto.getPlatform())
                 .setObjectType(StrUtil.isEmpty(dto.getObjectType()) ? TEMP_OBJECT_TYPE : dto.getObjectType())
-                .setOriginalFilename(getOriginalFilenameFromParts(parts))
+                .setPath(getDateFolder())
+                .setOriginalFilename(filename)
+                .setHashCalculatorSha256(true)
+                .setHashCalculatorMd5()
+                .setProgressListener(new ProgressListener() {
+                    @Override
+                    public void start() {
+                        log.info("[{}] 开始上传", filename);
+                    }
+
+                    @Override
+                    public void progress(long progressSize, Long allSize) {
+                        log.info("[{}] 已上传 [{}]，总大小 [{}]", filename, progressSize, allSize);
+                    }
+
+                    @Override
+                    public void finish() {
+                        log.info("[{}] 上传结束", filename);
+                    }
+                })
                 .upload();
 
         // 清理临时文件
@@ -470,7 +487,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         String basePath = StrUtil.isNotEmpty(fileProperties.getTempStoragePath())
                 ? fileProperties.getTempStoragePath()
                 : System.getProperty("java.io.tmpdir");
-        return Paths.get(basePath, "/file-parts/", uploadId).toString();
+        return Paths.get(basePath, "file-parts", uploadId).toString();
     }
 
     private String getOriginalFilenameFromParts(List<FilePart> parts) {
