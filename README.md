@@ -11,7 +11,7 @@
 
 [![star](https://gitcode.com/henhen6/mdp/star/2025top.svg)](https://gitcode.com/henhen6/mdp)
 
-## 官网1
+## 官网
 
 - 官网： http://mddata.top/
 - 文档： http://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
