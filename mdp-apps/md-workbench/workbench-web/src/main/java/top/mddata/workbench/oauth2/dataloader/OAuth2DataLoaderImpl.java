@@ -10,12 +10,12 @@ import top.mddata.base.base.R;
 import top.mddata.base.exception.BizException;
 import top.mddata.common.constant.ConfigKey;
 import top.mddata.console.facade.system.ConfigFacade;
-import top.mddata.open.vo.admin.AppVo;
-import top.mddata.open.vo.admin.OauthOpenidVo;
-import top.mddata.open.vo.admin.OauthScopeVo;
 import top.mddata.open.facade.admin.AppFacade;
 import top.mddata.open.facade.admin.OauthOpenidFacade;
 import top.mddata.open.facade.admin.OauthScopeFacade;
+import top.mddata.open.vo.admin.AppVo;
+import top.mddata.open.vo.admin.OauthOpenidVo;
+import top.mddata.open.vo.admin.OauthScopeVo;
 
 import java.util.ArrayList;
 import java.util.List;

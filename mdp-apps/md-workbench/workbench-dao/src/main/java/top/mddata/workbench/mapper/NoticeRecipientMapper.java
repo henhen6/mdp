@@ -23,11 +23,11 @@ public interface NoticeRecipientMapper extends SuperMapper<NoticeRecipient> {
      */
     @Select({
             """
-            SELECT COUNT(*)
-              FROM mdc_notice_recipient
-             WHERE user_id = #{userId}
-               AND `read` = 0
-            """
+                    SELECT COUNT(*)
+                      FROM mdc_notice_recipient
+                     WHERE user_id = #{userId}
+                       AND `read` = 0
+                    """
     })
     Long countUnreadByUserId(@Param("userId") Long userId);
 }

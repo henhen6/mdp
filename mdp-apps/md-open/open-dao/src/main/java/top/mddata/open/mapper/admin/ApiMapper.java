@@ -20,13 +20,13 @@ public interface ApiMapper extends SuperMapper<Api> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS value
-              FROM
-            """
+                    SELECT COUNT(*) AS value
+                      FROM
+                    """
             + ApiBase.TABLE_NAME +
             """
-             WHERE state = 1
-            """
+                     WHERE state = 1
+                    """
     })
     Long countEnabled();
 }

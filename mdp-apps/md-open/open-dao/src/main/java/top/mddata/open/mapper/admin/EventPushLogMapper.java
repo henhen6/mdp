@@ -25,10 +25,10 @@ public interface EventPushLogMapper extends SuperMapper<EventPushLog> {
      */
     @Select({
             """
-            SELECT COALESCE(SUM(CASE WHEN exec_status = '1' THEN 1 ELSE 0 END), 0) AS successCount,
-                   COALESCE(SUM(CASE WHEN exec_status IN ('1', '2') THEN 1 ELSE 0 END), 0) AS totalCount
-              FROM
-            """
+                    SELECT COALESCE(SUM(CASE WHEN exec_status = '1' THEN 1 ELSE 0 END), 0) AS successCount,
+                           COALESCE(SUM(CASE WHEN exec_status IN ('1', '2') THEN 1 ELSE 0 END), 0) AS totalCount
+                      FROM
+                    """
             + EventPushLogBase.TABLE_NAME
     })
     Map<String, Object> sumAll();

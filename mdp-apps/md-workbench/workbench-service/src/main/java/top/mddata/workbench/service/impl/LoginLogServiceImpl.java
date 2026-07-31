@@ -36,13 +36,13 @@ import java.util.stream.Stream;
 @Slf4j
 @RequiredArgsConstructor
 public class LoginLogServiceImpl extends SuperServiceImpl<LoginLogMapper, LoginLog> implements LoginLogService {
-    private final Ip2Region ip2Region;
     private static final Supplier<Stream<String>> BROWSER = () -> Stream.of(
             "Chrome", "Firefox", "Microsoft Edge", "Safari", "Opera"
     );
     private static final Supplier<Stream<String>> OPERATING_SYSTEM = () -> Stream.of(
             "Android", "Linux", "Mac OS X", "Ubuntu", "Windows 10", "Windows 8", "Windows 7", "Windows XP", "Windows Vista"
     );
+    private final Ip2Region ip2Region;
 
     private static String simplifyOperatingSystem(String operatingSystem) {
         return OPERATING_SYSTEM.get().parallel().filter(b -> StrUtil.containsIgnoreCase(operatingSystem, b)).findAny().orElse(operatingSystem);

@@ -3,9 +3,9 @@ package top.mddata.open.facade.admin.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
-import top.mddata.open.vo.admin.OauthUnionidVo;
-import top.mddata.open.facade.admin.api.OauthUnionidApi;
 import top.mddata.open.facade.admin.OauthUnionidFacade;
+import top.mddata.open.facade.admin.api.OauthUnionidApi;
+import top.mddata.open.vo.admin.OauthUnionidVo;
 
 /**
  *

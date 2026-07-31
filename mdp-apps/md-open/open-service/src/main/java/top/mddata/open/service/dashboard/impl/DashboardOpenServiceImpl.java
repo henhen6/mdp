@@ -5,6 +5,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.mddata.base.utils.DefValueHelper;
 import top.mddata.common.enumeration.AuditStatusEnum;
 import top.mddata.open.entity.admin.Api;
 import top.mddata.open.entity.admin.ApiCallLog;
@@ -31,7 +32,6 @@ import top.mddata.open.vo.dashboard.EventTriggerStatisticsVo;
 import top.mddata.open.vo.dashboard.EventTriggerTrendVo;
 import top.mddata.open.vo.dashboard.OauthDistributionVo;
 import top.mddata.open.vo.dashboard.OverviewOpenVo;
-import top.mddata.base.utils.DefValueHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,6 +77,22 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
     private final EventPushMapper eventPushMapper;
     private final NotifyInfoLogMapper notifyInfoLogMapper;
     private final EventPushLogMapper eventPushLogMapper;
+
+    private static LocalDate[] normalizeRange(LocalDate startDate, LocalDate endDate) {
+        LocalDate today = LocalDate.now();
+        LocalDate start = startDate != null ? startDate : today.minusDays(DEFAULT_DAYS);
+        LocalDate end = endDate != null ? endDate : today;
+        if (start.isAfter(end)) {
+            LocalDate tmp = start;
+            start = end;
+            end = tmp;
+        }
+        long span = end.toEpochDay() - start.toEpochDay();
+        if (span > MAX_RANGE_DAYS) {
+            start = end.minusDays(MAX_RANGE_DAYS);
+        }
+        return new LocalDate[]{start, end};
+    }
 
     @Override
     public OverviewOpenVo getOverviewOpen() {
@@ -317,22 +333,6 @@ public class DashboardOpenServiceImpl implements DashboardOpenService {
         ));
 
         return result;
-    }
-
-    private static LocalDate[] normalizeRange(LocalDate startDate, LocalDate endDate) {
-        LocalDate today = LocalDate.now();
-        LocalDate start = startDate != null ? startDate : today.minusDays(DEFAULT_DAYS);
-        LocalDate end = endDate != null ? endDate : today;
-        if (start.isAfter(end)) {
-            LocalDate tmp = start;
-            start = end;
-            end = tmp;
-        }
-        long span = end.toEpochDay() - start.toEpochDay();
-        if (span > MAX_RANGE_DAYS) {
-            start = end.minusDays(MAX_RANGE_DAYS);
-        }
-        return new LocalDate[]{start, end};
     }
 
     private <T> List<T> fillDateRange(LocalDate start, LocalDate end, Map<String, Long> dateMap,

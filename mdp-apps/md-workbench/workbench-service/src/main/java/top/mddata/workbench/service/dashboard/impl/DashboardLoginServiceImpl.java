@@ -1,9 +1,11 @@
 package top.mddata.workbench.service.dashboard.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.mddata.base.utils.DefValueHelper;
 import top.mddata.workbench.entity.LoginLog;
 import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.enumeration.LoginChannelEnum;
@@ -16,14 +18,12 @@ import top.mddata.workbench.vo.dashboard.DashboardRankVo;
 import top.mddata.workbench.vo.dashboard.HourlyDistributionVo;
 import top.mddata.workbench.vo.dashboard.OverviewLoginVo;
 import top.mddata.workbench.vo.dashboard.RegionDistributionVo;
-import top.mddata.base.utils.DefValueHelper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import cn.hutool.core.convert.Convert;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -201,7 +201,7 @@ public class DashboardLoginServiceImpl implements DashboardLoginService {
 
     /** 转换分发列表（通用模板） */
     private List<DashboardDistributionVo> convertDistributionList(List<Map<String, Object>> rawList,
-                                                                   java.util.function.Function<String, String> converter) {
+                                                                  java.util.function.Function<String, String> converter) {
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }

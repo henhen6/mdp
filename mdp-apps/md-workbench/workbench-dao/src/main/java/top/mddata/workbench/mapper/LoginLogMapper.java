@@ -30,14 +30,14 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT ip_province AS name, COUNT(*) AS value
-              FROM mdw_login_log
-             WHERE ip_province IS NOT NULL
-               AND ip_province <> ''
-             GROUP BY ip_province
-             ORDER BY value DESC
-             LIMIT #{limit}
-            """
+                    SELECT ip_province AS name, COUNT(*) AS value
+                      FROM mdw_login_log
+                     WHERE ip_province IS NOT NULL
+                       AND ip_province <> ''
+                     GROUP BY ip_province
+                     ORDER BY value DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByProvince(@Param("loginDate") String loginDate, @Param("limit") int limit);
 
@@ -52,15 +52,15 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT login_ip AS name, COUNT(*) AS value
-              FROM mdw_login_log
-             WHERE login_ip IS NOT NULL
-               AND login_ip <> ''
-               AND login_date = #{loginDate}
-             GROUP BY login_ip
-             ORDER BY value DESC
-             LIMIT #{limit}
-            """
+                    SELECT login_ip AS name, COUNT(*) AS value
+                      FROM mdw_login_log
+                     WHERE login_ip IS NOT NULL
+                       AND login_ip <> ''
+                       AND login_date = #{loginDate}
+                     GROUP BY login_ip
+                     ORDER BY value DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByIp(@Param("loginDate") String loginDate, @Param("limit") int limit);
 
@@ -75,15 +75,15 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT name AS name, COUNT(*) AS value
-              FROM mdw_login_log
-             WHERE name IS NOT NULL
-               AND name <> ''
-               AND login_date = #{loginDate}
-             GROUP BY name
-             ORDER BY value DESC
-             LIMIT #{limit}
-            """
+                    SELECT name AS name, COUNT(*) AS value
+                      FROM mdw_login_log
+                     WHERE name IS NOT NULL
+                       AND name <> ''
+                       AND login_date = #{loginDate}
+                     GROUP BY name
+                     ORDER BY value DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByName(@Param("loginDate") String loginDate, @Param("limit") int limit);
 
@@ -92,13 +92,13 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT browser_name AS name, COUNT(*) AS count
-              FROM mdw_login_log
-             WHERE browser_name IS NOT NULL
-               AND browser_name <> ''
-             GROUP BY browser_name
-             ORDER BY count DESC
-            """
+                    SELECT browser_name AS name, COUNT(*) AS count
+                      FROM mdw_login_log
+                     WHERE browser_name IS NOT NULL
+                       AND browser_name <> ''
+                     GROUP BY browser_name
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByBrowser();
 
@@ -107,13 +107,13 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT os AS name, COUNT(*) AS count
-              FROM mdw_login_log
-             WHERE os IS NOT NULL
-               AND os <> ''
-             GROUP BY os
-             ORDER BY count DESC
-            """
+                    SELECT os AS name, COUNT(*) AS count
+                      FROM mdw_login_log
+                     WHERE os IS NOT NULL
+                       AND os <> ''
+                     GROUP BY os
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByOs();
 
@@ -122,13 +122,13 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT auth_type AS code, COUNT(*) AS count
-              FROM mdw_login_log
-             WHERE auth_type IS NOT NULL
-               AND auth_type <> ''
-             GROUP BY auth_type
-             ORDER BY count DESC
-            """
+                    SELECT auth_type AS code, COUNT(*) AS count
+                      FROM mdw_login_log
+                     WHERE auth_type IS NOT NULL
+                       AND auth_type <> ''
+                     GROUP BY auth_type
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByAuthType();
 
@@ -137,13 +137,13 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT login_channel AS code, COUNT(*) AS count
-              FROM mdw_login_log
-             WHERE login_channel IS NOT NULL
-               AND login_channel <> ''
-             GROUP BY login_channel
-             ORDER BY count DESC
-            """
+                    SELECT login_channel AS code, COUNT(*) AS count
+                      FROM mdw_login_log
+                     WHERE login_channel IS NOT NULL
+                       AND login_channel <> ''
+                     GROUP BY login_channel
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByChannel();
 
@@ -152,13 +152,13 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT event_type AS code, COUNT(*) AS count
-              FROM mdw_login_log
-             WHERE event_type IS NOT NULL
-               AND event_type <> ''
-             GROUP BY event_type
-             ORDER BY count DESC
-            """
+                    SELECT event_type AS code, COUNT(*) AS count
+                      FROM mdw_login_log
+                     WHERE event_type IS NOT NULL
+                       AND event_type <> ''
+                     GROUP BY event_type
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByEventType();
 
@@ -170,15 +170,15 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT login_date AS date,
-                   COUNT(*) AS loginCount,
-                   COUNT(DISTINCT user_id) AS userCount
-              FROM mdw_login_log
-             WHERE login_date >= #{startDate}
-               AND status = '01'
-             GROUP BY login_date
-             ORDER BY date ASC
-            """
+                    SELECT login_date AS date,
+                           COUNT(*) AS loginCount,
+                           COUNT(DISTINCT user_id) AS userCount
+                      FROM mdw_login_log
+                     WHERE login_date >= #{startDate}
+                       AND status = '01'
+                     GROUP BY login_date
+                     ORDER BY date ASC
+                    """
     })
     List<Map<String, Object>> dailyStatistics(@Param("startDate") String startDate);
 
@@ -187,16 +187,16 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT name AS name, COUNT(*) AS value
-              FROM mdw_login_log
-             WHERE name IS NOT NULL
-               AND name <> ''
-               AND login_date >= #{startDate}
-               AND status = '01'
-             GROUP BY name
-             ORDER BY value DESC
-             LIMIT #{limit}
-            """
+                    SELECT name AS name, COUNT(*) AS value
+                      FROM mdw_login_log
+                     WHERE name IS NOT NULL
+                       AND name <> ''
+                       AND login_date >= #{startDate}
+                       AND status = '01'
+                     GROUP BY name
+                     ORDER BY value DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> activeUserRank(@Param("startDate") String startDate, @Param("limit") int limit);
 
@@ -208,13 +208,13 @@ public interface LoginLogMapper extends SuperMapper<LoginLog> {
      */
     @Select({
             """
-            SELECT HOUR(created_at) AS hour, COUNT(*) AS count
-              FROM mdw_login_log
-             WHERE login_date = #{loginDate}
-               AND status = '01'
-             GROUP BY HOUR(created_at)
-             ORDER BY hour ASC
-            """
+                    SELECT HOUR(created_at) AS hour, COUNT(*) AS count
+                      FROM mdw_login_log
+                     WHERE login_date = #{loginDate}
+                       AND status = '01'
+                     GROUP BY HOUR(created_at)
+                     ORDER BY hour ASC
+                    """
     })
     List<Map<String, Object>> hourlyDistribution(@Param("loginDate") String loginDate);
 }

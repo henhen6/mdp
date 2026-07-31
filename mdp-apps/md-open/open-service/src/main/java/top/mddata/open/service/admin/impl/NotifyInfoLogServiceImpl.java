@@ -1,12 +1,12 @@
 package top.mddata.open.service.admin.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.open.entity.admin.NotifyInfoLog;
 import top.mddata.open.mapper.admin.NotifyInfoLogMapper;
 import top.mddata.open.service.admin.NotifyInfoLogService;
-import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 回调任务日志 服务层实现。

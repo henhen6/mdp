@@ -31,23 +31,23 @@ public interface EventPushMapper extends SuperMapper<EventPush> {
      */
     @Select({
             """
-            SELECT p.event_code AS eventCode,
-                   COALESCE(ty.name, p.event_code) AS eventName,
-                   p.app_id AS appId,
-                   COALESCE(a.name, p.app_id) AS appName,
-                   COUNT(*) AS pushCount
-              FROM
-            """
+                    SELECT p.event_code AS eventCode,
+                           COALESCE(ty.name, p.event_code) AS eventName,
+                           p.app_id AS appId,
+                           COALESCE(a.name, p.app_id) AS appName,
+                           COUNT(*) AS pushCount
+                      FROM
+                    """
             + EventPushBase.TABLE_NAME + " p" +
             """
-             LEFT JOIN
-            """
+                     LEFT JOIN
+                    """
             + EventTypeBase.TABLE_NAME + " ty ON ty.code = p.event_code AND ty.state = 1" +
             """
-             LEFT JOIN mdo_app a ON a.id = p.app_id
-             GROUP BY p.event_code, ty.name, p.app_id, a.name
-             ORDER BY pushCount DESC
-            """
+                     LEFT JOIN mdo_app a ON a.id = p.app_id
+                     GROUP BY p.event_code, ty.name, p.app_id, a.name
+                     ORDER BY pushCount DESC
+                    """
     })
     List<Map<String, Object>> statisticsByEventAndApp();
 
@@ -59,20 +59,20 @@ public interface EventPushMapper extends SuperMapper<EventPush> {
      */
     @Select({
             """
-            SELECT DATE_FORMAT(t.trigger_at, '%Y-%m-%d') AS date,
-                   COUNT(DISTINCT t.id) AS triggerCount,
-                   COUNT(DISTINCT p.id) AS pushCount
-              FROM
-            """
+                    SELECT DATE_FORMAT(t.trigger_at, '%Y-%m-%d') AS date,
+                           COUNT(DISTINCT t.id) AS triggerCount,
+                           COUNT(DISTINCT p.id) AS pushCount
+                      FROM
+                    """
             + EventPushBase.TABLE_NAME + " p" +
             """
-             INNER JOIN mdo_event_trigger t ON t.id = p.event_trigger_id
-             WHERE t.trigger_at >= #{startTime, jdbcType=TIMESTAMP}
-               AND t.trigger_at < #{endTime, jdbcType=TIMESTAMP}
-             GROUP BY DATE_FORMAT(t.trigger_at, '%Y-%m-%d')
-             ORDER BY date ASC
-            """
+                     INNER JOIN mdo_event_trigger t ON t.id = p.event_trigger_id
+                     WHERE t.trigger_at >= #{startTime, jdbcType=TIMESTAMP}
+                       AND t.trigger_at < #{endTime, jdbcType=TIMESTAMP}
+                     GROUP BY DATE_FORMAT(t.trigger_at, '%Y-%m-%d')
+                     ORDER BY date ASC
+                    """
     })
     List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime,
-                                               @Param("endTime") LocalDateTime endTime);
+                                              @Param("endTime") LocalDateTime endTime);
 }

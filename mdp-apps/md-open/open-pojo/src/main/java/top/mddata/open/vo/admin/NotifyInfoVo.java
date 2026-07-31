@@ -2,16 +2,15 @@ package top.mddata.open.vo.admin;
 
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import top.mddata.open.entity.admin.base.NotifyInfoBase;
-
-import java.io.Serial;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+import top.mddata.open.entity.admin.base.NotifyInfoBase;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 回调任务 VO类（通常用作Controller出参）。
@@ -28,7 +27,6 @@ public class NotifyInfoVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
 
 
     /**

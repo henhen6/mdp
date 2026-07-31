@@ -23,15 +23,15 @@ public interface OauthLogMapper extends SuperMapper<OauthLog> {
      */
     @Select({
             """
-            SELECT grant_type AS name, COUNT(*) AS count
-              FROM
-            """
+                    SELECT grant_type AS name, COUNT(*) AS count
+                      FROM
+                    """
             + OauthLogBase.TABLE_NAME +
             """
-             WHERE grant_type IS NOT NULL AND grant_type <> ''
-             GROUP BY grant_type
-             ORDER BY count DESC
-            """
+                     WHERE grant_type IS NOT NULL AND grant_type <> ''
+                     GROUP BY grant_type
+                     ORDER BY count DESC
+                    """
     })
     List<Map<String, Object>> countByGrantType();
 }

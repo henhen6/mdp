@@ -155,6 +155,32 @@ public class MultiThreadTaskProcessor {
         }
     }
 
+    @PreDestroy
+    public void destroy() {
+        this.shutdownGracefully();
+    }
+
+    /**
+     * 获取线程池当前状态
+     */
+    public boolean isThreadPoolShutdown() {
+        return isShutdown.get();
+    }
+
+    /**
+     * 获取当前活跃线程数
+     */
+    public int getActiveThreadCount() {
+        return executor.getActiveCount();
+    }
+
+    /**
+     * 任务接口
+     */
+    public interface Task {
+        void execute();
+    }
+
     /**
      * 工作线程类
      * 优化：捕获单个任务执行异常，避免一个任务失败导致整个线程的任务中断
@@ -204,6 +230,8 @@ public class MultiThreadTaskProcessor {
         }
     }
 
+    // ==================== 辅助方法（可选） ====================
+
     /**
      * 自定义线程工厂：统一命名线程，便于日志排查和问题定位
      */
@@ -247,33 +275,5 @@ public class MultiThreadTaskProcessor {
                 }
             }
         }
-    }
-
-    @PreDestroy
-    public void destroy() {
-        this.shutdownGracefully();
-    }
-
-    /**
-     * 任务接口
-     */
-    public interface Task {
-        void execute();
-    }
-
-    // ==================== 辅助方法（可选） ====================
-
-    /**
-     * 获取线程池当前状态
-     */
-    public boolean isThreadPoolShutdown() {
-        return isShutdown.get();
-    }
-
-    /**
-     * 获取当前活跃线程数
-     */
-    public int getActiveThreadCount() {
-        return executor.getActiveCount();
     }
 }

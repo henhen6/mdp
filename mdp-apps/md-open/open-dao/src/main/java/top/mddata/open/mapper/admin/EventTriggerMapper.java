@@ -30,20 +30,20 @@ public interface EventTriggerMapper extends SuperMapper<EventTrigger> {
      */
     @Select({
             """
-            SELECT t.event_code AS eventCode,
-                   COALESCE(ty.name, t.event_code) AS eventName,
-                   COUNT(*) AS triggerCount
-              FROM
-            """
+                    SELECT t.event_code AS eventCode,
+                           COALESCE(ty.name, t.event_code) AS eventName,
+                           COUNT(*) AS triggerCount
+                      FROM
+                    """
             + EventTriggerBase.TABLE_NAME + " t " +
             """
-             LEFT JOIN
-            """
+                     LEFT JOIN
+                    """
             + EventTypeBase.TABLE_NAME + " ty ON ty.code = t.event_code AND ty.state = 1" +
             """
-             GROUP BY t.event_code, ty.name
-             ORDER BY triggerCount DESC
-            """
+                     GROUP BY t.event_code, ty.name
+                     ORDER BY triggerCount DESC
+                    """
     })
     List<Map<String, Object>> countByEventCode();
 
@@ -52,21 +52,21 @@ public interface EventTriggerMapper extends SuperMapper<EventTrigger> {
      */
     @Select({
             """
-            SELECT t.event_code AS eventCode,
-                   COALESCE(ty.name, t.event_code) AS eventName,
-                   COUNT(*) AS triggerCount
-              FROM
-            """
+                    SELECT t.event_code AS eventCode,
+                           COALESCE(ty.name, t.event_code) AS eventName,
+                           COUNT(*) AS triggerCount
+                      FROM
+                    """
             + EventTriggerBase.TABLE_NAME + " t " +
             """
-             LEFT JOIN
-            """
+                     LEFT JOIN
+                    """
             + EventTypeBase.TABLE_NAME + " ty ON ty.code = t.event_code AND ty.state = 1" +
             """
-             GROUP BY t.event_code, ty.name
-             ORDER BY triggerCount DESC
-             LIMIT #{limit}
-            """
+                     GROUP BY t.event_code, ty.name
+                     ORDER BY triggerCount DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByEventCode(@Param("limit") int limit);
 
@@ -75,17 +75,17 @@ public interface EventTriggerMapper extends SuperMapper<EventTrigger> {
      */
     @Select({
             """
-            SELECT DATE_FORMAT(trigger_at, '%Y-%m-%d') AS date, COUNT(*) AS triggerCount
-              FROM
-            """
+                    SELECT DATE_FORMAT(trigger_at, '%Y-%m-%d') AS date, COUNT(*) AS triggerCount
+                      FROM
+                    """
             + EventTriggerBase.TABLE_NAME +
             """
-             WHERE trigger_at >= #{startTime, jdbcType=TIMESTAMP}
-               AND trigger_at < #{endTime, jdbcType=TIMESTAMP}
-             GROUP BY DATE_FORMAT(trigger_at, '%Y-%m-%d')
-             ORDER BY date ASC
-            """
+                     WHERE trigger_at >= #{startTime, jdbcType=TIMESTAMP}
+                       AND trigger_at < #{endTime, jdbcType=TIMESTAMP}
+                     GROUP BY DATE_FORMAT(trigger_at, '%Y-%m-%d')
+                     ORDER BY date ASC
+                    """
     })
     List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime,
-                                               @Param("endTime") LocalDateTime endTime);
+                                              @Param("endTime") LocalDateTime endTime);
 }
