@@ -57,7 +57,7 @@ public class UserDto implements Serializable {
      */
     @Size(max = 255, message = "密码长度不能超过{max}")
     @Schema(description = "密码")
-    @NotEmptyPattern(regexp = REGEX_PASSWORD, message = "至少包含字母、数字、特殊字符")
+    @NotEmptyPattern(regexp = REGEX_PASSWORD, message = "至少包含6-20位字母、数字、特殊字符")
     private String password;
 
 
