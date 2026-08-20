@@ -38,12 +38,14 @@ public class SsoClientController {
      *
      * @param clientLoginUrl Client端登录地址
      * @param clientId 应用ID
+     * @param ssoUrl 直接获取单点登录授权地址
      * @return SSO服务端登录地址
      */
     @Operation(summary = "获取SSO服务端登录地址", description = "获取SSO服务端登录地址")
     @GetMapping("/anyUser/client/getSsoAuthUrl")
-    public R<String> getSsoAuthUrl(String clientLoginUrl, String clientId) {
-        String serverAuthUrl = buildServerAuthUrl(clientLoginUrl, clientId);
+    public R<String> getSsoAuthUrl(Boolean ssoUrl, String clientLoginUrl, String clientId) {
+        log.info("获取SSO服务端登录地址: ssoUrl={} clientLoginUrl={}, clientId={}", ssoUrl, clientLoginUrl, clientId);
+        String serverAuthUrl = buildServerAuthUrl(ssoUrl, clientLoginUrl, clientId);
         return R.success(serverAuthUrl);
     }
 
@@ -52,13 +54,18 @@ public class SsoClientController {
      * 构建URL：Server端 单点登录授权地址，
      *
      * @param clientLoginUrl Client端登录地址
+     * @param clientId 应用ID
+     * @param ssoUrl 直接获取单点登录授权地址
      * @return SSO-Server端-认证地址
      */
-    private String buildServerAuthUrl(String clientLoginUrl, String clientId) {
+    private String buildServerAuthUrl(Boolean ssoUrl, String clientLoginUrl, String clientId) {
         SaSsoClientConfig ssoConfig = SaSsoClientProcessor.getInstance().getSsoClientTemplate().getClientConfig(clientId);
 
         // 服务端认证地址
         String serverUrl = ssoConfig.splicingAuthUrl();
+        if (ssoUrl != null && ssoUrl) {
+            return serverUrl;
+        }
 
         if (StrUtil.isEmpty(clientId)) {
             // 拼接客户端标识
