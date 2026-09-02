@@ -2,14 +2,14 @@
 
 ##  字段
 ###  强制字段（每张表必须有）
-- id BIGINT PRIMARY KEY AUTO_INCREMENT
+- id BIGINT PRIMARY KEY
 - created_at DATETIME DEFAULT NOW()
 - created_by BIGINT DEFAULT NULL
-### 可选字段
-- updated_at DATETIME DEFAULT NOW()
-- updated_by BIGINT DEFAULT NULL
-- deleted_by BIGINT DEFAULT NULL
-- deleted_at BIGINT DEFAULT 0
+### 可选字段，根据业务情况选择性添加这些字段
+- updated_at DATETIME DEFAULT NOW()     -- 更新时间
+- updated_by BIGINT DEFAULT NULL     -- 更新人
+- deleted_by BIGINT DEFAULT NULL     -- 删除人
+- deleted_at BIGINT DEFAULT 0        -- 删除时间
 
 ## 2. 命名规范
 - 表名：小写 + 下划线
@@ -25,6 +25,7 @@
 - 时间：DATETIME
 - 字符串：VARCHAR，长度合理
 - 大文本：TEXT
+- 超大文本：LONGTEXT
 - 金额：DECIMAL(18,2)
 
 ## 4. 索引规范

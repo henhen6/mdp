@@ -208,8 +208,8 @@ public class OAuth2ServerController {
         if (!result.getIsSuccess()) {
             return R.fail("查询应用失败");
         }
-        AppVo opApplication = result.getData();
-        ArgumentAssert.notNull(opApplication, "应用不存在");
+        AppVo appVo = result.getData();
+        ArgumentAssert.notNull(appVo, "应用不存在");
 
         ConfirmInfoVo vo = new ConfirmInfoVo();
         // 查询权限信息
@@ -220,7 +220,7 @@ public class OAuth2ServerController {
         User ssoUser = ssoUserService.getById(ContextUtil.getUserId());
         vo.setScopes(scopes);
         vo.setScopeList(scopeList.getData());
-        vo.setAppVo(opApplication);
+        vo.setAppVo(appVo);
         vo.setUser(BeanPlusUtil.toBean(ssoUser, SsoUserVo.class));
 
         return R.success(vo);
