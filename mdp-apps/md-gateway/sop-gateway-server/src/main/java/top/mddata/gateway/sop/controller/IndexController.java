@@ -1,5 +1,6 @@
 package top.mddata.gateway.sop.controller;
 
+import com.gitee.sop.support.message.Response;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import top.mddata.gateway.sop.request.ApiRequest;
 import top.mddata.gateway.sop.request.ApiRequestContext;
-import com.gitee.sop.support.message.Response;
 import top.mddata.gateway.sop.service.ParamExecutor;
 import top.mddata.gateway.sop.service.RouteService;
 import top.mddata.gateway.sop.util.RequestUtil;
@@ -60,8 +60,8 @@ public class IndexController {
      * version	        String	是	        3	    调用的接口版本，固定为：1.0	1.0
      * format	        String	否	        40	    仅支持JSON	JSON
      * charset	        String	是	        10	    请求使用的编码格式，如utf-8,gbk,gb2312等	utf-8
-     * signType	    String	是	        10	    商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2	RSA2
-     * sign	        String	是	        344	    商户请求参数的签名串，详见签名	详见示例
+     * signType	    String	视接口配置	10	    应用生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2。仅接口要求签名（needSign=true）时必填	RSA2
+     * sign	        String	视接口配置	344	    应用请求参数的签名串，详见签名。仅接口要求签名（needSign=true）时必填	详见示例
      * timestamp	    String	是	        19	    发送请求的时间，格式"yyyy-MM-dd HH:mm:ss"	2014-07-24 03:07:50
      * accessToken	    String	否	        512	    访问令牌，通过 accessToken.get 接口获取
      * bizContent	    String	是		请求参数的集合，最大长度不限，除公共参数外所有请求参数都必须放在这个参数中传递，具体参照各产品快速接入文档

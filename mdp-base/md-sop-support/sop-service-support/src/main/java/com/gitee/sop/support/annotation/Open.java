@@ -32,7 +32,8 @@ public @interface Open {
     boolean permission() default false;
 
     /**
-     * 是否需要accessToken，设置为true，网关端会校验token是否存在
+     * 是否需要accessToken，设置为true时，网关会校验accessToken非空，
+     * 并由TokenValidateInterceptor在拦截器阶段校验其真实有效性（Redis中{appKey}:{token}映射）
      */
     boolean needToken() default true;
 
