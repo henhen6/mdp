@@ -80,6 +80,7 @@ public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> impleme
 
         delCache(entity);
 
+        // 这里只是做一个演示代码，通常只有处理比较耗时的逻辑时，才需要异步回调。
         callNotify(entity);
 
         return BeanUtil.toBean(entity, OrgResp.class);
