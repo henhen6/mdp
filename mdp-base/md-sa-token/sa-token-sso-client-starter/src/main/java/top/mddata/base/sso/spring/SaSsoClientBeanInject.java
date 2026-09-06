@@ -1,5 +1,6 @@
 package top.mddata.base.sso.spring;
 
+import cn.dev33.satoken.plugin.SaTokenPluginHolder;
 import cn.dev33.satoken.sso.SaSsoClientManager;
 import cn.dev33.satoken.sso.config.SaSsoClientConfig;
 import cn.dev33.satoken.sso.processor.SaSsoClientProcessor;
@@ -45,6 +46,13 @@ public class SaSsoClientBeanInject {
         if (ssoClientsConfigMap != null && !ssoClientsConfigMap.isEmpty()) {
             SaSsoClientManager.setClientConfigMap(ssoClientsConfigMap);
         }
+
+        // 第三步：兜底触发 sa-token 插件加载（SPI 机制，读取 classpath 下 META-INF/satoken/ 目录声明的插件）。
+        // SSO 模式三的消息推送依赖 SaHttpTemplate（如 sa-token-forest 插件注册的 Forest 实现），该模板默认是
+        // 空壳实现（直接抛 NotImplException）。官方由 sa-token-spring-boot4-starter 的 SaBeanInject 触发插件
+        // 加载，但客户端项目可能未引入该 starter（最小化引入场景），因此这里兜底触发一次。
+        // init 内部有 isLoader 防重入，与官方 starter 同时存在时不会重复加载。
+        SaTokenPluginHolder.instance.init();
     }
 
     /**

@@ -36,6 +36,18 @@ public class ParamName {
      */
     private String grantType = "grant_type";
     /**
+     * 授权码（授权码模式下换取 access_token 的一次性凭证）
+     */
+    private String code = "code";
+    /**
+     * 访问令牌
+     */
+    private String accessToken = "access_token";
+    /**
+     * 刷新令牌
+     */
+    private String refreshToken = "refresh_token";
+    /**
      * 是否立即构建 redirect_uri 授权地址
      */
     private String buildRedirectUri = "build_redirect_uri";
@@ -72,6 +84,21 @@ public class ParamName {
 
     public ParamName setGrantType(String grantType) {
         this.grantType = grantType;
+        return this;
+    }
+
+    public ParamName setCode(String code) {
+        this.code = code;
+        return this;
+    }
+
+    public ParamName setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+        return this;
+    }
+
+    public ParamName setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
         return this;
     }
 
