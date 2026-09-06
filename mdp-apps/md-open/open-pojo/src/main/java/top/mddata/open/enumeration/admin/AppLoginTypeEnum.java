@@ -9,7 +9,7 @@ import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 应用登录方式
- * [10-单点登录 20-oauth2]
+ * [10-ticket模式 20-oauth2]
  *
  * @author henhen6
  * @date 2025年11月20日19:53:37
@@ -21,8 +21,8 @@ import top.mddata.base.interfaces.BaseEnum;
 @Schema(description = "应用登录方式-枚举")
 public enum AppLoginTypeEnum implements BaseEnum<String> {
 
-    SSO("10", "单点登录"),
-    OAUTH2("20", "Oauth2认证");
+    TICKET("10", "ticket模式"),
+    OAUTH2("20", "OAuth2认证");
     /**
      * 资源类型
      */

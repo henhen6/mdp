@@ -60,7 +60,7 @@ public class AppVo implements Serializable {
 
     /**
      * 登录方式
-     * [10-单点登录 20-oauth2]
+     * [10-ticket模式 20-OAuth2认证]
      */
     @Schema(description = "登录方式")
     private String loginType;
@@ -117,7 +117,7 @@ public class AppVo implements Serializable {
     private String homeUrl;
     /**
      * 自动登录地址
-     * 单点登录
+     * ticket模式单点登录
      */
     @Schema(description = "自动登录地址")
     private String ssoAutoLoginUrl;

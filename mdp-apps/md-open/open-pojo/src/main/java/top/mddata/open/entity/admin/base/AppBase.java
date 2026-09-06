@@ -48,7 +48,7 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
 
     /**
      * 登录方式
-     * [10-单点登录 20-oauth2]
+     * [10-ticket模式 20-OAuth2认证]
      */
     private String loginType;
 
@@ -95,7 +95,7 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
     private String homeUrl;
     /**
      * 自动登录地址
-     * 单点登录
+     * ticket模式单点登录
      */
     private String ssoAutoLoginUrl;
 

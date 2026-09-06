@@ -71,13 +71,13 @@ public class AppDevInfoDto implements Serializable {
 
     /**
      * 登录方式
-     * [10-单点登录 20-oauth2]
+     * [10-ticket模式 20-OAuth2认证]
      */
     @NotEmpty(message = "请填写登录方式")
     private String loginType;
     /**
      * 自动登录地址
-     * 单点登录
+     * ticket模式单点登录
      */
     @Size(max = 512, message = "自动登录地址长度不能超过{max}")
     @Schema(description = "自动登录地址")

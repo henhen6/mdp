@@ -59,7 +59,7 @@ public class AppDto implements Serializable {
 
     /**
      * 登录方式
-     * [10-单点登录 20-oauth2]
+     * [10-ticket模式 20-OAuth2认证]
      */
     @NotEmpty(message = "请填写登录方式")
     @Size(max = 2, message = "登录方式长度不能超过{max}")
