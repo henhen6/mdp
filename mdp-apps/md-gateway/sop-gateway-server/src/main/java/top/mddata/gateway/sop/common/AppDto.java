@@ -127,7 +127,7 @@ public class AppDto implements Serializable {
     private String homeUrl;
     /**
      * 自动登录地址
-     * 单点登录
+     * ticket模式单点登录
      */
     @Size(max = 512, message = "自动登录地址长度不能超过{max}")
     @Schema(description = "自动登录地址")

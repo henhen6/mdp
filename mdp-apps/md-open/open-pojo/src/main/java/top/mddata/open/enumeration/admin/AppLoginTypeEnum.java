@@ -9,7 +9,7 @@ import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 应用登录方式
- * [10-ticket模式 20-oauth2]
+ * [10-ticket模式 20-OAuth2认证]
  *
  * @author henhen6
  * @date 2025年11月20日19:53:37
