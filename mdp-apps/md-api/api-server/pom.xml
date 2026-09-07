@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>api-server</artifactId>
-    <description>接口服务-微服务版启动层</description>
+    <description>微服务架构-开放接口</description>
 
     <dependencies>
         <!-- 项目业务控制层 -->

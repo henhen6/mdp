@@ -29,7 +29,7 @@
         <module>md-console</module>
         <!-- 开发者平台 -->
         <module>md-open</module>
-        <!-- 对外接口服务 -->
+        <!-- 开放接口服务 -->
         <module>md-api</module>
         <!-- 网关 -->
         <module>md-gateway</module>

@@ -13,7 +13,7 @@ spring:
       url: jdbc:mysql://127.0.0.1:3306/mdp?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
 
 dubbo:
-  # 需要使用 对外接口 功能时开启
+  # 需要使用 开放接口 功能时开启
   enabled: true
   registry:
     # 使用本地 zookeeper（启动 ZookeeperRegistryServer 即可）

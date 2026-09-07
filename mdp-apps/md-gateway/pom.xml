@@ -18,7 +18,7 @@
     <modules>
         <!-- 内部网关-提供内部接口 -->
         <module>inner-gateway-server</module>
-        <!-- 外部网关-开放平台提供对外接口 -->
+        <!-- 外部网关-开放平台提供开放接口 -->
         <module>sop-gateway-server</module>
         <module>zookeeper-server</module>
     </modules>

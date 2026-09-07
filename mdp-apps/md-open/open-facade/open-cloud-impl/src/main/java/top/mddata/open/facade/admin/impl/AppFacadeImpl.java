@@ -11,7 +11,7 @@ import top.mddata.open.vo.admin.AppVo;
 import java.util.List;
 
 /**
- * 应用管理单体版实现类
+ * 应用管理微服务版实现类
  *
  * @author henhen6
  * @since 2025/8/12 11:28
