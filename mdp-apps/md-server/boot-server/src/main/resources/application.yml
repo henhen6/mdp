@@ -408,11 +408,17 @@ logging:
     org.springframework: info
   pattern:
     dateformat: yyyy-MM-dd HH:mm:ss.SSS
-    console: "[${spring.application.name}:%X{UserId}] %d{yyyy-MM-dd HH:mm:ss.SSS}[%5p] ${PID} [%X{trace}] [%t:%r] [%logger{50}.%M:%L] %m%n"
-    file: "[${spring.application.name}:%X{UserId}] %d{yyyy-MM-dd HH:mm:ss.SSS}[%5p] ${PID} [%X{trace}] [%t:%r] [%logger{50}.%M:%L] %m%n"
+#    console: "[${spring.application.name}:%X{UserId}] %d{yyyy-MM-dd HH:mm:ss.SSS}[%5p] ${PID:-} [%X{trace}] [%t:%r] [%logger{50}.%M:%L] %m%n"
+#    file: "[${spring.application.name}:%X{UserId}] %d{yyyy-MM-dd HH:mm:ss.SSS}[%5p] ${PID:-} [%X{trace}] [%t:%r] [%logger{50}.%M:%L] %m%n"
+    # 开发调试用：保留 %M:%L，彩色，加 %wEx 压缩异常空行
+    console: "[${spring.application.name}:%X{UserId:-}] %clr(%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai}){faint} %clr(%5p) %clr(${PID:-}){magenta} [%X{trace:-}] [%15.15t] [%logger{36}.%M:%L] %n%m%n%wEx"
+    # 生产落盘用：砍掉 %M:%L 和 %r（性能），显式时区，线程名对齐
+    file: "[${spring.application.name}:%X{UserId:-}] %d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} %5p ${PID:-} [%X{trace:-}] [%15.15t] [%logger{36}] %n%m%n%wEx"
   logback:
     rollingpolicy:
       max-file-size: 64MB
+      max-history: 30          # Boot 默认 7 天，排障常嫌不够
+      total-size-cap: 10GB     # Boot 默认无上限，防磁盘打爆
 
 dubbo:
   enabled: false

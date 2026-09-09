@@ -123,8 +123,7 @@ public abstract class MyMybatisFlexConfiguration extends DbConfiguration impleme
             case SCHEDULED -> AuditManager.setMessageCollector(new ScheduledMessageCollector());
             default -> AuditManager.setMessageCollector(suppressible(auditMessage ->
                     log.info("""
-                                    SQL:
-                                    Mapper: {} | 查询数据量: {} 条 | 消耗时间: {} ms
+                                    SQL审计: Mapper: {} | 查询数据量: {} 条 | 消耗时间: {} ms
                                     {}""",
                             auditMessage.getStmtId(),
                             auditMessage.getQueryCount(),
