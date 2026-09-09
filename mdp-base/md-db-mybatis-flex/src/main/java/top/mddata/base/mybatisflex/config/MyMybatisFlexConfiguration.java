@@ -6,6 +6,7 @@ import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.audit.AuditManager;
 import com.mybatisflex.core.audit.ConsoleMessageCollector;
 import com.mybatisflex.core.audit.CountableMessageCollector;
+import com.mybatisflex.core.audit.MessageCollector;
 import com.mybatisflex.core.audit.ScheduledMessageCollector;
 import com.mybatisflex.core.dialect.DbType;
 import com.mybatisflex.core.keygen.KeyGeneratorFactory;
@@ -28,6 +29,7 @@ import top.mddata.base.mybatisflex.keygen.UidKeyGenerator;
 import top.mddata.base.mybatisflex.listener.DefaultInsertListener;
 import top.mddata.base.mybatisflex.listener.DefaultUpdateListener;
 import top.mddata.base.mybatisflex.logicdelete.TimeStampDelByLogicDeleteProcessor;
+import top.mddata.base.util.LogSuppressUtil;
 
 import java.util.Properties;
 
@@ -116,10 +118,10 @@ public abstract class MyMybatisFlexConfiguration extends DbConfiguration impleme
         AuditManager.setAuditEnable(flex.getAudit());
 
         switch (flex.getAuditCollector()) {
-            case CONSOLE -> AuditManager.setMessageCollector(new ConsoleMessageCollector());
+            case CONSOLE -> AuditManager.setMessageCollector(suppressible(new ConsoleMessageCollector()));
             case COUNTABLE -> AuditManager.setMessageCollector(new CountableMessageCollector());
             case SCHEDULED -> AuditManager.setMessageCollector(new ScheduledMessageCollector());
-            default -> AuditManager.setMessageCollector(auditMessage ->
+            default -> AuditManager.setMessageCollector(suppressible(auditMessage ->
                     log.info("""
                                     SQL:
                                     Mapper: {} | 查询数据量: {} 条 | 消耗时间: {} ms
@@ -128,8 +130,20 @@ public abstract class MyMybatisFlexConfiguration extends DbConfiguration impleme
                             auditMessage.getQueryCount(),
                             auditMessage.getElapsedTime(),
                             formatSql(auditMessage.getFullSql())
-                    ));
+                    )));
         }
+    }
+
+    /**
+     * 操作日志异步落库链路（SysLogListener 打标线程）产生的 SQL 不再审计输出，
+     * 否则每次记录日志都会级联刷出本链路全部 insert/select 的审计日志；仅过滤输出，SQL 正常执行
+     */
+    private static MessageCollector suppressible(MessageCollector delegate) {
+        return auditMessage -> {
+            if (!LogSuppressUtil.isSuppressed()) {
+                delegate.collect(auditMessage);
+            }
+        };
     }
 
 }

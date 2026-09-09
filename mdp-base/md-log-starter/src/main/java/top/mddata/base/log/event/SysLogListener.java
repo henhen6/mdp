@@ -9,6 +9,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 import top.mddata.base.model.log.OptLogDTO;
 import top.mddata.base.util.ContextUtil;
+import top.mddata.base.util.LogSuppressUtil;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -30,15 +31,21 @@ public class SysLogListener {
     @Order
     @EventListener(SysLogEvent.class)
     public void saveSysLog(SysLogEvent event) {
-        OptLogDTO sysLog = (OptLogDTO) event.getSource();
-        ContextUtil.setLogTraceId(sysLog.getTrace());
-        ContextUtil.setToken(sysLog.getToken());
-        ContextUtil.setUserId(sysLog.getUserId());
+        // 日志落库链路本体会被方法切面/SQL审计再次拦截输出，整段抑制其日志（仅过滤输出，入库不受影响）
+        LogSuppressUtil.suppress();
+        try {
+            OptLogDTO sysLog = (OptLogDTO) event.getSource();
+            ContextUtil.setLogTraceId(sysLog.getTrace());
+            ContextUtil.setToken(sysLog.getToken());
+            ContextUtil.setUserId(sysLog.getUserId());
 
-        Map<String, String> localMap = ContextUtil.getLocalMap();
-        localMap.forEach(MDC::put);
+            Map<String, String> localMap = ContextUtil.getLocalMap();
+            localMap.forEach(MDC::put);
 
-        consumer.accept(sysLog);
+            consumer.accept(sysLog);
+        } finally {
+            LogSuppressUtil.release();
+        }
     }
 
 }

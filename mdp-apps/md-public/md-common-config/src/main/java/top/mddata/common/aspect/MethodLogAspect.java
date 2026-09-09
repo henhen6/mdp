@@ -17,6 +17,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import top.mddata.base.util.LogSuppressUtil;
 import top.mddata.common.properties.SystemProperties;
 
 import java.io.File;
@@ -76,8 +77,9 @@ public class MethodLogAspect {
 
     @Around("serviceLayer()")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
-        // 总开关关闭时不做任何序列化；SystemProperties 是 @RefreshScope 代理，每次读取都能感知配置刷新
-        if (!Boolean.TRUE.equals(systemProperties.getRecordLog())) {
+        // 总开关关闭时不做任何序列化；SystemProperties 是 @RefreshScope 代理，每次读取都能感知配置刷新。
+        // 日志落库链路（SysLogListener 打标线程）调用的 Service 不输出，避免"记录日志产生日志"
+        if (!Boolean.TRUE.equals(systemProperties.getRecordLog()) || LogSuppressUtil.isSuppressed()) {
             return pjp.proceed();
         }
         long start = System.nanoTime();
