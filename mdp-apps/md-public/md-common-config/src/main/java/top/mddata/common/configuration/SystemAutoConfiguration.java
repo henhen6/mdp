@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.mddata.common.aspect.MethodLogAspect;
 import top.mddata.common.configurer.AlwaysConfigurer;
 import top.mddata.common.properties.MsgProperties;
 import top.mddata.common.properties.SystemProperties;
@@ -30,13 +31,12 @@ public class SystemAutoConfiguration {
     }
 
     /**
-     @Bean
-     @ConditionalOnMissingBean
-     @ConditionalOnProperty(prefix = SystemProperties.PREFIX, name = "recordLog", havingValue = "true", matchIfMissing = true)
-     public FsLogAspect getLampLogAspect() {
-     return new FsLogAspect(systemProperties);
-     }
+     * 方法日志切面。不按 recordLog 做条件注册：SystemProperties 是 @RefreshScope 代理，
+     * 运行时开关判断可支持 Nacos 动态刷新；关闭时切面仅一次布尔判断，开销可忽略
      */
-
+    @Bean
+    public MethodLogAspect methodLogAspect(SystemProperties systemProperties) {
+        return new MethodLogAspect(systemProperties);
+    }
 
 }

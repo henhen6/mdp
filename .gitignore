@@ -47,3 +47,6 @@ claude-logs/
 *.claude.tmp
 *.local.md
 *.local.json
+
+# Claude 解压分析用的三方源码（jar 反编译等），统一放这里避免污染仓库
+.claude/jar-sources/
