@@ -12,7 +12,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>md-mvc-flex</artifactId>
     <name>${project.artifactId}</name>
-    <description>公共模块</description>
+    <description>spring web相关：controller、service、request 公共实现</description>
 
     <dependencies>
         <dependency>
