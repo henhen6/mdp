@@ -75,11 +75,11 @@ public class R<T> {
     /**
      * 响应状态码
      * <p>
-     * 0 或 200 表示请求处理成功，其他值表示各种异常情况。
+     * 0 表示请求处理成功，其他值表示各种异常情况。
      * 具体状态码定义请参考 {@link top.mddata.base.exception.code.ExceptionCode}
      * </p>
      */
-    @Schema(description = "响应编码:0/200-请求处理成功")
+    @Schema(description = "响应编码:0-请求处理成功")
     private int code;
 
     /**
@@ -355,13 +355,13 @@ public class R<T> {
      * 判断请求是否成功
      * <p>
      * 根据状态码判断请求是否处理成功。
-     * 状态码为 0 或 200 时视为成功，其他值视为失败。
+     * 状态码为 0 时视为成功，其他值视为失败。
      * </p>
      *
      * @return true 表示成功，false 表示失败
      */
     public Boolean getIsSuccess() {
-        return this.code == SUCCESS_CODE || this.code == 200;
+        return this.code == SUCCESS_CODE;
     }
 
     @Override
