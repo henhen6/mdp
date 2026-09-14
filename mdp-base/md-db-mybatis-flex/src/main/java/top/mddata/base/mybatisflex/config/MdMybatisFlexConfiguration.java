@@ -40,10 +40,10 @@ import java.util.Properties;
  * @since 2018/10/24
  */
 @Slf4j
-public class MyMybatisFlexConfiguration extends DbConfiguration implements MyBatisFlexCustomizer {
+public class MdMybatisFlexConfiguration extends DbConfiguration implements MyBatisFlexCustomizer {
     protected final MybatisFlexProperties mybatisFlexProperties;
 
-    public MyMybatisFlexConfiguration(final DatabaseProperties databaseProperties, MybatisFlexProperties mybatisFlexProperties) {
+    public MdMybatisFlexConfiguration(final DatabaseProperties databaseProperties, MybatisFlexProperties mybatisFlexProperties) {
         super(databaseProperties);
         this.mybatisFlexProperties = mybatisFlexProperties;
     }
