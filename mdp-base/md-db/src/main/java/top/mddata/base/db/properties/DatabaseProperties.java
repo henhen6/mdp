@@ -39,10 +39,6 @@ public class DatabaseProperties {
      */
     private List<String> writeWhiteList;
     /**
-     * 是否启用数据权限
-     */
-    private Boolean isDataScope = true;
-    /**
      * 在执行sql时，租户插件 不会自动拼接租户ID的 表名
      */
     private List<String> ignoreTable = new ArrayList<>();
