@@ -40,7 +40,7 @@ import java.util.Properties;
  * @since 2018/10/24
  */
 @Slf4j
-public abstract class MyMybatisFlexConfiguration extends DbConfiguration implements MyBatisFlexCustomizer {
+public class MyMybatisFlexConfiguration extends DbConfiguration implements MyBatisFlexCustomizer {
     protected final MybatisFlexProperties mybatisFlexProperties;
 
     public MyMybatisFlexConfiguration(final DatabaseProperties databaseProperties, MybatisFlexProperties mybatisFlexProperties) {
