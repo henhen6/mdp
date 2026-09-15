@@ -11,7 +11,6 @@ import top.mddata.base.constant.Constants;
 import top.mddata.base.db.properties.flex.AuditCollector;
 import top.mddata.base.db.properties.flex.LogicDeleteProcessor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static top.mddata.base.db.properties.DatabaseProperties.PREFIX;
@@ -38,14 +37,6 @@ public class DatabaseProperties {
      * 禁止写入白名单
      */
     private List<String> writeWhiteList;
-    /**
-     * 在执行sql时，租户插件 不会自动拼接租户ID的 表名
-     */
-    private List<String> ignoreTable = new ArrayList<>();
-    /**
-     * 在执行sql时，租户插件 不会自动拼接租户ID的 表前缀
-     */
-    private List<String> ignoreTablePrefix = new ArrayList<>();
     /**
      * id 类型
      */
