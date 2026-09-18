@@ -4,12 +4,12 @@ import cn.dev33.satoken.sso.config.SaSsoClientConfig;
 import cn.dev33.satoken.sso.model.SaCheckTicketResult;
 import cn.dev33.satoken.sso.processor.SaSsoClientProcessor;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.dev33.satoken.util.SaFoxUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.workbench.service.AuthService;
 
 /**
  * 单点登录 客户端接口
@@ -27,9 +28,12 @@ import top.mddata.base.base.R;
  */
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping()
 @Tag(name = "单点登录客户端")
 public class SsoClientController {
+
+    private final AuthService authService;
 
     /**
      * 获取SSO服务端登录地址
@@ -87,19 +91,15 @@ public class SsoClientController {
      * 该接口会根据is-http判断是否调用 center-server 的pushS接口
      *
      * @param ticket ticket
+     * @param appKey 应用Key，兼作 SSO clientId 用于校验 ticket 归属（前端固定传入）
      * @return token
      */
     @Operation(summary = "客户端根据ticket获取token", description = "校验ticket有限性，并返回token")
     @GetMapping("/anyUser/client/doLoginByTicket")
     @RequestLog(value = "SSO客户端根据ticket获取token", logType = RequestLog.LogType.QUERY)
-    public R<String> doLoginByTicket(String clientId, String ticket) {
-        SaCheckTicketResult ctr = SaSsoClientProcessor.getInstance().checkTicket(clientId, ticket);
-        StpUtil.login(ctr.getLoginId(), new SaLoginParameter()
-                        .setTimeout(ctr.getRemainTokenTimeout())
-//                .setDeviceType(ctr.getDeviceType())
-                        .setDeviceId(ctr.getDeviceId())
-        );
-        return R.success(StpUtil.getTokenValue());
+    public R<String> doLoginByTicket(String ticket, String appKey) {
+        SaCheckTicketResult ctr = SaSsoClientProcessor.getInstance().checkTicket(appKey, ticket);
+        return R.success(authService.loginByTicket(ctr.getLoginId(), ctr.getRemainTokenTimeout(), ctr.getDeviceId()));
     }
 
 

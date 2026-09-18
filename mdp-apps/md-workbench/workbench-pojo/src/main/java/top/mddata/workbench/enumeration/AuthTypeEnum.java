@@ -37,7 +37,15 @@ public enum AuthTypeEnum implements BaseEnum<String> {
     /**
      * 邮箱 + 密码登录
      */
-    EMAIL("04", "邮箱密码登录");
+    EMAIL("04", "邮箱密码登录"),
+    /**
+     * SSO 单点登录 ticket 模式登录
+     */
+    TICKET("05", "ticket模式"),
+    /**
+     * OAuth2 授权登录（签发 code / 隐藏式签发 token）
+     */
+    OAUTH2("06", "OAuth2授权登录");
 
     @Schema(description = "code")
     @EnumValue

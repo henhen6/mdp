@@ -24,6 +24,18 @@ public interface AuthService {
     R<LoginVo> login(LoginDto login);
 
     /**
+     * SSO 客户端 ticket 模式登录：ticket 已由客户端校验通过，此处完成本地登录，
+     * 并将与普通登录一致的用户常用信息写入 TokenSession。
+     * 登录日志事件统一在 SsoServerController#getRedirectUrl 签发 ticket 时推送，此处不记录
+     *
+     * @param loginId            SSO 校验返回的登录标识（用户id）
+     * @param remainTokenTimeout ticket 对应的 token 剩余有效期
+     * @param deviceId           设备id
+     * @return 本次登录生成的 token
+     */
+    String loginByTicket(Object loginId, Long remainTokenTimeout, String deviceId);
+
+    /**
      * 根据邮箱注册
      * @param register 参数
      * @return 邮箱

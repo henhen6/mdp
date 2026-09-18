@@ -14,6 +14,11 @@ import cn.dev33.satoken.oauth2.error.SaOAuth2ErrorCode;
 import cn.dev33.satoken.oauth2.exception.SaOAuth2Exception;
 import cn.dev33.satoken.oauth2.strategy.SaOAuth2Strategy;
 import cn.dev33.satoken.oauth2.template.SaOAuth2Template;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.util.SaFoxUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.extra.spring.SpringUtil;
+import com.alibaba.fastjson2.JSON;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +40,9 @@ import top.mddata.open.facade.admin.OauthScopeFacade;
 import top.mddata.open.vo.admin.AppVo;
 import top.mddata.open.vo.admin.OauthScopeVo;
 import top.mddata.workbench.dto.LoginDto;
+import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.enumeration.AuthTypeEnum;
+import top.mddata.workbench.event.LoginEvent;
 import top.mddata.workbench.oauth2.dto.ConfirmDto;
 import top.mddata.workbench.oauth2.dto.RedirectUriDto;
 import top.mddata.workbench.oauth2.vo.ConfirmInfoVo;
@@ -118,6 +125,7 @@ public class OAuth2ServerController {
         if (SaOAuth2Consts.ResponseType.code.equals(ra.getResponseType())) {
             CodeModel codeModel = dataGenerate.generateCode(ra);
             String redirectUri = dataGenerate.buildRedirectUri(ra.getRedirectUri(), codeModel.getCode(), ra.getState());
+            publishOauth2LoginLog(ra.getClientId(), ra.getRedirectUri(), ra.getLoginId());
             return R.success(redirectUri);
         }
 
@@ -125,6 +133,7 @@ public class OAuth2ServerController {
         if (SaOAuth2Consts.ResponseType.token.equals(ra.getResponseType())) {
             AccessTokenModel at = dataGenerate.generateAccessToken(ra, false, null);
             String redirectUri = dataGenerate.buildImplicitRedirectUri(ra.getRedirectUri(), at.getAccessToken(), ra.getState());
+            publishOauth2LoginLog(ra.getClientId(), ra.getRedirectUri(), ra.getLoginId());
             return R.success(redirectUri);
         }
 
@@ -193,6 +202,35 @@ public class OAuth2ServerController {
         ra.setScopes(SaOAuth2Manager.getDataConverter().convertScopeStringToList(param.getScope()));
         ra.setLoginId(loginId);
         return ra;
+    }
+
+    /**
+     * 记录 OAuth2 授权登录日志（参考 SsoServerController#getRedirectUrl）。
+     * <p>
+     * 统一在签发 code/token 的出口记录，覆盖自动确认授权（getRedirectUri）与
+     * 手动确认授权（confirm 情况2）两条路径；仅保存授权不签发时（confirm 情况1）不记录，
+     * 避免与随后的 getRedirectUri 重复。应用信息查不到时不阻断签发流程。
+     *
+     * @param clientId    应用 clientId（即 appKey）
+     * @param redirectUri 客户端回调地址（记录时截断查询参数）
+     * @param loginId     当前登录用户id
+     */
+    private void publishOauth2LoginLog(String clientId, String redirectUri, Object loginId) {
+        LoginLogDto dto = LoginLogDto.success(AuthTypeEnum.OAUTH2, null, null, "免密自动登录", JSON.toJSONString(StpUtil.getTokenInfo()));
+        dto.setUserId(Convert.toLong(loginId));
+
+        R<AppVo> appResult = appFacade.getAppByAppKey(clientId);
+        if (appResult.getIsSuccess() && appResult.getData() != null) {
+            AppVo app = appResult.getData();
+            dto.setAppKey(app.getAppKey());
+            dto.setAppName(app.getName());
+        }
+
+        if (SaFoxUtil.isNotEmpty(redirectUri) && redirectUri.contains("?")) {
+            redirectUri = redirectUri.substring(0, redirectUri.indexOf("?"));
+        }
+        dto.setAppRedirect(redirectUri);
+        SpringUtil.publishEvent(new LoginEvent(dto));
     }
 
     /**
@@ -272,6 +310,7 @@ public class OAuth2ServerController {
         if (SaOAuth2Consts.ResponseType.code.equals(ra.getResponseType())) {
             CodeModel codeModel = dataGenerate.generateCode(ra);
             String redirectUri = dataGenerate.buildRedirectUri(ra.getRedirectUri(), codeModel.getCode(), ra.getState());
+            publishOauth2LoginLog(ra.getClientId(), ra.getRedirectUri(), ra.getLoginId());
             vo.setRedirectUri(redirectUri);
             return R.success(vo);
         }
@@ -280,6 +319,7 @@ public class OAuth2ServerController {
         if (SaOAuth2Consts.ResponseType.token.equals(ra.getResponseType())) {
             AccessTokenModel at = dataGenerate.generateAccessToken(ra, false, null);
             String redirectUri = dataGenerate.buildImplicitRedirectUri(ra.getRedirectUri(), at.getAccessToken(), ra.getState());
+            publishOauth2LoginLog(ra.getClientId(), ra.getRedirectUri(), ra.getLoginId());
             vo.setRedirectUri(redirectUri);
             return R.success(vo);
         }

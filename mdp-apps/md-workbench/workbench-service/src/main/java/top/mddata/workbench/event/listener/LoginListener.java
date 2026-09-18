@@ -35,14 +35,6 @@ public class LoginListener {
 
         User user = null;
         switch (loginLogDto.getAuthType()) {
-            case USERNAME:
-            case CAPTCHA:
-                if (StrUtil.isNotEmpty(loginLogDto.getAccount())) {
-                    user = ssoUserService.getByUsername(loginLogDto.getAccount());
-                } else if (loginLogDto.getUserId() != null) {
-                    user = ssoUserService.getByIdCache(loginLogDto.getUserId());
-                }
-                break;
             case PHONE:
                 if (StrUtil.isNotEmpty(loginLogDto.getAccount())) {
                     user = ssoUserService.getByPhone(loginLogDto.getAccount());
@@ -58,6 +50,11 @@ public class LoginListener {
                 }
                 break;
             default:
+                if (StrUtil.isNotEmpty(loginLogDto.getAccount())) {
+                    user = ssoUserService.getByUsername(loginLogDto.getAccount());
+                } else if (loginLogDto.getUserId() != null) {
+                    user = ssoUserService.getByIdCache(loginLogDto.getUserId());
+                }
                 break;
         }
 

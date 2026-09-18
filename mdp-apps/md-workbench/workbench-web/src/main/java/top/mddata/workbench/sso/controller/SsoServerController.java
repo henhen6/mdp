@@ -30,6 +30,7 @@ import top.mddata.open.facade.admin.AppFacade;
 import top.mddata.open.vo.admin.AppVo;
 import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.dto.LoginRedirectUrlDto;
+import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.event.LoginEvent;
 
 import java.util.List;
@@ -99,7 +100,7 @@ public class SsoServerController {
             result = R.success(redirectUrl);
         }
 
-        // 记录登录日志
+        // 记录登录日志：第三方应用换 ticket 不经过本系统客户端接口，登录日志统一在服务端签发 ticket 时记录
         if (SaFoxUtil.isNotEmpty(redirect) && redirect.contains("?")) {
             int index = redirect.indexOf("?");
             redirect = redirect.substring(0, index);
@@ -108,7 +109,7 @@ public class SsoServerController {
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
 
         // 发送登录成功事件
-        LoginLogDto dto = LoginLogDto.success(param.getAuthType(), param.getDeviceInfo(), null, "登录成功", JSON.toJSONString(tokenInfo));
+        LoginLogDto dto = LoginLogDto.success(AuthTypeEnum.TICKET, null, null, "免密自动登录", JSON.toJSONString(tokenInfo));
         dto.setUserId(Convert.toLong(tokenInfo.getLoginId()));
         if (app != null) {
             dto.setAppKey(app.getAppKey());

@@ -9,6 +9,7 @@ import cn.dev33.satoken.temp.SaTempUtil;
 import cn.dev33.satoken.util.SaFoxUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -102,16 +103,67 @@ public class AuthServiceImpl implements AuthService {
 
         Long userId = ssoUser.getId();
 
-//        查询用户部门信息
-        TempOrg org = findOrg(ssoUser);
-
         // 创建Account-Session
         StpUtil.login(userId, new SaLoginParameter()
                 .setDeviceType("PC")
                 .setDeviceId(StrUtil.isEmpty(login.getDeviceId()) ? SaFoxUtil.getRandomString(32) : login.getDeviceId()));
 
+        // 写入用户常用信息到 TokenSession
+        fillTokenSession(ssoUser);
+
+
+        // 封装返回值
+        JSONObject obj = new JSONObject();
+        obj.put(USER_ID, ssoUser.getId());
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        LoginVo loginVO = BeanUtil.toBean(tokenInfo, LoginVo.class);
+        loginVO.setExpire(tokenInfo.getTokenTimeout());
+        loginVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
+        loginVO.setId(userId);
+
+        // 发送登录成功事件
+        LoginLogDto dto = LoginLogDto.success(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), "登录成功", JSON.toJSONString(tokenInfo))
+                // 登录时，默认是默认应用 工作台
+                .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
+        SpringUtil.publishEvent(new LoginEvent(dto));
+
+        return R.success(loginVO);
+    }
+
+    @Override
+    public String loginByTicket(Object loginId, Long remainTokenTimeout, String deviceId) {
+        // fail fast：loginId 非法或用户不存在时直接终止，不发 token
+        Long userId = Convert.toLong(loginId);
+        ArgumentAssert.notNull(userId, "SSO ticket 登录失败，loginId 非法: {}", loginId);
+
+        User user = ssoUserService.getById(userId);
+        ArgumentAssert.notNull(user, "SSO ticket 登录失败，用户不存在: userId={}", userId);
+
+        StpUtil.login(userId, new SaLoginParameter()
+                .setTimeout(remainTokenTimeout)
+                .setDeviceId(deviceId));
+
+        // 与普通登录同源写入用户常用信息，保证两种登录方式的会话数据权限等价
+        fillTokenSession(user);
+
+        // 登录日志事件统一在 SsoServerController#getRedirectUrl 签发 ticket 时推送
+        // （第三方应用换 ticket 不经过本方法，在此记录会导致 MDP 前端一次登录记两条、第三方漏记）
+        return StpUtil.getTokenValue();
+    }
+
+    /**
+     * 将用户常用信息（loginId、当前组织上下文）写入当前 TokenSession。
+     * <p>
+     * 普通登录与 SSO ticket 登录共用，必须在 StpUtil.login 之后调用。
+     *
+     * @param user 用户
+     */
+    private void fillTokenSession(User user) {
+        // 查询用户部门信息
+        TempOrg org = findOrg(user);
+
         SaSession session = StpUtil.getTokenSession();
-        session.setLoginId(ssoUser.getId());
+        session.setLoginId(user.getId());
         if (org.getCurrentTopCompanyId() != null) {
             session.set(TOP_COMPANY_ID, org.getCurrentTopCompanyId());
         } else {
@@ -139,24 +191,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         session.set(TOP_COMPANY_IS_ADMIN, org.isCurrentTopCompanyIsAdmin());
-
-
-        // 封装返回值
-        JSONObject obj = new JSONObject();
-        obj.put(USER_ID, ssoUser.getId());
-        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        LoginVo loginVO = BeanUtil.toBean(tokenInfo, LoginVo.class);
-        loginVO.setExpire(tokenInfo.getTokenTimeout());
-        loginVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
-        loginVO.setId(userId);
-
-        // 发送登录成功事件
-        LoginLogDto dto = LoginLogDto.success(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), "登录成功", JSON.toJSONString(tokenInfo))
-                // 登录时，默认是默认应用 工作台
-                .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
-        SpringUtil.publishEvent(new LoginEvent(dto));
-
-        return R.success(loginVO);
     }
 
     private TempOrg findOrg(User sysUser) {
