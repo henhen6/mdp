@@ -65,14 +65,6 @@ public class RoleDto implements Serializable {
     private String roleType;
 
     /**
-     * 组织性质
-     * [1-默认 90-开发者 99-运维]
-     */
-    @NotNull(message = "请填写组织性质")
-    @Schema(description = "组织性质")
-    private Integer orgNature;
-
-    /**
      * 说明
      */
     @Size(max = 255, message = "说明长度不能超过{max}")
