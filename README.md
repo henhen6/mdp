@@ -8,13 +8,13 @@
 [![Star](https://gitee.com/henhen6/mddata/badge/star.svg?theme=gray)](https://gitee.com/henhen6/mddata/stargazers)
 [![Fork](https://gitee.com/henhen6/mddata/badge/fork.svg?theme=gray)](https://gitee.com/henhen6/mddata/members)
 ![star](https://gitcode.com/henhen6/mdp/star/badge.svg)
-
 [![star](https://gitcode.com/henhen6/mdp/star/2025top.svg)](https://gitcode.com/henhen6/mdp)
 
-## 官网
+## 常用链接
 
 - 官网： http://mddata.top/
 - 文档： http://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
+- 前端代码： https://gitee.com/henhen6/mdp-web-vben
 
 ## 介绍
 主数据平台（master-data-platform），简称MDP。MDP基于Java17、SpringBoot、vue3、ant-design-vue等主流技术构建的中后台快速开发平台，立志打造为一个企业级的软件开发基础脚手架，帮助企业快速搭建一个基础开发框架。
@@ -68,6 +68,15 @@
   - 运维管理员账号密码：ops_admin/admin
   - 开发者管理员账号密码：open_admin/admin
   - 企业管理员账号密码：admin/admin
+
+## 第三应用
+
+使用主流开源项目作为单点登录的客户端，对接到MDP平台，二次开发时可以用于学习如何集成。 需要本地部署后查看效果，演示环境服务器资源有限无法部署。
+
+| 应用                                      | 备注                                           |
+|---------------------------------------------|----------------------------------------------|
+| [若依-oauth](https://gitee.com/henhen6/RuoYi-Vue-oauth2) | 单点登录客户端，基于ticket模式对接单点登录、并对接了事件回调、接口调用等主要功能。 |
+| [若依-ticket](https://gitee.com/henhen6/RuoYi-Vue-sso) | 单点登录客户端。基于Oauth2模式对接单点登录、并对接了事件回调、接口调用等主要功能。  |
 
 
 ## 主要功能
