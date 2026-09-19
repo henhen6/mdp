@@ -82,7 +82,7 @@ public class TokenContextFilter extends SaInterceptor {
             log.debug("access filter not execute");
             return;
         }
-        SaSession accountSession = StpUtil.getSession();
+        SaSession accountSession = StpUtil.getTokenSession();
 
         if (accountSession != null) {
             Long userId = (Long) accountSession.getLoginId();

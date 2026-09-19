@@ -55,6 +55,7 @@ mdp:
       ALL:
         - /**/anyUser/**
         - /**/sso/**
+        - /**/oauth2/getRedirectUri
         - /**/oauth2/userinfo
         - /**/oauth2/token
         - /**/oauth2/refresh
