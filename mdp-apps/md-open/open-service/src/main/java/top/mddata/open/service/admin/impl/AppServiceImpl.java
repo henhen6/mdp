@@ -25,6 +25,7 @@ import top.mddata.common.cache.open.AppByAppKeyCkBuilder;
 import top.mddata.common.cache.open.AppCkBuilder;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.entity.UserRoleRel;
+import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.entity.permission.Role;
@@ -99,7 +100,8 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
         otherParams.put("roleId", query.getRoleId());
         // 当前组织性质下的、权限集合角色
         otherParams.put("roleCategory", RoleCategoryEnum.PERM_SET.getCode());
-        otherParams.put("orgNature", ContextUtil.getCurrentCompanyNature());
+        Integer currentCompanyNature = ContextUtil.getCurrentCompanyNature();
+        otherParams.put("orgNature", currentCompanyNature == null ? OrgNatureEnum.DEFAULT.getCode() : currentCompanyNature);
         otherParams.put("templateRole", 1);
         otherParams.put("hasAppByRole", query.getHasApp() != null && query.getHasApp());
 
