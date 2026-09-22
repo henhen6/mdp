@@ -79,6 +79,9 @@
 | [若依-ticket](https://gitee.com/henhen6/RuoYi-Vue-sso) | 单点登录客户端。基于Oauth2模式对接单点登录、并对接了事件回调、接口调用等主要功能。  |
 
 
+## 广告位
+- [lamp-cloud](https://gitee.com/dromara/lamp-cloud) : 专注于多租户解决方案。
+
 ## 主要功能
 
 - 工作台
