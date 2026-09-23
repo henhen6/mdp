@@ -44,6 +44,7 @@ import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.event.LoginEvent;
 import top.mddata.workbench.oauth2.dto.ConfirmDto;
 import top.mddata.workbench.oauth2.dto.RedirectUriDto;
+import top.mddata.workbench.oauth2.handler.MdPasswordGrantTypeHandler;
 import top.mddata.workbench.oauth2.vo.ConfirmInfoVo;
 import top.mddata.workbench.oauth2.vo.ConfirmVo;
 import top.mddata.workbench.service.AuthService;
@@ -341,6 +342,9 @@ public class OAuth2ServerController {
         SaOAuth2Strategy.instance.notLoginView = () -> {
             throw new BizException("暂无此功能");
         };
+
+        // 替换默认的密码模式处理器：消除其 stderr 警告，并在登录失败时返回客户端可读的错误信息
+        SaOAuth2Strategy.instance.registerGrantTypeHandler(new MdPasswordGrantTypeHandler());
 
         // 登录处理函数
         SaOAuth2Strategy.instance.doLoginHandle = (name, pwd) -> {
