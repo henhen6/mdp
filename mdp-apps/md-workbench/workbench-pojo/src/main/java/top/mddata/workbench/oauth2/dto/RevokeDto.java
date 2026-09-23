@@ -12,7 +12,9 @@ import top.mddata.base.annotation.web.ParamName;
  * 回收token参数
  * @author henhen6
  * @since 2025/8/29 16:06
+ * @deprecated 已迁移至 sa-token-oauth2-core 模块的 {@code Oauth2RevokeRequest}（参数名遵循 RFC 7009 改为 token）
  */
+@Deprecated
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Schema(title = "RevokeDto", description = "回收token参数")

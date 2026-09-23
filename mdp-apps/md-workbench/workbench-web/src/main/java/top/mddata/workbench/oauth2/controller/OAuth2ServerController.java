@@ -8,7 +8,6 @@ import cn.dev33.satoken.oauth2.data.generate.SaOAuth2DataGenerate;
 import cn.dev33.satoken.oauth2.data.model.AccessTokenModel;
 import cn.dev33.satoken.oauth2.data.model.CodeModel;
 import cn.dev33.satoken.oauth2.data.model.loader.SaClientModel;
-import cn.dev33.satoken.oauth2.data.model.request.ClientIdAndSecretModel;
 import cn.dev33.satoken.oauth2.data.model.request.RequestAuthModel;
 import cn.dev33.satoken.oauth2.error.SaOAuth2ErrorCode;
 import cn.dev33.satoken.oauth2.exception.SaOAuth2Exception;
@@ -53,8 +52,6 @@ import top.mddata.workbench.vo.SsoUserVo;
 
 import java.util.List;
 
-import static top.mddata.workbench.oauth2.data.Oauth2DataResolver.readClientIdAndSecret;
-
 /**
  * OAuth2 Server端
  *
@@ -93,7 +90,7 @@ public class OAuth2ServerController {
         String responseType = param.getResponseType();
 
         // 1、先判断是否开启了指定的授权模式
-        checkAuthorizeResponseType(responseType, param, cfg);
+        checkResponseTypeAllowed(responseType, param.getClientId(), cfg);
 
         // 2、如果尚未登录, 则先去登录
         long loginId = SaOAuth2Manager.getStpLogic().getLoginIdAsLong();
@@ -142,26 +139,20 @@ public class OAuth2ServerController {
     }
 
     /**
-     * 根据当前请求提交的 client_id 参数获取 SaClientModel 对象
-     * @return /
+     * 校验 response_type 对应的授权模式：系统是否开放 + 应用是否开放
+     *
+     * @param responseType 授权类型（code / token）
+     * @param clientId     应用id
+     * @param cfg          OAuth2 Server 配置
      */
-    private SaClientModel currClientModel(RedirectUriDto param) {
+    private void checkResponseTypeAllowed(String responseType, String clientId, SaOAuth2ServerConfig cfg) {
         SaOAuth2Template oauth2Template = SaOAuth2Manager.getTemplate();
-        ClientIdAndSecretModel clientIdAndSecret = readClientIdAndSecret(param);
-        return oauth2Template.checkClientModel(clientIdAndSecret.getClientId());
-    }
-
-
-    /**
-     * 校验 authorize 路由的 ResponseType 参数
-     */
-    private void checkAuthorizeResponseType(String responseType, RedirectUriDto param, SaOAuth2ServerConfig cfg) {
         // 模式一：Code授权码
         if (responseType.equals(SaOAuth2Consts.ResponseType.code)) {
             if (!cfg.enableAuthorizationCode) {
                 throwErrorSystemNotEnableModel();
             }
-            if (!currClientModel(param).getAllowGrantTypes().contains(GrantType.authorization_code)) {
+            if (!oauth2Template.checkClientModel(clientId).getAllowGrantTypes().contains(GrantType.authorization_code)) {
                 throwErrorClientNotEnableModel();
             }
         } else if (responseType.equals(SaOAuth2Consts.ResponseType.token)) {
@@ -169,7 +160,7 @@ public class OAuth2ServerController {
             if (!cfg.enableImplicit) {
                 throwErrorSystemNotEnableModel();
             }
-            if (!currClientModel(param).getAllowGrantTypes().contains(GrantType.implicit)) {
+            if (!oauth2Template.checkClientModel(clientId).getAllowGrantTypes().contains(GrantType.implicit)) {
                 throwErrorClientNotEnableModel();
             }
         } else {
@@ -252,6 +243,8 @@ public class OAuth2ServerController {
         ConfirmInfoVo vo = new ConfirmInfoVo();
         // 查询权限信息
         List<String> scopes = SaOAuth2Manager.getDataConverter().convertScopeStringToList(scope);
+        // 仅允许查询该应用已签约的 scope，防止越权展示
+        SaOAuth2Manager.getTemplate().checkContractScope(clientId, scopes);
         R<List<OauthScopeVo>> scopeList = oauthScopeFacade.getScopeListByCode(scopes);
 
 
@@ -289,7 +282,6 @@ public class OAuth2ServerController {
         ConfirmVo vo = new ConfirmVo();
         // -------- 情况1：只返回确认结果即可
         if (!buildRedirectUri) {
-            oauth2Template.saveGrantScope(clientId, loginId, scopes);
             return R.success(vo);
         }
 
@@ -304,6 +296,12 @@ public class OAuth2ServerController {
                 .setNonce(param.getNonce())
                 .setScopes(scopes)
                 .setLoginId(loginId);
+
+        // 安全校验：与 getRedirectUri 保持一致，防止篡改 redirect_uri / scope / response_type 越权签发授权码
+        SaOAuth2ServerConfig cfg = SaOAuth2Manager.getServerConfig();
+        checkResponseTypeAllowed(ra.getResponseType(), ra.getClientId(), cfg);
+        oauth2Template.checkRedirectUri(ra.getClientId(), ra.getRedirectUri());
+        oauth2Template.checkContractScope(ra.getClientId(), ra.getScopes());
 
         // 判断授权类型，构建不同的重定向地址
         // 		如果是 授权码式，则：开始重定向授权，下放code

@@ -1,9 +1,16 @@
 package top.mddata.base.oauth2.template;
 
 import cn.dev33.satoken.SaManager;
+import cn.dev33.satoken.json.SaJsonTemplate;
 import cn.dev33.satoken.util.SaFoxUtil;
 import lombok.Getter;
 import top.mddata.base.oauth2.SaOauth2ClientManager;
+import top.mddata.base.oauth2.core.constant.Oauth2Constants;
+import top.mddata.base.oauth2.core.request.Oauth2RevokeRequest;
+import top.mddata.base.oauth2.core.request.Oauth2TokenRequest;
+import top.mddata.base.oauth2.core.response.Oauth2TokenResponse;
+import top.mddata.base.oauth2.core.response.Oauth2UserInfoResponse;
+import top.mddata.base.oauth2.exception.Oauth2ClientException;
 import top.mddata.base.oauth2.name.ParamName;
 import top.mddata.base.oauth2.properties.Oauth2ClientConfig;
 
@@ -67,21 +74,22 @@ public class SaOauth2ClientTemplate {
      * 根据授权码换取 access_token（授权码模式）。
      * <br/> 调用Server端 {@code POST /oauth2/token}，grant_type=authorization_code
      *
-     * @param code 授权码（一次性，有效期短）
-     * @param redirectUri 重定向地址（必须与授权时传入的一致，可为null）
-     * @return Server端响应的 JSON 字符串（含 access_token、refresh_token、openid 等字段，注意为 snake_case）
+     * @param request 令牌请求（code 必填，redirectUri 必须与授权时传入的一致，可为null）
+     * @return 标准令牌响应（含 access_token、refresh_token、openid 等字段）
      */
-    public String getAccessTokenByCode(String code, String redirectUri) {
-        Oauth2ClientConfig clientConfig = getClientConfig();
-        Map<String, Object> params = new HashMap<>();
-        params.put(paramName.getGrantType(), "authorization_code");
-        params.put(paramName.getClientId(), clientConfig.getClientId());
-        params.put(paramName.getClientSecret(), clientConfig.getClientSecret());
-        if (SaFoxUtil.isNotEmpty(redirectUri)) {
-            params.put(paramName.getRedirectUri(), redirectUri);
+    public Oauth2TokenResponse getAccessTokenByCode(Oauth2TokenRequest request) {
+        if (SaFoxUtil.isEmpty(request.getCode())) {
+            throw new IllegalArgumentException("code 不能为空");
         }
-        params.put(paramName.getCode(), code);
-        return sendPost(clientConfig.splicingTokenUrl(), params);
+        Oauth2ClientConfig clientConfig = getClientConfig();
+        Map<String, Object> params = buildClientCredentialParams(clientConfig);
+        params.put(paramName.getGrantType(), Oauth2Constants.GRANT_TYPE_AUTHORIZATION_CODE);
+        if (SaFoxUtil.isNotEmpty(request.getRedirectUri())) {
+            params.put(paramName.getRedirectUri(), request.getRedirectUri());
+        }
+        params.put(paramName.getCode(), request.getCode());
+        String json = sendPost(clientConfig.splicingTokenUrl(), params);
+        return parseResponse(json, Oauth2TokenResponse.class);
     }
 
     /**
@@ -89,66 +97,82 @@ public class SaOauth2ClientTemplate {
      * <br/> 调用Server端 {@code POST /oauth2/userinfo}（要求 scope 含 userinfo）
      *
      * @param accessToken 访问令牌
-     * @return Server端响应的 JSON 字符串（含用户昵称、头像、邮箱、手机号等公开信息）
+     * @return 用户公开信息（含 sub、昵称、头像、邮箱、手机号等）
      */
-    public String getUserInfoByAccessToken(String accessToken) {
+    public Oauth2UserInfoResponse getUserInfoByAccessToken(String accessToken) {
+        if (SaFoxUtil.isEmpty(accessToken)) {
+            throw new IllegalArgumentException("accessToken 不能为空");
+        }
         Oauth2ClientConfig clientConfig = getClientConfig();
         Map<String, Object> params = new HashMap<>();
         params.put(paramName.getAccessToken(), accessToken);
-        return sendPost(clientConfig.splicingUserinfoUrl(), params);
+        String json = sendPost(clientConfig.splicingUserinfoUrl(), params);
+        return parseResponse(json, Oauth2UserInfoResponse.class);
     }
 
     /**
      * 根据 refresh_token 刷新 access_token。
      * <br/> 调用Server端 {@code POST /oauth2/refresh}，grant_type=refresh_token
      *
-     * @param refreshToken 刷新令牌
-     * @return Server端响应的 JSON 字符串（含新的 access_token、refresh_token）
+     * @param request 令牌请求（refreshToken 必填，scope 可空，仅支持收窄授权范围）
+     * @return 标准令牌响应（含新的 access_token、refresh_token）
      */
-    public String refreshAccessToken(String refreshToken) {
+    public Oauth2TokenResponse refreshAccessToken(Oauth2TokenRequest request) {
+        if (SaFoxUtil.isEmpty(request.getRefreshToken())) {
+            throw new IllegalArgumentException("refreshToken 不能为空");
+        }
         Oauth2ClientConfig clientConfig = getClientConfig();
-        Map<String, Object> params = new HashMap<>();
-        params.put(paramName.getGrantType(), "refresh_token");
-        params.put(paramName.getClientId(), clientConfig.getClientId());
-        params.put(paramName.getClientSecret(), clientConfig.getClientSecret());
-        params.put(paramName.getRefreshToken(), refreshToken);
-        return sendPost(clientConfig.splicingRefreshUrl(), params);
+        Map<String, Object> params = buildClientCredentialParams(clientConfig);
+        params.put(paramName.getGrantType(), Oauth2Constants.GRANT_TYPE_REFRESH_TOKEN);
+        params.put(paramName.getRefreshToken(), request.getRefreshToken());
+        if (SaFoxUtil.isNotEmpty(request.getScope())) {
+            params.put(paramName.getScope(), request.getScope());
+        }
+        String json = sendPost(clientConfig.splicingRefreshUrl(), params);
+        return parseResponse(json, Oauth2TokenResponse.class);
     }
 
     /**
-     * 回收 access_token，使其立即失效。
+     * 回收 token，使其立即失效（RFC 7009）。
      * <br/> 调用Server端 {@code POST /oauth2/revoke}
-     * <p> 建议在用户退出登录时调用，防止token在有效期内被继续使用
+     * <p> 建议在用户退出登录时调用，防止token在有效期内被继续使用；
+     * 撤销 access_token 时Server端会级联撤销关联的 refresh_token
      *
-     * @param accessToken 访问令牌
-     * @return Server端响应的 JSON 字符串
+     * @param request 撤销请求（token 必填，tokenTypeHint 可空）
      */
-    public String revokeAccessToken(String accessToken) {
+    public void revokeAccessToken(Oauth2RevokeRequest request) {
+        if (SaFoxUtil.isEmpty(request.getToken())) {
+            throw new IllegalArgumentException("token 不能为空");
+        }
         Oauth2ClientConfig clientConfig = getClientConfig();
-        Map<String, Object> params = new HashMap<>();
-        params.put(paramName.getClientId(), clientConfig.getClientId());
-        params.put(paramName.getClientSecret(), clientConfig.getClientSecret());
-        params.put(paramName.getAccessToken(), accessToken);
-        return sendPost(clientConfig.splicingRevokeUrl(), params);
+        Map<String, Object> params = buildClientCredentialParams(clientConfig);
+        params.put(paramName.getToken(), request.getToken());
+        if (SaFoxUtil.isNotEmpty(request.getTokenTypeHint())) {
+            params.put(paramName.getTokenTypeHint(), request.getTokenTypeHint());
+        }
+        String json = sendPost(clientConfig.splicingRevokeUrl(), params);
+        // RFC 7009：成功时响应体为空，仅当返回了错误体时才需要解析
+        if (SaFoxUtil.isNotEmpty(json)) {
+            checkErrorResponse(json);
+        }
     }
 
     /**
      * 获取 client_token（凭证式，代表应用自身而非某个用户）。
      * <br/> 调用Server端 {@code POST /oauth2/client_token}，grant_type=client_credentials
      *
-     * @param scope 权限范围
-     * @return Server端响应的 JSON 字符串（含 client_token）
+     * @param request 令牌请求（scope 可空）
+     * @return 标准令牌响应（access_token 即 client_token）
      */
-    public String getClientToken(String scope) {
+    public Oauth2TokenResponse getClientToken(Oauth2TokenRequest request) {
         Oauth2ClientConfig clientConfig = getClientConfig();
-        Map<String, Object> params = new HashMap<>();
-        params.put(paramName.getGrantType(), "client_credentials");
-        params.put(paramName.getClientId(), clientConfig.getClientId());
-        params.put(paramName.getClientSecret(), clientConfig.getClientSecret());
-        if (SaFoxUtil.isNotEmpty(scope)) {
-            params.put(paramName.getScope(), scope);
+        Map<String, Object> params = buildClientCredentialParams(clientConfig);
+        params.put(paramName.getGrantType(), Oauth2Constants.GRANT_TYPE_CLIENT_CREDENTIALS);
+        if (SaFoxUtil.isNotEmpty(request.getScope())) {
+            params.put(paramName.getScope(), request.getScope());
         }
-        return sendPost(clientConfig.splicingClientTokenUrl(), params);
+        String json = sendPost(clientConfig.splicingClientTokenUrl(), params);
+        return parseResponse(json, Oauth2TokenResponse.class);
     }
 
     /**
@@ -170,5 +194,41 @@ public class SaOauth2ClientTemplate {
      */
     private String sendPost(String url, Map<String, Object> params) {
         return SaManager.getSaHttpTemplate().postByFormData(url, params);
+    }
+
+    /**
+     * 构建带客户端凭证的请求参数，clientId / clientSecret 统一取自本地配置
+     */
+    private Map<String, Object> buildClientCredentialParams(Oauth2ClientConfig clientConfig) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(paramName.getClientId(), clientConfig.getClientId());
+        params.put(paramName.getClientSecret(), clientConfig.getClientSecret());
+        return params;
+    }
+
+    /**
+     * 解析响应体：标准错误响应（{"error": ...}）转为异常抛出，正常响应反序列化为目标类型
+     *
+     * @param json 响应体
+     * @param type 目标类型
+     * @return 反序列化结果
+     * @param <T> 目标类型泛型
+     */
+    private <T> T parseResponse(String json, Class<T> type) {
+        checkErrorResponse(json);
+        return SaManager.getSaJsonTemplate().jsonToObject(json, type);
+    }
+
+    /**
+     * 检查响应体是否为标准错误格式，是则抛出异常
+     */
+    private void checkErrorResponse(String json) {
+        SaJsonTemplate jsonTemplate = SaManager.getSaJsonTemplate();
+        Map<String, Object> map = jsonTemplate.jsonToMap(json);
+        Object error = map.get("error");
+        if (error != null) {
+            Object errorDescription = map.get("error_description");
+            throw new Oauth2ClientException(String.valueOf(error), errorDescription == null ? null : String.valueOf(errorDescription));
+        }
     }
 }

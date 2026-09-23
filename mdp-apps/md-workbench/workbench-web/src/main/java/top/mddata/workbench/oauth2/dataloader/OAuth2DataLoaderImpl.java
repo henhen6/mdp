@@ -48,15 +48,15 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
         if (!result.getIsSuccess()) {
             return null;
         }
-        AppVo opApplicationVo = result.getData();
-        if (opApplicationVo == null) {
+        AppVo appVo = result.getData();
+        if (appVo == null) {
             return null;
         }
-        if (!opApplicationVo.getState()) {
+        if (!appVo.getState()) {
             throw new BizException("该应用已被封禁，无法授权认证");
         }
 
-        R<List<OauthScopeVo>> listR = oauthScopeFacade.listByAppId(opApplicationVo.getId());
+        R<List<OauthScopeVo>> listR = oauthScopeFacade.listByAppId(appVo.getId());
         List<String> scopes = new ArrayList<>();
         if (listR.getIsSuccess()) {
             List<OauthScopeVo> scopeList = listR.getData();
@@ -64,46 +64,46 @@ public class OAuth2DataLoaderImpl implements SaOAuth2DataLoader {
         }
         // 构建 SaClientModel 对象
         SaClientModel model = new SaClientModel()
-                // client id
-                .setClientId(opApplicationVo.getId().toString())
+                // client id（与全链路保持一致，使用 appKey，而非应用主键 id）
+                .setClientId(clientId)
                 // client 秘钥
-                .setClientSecret(opApplicationVo.getAppSecret())
+                .setClientSecret(appVo.getAppSecret())
                 // 所有允许授权的 url
-                .addAllowRedirectUris(SaFoxUtil.convertStringToArray(opApplicationVo.getOauth2AllowRedirectUris()))
+                .addAllowRedirectUris(SaFoxUtil.convertStringToArray(appVo.getOauth2AllowRedirectUris()))
                 // 所有签约的权限
                 .addContractScopes(SaFoxUtil.toArray(scopes))
                 // 所有允许的授权模式
-                .addAllowGrantTypes(SaFoxUtil.convertStringToArray(opApplicationVo.getOauth2AllowGrantTypes()));
+                .addAllowGrantTypes(SaFoxUtil.convertStringToArray(appVo.getOauth2AllowGrantTypes()));
 
         // 是否每次刷新 Refresh-Token
-        if (opApplicationVo.getOauth2NewRefresh() == -1) {
+        if (appVo.getOauth2NewRefresh() == -1) {
             Boolean defaultNewRefresh = configFacade.getBoolean(ConfigKey.Open.APP_NEW_REFRESH, true);
             model.setIsNewRefresh(defaultNewRefresh);
         } else {
-            model.setIsNewRefresh(opApplicationVo.getOauth2NewRefresh() == 1);
+            model.setIsNewRefresh(appVo.getOauth2NewRefresh() == 1);
         }
 
         // AccessToken 有效期
-        if (opApplicationVo.getOauth2AccessTokenTimeout() == -1) {
+        if (appVo.getOauth2AccessTokenTimeout() == -1) {
             model.setAccessTokenTimeout(configFacade.getLong(ConfigKey.Open.APP_ACCESS_TOKEN_TIMEOUT, 1L));
         } else {
-            model.setAccessTokenTimeout(opApplicationVo.getOauth2AccessTokenTimeout());
+            model.setAccessTokenTimeout(appVo.getOauth2AccessTokenTimeout());
         }
         // RefreshToken 有效期
-        if (opApplicationVo.getOauth2RefreshTokenTimeout() == -1) {
+        if (appVo.getOauth2RefreshTokenTimeout() == -1) {
             model.setRefreshTokenTimeout(configFacade.getLong(ConfigKey.Open.APP_REFRESH_TOKEN_TIMEOUT, 1L));
         } else {
-            model.setRefreshTokenTimeout(opApplicationVo.getOauth2RefreshTokenTimeout());
+            model.setRefreshTokenTimeout(appVo.getOauth2RefreshTokenTimeout());
         }
         // ClientToken 有效期
-        if (opApplicationVo.getOauth2ClientTokenTimeout() == -1) {
+        if (appVo.getOauth2ClientTokenTimeout() == -1) {
             model.setClientTokenTimeout(configFacade.getLong(ConfigKey.Open.APP_CLIENT_TOKEN_TIMEOUT, 1L));
         } else {
-            model.setClientTokenTimeout(opApplicationVo.getOauth2ClientTokenTimeout());
+            model.setClientTokenTimeout(appVo.getOauth2ClientTokenTimeout());
         }
 
         // 是否允许此应用自动确认授权 （高危配置，禁止向不被信任的第三方开启此选项）
-        model.setIsAutoConfirm(opApplicationVo.getOauth2IsConfirm());
+        model.setIsAutoConfirm(appVo.getOauth2IsConfirm());
 
         // 返回
         return model;

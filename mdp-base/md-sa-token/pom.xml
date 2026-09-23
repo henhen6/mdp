@@ -20,6 +20,7 @@
     <description>sa-token 扩展</description>
 
     <modules>
+        <module>sa-token-oauth2-core</module>
         <module>sa-token-oauth2-client</module>
         <module>sa-token-oauth2-client-starter</module>
         <module>sa-token-sso-core</module>

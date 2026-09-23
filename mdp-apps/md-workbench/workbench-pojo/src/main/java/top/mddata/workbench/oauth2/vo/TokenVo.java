@@ -16,7 +16,9 @@ import java.util.Map;
  * Oauth2根据code 获取token后的返回值
  * @author henhen6
  * @since 2025/8/29 16:07
+ * @deprecated 已迁移至 sa-token-oauth2-core 模块的 {@code Oauth2TokenResponse}
  */
+@Deprecated
 @Data
 @Schema(title = "TokenVo", description = "Token")
 // 自动将驼峰转换下划线

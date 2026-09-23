@@ -5,7 +5,7 @@ import cn.dev33.satoken.oauth2.data.model.request.ClientIdAndSecretModel;
 import cn.dev33.satoken.oauth2.error.SaOAuth2ErrorCode;
 import cn.dev33.satoken.oauth2.exception.SaOAuth2Exception;
 import cn.dev33.satoken.util.SaFoxUtil;
-import top.mddata.workbench.oauth2.dto.BaseClientDto;
+import top.mddata.base.oauth2.core.request.Oauth2ClientCredentials;
 
 /**
  *Sa-Token OAuth2 数据解析器，负责 Web 交互层面的数据进出：
@@ -21,7 +21,7 @@ public class Oauth2DataResolver {
      * @param param /
      * @return /
      */
-    public static ClientIdAndSecretModel readClientIdAndSecret(BaseClientDto param) {
+    public static ClientIdAndSecretModel readClientIdAndSecret(Oauth2ClientCredentials param) {
         // 优先从请求参数中获取
         String clientId = param.getClientId();
         String clientSecret = param.getClientSecret();
@@ -32,7 +32,8 @@ public class Oauth2DataResolver {
         // 如果请求参数中没有提供 client_id 参数，则尝试从 请求头的 Authorization 中获取
         String authorizationValue = SaHttpBasicUtil.getAuthorizationValue();
         if (SaFoxUtil.isNotEmpty(authorizationValue)) {
-            String[] arr = authorizationValue.split(":");
+            // 按首个冒号切分，避免 client_secret 本身含冒号时被截断
+            String[] arr = authorizationValue.split(":", 2);
             clientId = arr[0];
             if (arr.length > 1) {
                 clientSecret = arr[1];

@@ -141,6 +141,11 @@
 
             <dependency>
                 <groupId>top.mddata.base</groupId>
+                <artifactId>sa-token-oauth2-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.mddata.base</groupId>
                 <artifactId>sa-token-oauth2-client</artifactId>
                 <version>${revision}</version>
             </dependency>

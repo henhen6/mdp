@@ -51,6 +51,14 @@ public class ParamName {
      * 是否立即构建 redirect_uri 授权地址
      */
     private String buildRedirectUri = "build_redirect_uri";
+    /**
+     * 待撤销的令牌（RFC 7009）
+     */
+    private String token = "token";
+    /**
+     * 令牌类型提示（RFC 7009）
+     */
+    private String tokenTypeHint = "token_type_hint";
 
     public ParamName setClientId(String clientId) {
         this.clientId = clientId;
@@ -104,6 +112,16 @@ public class ParamName {
 
     public ParamName setBuildRedirectUri(String buildRedirectUri) {
         this.buildRedirectUri = buildRedirectUri;
+        return this;
+    }
+
+    public ParamName setToken(String token) {
+        this.token = token;
+        return this;
+    }
+
+    public ParamName setTokenTypeHint(String tokenTypeHint) {
+        this.tokenTypeHint = tokenTypeHint;
         return this;
     }
 }
