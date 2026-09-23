@@ -6,7 +6,10 @@ import cn.dev33.satoken.sso.processor.SaSsoClientProcessor;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaFoxUtil;
 import cn.dev33.satoken.util.SaResult;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
+import com.alibaba.fastjson2.JSON;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.open.facade.admin.AppFacade;
+import top.mddata.open.vo.admin.AppVo;
+import top.mddata.workbench.dto.LoginLogDto;
+import top.mddata.workbench.event.LoginEvent;
 import top.mddata.workbench.service.AuthService;
 
 /**
@@ -34,6 +41,7 @@ import top.mddata.workbench.service.AuthService;
 public class SsoClientController {
 
     private final AuthService authService;
+    private final AppFacade appFacade;
 
     /**
      * 获取SSO服务端登录地址
@@ -128,13 +136,47 @@ public class SsoClientController {
     @Operation(summary = "客户端-退出当前应用", description = "客户端-退出当前应用")
     @PostMapping("/anyUser/client/logout")
     @RequestLog(value = "SSO客户端退出当前应用", logType = RequestLog.LogType.DELETE)
-    public R<Boolean> logout() {
+    public R<Boolean> logout(@RequestParam(required = false) String clientId) {
         try {
+            // 退出前取当前会话信息，退出后无法再获取
+            Object loginId = StpUtil.getLoginIdDefaultNull();
+            String tokenInfo = loginId == null ? null : JSON.toJSONString(StpUtil.getTokenInfo());
+
             StpUtil.logout();
+            // token 已过期时 logout 抛异常进入 catch，不产生真实退出动作，不记录日志
+            publishLogoutLog(loginId, tokenInfo, clientId);
         } catch (Exception e) {
             log.debug("token已经过期，无需退出", e);
         }
         return R.success(true);
+    }
+
+    /**
+     * 记录客户端退出日志（与登录日志共用 LoginEvent 通道）。
+     * <p>
+     * 仅记录"退出当前应用"；全端注销统一由 SSO 服务端 pushS 收到 signout 消息时记录，此处不重复
+     *
+     * @param loginId   用户id，为空时不记录
+     * @param tokenInfo 令牌信息
+     * @param clientId  发起方应用标识，为空时取当前默认 client 配置
+     */
+    private void publishLogoutLog(Object loginId, String tokenInfo, String clientId) {
+        if (loginId == null) {
+            return;
+        }
+        String appKey = StrUtil.isNotEmpty(clientId)
+                ? clientId
+                : SaSsoClientProcessor.getInstance().getSsoClientTemplate().getClient();
+
+        LoginLogDto dto = LoginLogDto.logout(null, "退出当前应用", tokenInfo);
+        dto.setUserId(Convert.toLong(loginId));
+        dto.setAppKey(appKey);
+
+        R<AppVo> appResult = appFacade.getAppByAppKey(appKey);
+        if (appResult.getIsSuccess() && appResult.getData() != null) {
+            dto.setAppName(appResult.getData().getName());
+        }
+        SpringUtil.publishEvent(new LoginEvent(dto));
     }
 
 

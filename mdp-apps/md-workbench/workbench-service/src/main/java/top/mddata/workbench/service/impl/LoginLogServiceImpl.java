@@ -66,7 +66,8 @@ public class LoginLogServiceImpl extends SuperServiceImpl<LoginLogMapper, LoginL
         loginLog.setEventType(dto.getEventType().getCode());
         loginLog.setStatus(dto.getStatus().getCode());
         loginLog.setStatusReason(dto.getStatusReason());
-        loginLog.setAuthType(dto.getAuthType().getCode());
+        // 退出/注销事件不涉及认证方式，authType 允许为空
+        loginLog.setAuthType(dto.getAuthType() == null ? null : dto.getAuthType().getCode());
         loginLog.setLoginChannel(dto.getLoginChannel().getCode());
         loginLog.setLoginDate(DateUtils.formatAsDate(LocalDateTime.now()));
         loginLog.setLoginIp(dto.getLoginIp());

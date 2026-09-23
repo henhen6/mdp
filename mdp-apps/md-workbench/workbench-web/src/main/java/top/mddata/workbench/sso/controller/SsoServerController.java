@@ -1,5 +1,8 @@
 package top.mddata.workbench.sso.controller;
 
+import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.sso.message.SaSsoMessage;
+import cn.dev33.satoken.sso.name.ParamName;
 import cn.dev33.satoken.sso.processor.SaSsoServerProcessor;
 import cn.dev33.satoken.sso.template.SaSsoServerUtil;
 import cn.dev33.satoken.sso.util.SaSsoConsts;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.utils.IpUtil;
+import top.mddata.common.constant.DefValConstants;
 import top.mddata.open.facade.admin.AppFacade;
 import top.mddata.open.vo.admin.AppVo;
 import top.mddata.workbench.dto.LoginLogDto;
@@ -128,8 +132,13 @@ public class SsoServerController {
     @RequestLog(value = "SSO服务端全端退出", logType = RequestLog.LogType.OTHER)
     public R<Boolean> ssoSignout() {
         try {
+            // 注销前取当前会话信息，注销后无法再获取
+            Object loginId = StpUtil.getLoginIdDefaultNull();
+            String tokenInfo = loginId == null ? null : JSON.toJSONString(StpUtil.getTokenInfo());
+
             SaResult result = (SaResult) SaSsoServerProcessor.getInstance().ssoSignout();
             if (result.getCode() == SaResult.CODE_SUCCESS) {
+                publishSsoLog(true, loginId, tokenInfo, DefValConstants.WORKBENCH_APP_KEY, DefValConstants.WORKBENCH_APP_NAME);
                 return R.success();
             } else {
                 return R.result(result.getCode(), false, result.getMsg());
@@ -159,9 +168,11 @@ public class SsoServerController {
             String client = SaSsoServerProcessor.getInstance().getClient();
             log.info("接收到客户端:[{}]， 应用:[{}] 的请求", clientIp, client);
 
+            String appName = null;
             R<AppVo> appResult = appFacade.getAppByAppKey(client);
             if (appResult.getIsSuccess() && appResult.getData() != null) {
                 AppVo appVo = appResult.getData();
+                appName = appVo.getName();
                 String allowIp = appVo.getAllowIp();
                 if (StrUtil.isNotEmpty(allowIp)) {
                     List<String> allowIpList = SaFoxUtil.convertStringToList(allowIp);
@@ -175,7 +186,17 @@ public class SsoServerController {
                 }
             }
 
-            return SaSsoServerProcessor.getInstance().ssoPushS();
+            // 注销消息（内置 console/open 与第三方应用发起的全端注销都会推送到此）统一在此记录，
+            // 发起方客户端不再记录，避免重复
+            ParamName paramName = SaSsoServerProcessor.getInstance().getSsoServerTemplate().getParamName();
+            SaSsoMessage message = new SaSsoMessage(SaHolder.getRequest().getParamMap());
+            boolean isSignout = SaSsoConsts.MESSAGE_SIGNOUT.equals(message.getType());
+
+            Object result = SaSsoServerProcessor.getInstance().ssoPushS();
+            if (isSignout && result instanceof SaResult saResult && saResult.getCode() == SaResult.CODE_SUCCESS) {
+                publishSsoLog(true, message.get(paramName.getLoginId()), null, client, appName);
+            }
+            return result;
         } catch (Exception e) {
             log.error("pushS", e);
             return SaResult.error(e.getMessage());
@@ -189,12 +210,42 @@ public class SsoServerController {
     @RequestLog(value = "SSO服务端退出当前应用", logType = RequestLog.LogType.DELETE)
     public R<Boolean> logout() {
         try {
+            // 退出前取当前会话信息，退出后无法再获取
+            Object loginId = StpUtil.getLoginIdDefaultNull();
+            String tokenInfo = loginId == null ? null : JSON.toJSONString(StpUtil.getTokenInfo());
+
             StpUtil.logout();
+            // token 已过期时 logout 抛异常进入 catch，不产生真实退出动作，不记录日志
+            publishSsoLog(false, loginId, tokenInfo, DefValConstants.WORKBENCH_APP_KEY, DefValConstants.WORKBENCH_APP_NAME);
         } catch (Exception e) {
             log.debug("token已经过期，无需退出", e);
         }
         return R.success(true);
     }
 
+    /**
+     * 记录 SSO 退出/注销日志（与登录日志共用 LoginEvent 通道）。
+     * <p>
+     * 注销事件只在发起处记录一次：工作台发起在 signout 记录；
+     * 客户端（内置 console/open 及第三方应用）发起统一在 pushS 收到 signout 消息时记录
+     *
+     * @param signout   true=注销（全端），false=退出（当前应用）
+     * @param loginId   用户id，为空时不记录
+     * @param tokenInfo 令牌信息
+     * @param appKey    发起方应用 appKey
+     * @param appName   发起方应用名称
+     */
+    private void publishSsoLog(boolean signout, Object loginId, String tokenInfo, String appKey, String appName) {
+        if (loginId == null) {
+            return;
+        }
+        LoginLogDto dto = signout
+                ? LoginLogDto.signout(null, "全端注销", tokenInfo)
+                : LoginLogDto.logout(null, "退出当前应用", tokenInfo);
+        dto.setUserId(Convert.toLong(loginId));
+        dto.setAppKey(appKey);
+        dto.setAppName(appName);
+        SpringUtil.publishEvent(new LoginEvent(dto));
+    }
 
 }

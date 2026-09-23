@@ -116,6 +116,45 @@ public class LoginLogDto implements Serializable {
                 .setInfo();
     }
 
+    /**
+     * 构建退出日志（SSO 场景）
+     *
+     * @param account      登录账号，可为空（监听器会按 userId 反查）
+     * @param statusReason 状态原因
+     * @param token        令牌信息
+     * @return 退出日志
+     */
+    public static LoginLogDto logout(String account, String statusReason, String token) {
+        return ofSsoEvent(LoginEventTypeEnum.LOGOUT, account, statusReason, token);
+    }
+
+    /**
+     * 构建注销日志（SSO 场景）
+     *
+     * @param account      登录账号，可为空（监听器会按 userId 反查）
+     * @param statusReason 状态原因
+     * @param token        令牌信息
+     * @return 注销日志
+     */
+    public static LoginLogDto signout(String account, String statusReason, String token) {
+        return ofSsoEvent(LoginEventTypeEnum.SIGNOUT, account, statusReason, token);
+    }
+
+    /**
+     * SSO 退出/注销事件不涉及认证方式，authType 留空
+     */
+    private static LoginLogDto ofSsoEvent(LoginEventTypeEnum eventType, String account, String statusReason, String token) {
+        LoginLogDto dto = new LoginLogDto();
+        return dto
+                .setAccount(account)
+                .setEventType(eventType)
+                .setStatus(LoginStatusEnum.SUCCESS)
+                .setStatusReason(statusReason)
+                .setLoginChannel(LoginChannelEnum.WEB_LOGIN)
+                .setTokenInfo(token)
+                .setInfo();
+    }
+
     public static LoginLogDto failByCheck(AuthTypeEnum authType, String deviceInfo, String account, String statusReason) {
         LoginLogDto dto = new LoginLogDto();
         return dto
@@ -128,18 +167,6 @@ public class LoginLogDto implements Serializable {
                 .setDeviceInfo(deviceInfo)
                 .setInfo();
     }
-//    public static LoginLogDto failByCheck(AuthTypeEnum authType, String deviceInfo, String account, String statusReason) {
-//        LoginLogDto dto = new LoginLogDto();
-//        return dto
-//                .setAccount(account)
-//                .setEventType(LoginEventTypeEnum.LOGIN)
-//                .setStatus(LoginStatusEnum.FAIL)
-//                .setStatusReason(statusReason)
-//                .setAuthType(authType)
-//                .setLoginChannel(LoginChannelEnum.PC_LOGIN)
-//                .setDeviceInfo(deviceInfo)
-//                .setInfo();
-//    }
 
     private LoginLogDto setInfo() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();

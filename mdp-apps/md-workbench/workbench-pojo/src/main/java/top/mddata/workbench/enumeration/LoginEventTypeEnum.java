@@ -23,7 +23,7 @@ import top.mddata.base.interfaces.BaseEnum;
 public enum LoginEventTypeEnum implements BaseEnum<String> {
     LOGIN("01", "登录"),
     LOGOUT("02", "退出"),
-    LOGOUT_CANCEL("03", "注销"),
+    SIGNOUT("03", "注销"),
     LOGIN_SWITCH("04", "切换"),
     LOGIN_PLAY("05", "扮演");
 

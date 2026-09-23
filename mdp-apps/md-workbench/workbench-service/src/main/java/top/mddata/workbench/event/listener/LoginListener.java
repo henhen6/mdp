@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.mddata.common.entity.User;
 import top.mddata.workbench.dto.LoginLogDto;
+import top.mddata.workbench.enumeration.AuthTypeEnum;
+import top.mddata.workbench.enumeration.LoginEventTypeEnum;
 import top.mddata.workbench.enumeration.LoginStatusEnum;
 import top.mddata.workbench.event.LoginEvent;
 import top.mddata.workbench.service.LoginLogService;
@@ -33,46 +35,44 @@ public class LoginListener {
         LoginLogDto loginLogDto = (LoginLogDto) event.getSource();
         log.debug("loginStatus:{}", loginLogDto);
 
-        User user = null;
-        switch (loginLogDto.getAuthType()) {
-            case PHONE:
-                if (StrUtil.isNotEmpty(loginLogDto.getAccount())) {
-                    user = ssoUserService.getByPhone(loginLogDto.getAccount());
-                } else if (loginLogDto.getUserId() != null) {
-                    user = ssoUserService.getByIdCache(loginLogDto.getUserId());
-                }
-                break;
-            case EMAIL:
-                if (StrUtil.isNotEmpty(loginLogDto.getAccount())) {
-                    user = ssoUserService.getByEmail(loginLogDto.getAccount());
-                } else if (loginLogDto.getUserId() != null) {
-                    user = ssoUserService.getByIdCache(loginLogDto.getUserId());
-                }
-                break;
-            default:
-                if (StrUtil.isNotEmpty(loginLogDto.getAccount())) {
-                    user = ssoUserService.getByUsername(loginLogDto.getAccount());
-                } else if (loginLogDto.getUserId() != null) {
-                    user = ssoUserService.getByIdCache(loginLogDto.getUserId());
-                }
-                break;
-        }
+        User user = resolveUser(loginLogDto);
 
         if (user != null) {
-
-
-            if (LoginStatusEnum.SUCCESS.eq(loginLogDto.getStatus())) {
-                // 重置错误次数 和 最后登录时间
-                this.ssoUserService.resetPwErrorNum(user.getId());
-            } else if (loginLogDto.isPasswordError()) {
-                // 密码错误
-                this.ssoUserService.incrPwErrorNumById(user.getId());
+            // 重置/累计密码错误次数仅对登录事件有意义，退出、注销等事件不触发
+            if (loginLogDto.getEventType() == LoginEventTypeEnum.LOGIN) {
+                if (LoginStatusEnum.SUCCESS.eq(loginLogDto.getStatus())) {
+                    // 重置错误次数 和 最后登录时间
+                    this.ssoUserService.resetPwErrorNum(user.getId());
+                } else if (loginLogDto.isPasswordError()) {
+                    // 密码错误
+                    this.ssoUserService.incrPwErrorNumById(user.getId());
+                }
             }
         } else {
             log.warn("用户 {} 不存在", JSON.toJSONString(loginLogDto));
         }
 
         loginLogService.save(loginLogDto, user);
+    }
+
+    /**
+     * 按认证方式反查用户：优先按账号精确匹配，其次按 userId 回查
+     */
+    private User resolveUser(LoginLogDto loginLogDto) {
+        if (StrUtil.isNotEmpty(loginLogDto.getAccount())) {
+            AuthTypeEnum authType = loginLogDto.getAuthType();
+            if (authType == AuthTypeEnum.PHONE) {
+                return ssoUserService.getByPhone(loginLogDto.getAccount());
+            }
+            if (authType == AuthTypeEnum.EMAIL) {
+                return ssoUserService.getByEmail(loginLogDto.getAccount());
+            }
+            return ssoUserService.getByUsername(loginLogDto.getAccount());
+        }
+        if (loginLogDto.getUserId() != null) {
+            return ssoUserService.getByIdCache(loginLogDto.getUserId());
+        }
+        return null;
     }
 
 }
