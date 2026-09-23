@@ -22,6 +22,12 @@ public interface Oauth2Constants {
     /** 隐藏式（OAuth 2.1 已废弃，仅兼容旧客户端） */
     String GRANT_TYPE_IMPLICIT = "implicit";
 
+    /** 授权端点 response_type：授权码 */
+    String RESPONSE_TYPE_CODE = "code";
+
+    /** 授权端点 response_type：隐藏式 */
+    String RESPONSE_TYPE_TOKEN = "token";
+
     /** Bearer 令牌类型 */
     String TOKEN_TYPE_BEARER = "Bearer";
 

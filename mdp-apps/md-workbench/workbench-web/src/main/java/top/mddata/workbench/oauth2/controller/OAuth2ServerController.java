@@ -348,7 +348,14 @@ public class OAuth2ServerController {
             loginDto.setUsername(name);
             loginDto.setPassword(pwd);
             loginDto.setAuthType(AuthTypeEnum.USERNAME);
-            return authService.login(loginDto);
+            try {
+                return authService.login(loginDto);
+            } catch (BizException e) {
+                // 密码式登录失败时转换为标准 OAuth2 错误（invalid_grant），
+                // 由 Oauth2ExceptionHandler 返回客户端可读的描述（如"用户名或密码错误"）；
+                // 非业务异常不捕获，避免吞掉系统级错误
+                throw new SaOAuth2Exception(e.getMessage()).setCode(SaOAuth2ErrorCode.CODE_30161);
+            }
         };
 
     }

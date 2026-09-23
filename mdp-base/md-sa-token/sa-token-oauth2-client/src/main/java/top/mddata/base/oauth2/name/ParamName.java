@@ -59,6 +59,14 @@ public class ParamName {
      * 令牌类型提示（RFC 7009）
      */
     private String tokenTypeHint = "token_type_hint";
+    /**
+     * 用户名（密码模式）
+     */
+    private String username = "username";
+    /**
+     * 密码（密码模式）
+     */
+    private String password = "password";
 
     public ParamName setClientId(String clientId) {
         this.clientId = clientId;
@@ -122,6 +130,16 @@ public class ParamName {
 
     public ParamName setTokenTypeHint(String tokenTypeHint) {
         this.tokenTypeHint = tokenTypeHint;
+        return this;
+    }
+
+    public ParamName setUsername(String username) {
+        this.username = username;
+        return this;
+    }
+
+    public ParamName setPassword(String password) {
+        this.password = password;
         return this;
     }
 }

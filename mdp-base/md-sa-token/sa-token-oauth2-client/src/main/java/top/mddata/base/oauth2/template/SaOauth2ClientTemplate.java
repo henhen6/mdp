@@ -35,20 +35,53 @@ public class SaOauth2ClientTemplate {
     }
 
     /**
-     构建URL：Server端 Oauth2登录授权地址，
+     构建URL：Server端 Oauth2登录授权地址（授权码模式），
      * <br/> 形如：{@code http://{host}:{port}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}&state={state}}
      * @param clientLoginUrl Client端登录地址
      * @param scope 权限范围
      * @param state 随机值
      * @return [SSO-Server端-认证地址 ]
      */
-    public String buildServerAuthorizeUrl(String clientLoginUrl, String scope, String state) {
+    public String buildCodeAuthorizeUrl(String clientLoginUrl, String scope, String state) {
+        return buildServerAuthorizeUrl(clientLoginUrl, scope, state, Oauth2Constants.RESPONSE_TYPE_CODE);
+    }
+
+    /**
+     构建URL：Server端 Oauth2登录授权地址（隐藏式），
+     * <br/> 形如：{@code http://{host}:{port}/oauth2/authorize?response_type=token&client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}&state={state}}
+     * <p> 隐藏式由Server端通过 URL 重定向直接下放 Access-Token，无需再调 token 端点换票。
+     * 注意：该模式已被 OAuth 2.1 废弃，仅建议用于兼容旧客户端
+     * @param clientLoginUrl Client端登录地址
+     * @param scope 权限范围
+     * @param state 随机值
+     * @return [SSO-Server端-认证地址 ]
+     */
+    public String buildImplicitAuthorizeUrl(String clientLoginUrl, String scope, String state) {
+        return buildServerAuthorizeUrl(clientLoginUrl, scope, state, Oauth2Constants.RESPONSE_TYPE_TOKEN);
+    }
+
+    /**
+     构建URL：Server端 Oauth2登录授权地址，
+     * <br/> 形如：{@code http://{host}:{port}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}&state={state}}
+     * <p> 仅授权码（code）与隐藏式（token）两种模式经过授权端点；
+     * 密码式直接调 {@code /oauth2/token}、客户端凭证直接调 {@code /oauth2/client_token}，不存在授权跳转地址。
+     * 注意：隐藏式（response_type=token）已被 OAuth 2.1 废弃，仅建议用于兼容旧客户端
+     * @param clientLoginUrl Client端登录地址
+     * @param scope 权限范围
+     * @param state 随机值
+     * @param responseType 授权类型：{@code code}（授权码）或 {@code token}（隐藏式）
+     * @return [SSO-Server端-认证地址 ]
+     */
+    public String buildServerAuthorizeUrl(String clientLoginUrl, String scope, String state, String responseType) {
+        if (!Oauth2Constants.RESPONSE_TYPE_CODE.equals(responseType) && !Oauth2Constants.RESPONSE_TYPE_TOKEN.equals(responseType)) {
+            throw new IllegalArgumentException("responseType 仅支持 code（授权码）或 token（隐藏式）：" + responseType);
+        }
         Oauth2ClientConfig clientConfig = getClientConfig();
         // 服务端认证地址
         String serverUrl = clientConfig.splicingAuthorizeUrl();
 
         // 拼接 response_type
-        serverUrl = SaFoxUtil.joinParam(serverUrl, paramName.getResponseType(), "code");
+        serverUrl = SaFoxUtil.joinParam(serverUrl, paramName.getResponseType(), responseType);
 
         // 拼接客户端标识
         String clientId = clientConfig.getClientId();
@@ -88,6 +121,33 @@ public class SaOauth2ClientTemplate {
             params.put(paramName.getRedirectUri(), request.getRedirectUri());
         }
         params.put(paramName.getCode(), request.getCode());
+        String json = sendPost(clientConfig.splicingTokenUrl(), params);
+        return parseResponse(json, Oauth2TokenResponse.class);
+    }
+
+    /**
+     * 根据用户名密码换取 access_token（密码模式）。
+     * <br/> 调用Server端 {@code POST /oauth2/token}，grant_type=password
+     * <p> 密码模式仅适用于高度信任的第一方客户端（OAuth 2.1 已废弃），且Server端需开启 enablePassword
+     *
+     * @param request 令牌请求（username、password 必填，scope 可空）
+     * @return 标准令牌响应（含 access_token、refresh_token 等字段）
+     */
+    public Oauth2TokenResponse getAccessTokenByPassword(Oauth2TokenRequest request) {
+        if (SaFoxUtil.isEmpty(request.getUsername())) {
+            throw new IllegalArgumentException("username 不能为空");
+        }
+        if (SaFoxUtil.isEmpty(request.getPassword())) {
+            throw new IllegalArgumentException("password 不能为空");
+        }
+        Oauth2ClientConfig clientConfig = getClientConfig();
+        Map<String, Object> params = buildClientCredentialParams(clientConfig);
+        params.put(paramName.getGrantType(), Oauth2Constants.GRANT_TYPE_PASSWORD);
+        params.put(paramName.getUsername(), request.getUsername());
+        params.put(paramName.getPassword(), request.getPassword());
+        if (SaFoxUtil.isNotEmpty(request.getScope())) {
+            params.put(paramName.getScope(), request.getScope());
+        }
         String json = sendPost(clientConfig.splicingTokenUrl(), params);
         return parseResponse(json, Oauth2TokenResponse.class);
     }
