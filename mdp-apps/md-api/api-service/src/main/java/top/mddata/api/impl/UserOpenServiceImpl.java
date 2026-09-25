@@ -33,7 +33,6 @@ import top.mddata.common.cache.workbench.SsoUserPhoneCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserUserNameCacheKeyBuilder;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.StoryMessageEnum;
-import top.mddata.common.enumeration.organization.UserTypeEnum;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.common.properties.SystemProperties;
 
@@ -93,7 +92,6 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
                         String password = SecureUtil.sha256(systemProperties.getDefPwd() + salt);
                         user.setSalt(salt);
                         user.setPassword(password);
-                        user.setUserType(UserTypeEnum.USER.getCode());
                         user.setState(true);
                         updateList.add(user);
                     } else {
@@ -109,7 +107,6 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
                     String password = SecureUtil.sha256(systemProperties.getDefPwd() + salt);
                     user.setSalt(salt);
                     user.setPassword(password);
-                    user.setUserType(UserTypeEnum.USER.getCode());
                     user.setState(true);
                     saveList.add(user);
                 }

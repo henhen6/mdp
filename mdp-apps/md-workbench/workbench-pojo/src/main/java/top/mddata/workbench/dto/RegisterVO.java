@@ -24,7 +24,7 @@ import lombok.experimental.Accessors;
 @Schema(title = "RegisterVO", description = "注册")
 public class RegisterVO {
     @Schema(description = "用户身份")
-    @NotNull(message = "请填写验证码")
+    @NotNull(message = "请选择注册身份")
     private Integer nature;
 
 }

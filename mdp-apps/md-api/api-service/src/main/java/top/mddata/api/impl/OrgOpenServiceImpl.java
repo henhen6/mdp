@@ -23,11 +23,9 @@ import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.organization.OrgCacheKeyBuilder;
 import top.mddata.common.entity.Org;
-import top.mddata.common.entity.OrgNature;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
-import top.mddata.common.mapper.OrgNatureMapper;
 import top.mddata.open.dto.admin.NotifyInfoDto;
 import top.mddata.open.facade.admin.NotifyAndEventPushFacade;
 
@@ -45,7 +43,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements OrgOpenService {
     private final UidGenerator uidGenerator;
-    private final OrgNatureMapper orgNatureMapper;
     private final NotifyAndEventPushFacade notifyAndEventPushFacade;
 
     @Override
@@ -71,12 +68,12 @@ public class OrgOpenServiceImpl extends SuperServiceImpl<OrgMapper, Org> impleme
         entity.setId(uidGenerator.getUid());
         fill(entity, parent);
 
-        save(entity);
+        // 部门冗余同步所属公司性质；根节点默认总公司性质
+        entity.setNature(parent != null
+                ? parent.getNature()
+                : OrgNatureEnum.HEAD_COMPANY.getCode());
 
-        OrgNature orgNature = new OrgNature();
-        orgNature.setNature(OrgNatureEnum.DEFAULT.getCode());
-        orgNature.setOrgId(entity.getId());
-        orgNatureMapper.insert(orgNature);
+        save(entity);
 
         delCache(entity);
 
