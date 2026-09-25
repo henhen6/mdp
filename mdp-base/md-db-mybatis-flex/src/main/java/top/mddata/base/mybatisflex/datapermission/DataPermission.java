@@ -38,17 +38,10 @@ public @interface DataPermission {
     String userId() default "create_user";
 
     /**
-     * 角色 ID（角色和部门关联表）
+     * 组织表名。本项目统一使用 mdc_org 组织表，
+     * 通过 tree_path 前缀匹配表达
+     * “本公司及以下 / 本部门及以下”的子树范围，
+     * 不使用外键与 ancestors 字段
      */
-    String roleId() default "role_id";
-
-    /**
-     * 部门表别名
-     */
-    String deptTableAlias() default "sys_dept";
-
-    /**
-     * 角色和部门关联表别名
-     */
-    String roleDeptTableAlias() default "sys_role_dept";
+    String deptTableAlias() default "mdc_org";
 }

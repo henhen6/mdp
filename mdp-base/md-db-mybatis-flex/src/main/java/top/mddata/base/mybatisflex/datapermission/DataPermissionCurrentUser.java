@@ -26,6 +26,11 @@ public class DataPermissionCurrentUser {
     private Long deptId;
 
     /**
+     * 公司 ID
+     */
+    private Long companyId;
+
+    /**
      * 当前用户角色信息
      */
     public static class CurrentUserRole {
@@ -40,12 +45,22 @@ public class DataPermissionCurrentUser {
          */
         private DataScope dataScope;
 
+        /**
+         * 自定义数据范围实现类（Spring Bean 名），仅 dataScope=CUSTOM 时有值
+         */
+        private String dataScopeImpl;
+
         public CurrentUserRole() {
         }
 
         public CurrentUserRole(Long roleId, DataScope dataScope) {
+            this(roleId, dataScope, null);
+        }
+
+        public CurrentUserRole(Long roleId, DataScope dataScope, String dataScopeImpl) {
             this.roleId = roleId;
             this.dataScope = dataScope;
+            this.dataScopeImpl = dataScopeImpl;
         }
 
         public Long getRoleId() {
@@ -62,6 +77,14 @@ public class DataPermissionCurrentUser {
 
         public void setDataScope(DataScope dataScope) {
             this.dataScope = dataScope;
+        }
+
+        public String getDataScopeImpl() {
+            return dataScopeImpl;
+        }
+
+        public void setDataScopeImpl(String dataScopeImpl) {
+            this.dataScopeImpl = dataScopeImpl;
         }
     }
 
@@ -87,5 +110,13 @@ public class DataPermissionCurrentUser {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 }
