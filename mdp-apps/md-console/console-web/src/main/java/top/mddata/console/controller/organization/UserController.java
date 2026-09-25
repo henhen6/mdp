@@ -20,14 +20,22 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
+import top.mddata.base.exception.ArgumentException;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.util.ContextUtil;
+import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.common.constant.BuiltInOrgId;
 import top.mddata.common.entity.User;
 import top.mddata.common.entity.UserRoleRel;
+import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.console.dto.organization.UserDto;
 import top.mddata.console.dto.organization.UserResetPasswordDto;
 import top.mddata.console.dto.organization.UserUpdateDto;
+import top.mddata.console.entity.permission.Role;
 import top.mddata.console.query.organization.UserQuery;
+import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.UserService;
+import top.mddata.console.service.permission.RoleService;
 import top.mddata.console.vo.organization.UserVo;
 
 import java.util.List;
@@ -45,6 +53,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController extends SuperController<UserService, User> {
     private final EchoService echoService;
+    private final OrgVisibilityService orgVisibilityService;
+    private final RoleService roleService;
 
     /**
      * 添加用户。
@@ -125,6 +135,8 @@ public class UserController extends SuperController<UserService, User> {
     public R<List<UserVo>> list(@RequestBody @Validated UserQuery params) {
         User entity = BeanUtil.toBean(params, User.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+        OrgVisibilityService.appendUserVisibilityFilter(wrapper,
+                orgVisibilityService.currentVisibleRootOrgIds(), ContextUtil.getUserId());
         List<UserVo> listVo = superService.listAs(wrapper, UserVo.class);
         return R.success(listVo);
     }
@@ -202,6 +214,14 @@ public class UserController extends SuperController<UserService, User> {
             wrapper.where(QueryMethods.notExists(userRoleWrapper));
         }
 
+        // 候选树由角色性质决定（1→总公司、90→开发者平台、99→运营中心），
+        // 运营者操作时不额外排除任何人，非运营者也无需显式排除运营者
+        // （运营者在运营中心树，不会被总公司/开发者平台路径命中）
+        Role role = roleService.getById(query.getRoleId());
+        ArgumentAssert.notNull(role, "角色[{}]不存在", query.getRoleId());
+        OrgVisibilityService.appendUserVisibilityFilter(wrapper,
+                roleNatureRoots(role.getOrgNature()), ContextUtil.getUserId());
+
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, UserVo.class);
@@ -236,5 +256,23 @@ public class UserController extends SuperController<UserService, User> {
     @RequestLog(value = "根据用户名注册账号", logType = RequestLog.LogType.ADD)
     public R<Boolean> registerByUsername(User defUser) {
         return R.success(superService.registerByUsername(defUser));
+    }
+
+    /**
+     * 角色性质到候选树根节点的映射：1→总公司、90→开发者平台、99→运营中心。
+     * 不含默认部门，默认部门在总公司树内，like 总公司路径已覆盖。
+     */
+    private List<Long> roleNatureRoots(Integer orgNature) {
+        ArgumentAssert.notNull(orgNature, "角色未配置组织性质");
+        if (OrgNatureEnum.HEAD_COMPANY.eq(orgNature)) {
+            return List.of(BuiltInOrgId.HEAD_COMPANY);
+        }
+        if (OrgNatureEnum.DEVELOPER.eq(orgNature)) {
+            return List.of(BuiltInOrgId.DEVELOPER_PLATFORM);
+        }
+        if (OrgNatureEnum.OPERATIONS.eq(orgNature)) {
+            return List.of(BuiltInOrgId.OPERATIONS_CENTER);
+        }
+        throw new ArgumentException("不支持的角色组织性质[{}]", orgNature);
     }
 }

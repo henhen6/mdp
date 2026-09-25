@@ -19,11 +19,6 @@ public interface ConfigKey {
          * 登录验证码是否启用
          */
         String LOGIN_CAPTCHA_ENABLED = "LOGIN_CAPTCHA_ENABLED";
-
-        /**
-         * 内置开发者 公司ID
-         */
-        String BUILT_IN_DEVELOPER = "BUILT_IN_DEVELOPER";
     }
 
     interface Workbench {

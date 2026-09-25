@@ -124,12 +124,6 @@ public class UserBase extends SuperEntity<Long> implements Serializable {
     private String ddOpenid;
 
     /**
-     * 人员类型
-     * [1-普通用户 2-管理员 99-运维管理员]
-     */
-    private Integer userType;
-
-    /**
      * 所属岗位
      */
     private Long positionId;

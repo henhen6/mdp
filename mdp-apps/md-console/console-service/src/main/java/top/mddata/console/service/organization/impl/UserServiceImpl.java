@@ -22,14 +22,15 @@ import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.mybatisflex.utils.BeanPageUtil;
+import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.DateUtils;
 import top.mddata.common.cache.console.organization.UserCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserEmailCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserPhoneCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserUserNameCacheKeyBuilder;
+import top.mddata.common.constant.BuiltInOrgId;
 import top.mddata.common.constant.ConfigKey;
-import top.mddata.common.constant.EchoDictType;
 import top.mddata.common.constant.EventTypeCode;
 import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.constant.RoleCode;
@@ -39,21 +40,23 @@ import top.mddata.common.entity.User;
 import top.mddata.common.entity.UserOrgRel;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.BooleanEnum;
+import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.UserSourceEnum;
-import top.mddata.common.enumeration.organization.UserTypeEnum;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.dto.organization.UserDto;
 import top.mddata.console.dto.organization.UserResetPasswordDto;
 import top.mddata.console.dto.organization.UserUpdateDto;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
-import top.mddata.console.entity.system.DictItem;
 import top.mddata.console.query.organization.UserQuery;
+import top.mddata.console.service.organization.OrgVisibilityService;
+import top.mddata.console.service.organization.UserIdentityService;
 import top.mddata.console.service.organization.UserOrgRelService;
 import top.mddata.console.service.organization.UserService;
+import top.mddata.console.service.organization.accountop.AccountOperation;
+import top.mddata.console.service.organization.accountop.AccountOperationGuard;
 import top.mddata.console.service.permission.RoleService;
 import top.mddata.console.service.system.ConfigService;
-import top.mddata.console.service.system.DictItemService;
 import top.mddata.console.service.system.FileService;
 import top.mddata.console.vo.organization.UserVo;
 import top.mddata.open.dto.admin.EventTriggerDto;
@@ -65,7 +68,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户 服务层实现。
@@ -80,11 +82,12 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     private final UserOrgRelService userOrgRelService;
     private final FileService fileService; // 同一个服务，直接调用 service。跨服务需要调用 facade
     private final ConfigService configService;  // 同一个服务，直接调用 service。跨服务需要调用 facade
-    private final DictItemService dictItemService;
     private final SystemProperties systemProperties;
     private final UidGenerator uidGenerator;
     private final NotifyAndEventPushFacade notifyAndEventPushFacade;
     private final RoleService roleService;
+    private final OrgVisibilityService orgVisibilityService;
+    private final AccountOperationGuard accountOperationGuard;
 
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
@@ -113,7 +116,6 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         entity.setSalt(salt);
         entity.setPassword(password);
-        entity.setUserType(UserTypeEnum.USER.getCode());
         String expireTime = configService.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
         entity.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
         entity.setUserSource(UserSourceEnum.PLATFORM.getCode());
@@ -170,6 +172,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     protected User updateBefore(Object updateDto) {
         User sysUser = super.updateBefore(updateDto);
+        checkStateChange(sysUser);
         ArgumentAssert.isFalse(checkUsername(sysUser.getUsername(), sysUser.getId()), "用户名[{}]， 重复", sysUser.getUsername());
         if (StrUtil.isNotEmpty(sysUser.getEmail())) {
             ArgumentAssert.isFalse(checkEmail(sysUser.getEmail(), sysUser.getId()), "邮箱[{}]， 重复", sysUser.getEmail());
@@ -186,6 +189,24 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         sysUser.setLastCompanyId(null);
         sysUser.setLastDeptId(null);
         return sysUser;
+    }
+
+    /**
+     * state 真实变化时触发账号操作矩阵校验：true→false 为禁用，false→true 为启用。
+     * state 为 null（前端未传该字段）或与库中现值一致时不拦截，其余字段修改不受影响。
+     */
+    private void checkStateChange(User sysUser) {
+        if (sysUser.getState() == null) {
+            return;
+        }
+        User dbUser = getById(sysUser.getId());
+        ArgumentAssert.notNull(dbUser, "用户[{}]不存在", sysUser.getId());
+        if (sysUser.getState().equals(dbUser.getState())) {
+            return;
+        }
+        AccountOperation op = Boolean.TRUE.equals(sysUser.getState())
+                ? AccountOperation.ENABLE : AccountOperation.DISABLE;
+        accountOperationGuard.check(sysUser.getId(), op);
     }
 
     @Override
@@ -228,7 +249,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         SqlOperators sqlOperators = WrapperUtil.buildOperators(entity.getClass());
         sqlOperators.set(User::getSex, SqlOperator.EQUALS);
         QueryWrapper wrapper = QueryWrapper.create(entity, sqlOperators);
-        wrapper.eq(User::getUserType, UserTypeEnum.USER.getCode());
+        // 可见性过滤：只显示当前操作人可见组织树内的用户（spec 第 7 节）
+        OrgVisibilityService.appendUserVisibilityFilter(wrapper,
+                orgVisibilityService.currentVisibleRootOrgIds(), ContextUtil.getUserId());
         if (CollUtil.isNotEmpty(params.getModel().getOrgIdList())) {
             QueryWrapper orgWrapper = QueryWrapper.create();
             orgWrapper.select(UserOrgRel::getUserId)
@@ -255,6 +278,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean resetPassword(UserResetPasswordDto data) {
+        accountOperationGuard.check(data.getId(), AccountOperation.RESET_PASSWORD);
         User user = UpdateEntity.of(User.class, data.getId());
         user.setPwErrorLastTime(null);
         user.setPwErrorNum(0);
@@ -314,6 +338,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean removeByIds(Collection<? extends Serializable> idList) {
+        List<Long> userIds = idList.stream().map(id -> Long.valueOf(String.valueOf(id))).toList();
+//        systemProtectService.checkUsersNotProtected(userIds, "删除用户");
+        userIds.forEach(id -> accountOperationGuard.check(id, AccountOperation.DELETE));
         boolean flag = super.removeByIds(idList);
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Console.USER_DELETE)
@@ -327,6 +354,8 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean registerByEmail(User user) {
+        ArgumentAssert.isTrue(UserIdentityService.checkRegisterNature(user.getNature()),
+                "不支持的注册身份：{}", user.getNature());
         ArgumentAssert.isFalse(checkEmail(user.getEmail(), null), "邮箱：{}已经存在", user.getEmail());
         user.setPassword(systemProperties.getDefPwd());
         user.setUsername(UUID.randomUUID().toString(true));
@@ -345,35 +374,27 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     }
 
     private void saveDefRole(User user) {
-        String code = RoleCode.DEFAULT_USER;
-
-        Map<String, DictItem> dictMap = dictItemService.getDictItemByUniqKey(EchoDictType.Workbench.REG_BIND_ROLE);
-
-        if (dictMap.containsKey(String.valueOf(user.getUserType()))) {
-            DictItem dictItem = dictMap.get(String.valueOf(user.getUserType()));
-            code = dictItem != null ? dictItem.getName() : null;
-        }
-
+        String code = OrgNatureEnum.DEVELOPER.eq(user.getNature())
+                ? RoleCode.DEFAULT_DEVELOPER : RoleCode.DEFAULT_USER;
         roleService.joinTheRole(code, user.getId());
-
     }
 
     private void saveDefOrg(User user) {
-        // 开发者 加入内置的组织
-        if (UserTypeEnum.DEVELOPER.eq(user.getUserType())) {
-            Long orgId = configService.getLong(ConfigKey.Console.BUILT_IN_DEVELOPER, null);
-            ArgumentAssert.notNull(orgId, "请先联系管理员配置公司：内置开发者");
+        // 开发者落入开发者平台公司，普通用户落入总公司下的默认部门（spec 第 6 节）
+        Long orgId = OrgNatureEnum.DEVELOPER.eq(user.getNature())
+                ? BuiltInOrgId.DEVELOPER_PLATFORM : BuiltInOrgId.DEFAULT_DEPT;
 
-            UserOrgRel userOrgRel = new UserOrgRel();
-            userOrgRel.setUserId(user.getId());
-            userOrgRel.setOrgId(orgId);
-            userOrgRelService.save(userOrgRel);
-        }
+        UserOrgRel userOrgRel = new UserOrgRel();
+        userOrgRel.setUserId(user.getId());
+        userOrgRel.setOrgId(orgId);
+        userOrgRelService.save(userOrgRel);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean registerByPhone(User user) {
+        ArgumentAssert.isTrue(UserIdentityService.checkRegisterNature(user.getNature()),
+                "不支持的注册身份：{}", user.getNature());
         ArgumentAssert.isFalse(checkPhone(user.getPhone(), null), "手机号：{}已经存在", user.getPhone());
         user.setPassword(systemProperties.getDefPwd());
         user.setUsername(UUID.randomUUID().toString(true));
@@ -394,6 +415,8 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean registerByUsername(User user) {
+        ArgumentAssert.isTrue(UserIdentityService.checkRegisterNature(user.getNature()),
+                "不支持的注册身份：{}", user.getNature());
         ArgumentAssert.isFalse(checkUsername(user.getUsername(), null), "用户名：{}已经存在", user.getUsername());
         initSsoUser(user);
         user.setName(user.getUsername());

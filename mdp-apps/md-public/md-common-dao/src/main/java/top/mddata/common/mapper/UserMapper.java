@@ -97,24 +97,29 @@ public interface UserMapper extends SuperMapper<User> {
     List<Map<String, Object>> countByState();
 
     /**
-     * 按人员类型统计用户数。
+     * 按组织性质统计用户数。
      *
-     * <p>手写 SQL，已手动过滤 deleted_at = 0。</p>
+     * <p>手写 SQL，已手动过滤 u 和 o 表的 deleted_at = 0。
+     * 用户属于多个组织时按组织分别计数。
+     * 没有任何组织关系的用户不计入分布（分布总数可能小于用户总数）。</p>
      *
-     * @return 人员类型分布，key=userType、name(展示名)、count
+     * @return 组织性质分布，key=nature(1-总公司 90-开发者 99-运营)、count
      */
     @Select({
             """
             SELECT
-                user_type AS code,
+                o.nature AS code,
                 COUNT(*) AS count
-              FROM mdc_user
-             WHERE deleted_at = 0
-               AND user_type IS NOT NULL
-             GROUP BY user_type
+              FROM mdc_user u
+              JOIN mdc_user_org_rel r ON r.user_id = u.id
+              JOIN mdc_org o ON o.id = r.org_id
+             WHERE u.deleted_at = 0
+               AND o.deleted_at = 0
+               AND o.nature IS NOT NULL
+             GROUP BY o.nature
             """
     })
-    List<Map<String, Object>> countByType();
+    List<Map<String, Object>> countByNature();
 
     /**
      * 统计本月新增用户数。

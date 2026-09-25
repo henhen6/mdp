@@ -46,11 +46,6 @@ public interface EchoDictType {
     }
 
     interface Workbench {
-
-        /**
-         * 注册时不同的组织性质默认绑定什么角色
-         */
-        String REG_BIND_ROLE = "REG_BIND_ROLE";
     }
 
     /**
@@ -78,7 +73,7 @@ public interface EchoDictType {
         String ORG_TYPE = "OrgTypeEnum";
         /**
          * 组织性质
-         * [1-默认 90-开发者 99-运维]
+         * [1-总公司 90-开发者 99-运营]
          */
         String ORG_NATURE = "OrgNatureEnum";
 

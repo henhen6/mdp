@@ -27,6 +27,14 @@ import java.util.List;
 public class User extends UserBase {
 
     /**
+     * 组织性质（注册身份载体，不持久化）
+     * [1-总公司 90-开发者 99-运营]
+     * 注册流程用于传递用户选择的身份
+     */
+    @Column(ignore = true)
+    private Integer nature;
+
+    /**
      * 用户拥有的部门
      */
     @RelationOneToMany(

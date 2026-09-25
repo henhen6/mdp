@@ -122,6 +122,7 @@ public class UserDto implements Serializable {
      * 机构ID
      */
     @Schema(description = "所属部门")
+    @NotEmpty(message = "请填写所属部门")
     private List<Long> orgIdList;
 
 }
