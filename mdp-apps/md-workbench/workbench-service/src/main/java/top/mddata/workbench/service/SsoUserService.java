@@ -2,7 +2,6 @@ package top.mddata.workbench.service;
 
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.Org;
-import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
 import top.mddata.workbench.dto.ProfileEmailDto;
 import top.mddata.workbench.dto.ProfilePasswordDto;
@@ -131,11 +130,11 @@ public interface SsoUserService extends SuperService<User> {
     boolean getTopCompanyIsAdminById(Long id);
 
     /**
-     * 根据组织id查询默认的组织性质
+     * 根据组织id查询组织性质
      * @param id 组织id
-     * @return
+     * @return 组织性质（1-总公司 90-开发者 99-运营），组织不存在时返回 null
      */
-    OrgNature getOrgNatureByOrgId(Long id);
+    Integer getOrgNatureByOrgId(Long id);
 
     /**
      * 更新用户信息

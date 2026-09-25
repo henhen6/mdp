@@ -35,12 +35,10 @@ import top.mddata.common.constant.FileObjectType;
 import top.mddata.common.constant.MsgTemplateKey;
 import top.mddata.common.dto.IdDto;
 import top.mddata.common.entity.Org;
-import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
-import top.mddata.common.mapper.OrgNatureMapper;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.facade.system.ConfigFacade;
@@ -73,7 +71,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> implements SsoUserService {
     private final OrgMapper orgMapper;
-    private final OrgNatureMapper orgNatureMapper;
     private final FileFacade fileFacade;
     private final CacheOps cacheOps;
     private final ConfigFacade configFacade;
@@ -302,16 +299,17 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean getTopCompanyIsAdminById(Long id) {
-        List<OrgNature> sysOrgTypes = orgNatureMapper.selectListByQuery(QueryWrapper.create().eq(OrgNature::getOrgId, id));
-
-        return sysOrgTypes.stream().anyMatch(item -> OrgNatureEnum.OPERATIONS.eq(item.getNature()));
+        Org org = getOrgByIdCache(id);
+        return org != null && OrgNatureEnum.OPERATIONS.eq(org.getNature());
     }
 
     @Override
-    public OrgNature getOrgNatureByOrgId(Long id) {
-        List<OrgNature> sysOrgTypes = orgNatureMapper.selectListByQuery(QueryWrapper.create().eq(OrgNature::getOrgId, id));
-        return CollUtil.isNotEmpty(sysOrgTypes) ? sysOrgTypes.get(0) : null;
+    @Transactional(readOnly = true)
+    public Integer getOrgNatureByOrgId(Long id) {
+        Org org = getOrgByIdCache(id);
+        return org != null ? org.getNature() : null;
     }
 
     @Override

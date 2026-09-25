@@ -34,7 +34,6 @@ import top.mddata.common.cache.workbench.ForgetPasswordCacheKeyBuilder;
 import top.mddata.common.constant.DefValConstants;
 import top.mddata.common.constant.MsgTemplateKey;
 import top.mddata.common.entity.Org;
-import top.mddata.common.entity.OrgNature;
 import top.mddata.common.entity.User;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.dto.message.MsgSendDto;
@@ -205,7 +204,6 @@ public class AuthServiceImpl implements AuthService {
 //        当前顶级组织是否超级管理
         boolean currentTopCompanyIsAdmin = false;
 
-
         if (sysUser == null) {
             return TempOrg.builder()
                     .currentTopCompanyId(currentTopCompanyId)
@@ -215,7 +213,6 @@ public class AuthServiceImpl implements AuthService {
                     .currentDeptId(currentDeptId).currentTopCompanyIsAdmin(currentTopCompanyIsAdmin).build();
         }
         Long userId = sysUser.getId();
-
         User updateUser = UpdateEntity.of(User.class, userId);
 
         List<Long> orgIdList = ssoUserService.findOrgIdByUserId(userId);
@@ -263,10 +260,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 查询单位的组织性质
         if (defaultCompany != null) {
-            OrgNature orgNature = ssoUserService.getOrgNatureByOrgId(defaultCompany.getId());
-            if (orgNature != null) {
-                currentCompanyNature = orgNature.getNature();
-            }
+            currentCompanyNature = ssoUserService.getOrgNatureByOrgId(defaultCompany.getId());
         }
 
         // 查最后一次登录时 所属顶级单位
@@ -293,10 +287,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 查询顶级单位的组织性质
         if (rootCompany != null) {
-            OrgNature orgNature = ssoUserService.getOrgNatureByOrgId(rootCompany.getId());
-            if (orgNature != null) {
-                currentTopCompanyNature = orgNature.getNature();
-            }
+            currentTopCompanyNature = ssoUserService.getOrgNatureByOrgId(rootCompany.getId());
         }
 
         ssoUserService.updateById(updateUser);
@@ -325,7 +316,7 @@ public class AuthServiceImpl implements AuthService {
             ArgumentAssert.equals(code.getValue(), register.getCode(), "验证码不正确");
         }
         User defUser = BeanUtil.toBean(register, User.class);
-        defUser.setUserType(register.getNature());
+        defUser.setNature(register.getNature());
         userFacade.registerByEmail(defUser);
         if (systemProperties.getVerifyCaptcha()) {
             CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(register.getKey(), MsgTemplateKey.Email.EMAIL_REGISTER);
@@ -343,7 +334,7 @@ public class AuthServiceImpl implements AuthService {
             ArgumentAssert.equals(code.getValue(), register.getCode(), "验证码不正确");
         }
         User defUser = BeanUtil.toBean(register, User.class);
-        defUser.setUserType(register.getNature());
+        defUser.setNature(register.getNature());
         userFacade.registerByPhone(defUser);
 
         if (systemProperties.getVerifyCaptcha()) {
@@ -359,7 +350,7 @@ public class AuthServiceImpl implements AuthService {
     public String registerByUsername(RegisterByUsernameDto register) {
         ArgumentAssert.equals(register.getPassword(), register.getConfirmPassword(), "密码不一致");
         User defUser = BeanUtil.toBean(register, User.class);
-        defUser.setUserType(register.getNature());
+        defUser.setNature(register.getNature());
         userFacade.registerByUsername(defUser);
         return defUser.getUsername();
     }
