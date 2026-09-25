@@ -9,7 +9,7 @@ import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 组织性质
- * [1-默认 90-开发者 99-运维]
+ * [1-总公司 90-开发者 99-运营]
  *
  * @author henhen6
  * @since 2021/3/12 21:20
@@ -20,17 +20,17 @@ import top.mddata.base.interfaces.BaseEnum;
 @Schema(description = "组织性质-枚举")
 public enum OrgNatureEnum implements BaseEnum<Integer> {
     /**
-     * 默认
+     * 总公司
      */
-    DEFAULT(1, "默认"),
+    HEAD_COMPANY(1, "总公司"),
     /**
      * 开发者
      */
     DEVELOPER(90, "开发者"),
     /**
-     * 运维
+     * 运营
      */
-    OPERATIONS(99, "运维");
+    OPERATIONS(99, "运营");
 
     /**
      * 资源类型

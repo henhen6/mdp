@@ -43,6 +43,13 @@ public class OrgBase<E extends TreeEntity<Long, E>> extends TreeEntity<Long, E> 
     private String orgType;
 
     /**
+     * 组织性质
+     * [1-总公司 90-开发者 99-运营]
+     * 一个组织有且只有一个性质；部门冗余同步所属公司的性质，读取时以顶级公司为准
+     */
+    private Integer nature;
+
+    /**
      * 简称
      */
     private String shortName;

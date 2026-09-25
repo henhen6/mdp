@@ -21,10 +21,12 @@ import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.utils.MyTreeUtil;
+import top.mddata.common.constant.BuiltInOrgId;
 import top.mddata.common.entity.Org;
 import top.mddata.console.dto.organization.OrgDto;
 import top.mddata.console.query.organization.OrgQuery;
 import top.mddata.console.service.organization.OrgService;
+import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.vo.organization.OrgVo;
 
 import java.io.Serializable;
@@ -45,6 +47,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OrgController extends SuperController<OrgService, Org> {
     private final EchoService echoService;
+    private final OrgVisibilityService orgVisibilityService;
 
     /**
      * 添加组织。
@@ -114,6 +117,7 @@ public class OrgController extends SuperController<OrgService, Org> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
+        appendVisibilityFilter(wrapper);
         superService.pageAs(page, wrapper, OrgVo.class);
         return R.success(page);
     }
@@ -129,6 +133,7 @@ public class OrgController extends SuperController<OrgService, Org> {
     public R<List<OrgVo>> list(@RequestBody @Validated OrgQuery params) {
         Org entity = BeanUtil.toBean(params, Org.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+        appendVisibilityFilter(wrapper);
         List<OrgVo> listVo = superService.listAs(wrapper, OrgVo.class);
         return R.success(listVo);
     }
@@ -140,16 +145,32 @@ public class OrgController extends SuperController<OrgService, Org> {
     @PostMapping("/tree")
     @RequestLog(value = "查询组织树", logType = RequestLog.LogType.QUERY)
     public R<List<OrgVo>> tree(@RequestBody @Validated OrgQuery query) {
-        /*
-        TODO 控制权限
-        运维企业 * 1  的用户，能查： 运维企业、开发者内置企业、普通企业
-        开发者内置企业 * 1 的用户，能查： 开发者内置企业
-        普通企业 * N 的用户，能查： 普通企业
-         */
-        List<OrgVo> list = superService.listAs(QueryWrapper.create(BeanUtil.toBean(query, Org.class)).orderBy(Org::getWeight, true), OrgVo.class);
+        QueryWrapper wrapper = QueryWrapper.create(BeanUtil.toBean(query, Org.class))
+                .orderBy(Org::getWeight, true);
+        appendVisibilityFilter(wrapper);
+        List<OrgVo> list = superService.listAs(wrapper, OrgVo.class);
         echoService.action(list);
         List<OrgVo> menuTreeList = MyTreeUtil.buildTreeEntity(list, OrgVo::new);
         return R.success(menuTreeList);
+    }
+
+    /**
+     * 追加组织可见性过滤：null=不限制；空列表=查不到任何数据；其余按树路径过滤
+     */
+    private void appendVisibilityFilter(QueryWrapper wrapper) {
+        List<Long> rootIds = orgVisibilityService.currentVisibleRootOrgIds();
+        if (rootIds == null) {
+            return;
+        }
+        if (rootIds.isEmpty()) {
+            wrapper.where("1 = 0");
+            return;
+        }
+        wrapper.and(qw -> {
+            for (Long rootId : rootIds) {
+                qw.or(Org::getTreePath).like("/" + rootId + "/");
+            }
+        });
     }
 
 
@@ -159,6 +180,16 @@ public class OrgController extends SuperController<OrgService, Org> {
     public R<Boolean> move(@RequestParam Long sourceId, @RequestParam(required = false) Long targetId) {
         superService.move(sourceId, targetId);
         return R.success();
+    }
+
+    /**
+     * 查询所有内置组织ID，前端用于禁用内置组织的编辑/删除/移动等操作
+     */
+    @GetMapping("/findBuiltInIds")
+    @Operation(summary = "查询内置组织ID", description = "返回所有系统内置组织ID")
+    @RequestLog(value = "查询内置组织ID", logType = RequestLog.LogType.QUERY)
+    public R<List<Long>> findBuiltInIds() {
+        return R.success(BuiltInOrgId.ALL);
     }
 
     @PostMapping("/findByIds")

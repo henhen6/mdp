@@ -15,17 +15,17 @@ import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.organization.OrgCacheKeyBuilder;
+import top.mddata.common.constant.BuiltInOrgId;
 import top.mddata.common.constant.EventTypeCode;
 import top.mddata.common.dto.IdDto;
 import top.mddata.common.dto.IdsDto;
 import top.mddata.common.entity.Org;
-import top.mddata.common.entity.OrgNature;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.console.dto.organization.OrgDto;
-import top.mddata.console.service.organization.OrgNatureService;
 import top.mddata.console.service.organization.OrgService;
+import top.mddata.console.service.organization.SystemProtectService;
 import top.mddata.console.service.organization.UserOrgRelService;
 import top.mddata.open.dto.admin.EventTriggerDto;
 import top.mddata.open.facade.admin.NotifyAndEventPushFacade;
@@ -54,9 +54,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements OrgService {
     private final UidGenerator uidGenerator;
-    private final OrgNatureService orgNatureService;
     private final UserOrgRelService userOrgRelService;
     private final NotifyAndEventPushFacade notifyAndEventPushFacade;
+    private final SystemProtectService systemProtectService;
 
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
@@ -67,6 +67,8 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
     @Transactional(rollbackFor = Exception.class)
     public void move(Long sourceId, Long targetId) {
         ArgumentAssert.notNull(sourceId, "当前节点不存在");
+        // 内置组织不允许移动（置于 notNull 之后，避免 List.of(null) 抛出无意义的 NPE）
+        systemProtectService.checkOrgNotBuiltIn(List.of(sourceId), "移动组织");
 
         Org current = getByIdCache(sourceId);
         ArgumentAssert.notNull(current, "当前节点不存在");
@@ -184,18 +186,14 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
 
         org.setId(uidGenerator.getUid());
         fill(org, parent);
+        // 部门冗余同步所属公司性质；根节点默认总公司性质
+        org.setNature(parent != null ? parent.getNature() : OrgNatureEnum.HEAD_COMPANY.getCode());
 
         return org;
     }
 
     @Override
     protected void saveAfter(Object save, Org entity) {
-        OrgNature orgNature = new OrgNature();
-        orgNature.setNature(OrgNatureEnum.DEFAULT.getCode());
-        orgNature.setOrgId(entity.getId());
-        orgNatureService.save(orgNature);
-
-
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Console.ORG_ADD)
                 .setEventContent(IdDto.builder().id(entity.getId()).build().toString())
@@ -209,6 +207,24 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
         OrgDto data = (OrgDto) updateDto;
         Org org = super.updateBefore(data);
 
+        // 内置组织的层级结构固定：3 个根公司必须保持根节点，默认部门必须挂在总公司下
+        if (SystemProtectService.isBuiltInOrg(org.getId())) {
+            // 内置组织承担运营中心/开发者平台/注册落点等系统职责，类型和状态被改会破坏这些系统约定
+            Org old = getById(org.getId());
+            ArgumentAssert.equals(old.getOrgType(), org.getOrgType(),
+                    "修改组织失败：内置组织[{}]的类型不允许修改", org.getName());
+            ArgumentAssert.equals(old.getState(), org.getState(),
+                    "修改组织失败：内置组织[{}]的状态不允许修改", org.getName());
+
+            if (Objects.equals(org.getId(), BuiltInOrgId.DEFAULT_DEPT)) {
+                ArgumentAssert.equals(BuiltInOrgId.HEAD_COMPANY, org.getParentId(),
+                        "修改组织失败：内置组织[{}]的上级组织必须保持为总公司", org.getName());
+            } else {
+                ArgumentAssert.isTrue(MyTreeUtil.isRoot(org.getParentId()),
+                        "修改组织失败：内置组织[{}]必须保持根节点", org.getName());
+            }
+        }
+
         Org parent = null;
         if (data.getParentId() != null) {
             parent = getById(data.getParentId());
@@ -220,6 +236,10 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
         }
 
         fill(org, parent);
+        // 根节点的组织性质不允许经 console 编辑变更（内置根公司性质固定，防止误操作抹掉运营/开发者性质）
+        if (parent != null) {
+            org.setNature(parent.getNature());
+        }
         return org;
     }
 
@@ -241,9 +261,10 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
             return false;
         }
 
+        systemProtectService.checkOrgNotBuiltIn(idList.stream()
+                .map(id -> Long.valueOf(String.valueOf(id))).toList(), "删除组织");
+
         boolean flag = super.removeByIds(idList);
-        // 删除组织性质
-        orgNatureService.remove(QueryWrapper.create().in(OrgNature::getOrgId, idList));
 
 //        删除 人员-组织
         userOrgRelService.removeByOrgIds(idList);
