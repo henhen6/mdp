@@ -36,7 +36,6 @@ import top.mddata.common.constant.MsgTemplateKey;
 import top.mddata.common.dto.IdDto;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.User;
-import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.UserMapper;
@@ -296,13 +295,6 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         CacheKey cacheKey = OrgCacheKeyBuilder.build(id);
         CacheResult<Org> result = cacheOps.get(cacheKey, k -> orgMapper.selectOneById(id));
         return result.getValue();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean getTopCompanyIsAdminById(Long id) {
-        Org org = getOrgByIdCache(id);
-        return org != null && OrgNatureEnum.OPERATIONS.eq(org.getNature());
     }
 
     @Override

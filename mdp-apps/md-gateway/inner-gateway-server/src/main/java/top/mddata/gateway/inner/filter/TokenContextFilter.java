@@ -36,7 +36,6 @@ import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
 import static top.mddata.base.constant.ContextConstants.DEPT_ID;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
-import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_IS_ADMIN;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
 
 
@@ -148,7 +147,6 @@ public class TokenContextFilter implements WebFilter, Ordered {
             Object topCompanyNature = tokenSession.get(TOP_COMPANY_NATURE);
             Object companyNature = tokenSession.get(COMPANY_NATURE);
             Object deptId = tokenSession.get(DEPT_ID);
-            Object topCompanyIsAdmin = tokenSession.get(TOP_COMPANY_IS_ADMIN);
 
 
             if (userId != null) {
@@ -165,9 +163,6 @@ public class TokenContextFilter implements WebFilter, Ordered {
             }
             if (companyNature != null) {
                 mutate.header(ContextConstants.COMPANY_NATURE, String.valueOf(companyNature));
-            }
-            if (topCompanyIsAdmin != null) {
-                mutate.header(ContextConstants.TOP_COMPANY_IS_ADMIN, String.valueOf(topCompanyIsAdmin));
             }
             if (deptId != null) {
                 mutate.header(ContextConstants.DEPT_ID, String.valueOf(deptId));

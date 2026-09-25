@@ -19,6 +19,7 @@ import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.common.cache.console.system.ConfigCacheKeyBuilder;
 import top.mddata.common.cache.console.system.ConfigUniqKeyCacheKeyBuilder;
+import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.system.DataTypeEnum;
 import top.mddata.console.entity.system.Config;
 import top.mddata.console.mapper.system.ConfigMapper;
@@ -58,8 +59,8 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
 
         // 当前机构id
         Long currentCompanyId = ContextUtil.getCurrentCompanyId();
-        if (ContextUtil.getTopCompanyIsAdmin()) {
-            // 若是当前组织性质是运维管理员，则不填写机构id
+        if (OrgNatureEnum.OPERATIONS.eq(ContextUtil.getCurrentTopCompanyNature())) {
+            // 若顶级机构性质是运营，则参数为全局参数，不填写机构id
             sysParam.setOrgId(null);
         } else {
             sysParam.setOrgId(currentCompanyId);
@@ -74,8 +75,8 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
     protected Config saveBefore(Object save) {
         Config sysParam = super.saveBefore(save);
         Long currentCompanyId = ContextUtil.getCurrentCompanyId();
-        if (ContextUtil.getTopCompanyIsAdmin()) {
-            // 若是当前组织性质是运维管理员，则不填写机构id
+        if (OrgNatureEnum.OPERATIONS.eq(ContextUtil.getCurrentTopCompanyNature())) {
+            // 若顶级机构性质是运营，则参数为全局参数，不填写机构id
             sysParam.setOrgId(null);
         } else {
             sysParam.setOrgId(currentCompanyId);

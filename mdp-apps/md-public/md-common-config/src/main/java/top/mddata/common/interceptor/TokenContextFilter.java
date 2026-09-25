@@ -3,7 +3,6 @@ package top.mddata.common.interceptor;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
@@ -21,7 +20,6 @@ import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
 import static top.mddata.base.constant.ContextConstants.DEPT_ID;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
-import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_IS_ADMIN;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
 
 /**
@@ -91,7 +89,6 @@ public class TokenContextFilter extends SaInterceptor {
             Object topCompanyNature = accountSession.get(TOP_COMPANY_NATURE);
             Object companyNature = accountSession.get(COMPANY_NATURE);
             Object deptId = accountSession.get(DEPT_ID);
-            Object topCompanyIsAdmin = accountSession.get(TOP_COMPANY_IS_ADMIN);
 
             ContextUtil.setUserId(userId);
             ContextUtil.setCurrentCompanyId(companyId);
@@ -99,7 +96,6 @@ public class TokenContextFilter extends SaInterceptor {
             ContextUtil.setCurrentCompanyNature(companyNature);
             ContextUtil.setCurrentTopCompanyNature(topCompanyNature);
             ContextUtil.setCurrentDeptId(deptId);
-            ContextUtil.setTopCompanyIsAdmin(topCompanyIsAdmin != null && Convert.toBool(topCompanyIsAdmin));
             MDC.put(ContextConstants.USER_ID, String.valueOf(userId));
         }
 

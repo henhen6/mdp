@@ -44,10 +44,6 @@ public final class ContextConstants {
      */
     public static final String DEPT_ID = "CurrentDeptId";
     /**
-     * 请求头中携带的 当前所属的顶级公司是否是管理员
-     */
-    public static final String TOP_COMPANY_IS_ADMIN = "CurrentTopCompanyIsAdmin";
-    /**
      * 请求头和线程变量中的 前端页面地址栏#号后的路径
      */
     public static final String PATH = "Path";

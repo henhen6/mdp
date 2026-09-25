@@ -59,7 +59,6 @@ import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
 import static top.mddata.base.constant.ContextConstants.DEPT_ID;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
-import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_IS_ADMIN;
 import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
 import static top.mddata.base.constant.ContextConstants.USER_ID;
 
@@ -188,8 +187,6 @@ public class AuthServiceImpl implements AuthService {
         } else {
             session.delete(DEPT_ID);
         }
-
-        session.set(TOP_COMPANY_IS_ADMIN, org.isCurrentTopCompanyIsAdmin());
     }
 
     private TempOrg findOrg(User sysUser) {
@@ -201,8 +198,6 @@ public class AuthServiceImpl implements AuthService {
         // 当前所属顶级单位
         Long currentTopCompanyId = null;
         Integer currentTopCompanyNature = null;
-//        当前顶级组织是否超级管理
-        boolean currentTopCompanyIsAdmin = false;
 
         if (sysUser == null) {
             return TempOrg.builder()
@@ -210,7 +205,7 @@ public class AuthServiceImpl implements AuthService {
                     .currentTopCompanyNature(currentTopCompanyNature)
                     .currentCompanyId(currentCompanyId)
                     .currentCompanyNature(currentCompanyNature)
-                    .currentDeptId(currentDeptId).currentTopCompanyIsAdmin(currentTopCompanyIsAdmin).build();
+                    .currentDeptId(currentDeptId).build();
         }
         Long userId = sysUser.getId();
         User updateUser = UpdateEntity.of(User.class, userId);
@@ -292,18 +287,12 @@ public class AuthServiceImpl implements AuthService {
 
         ssoUserService.updateById(updateUser);
 
-        // 组织性质拥有 99，就视为组织是超级管理员
-        if (rootCompany != null) {
-            currentTopCompanyIsAdmin = ssoUserService.getTopCompanyIsAdminById(rootCompany.getId());
-        }
-
         return TempOrg.builder()
                 .currentTopCompanyNature(currentTopCompanyNature)
                 .currentTopCompanyId(currentTopCompanyId)
                 .currentCompanyNature(currentCompanyNature)
                 .currentCompanyId(currentCompanyId)
                 .currentDeptId(currentDeptId)
-                .currentTopCompanyIsAdmin(currentTopCompanyIsAdmin)
                 .build();
     }
 
@@ -422,9 +411,5 @@ public class AuthServiceImpl implements AuthService {
          * 当前部门id
          */
         private Long currentDeptId;
-        /**
-         * 当前顶级公司是否是超管企业
-         */
-        private boolean currentTopCompanyIsAdmin;
     }
 }

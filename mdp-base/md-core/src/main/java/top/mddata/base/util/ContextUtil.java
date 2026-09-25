@@ -432,27 +432,6 @@ public final class ContextUtil {
     }
 
 
-    /**
-     * 获取顶级公司是否为管理员
-     * <p>
-     * 判断当前顶级公司是否具有管理员权限。
-     * </p>
-     *
-     * @return true 表示是管理员，false 表示不是
-     */
-    public static boolean getTopCompanyIsAdmin() {
-        return get(ContextConstants.TOP_COMPANY_IS_ADMIN, Boolean.class);
-    }
-
-    /**
-     * 设置顶级公司是否为管理员
-     *
-     * @param val 是否为管理员
-     */
-    public static void setTopCompanyIsAdmin(Boolean val) {
-        set(ContextConstants.TOP_COMPANY_IS_ADMIN, val);
-    }
-
     private static boolean isEmptyLong(String key) {
         String val = getLocalMap().get(key);
         return StrUtil.isEmpty(val) || StrPool.NULL.equals(val) || StrPool.ZERO.equals(val);

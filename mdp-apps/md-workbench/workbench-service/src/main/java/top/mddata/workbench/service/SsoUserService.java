@@ -123,13 +123,6 @@ public interface SsoUserService extends SuperService<User> {
     Org getOrgByIdCache(Long id);
 
     /**
-     * 判断用户所属的顶级公司是否是管理企业
-     * @param id 单位id
-     * @return 是否
-     */
-    boolean getTopCompanyIsAdminById(Long id);
-
-    /**
      * 根据组织id查询组织性质
      * @param id 组织id
      * @return 组织性质（1-总公司 90-开发者 99-运营），组织不存在时返回 null

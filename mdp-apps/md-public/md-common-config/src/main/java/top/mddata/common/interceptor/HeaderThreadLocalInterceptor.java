@@ -1,6 +1,5 @@
 package top.mddata.common.interceptor;
 
-import cn.hutool.core.convert.Convert;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +51,6 @@ public class HeaderThreadLocalInterceptor implements AsyncHandlerInterceptor {
         ContextUtil.setCurrentTopCompanyNature(WebUtils.getHeader(request, ContextConstants.TOP_COMPANY_NATURE));
         ContextUtil.setCurrentCompanyNature(WebUtils.getHeader(request, ContextConstants.COMPANY_NATURE));
         ContextUtil.setCurrentDeptId(WebUtils.getHeader(request, ContextConstants.DEPT_ID));
-        ContextUtil.setTopCompanyIsAdmin(Convert.toBool(WebUtils.getHeader(request, ContextConstants.TOP_COMPANY_IS_ADMIN)));
 
         Map<String, String> localMap = ContextUtil.getLocalMap();
         localMap.forEach(MDC::put);
