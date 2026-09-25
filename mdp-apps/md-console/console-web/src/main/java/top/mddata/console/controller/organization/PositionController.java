@@ -21,9 +21,12 @@ import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.common.entity.Org;
 import top.mddata.common.entity.Position;
+import com.mybatisflex.core.query.QueryMethods;
 import top.mddata.console.dto.organization.PositionDto;
 import top.mddata.console.query.organization.PositionQuery;
+import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.PositionService;
 import top.mddata.console.vo.organization.PositionVo;
 
@@ -45,6 +48,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PositionController extends SuperController<PositionService, Position> {
     private final EchoService echoService;
+    private final OrgVisibilityService orgVisibilityService;
 
     /**
      * 添加岗位。
@@ -114,6 +118,7 @@ public class PositionController extends SuperController<PositionService, Positio
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
+        appendPositionVisibilityFilter(wrapper);
         superService.pageAs(page, wrapper, PositionVo.class);
         echoService.action(page);
         return R.success(page);
@@ -130,6 +135,7 @@ public class PositionController extends SuperController<PositionService, Positio
     public R<List<PositionVo>> list(@RequestBody @Validated PositionQuery params) {
         Position entity = BeanUtil.toBean(params, Position.class);
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
+        appendPositionVisibilityFilter(wrapper);
         List<PositionVo> listVo = superService.listAs(wrapper, PositionVo.class);
         return R.success(listVo);
     }
@@ -144,5 +150,27 @@ public class PositionController extends SuperController<PositionService, Positio
     @PostMapping("/findByIds")
     public Map<Serializable, Object> findByIds(@RequestParam("ids") Set<Serializable> ids) {
         return superService.findByIds(ids);
+    }
+
+    /**
+     * 追加岗位可见性过滤：岗位所属组织必须在可见树内
+     */
+    private void appendPositionVisibilityFilter(QueryWrapper wrapper) {
+        List<Long> rootIds = orgVisibilityService.currentVisibleRootOrgIds();
+        if (rootIds == null) {
+            return;
+        }
+        if (rootIds.isEmpty()) {
+            wrapper.where("1 = 0");
+            return;
+        }
+        wrapper.and(qw -> {
+            for (Long rootId : rootIds) {
+                QueryWrapper sub = QueryWrapper.create().select("1").from(Org.class)
+                        .where(Org::getId).eq(Position::getOrgId)
+                        .and(Org::getTreePath).like("/" + rootId + "/");
+                qw.or(QueryMethods.exists(sub));
+            }
+        });
     }
 }
