@@ -66,6 +66,15 @@ public class OrgVo extends TreeEntity<Long, OrgVo> implements Serializable, Echo
     private String orgType;
 
     /**
+     * 组织性质
+     * [1-总公司 90-开发者 99-运营]
+     * 一个组织有且只有一个性质；部门冗余同步所属公司的性质，读取时以顶级公司为准
+     */
+    @Schema(description = "组织性质")
+    @Echo(api = EchoApi.DICT_CLASS, dictType = EchoDictType.Console.ORG_NATURE)
+    private Integer nature;
+
+    /**
      * 简称
      */
     @Schema(description = "简称")
