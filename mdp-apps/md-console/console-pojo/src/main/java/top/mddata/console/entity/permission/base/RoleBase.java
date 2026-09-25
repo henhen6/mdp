@@ -47,16 +47,23 @@ public class RoleBase extends SuperEntity<Long> implements Serializable {
     private String roleCategory;
 
     /**
-     * 角色类型
-     * [10-功能角色 20-桌面角色 30-数据角色]
-     */
-    private String roleType;
-
-    /**
      * 组织性质
-     * [1-默认 90-开发者 99-运维]
+     * [1-总公司 90-开发者 99-运营]
      */
     private Integer orgNature;
+
+    /**
+     * 数据范围
+     * [10-全部 20-本公司及以下 30-本部门及以下
+     * 40-本部门 50-仅本人 90-自定义实现]
+     */
+    private String dataScope;
+
+    /**
+     * 自定义数据范围实现类（Spring Bean 名）
+     * 仅 dataScope=90 时使用，实现 DataScopeCustomHandler 接口
+     */
+    private String dataScopeImpl;
 
     /**
      * 是否模版

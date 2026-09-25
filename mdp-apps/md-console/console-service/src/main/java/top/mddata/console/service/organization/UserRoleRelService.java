@@ -33,4 +33,13 @@ public interface UserRoleRelService extends SuperService<UserRoleRel> {
      * @return 删除结果
      */
     Boolean delete(UserRoleRelDto dto);
+
+    /**
+     * 校验角色用户绑定：用户所属树的组织性质必须等于角色的组织性质（防身份漂移）。
+     * 用户无任何组织关系、或角色不存在时 fail fast。
+     *
+     * @param roleId  角色id
+     * @param userIds 待绑定用户id
+     */
+    void checkRoleUserNatureMatch(Long roleId, Collection<Long> userIds);
 }

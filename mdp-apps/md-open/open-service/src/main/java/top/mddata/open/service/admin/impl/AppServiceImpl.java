@@ -101,7 +101,7 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
         // 当前组织性质下的、权限集合角色
         otherParams.put("roleCategory", RoleCategoryEnum.PERM_SET.getCode());
         Integer currentCompanyNature = ContextUtil.getCurrentCompanyNature();
-        otherParams.put("orgNature", currentCompanyNature == null ? OrgNatureEnum.DEFAULT.getCode() : currentCompanyNature);
+        otherParams.put("orgNature", currentCompanyNature == null ? OrgNatureEnum.HEAD_COMPANY.getCode() : currentCompanyNature);
         otherParams.put("templateRole", 1);
         otherParams.put("hasAppByRole", query.getHasApp() != null && query.getHasApp());
 

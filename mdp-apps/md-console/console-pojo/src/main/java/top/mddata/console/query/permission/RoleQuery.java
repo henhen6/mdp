@@ -57,15 +57,8 @@ public class RoleQuery extends ExtraParams implements Serializable {
     private String roleCategory;
 
     /**
-     * 角色类型
-     * [10-功能角色 20-桌面角色 30-数据角色]
-     */
-    @Schema(description = "角色类型")
-    private String roleType;
-
-    /**
      * 组织性质
-     * [1-默认 90-开发者 99-运维]
+     * [1-总公司 90-开发者 99-运营]
      */
     @Schema(description = "组织性质")
     private Integer orgNature;

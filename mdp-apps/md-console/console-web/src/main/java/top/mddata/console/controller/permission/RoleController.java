@@ -164,4 +164,39 @@ public class RoleController extends SuperController<RoleService, Role> {
     public R<Boolean> saveRoleResource(@Validated @RequestBody RoleResourceRelDto dto) {
         return R.success(roleResourceRelService.saveRoleResource(dto));
     }
+
+    @GetMapping("/assignableDataScopes")
+    @Operation(summary = "可分配的数据范围档位",
+            description = "按当前操作人的权限集合计算")
+    @RequestLog(value = "查询可分配的数据范围档位", logType = RequestLog.LogType.QUERY)
+    public R<List<Map<String, String>>> assignableDataScopes() {
+        List<Map<String, String>> list = superService.getAssignableDataScopes().stream()
+                .map(scope -> Map.of("code", scope.getCode(), "name", scope.getDesc()))
+                .toList();
+        return R.success(list);
+    }
+
+    @GetMapping("/assignableAppIds")
+    @Operation(summary = "可分配的应用id集合",
+            description = "取当前操作人权限集合角色已分配的应用")
+    @RequestLog(value = "查询可分配的应用id集合", logType = RequestLog.LogType.QUERY)
+    public R<List<Long>> assignableAppIds() {
+        Role permSet = superService.getPermSetRoleOfCurrentOperator();
+        if (permSet == null) {
+            return R.success(List.of());
+        }
+        return R.success(superService.listAppIdsByRoleId(permSet.getId()));
+    }
+
+    @GetMapping("/assignableResourceIds")
+    @Operation(summary = "可分配的资源id集合",
+            description = "取当前操作人权限集合角色已分配的资源")
+    @RequestLog(value = "查询可分配的资源id集合", logType = RequestLog.LogType.QUERY)
+    public R<Map<Long, Collection<Long>>> assignableResourceIds() {
+        Role permSet = superService.getPermSetRoleOfCurrentOperator();
+        if (permSet == null) {
+            return R.success(Map.of());
+        }
+        return R.success(roleResourceRelService.findResourceIdByRoleId(permSet.getId()));
+    }
 }
