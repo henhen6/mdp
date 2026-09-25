@@ -9,8 +9,8 @@ import top.mddata.base.utils.DefValueHelper;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.StateEnum;
+import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
-import top.mddata.common.enumeration.organization.UserTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.console.entity.permission.Role;
@@ -141,14 +141,14 @@ public class DashboardUserServiceImpl implements DashboardUserService {
 
     @Override
     public List<DistributionVo> getTypeDistribution() {
-        List<Map<String, Object>> rawList = userMapper.countByType();
+        List<Map<String, Object>> rawList = userMapper.countByNature();
         if (rawList == null || rawList.isEmpty()) {
             return Collections.emptyList();
         }
         long total = rawList.stream().mapToLong(raw -> Convert.toLong(raw.get("count"))).sum();
         return rawList.stream().map(raw -> {
             DistributionVo vo = new DistributionVo();
-            vo.setName(convertUserType(Convert.toLong(raw.get("code"))));
+            vo.setName(convertNature(Convert.toLong(raw.get("code"))));
             long count = Convert.toLong(raw.get("count"));
             vo.setCount(count);
             vo.setPercent(DefValueHelper.calcPercent(count, total));
@@ -176,12 +176,11 @@ public class DashboardUserServiceImpl implements DashboardUserService {
         return enabled ? StateEnum.ENABLE.getDesc() : StateEnum.DISABLE.getDesc();
     }
 
-    private String convertUserType(Long code) {
+    private String convertNature(Long code) {
         if (code == null) {
             return null;
         }
-        UserTypeEnum[] values = UserTypeEnum.values();
-        for (UserTypeEnum enumVal : values) {
+        for (OrgNatureEnum enumVal : OrgNatureEnum.values()) {
             if (enumVal.getCode().equals(code.intValue())) {
                 return enumVal.getDesc();
             }
