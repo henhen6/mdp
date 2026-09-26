@@ -14,6 +14,7 @@ import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.permission.RoleDataScopeCacheKeyBuilder;
+import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.dto.permission.RoleDataScopeRelDto;
 import top.mddata.console.entity.permission.ResourceMenu;
 import top.mddata.console.entity.permission.Role;
@@ -58,10 +59,13 @@ public class RoleDataScopeRelServiceImpl
         Long roleId = dto.getRoleId();
         List<RoleDataScopeRelDto.Item> items = dto.getItems() == null ? List.of() : dto.getItems();
         Role permSet = roleService.getPermSetRoleOfCurrentOperator();
+        Role targetRole = roleService.getById(roleId);
+        ArgumentAssert.notNull(targetRole, "角色[{}]不存在", roleId);
+        boolean targetIsPermSet = RoleCategoryEnum.PERM_SET.getCode().equals(targetRole.getRoleCategory());
 
         Set<Long> menuIdSet = new HashSet<>();
         for (RoleDataScopeRelDto.Item item : items) {
-            validateItem(permSet, item);
+            validateItem(permSet, item, targetIsPermSet);
             ArgumentAssert.isTrue(menuIdSet.add(item.getMenuId()),
                     "菜单[{}]存在重复授权项", item.getMenuId());
         }
@@ -98,7 +102,7 @@ public class RoleDataScopeRelServiceImpl
      * 校验单个授权项：菜单已启用数据权限、档位有效、
      * 自定义档 Bean 名约束、档位不超出权限集合可分配范围
      */
-    private void validateItem(Role permSet, RoleDataScopeRelDto.Item item) {
+    private void validateItem(Role permSet, RoleDataScopeRelDto.Item item, boolean targetIsPermSet) {
         ResourceMenu menu = resourceMenuMapper.selectOneById(item.getMenuId());
         ArgumentAssert.notNull(menu, "菜单[{}]不存在", item.getMenuId());
         ArgumentAssert.isTrue(Boolean.TRUE.equals(menu.getDataScopeState()),
@@ -107,7 +111,9 @@ public class RoleDataScopeRelServiceImpl
         DataScopeEnum scope = DataScopeEnum.getByCode(item.getDataScope());
         ArgumentAssert.notNull(scope, "数据范围档位[{}]无效", item.getDataScope());
         if (DataScopeEnum.CUSTOM.equals(scope)) {
-            ArgumentAssert.isTrue(StrUtil.isNotBlank(item.getDataScopeImpl()),
+            // 权限集合的授权是规则数据（约束下游可分配的档位上限），
+            // 角色不绑用户、运行时不消费，自定义实现 Bean 名无意义，免填
+            ArgumentAssert.isTrue(targetIsPermSet || StrUtil.isNotBlank(item.getDataScopeImpl()),
                     "自定义实现档必须填写实现类 Bean 名");
         } else {
             ArgumentAssert.isTrue(StrUtil.isBlank(item.getDataScopeImpl()),
@@ -152,6 +158,7 @@ public class RoleDataScopeRelServiceImpl
             return List.of();
         }
         List<DataScopeMenuTreeVo> nodes = new ArrayList<>();
+        List<ResourceMenu> configurableMenus = new ArrayList<>();
         for (ResourceMenu menu : enabledMenus) {
             List<DataScopeEnum> scopes = roleService.getAssignableScopesOfMenu(menu.getId());
             if (CollUtil.isEmpty(scopes)) {
@@ -162,12 +169,14 @@ public class RoleDataScopeRelServiceImpl
                     .map(scope -> new DataScopeMenuTreeVo.ScopeOption(scope.getCode(), scope.getDesc()))
                     .toList());
             nodes.add(node);
+            configurableMenus.add(menu);
         }
         if (nodes.isEmpty()) {
             return List.of();
         }
-        // 可配置菜单可能挂在任意层级，补全祖先链保证树结构完整（祖先仅展示）
-        Set<Long> ancestorIds = parseAncestorIds(enabledMenus);
+        // 只从"实际可配置"的菜单收集祖先：被权限集合过滤掉的菜单不参与，
+        // 否则其上级会以仅展示节点挂在树上，却没有可配置后代
+        Set<Long> ancestorIds = parseAncestorIds(configurableMenus);
         if (CollUtil.isNotEmpty(ancestorIds)) {
             List<ResourceMenu> ancestors = resourceMenuMapper.selectListByIds(ancestorIds);
             ancestors.forEach(ancestor -> nodes.add(toNode(ancestor, false)));
