@@ -99,7 +99,16 @@ R.fail("错误消息")        // 失败
 
 ### Mapper 继承
 
-所有 Mapper 继承 `top.mddata.base.mvcflex.mapper.SuperMapper<T>`
+所有 Mapper 继承 `top.mddata.base.mvcflex.mapper.SuperMapper<T>`，且**必须加 `@Repository` 注解**：
+
+```java
+@Repository
+public interface XxxMapper extends SuperMapper<Xxx> { }
+```
+
+> Mapper 的注册机制是 Spring 组件扫描 + `@Repository`（不是 `@MapperScan`）。
+> 漏加时编译正常，但启动失败：`Parameter N of constructor in XxxServiceImpl
+> required a bean of type 'XxxMapper' that could not be found`。
 
 ### Service 继承
 

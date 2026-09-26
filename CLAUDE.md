@@ -22,9 +22,9 @@ MDP 是一个Monorepo项目，包含三个主要模块，分别位于mdp-base、
 
 ## 核心架构
 
-@docs/architecture.md
-@docs/api-standards.md
-@docs/database-schema.md
+- @docs/architecture.md
+- @docs/api-standards.md
+- @docs/database-schema.md
 
 
 ## 数据库配置
