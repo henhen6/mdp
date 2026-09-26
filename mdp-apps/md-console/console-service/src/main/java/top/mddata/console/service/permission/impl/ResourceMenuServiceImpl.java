@@ -14,19 +14,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
+import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
 import top.mddata.base.util.StrPool;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.BeanPlusUtil;
 import top.mddata.base.utils.MyTreeUtil;
+import top.mddata.common.cache.console.permission.MenuDataScopeCacheKeyBuilder;
 import top.mddata.common.constant.console.AdminConstant;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.permission.MenuTypeEnum;
+import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.dto.permission.ResourceMenuDto;
 import top.mddata.console.entity.permission.ResourceMenu;
 import top.mddata.console.entity.permission.Role;
+import top.mddata.console.entity.permission.RoleDataScopeRel;
 import top.mddata.console.entity.permission.RoleResourceRel;
 import top.mddata.console.mapper.permission.ResourceMenuMapper;
+import top.mddata.console.mapper.permission.RoleMapper;
 import top.mddata.console.service.permission.ResourceMenuService;
+import top.mddata.console.service.permission.RoleDataScopeRelService;
 import top.mddata.console.vo.permission.ResourceMenuVo;
 import top.mddata.console.vo.permission.RouterMeta;
 
@@ -51,6 +57,8 @@ import static top.mddata.common.constant.console.AdminConstant.LAYOUT;
 @RequiredArgsConstructor
 public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper, ResourceMenu> implements ResourceMenuService {
     private final UidGenerator uidGenerator;
+    private final RoleMapper roleMapper;
+    private final RoleDataScopeRelService roleDataScopeRelService;
 
     /**
      * 是否所有的子都是视图
@@ -301,12 +309,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
 
     @Override
     protected void saveAfter(Object save, ResourceMenu entity) {
-        ResourceMenuDto dto = (ResourceMenuDto) save;
         super.saveAfter(save, entity);
-
-        // 操作其他数据
+        grantPermSetRolesIfEnabled(entity);
     }
-
 
     @Override
     protected ResourceMenu updateBefore(Object update) {
@@ -332,6 +337,44 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     @Override
     protected void updateAfter(Object updateDto, ResourceMenu entity) {
         super.updateAfter(updateDto, entity);
+        grantPermSetRolesIfEnabled(entity);
+    }
+
+    /**
+     * 菜单启用数据权限时，自动为各组织性质的权限集合与管理员角色授予"全部数据"。
+     * 否则未授权=无数据的严格语义会把管理员体系锁死在 1=0：
+     * 权限集合无法授权下游、持有管理员角色的运营者也看不到数据。
+     * 普通角色不在此列，必须逐菜单显式授权
+     */
+    private void grantPermSetRolesIfEnabled(ResourceMenu menu) {
+        if (menu == null) {
+            return;
+        }
+        // 启用/关闭都要失效菜单缓存，保证引擎立即读到最新开关状态
+        cacheOps.del(List.of(MenuDataScopeCacheKeyBuilder.build(menu.getCode())));
+        if (!Boolean.TRUE.equals(menu.getDataScopeState())) {
+            // 关闭时授权记录保留，重新启用自动恢复（避免误删管理员已配置的数据）
+            return;
+        }
+        List<Role> protectedRoles = roleMapper.selectListByQuery(QueryWrapper.create()
+                .in(Role::getRoleCategory, RoleCategoryEnum.ADMIN_ROLE.getCode(), RoleCategoryEnum.PERM_SET.getCode())
+                .eq(Role::getState, Boolean.TRUE));
+        List<RoleDataScopeRel> grants = new ArrayList<>();
+        for (Role role : protectedRoles) {
+            boolean exists = roleDataScopeRelService.exists(QueryWrapper.create()
+                    .eq(RoleDataScopeRel::getRoleId, role.getId())
+                    .eq(RoleDataScopeRel::getMenuId, menu.getId()));
+            if (!exists) {
+                RoleDataScopeRel grant = new RoleDataScopeRel();
+                grant.setRoleId(role.getId());
+                grant.setMenuId(menu.getId());
+                grant.setDataScope(DataScopeEnum.ALL.getCode());
+                grants.add(grant);
+            }
+        }
+        if (CollUtil.isNotEmpty(grants)) {
+            roleDataScopeRelService.saveBatch(grants);
+        }
     }
 
     @Override

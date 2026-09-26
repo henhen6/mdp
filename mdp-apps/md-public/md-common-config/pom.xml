@@ -28,6 +28,10 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
+            <groupId>top.mddata.base</groupId>
+            <artifactId>md-cache-starter</artifactId>
+        </dependency>
+        <dependency>
             <groupId>top.mddata.apps</groupId>
             <artifactId>md-common-pojo</artifactId>
             <version>${revision}</version>

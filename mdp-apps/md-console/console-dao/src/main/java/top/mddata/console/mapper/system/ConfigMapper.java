@@ -25,9 +25,6 @@ public interface ConfigMapper extends SuperMapper<Config> {
 
     /**
      * 根据查询条件查询配置列表
-     * <p>
-     * 注意：数据权限注解 @DataPermission 已移至 Service 层
-     * </p>
      *
      * @param queryWrapper 查询条件
      * @return 配置列表

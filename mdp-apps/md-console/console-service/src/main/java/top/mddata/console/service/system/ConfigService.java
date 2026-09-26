@@ -87,9 +87,6 @@ public interface ConfigService extends SuperService<Config> {
 
     /**
      * 带数据权限的查询配置列表
-     * <p>
-     * 此方法标注了 @DataPermission 注解，Spring AOP 会自动拦截并应用数据权限过滤
-     * </p>
      *
      * @param queryWrapper 查询条件
      * @return 配置列表（已根据当前用户的数据权限过滤）

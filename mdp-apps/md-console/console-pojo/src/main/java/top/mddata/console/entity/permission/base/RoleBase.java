@@ -53,19 +53,6 @@ public class RoleBase extends SuperEntity<Long> implements Serializable {
     private Integer orgNature;
 
     /**
-     * 数据范围
-     * [10-全部 20-本公司及以下 30-本部门及以下
-     * 40-本部门 50-仅本人 90-自定义实现]
-     */
-    private String dataScope;
-
-    /**
-     * 自定义数据范围实现类（Spring Bean 名）
-     * 仅 dataScope=90 时使用，实现 DataScopeCustomHandler 接口
-     */
-    private String dataScopeImpl;
-
-    /**
      * 是否模版
      */
     private Boolean templateRole;

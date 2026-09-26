@@ -108,6 +108,13 @@ public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements 
     private Boolean state;
 
     /**
+     * 数据权限开关
+     * [0-关闭 1-启用]
+     */
+    @Schema(description = "数据权限开关")
+    private Boolean dataScopeState;
+
+    /**
      * 树路径
      */
     @Schema(description = "树路径")

@@ -1,12 +1,10 @@
 package top.mddata.console.service.permission.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.mddata.base.mybatisflex.datapermission.DataScope;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.constant.RoleCode;
@@ -49,10 +47,6 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
         if (RoleCategoryEnum.PERM_SET.eq(entity.getRoleCategory())) {
             ArgumentAssert.isFalse(roleService.checkCategoryAndOrgNature(entity.getRoleCategory(), entity.getOrgNature(), null), "当前组织性质下，已存在权限集合");
         }
-        // 数据范围为空视同全部（防止 null 落库绕过 DDL 默认值与"空视同 ALL"契约）
-        if (StrUtil.isEmpty(entity.getDataScope())) {
-            entity.setDataScope(DataScope.ALL.getCode());
-        }
         return entity;
     }
 
@@ -83,10 +77,6 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
                     "修改角色失败：角色[{}]的组织性质不可修改", oldRole.getName());
         }
 
-        // 数据范围为空视同全部（防止 null 落库绕过 DDL 默认值与"空视同 ALL"契约）
-        if (StrUtil.isEmpty(entity.getDataScope())) {
-            entity.setDataScope(DataScope.ALL.getCode());
-        }
         return entity;
     }
 

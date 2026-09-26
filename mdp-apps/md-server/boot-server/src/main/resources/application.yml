@@ -1,6 +1,7 @@
 mdp:
   database: # 字段介绍参考 DatabaseProperties
     flex:
+      dataScope: true
       audit: true
       auditCollector: DEFAULTS
       logicDeleteProcessor: TIME_STAMP_DEL_BY_LOGIC_DELETE_PROCESSOR

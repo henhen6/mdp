@@ -82,6 +82,12 @@ public class ResourceMenuBase<E extends TreeEntity<Long, E>> extends TreeEntity<
     private Boolean state;
 
     /**
+     * 数据权限开关
+     * [0-关闭 1-启用]
+     */
+    private Boolean dataScopeState;
+
+    /**
      * 树路径
      */
     private String treePath;

@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
-import top.mddata.base.mybatisflex.datapermission.DataScope;
+import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.constant.RoleCode;
@@ -17,6 +17,8 @@ import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.entity.permission.Role;
 import top.mddata.console.entity.permission.RoleAppRel;
+import top.mddata.console.entity.permission.RoleDataScopeRel;
+import top.mddata.console.mapper.permission.RoleDataScopeRelMapper;
 import top.mddata.console.mapper.permission.RoleMapper;
 import top.mddata.console.service.organization.SystemProtectService;
 import top.mddata.console.service.organization.UserRoleRelService;
@@ -43,6 +45,7 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
     private final RoleAppRelService roleAppRelService;
     private final UserRoleRelService userRoleRelService;
     private final SystemProtectService systemProtectService;
+    private final RoleDataScopeRelMapper roleDataScopeRelMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -96,10 +99,6 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
         entity.setOrgNature(resolveCurrentOrgNature());
         entity.setTemplateRole(false);
         entity.setRoleCategory(RoleCategoryEnum.NORMAL_ROLE.getCode());
-        // 数据范围为空视同全部（防止 null 落库绕过 DDL 默认值与"空视同 ALL"契约）
-        if (StrUtil.isEmpty(entity.getDataScope())) {
-            entity.setDataScope(DataScope.ALL.getCode());
-        }
         return entity;
     }
 
@@ -126,10 +125,6 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
                 && Boolean.FALSE.equals(entity.getState());
         ArgumentAssert.isFalse(protectedRoleDisabled, "禁用角色失败：角色[运营管理员]受系统保护");
 
-        // 数据范围为空视同全部（防止 null 落库绕过 DDL 默认值与"空视同 ALL"契约）
-        if (StrUtil.isEmpty(entity.getDataScope())) {
-            entity.setDataScope(DataScope.ALL.getCode());
-        }
         return entity;
     }
 
@@ -171,14 +166,16 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
 
     @Override
     @Transactional(readOnly = true)
-    public List<DataScope> getAssignableDataScopes() {
+    public List<DataScopeEnum> getAssignableScopesOfMenu(Long menuId) {
         Role permSet = getPermSetRoleOfCurrentOperator();
         if (permSet == null) {
-            // 权限集合角色不存在=配置缺失，无可分配项（fail-closed）
             return List.of();
         }
-        DataScope permSetScope = DataScope.getByCode(permSet.getDataScope());
-        return RoleService.getAssignableDataScopes(permSetScope);
+        RoleDataScopeRel rel = roleDataScopeRelMapper.selectOneByQuery(QueryWrapper.create()
+                .eq(RoleDataScopeRel::getRoleId, permSet.getId())
+                .eq(RoleDataScopeRel::getMenuId, menuId));
+        return RoleService.getAssignableDataScopes(
+                rel == null ? null : DataScopeEnum.getByCode(rel.getDataScope()));
     }
 
     @Override

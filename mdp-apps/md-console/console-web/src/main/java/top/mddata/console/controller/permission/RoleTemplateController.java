@@ -19,10 +19,14 @@ import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
+import top.mddata.console.dto.permission.RoleDataScopeRelDto;
 import top.mddata.console.dto.permission.RoleTemploateDto;
 import top.mddata.console.entity.permission.Role;
 import top.mddata.console.query.permission.RoleQuery;
+import top.mddata.console.service.permission.RoleDataScopeRelService;
 import top.mddata.console.service.permission.RoleTemplateService;
+import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
+import top.mddata.console.vo.permission.RoleDataScopeRelVo;
 import top.mddata.console.vo.permission.RoleVo;
 
 import java.util.List;
@@ -39,6 +43,7 @@ import java.util.List;
 @RequestMapping("/permission/roleTemplate")
 @RequiredArgsConstructor
 public class RoleTemplateController extends SuperController<RoleTemplateService, Role> {
+    private final RoleDataScopeRelService roleDataScopeRelService;
     private final EchoService echoService;
 
     /**
@@ -110,6 +115,44 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         echoService.action(listVo);
         return R.success(listVo);
+    }
+
+    /**
+     * 保存角色的数据权限授权。
+     *
+     * @param dto 授权项
+     * @return {@code true} 成功
+     */
+    @PostMapping("/saveRoleDataScope")
+    @Operation(summary = "保存角色数据权限", description = "全量覆盖保存角色的数据权限授权")
+    @RequestLog(value = "保存角色数据权限", logType = RequestLog.LogType.UPDATE, request = false)
+    public R<Boolean> saveRoleDataScope(@Validated @RequestBody RoleDataScopeRelDto dto) {
+        return R.success(roleDataScopeRelService.saveRoleDataScope(dto));
+    }
+
+    /**
+     * 查询角色的数据权限授权。
+     *
+     * @param roleId 角色id
+     * @return 授权列表
+     */
+    @GetMapping("/findDataScopeByRoleId")
+    @Operation(summary = "查询角色数据权限", description = "查询角色的数据权限授权")
+    @RequestLog(value = "查询角色数据权限", logType = RequestLog.LogType.QUERY)
+    public R<List<RoleDataScopeRelVo>> findDataScopeByRoleId(@RequestParam Long roleId) {
+        return R.success(roleDataScopeRelService.findDataScopeByRoleId(roleId));
+    }
+
+    /**
+     * 可授权的数据权限菜单树。
+     *
+     * @return 菜单树（含仅展示的祖先节点；可配置节点带可分配档位）
+     */
+    @GetMapping("/assignableDataScopeMenus")
+    @Operation(summary = "可授权的数据权限菜单树", description = "已启用数据权限的菜单树及各节点可分配档位")
+    @RequestLog(value = "查询可授权的数据权限菜单树", logType = RequestLog.LogType.QUERY)
+    public R<List<DataScopeMenuTreeVo>> assignableDataScopeMenus() {
+        return R.success(roleDataScopeRelService.findAssignableDataScopeMenuTree());
     }
 
 }

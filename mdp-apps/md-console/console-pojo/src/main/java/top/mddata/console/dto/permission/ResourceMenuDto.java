@@ -110,6 +110,13 @@ public class ResourceMenuDto implements Serializable {
     private Boolean state;
 
     /**
+     * 数据权限开关
+     * [0-关闭 1-启用]
+     */
+    @Schema(description = "数据权限开关")
+    private Boolean dataScopeState;
+
+    /**
      * 父级ID
      */
     @Schema(description = "父级ID")

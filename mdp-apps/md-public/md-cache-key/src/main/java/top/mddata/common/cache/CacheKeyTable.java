@@ -39,6 +39,10 @@ public interface CacheKeyTable {
         String ORG = "org";
         /** 角色拥有的资源 */
         String ROLE_RESOURCE = "role_resource";
+        /** 角色 × 菜单 数据范围授权 */
+        String ROLE_DATA_SCOPE = "role_data_scope";
+        /** 菜单数据权限开关 */
+        String RESOURCE_MENU = "resource_menu";
     }
 
     interface Workbench {
