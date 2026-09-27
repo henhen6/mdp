@@ -32,6 +32,7 @@ import top.mddata.console.entity.permission.RoleResourceRel;
 import top.mddata.console.mapper.permission.ResourceMenuMapper;
 import top.mddata.console.mapper.permission.RoleMapper;
 import top.mddata.console.service.permission.ResourceMenuService;
+import top.mddata.console.service.permission.ResourceApiService;
 import top.mddata.console.service.permission.RoleDataScopeRelService;
 import top.mddata.console.vo.permission.ResourceMenuVo;
 import top.mddata.console.vo.permission.RouterMeta;
@@ -59,6 +60,7 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     private final UidGenerator uidGenerator;
     private final RoleMapper roleMapper;
     private final RoleDataScopeRelService roleDataScopeRelService;
+    private final ResourceApiService resourceApiService;
 
     /**
      * 是否所有的子都是视图
@@ -500,9 +502,20 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
         if (CollUtil.isEmpty(sysMenus)) {
             return false;
         }
+        // 收集所有被删菜单id（含子孙），用于级联清理接口权限
+        List<Long> allMenuIds = new ArrayList<>();
+        sysMenus.forEach(sysMenu -> {
+            List<ResourceMenu> children = list(QueryWrapper.create()
+                    .likeLeft(ResourceMenu::getTreePath, sysMenu.getTreePath()));
+            children.forEach(c -> allMenuIds.add(c.getId()));
+        });
+        allMenuIds.addAll(idList.stream().map(Convert::toLong).toList());
 //        删除他的子集
         sysMenus.forEach(sysMenu -> remove(QueryWrapper.create().likeLeft(ResourceMenu::getTreePath, sysMenu.getTreePath())));
-        return super.removeByIds(idList);
+        boolean result = super.removeByIds(idList);
+        // 级联清理接口权限配置，防悬挂关联（菜单删除是低频操作，批量处理可接受）
+        resourceApiService.deleteByResource(allMenuIds);
+        return result;
     }
 
 }

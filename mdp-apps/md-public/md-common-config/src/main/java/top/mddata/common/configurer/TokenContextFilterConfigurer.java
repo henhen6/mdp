@@ -2,6 +2,7 @@ package top.mddata.common.configurer;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import top.mddata.common.apiperm.ApiPermSupport;
 import top.mddata.common.interceptor.TokenContextFilter;
 import top.mddata.common.properties.IgnoreProperties;
 
@@ -14,10 +15,11 @@ import top.mddata.common.properties.IgnoreProperties;
 @RequiredArgsConstructor
 public class TokenContextFilterConfigurer extends BasicConfigurer {
     private final IgnoreProperties ignoreProperties;
+    private final ApiPermSupport apiPermSupport;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenContextFilter(ignoreProperties))
+        registry.addInterceptor(new TokenContextFilter(ignoreProperties, apiPermSupport))
                 .excludePathPatterns(getExcludeCommonPathPatterns())
                 .addPathPatterns("/**").order(-20);
     }

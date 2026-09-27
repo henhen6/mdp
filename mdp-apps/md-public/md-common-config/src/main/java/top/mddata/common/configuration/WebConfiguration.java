@@ -13,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.mddata.base.boot.config.BaseConfig;
+import top.mddata.common.apiperm.ApiPermSupport;
 import top.mddata.common.configurer.HeaderThreadLocalConfigurer;
 import top.mddata.common.configurer.TokenContextFilterConfigurer;
 import top.mddata.common.properties.IgnoreProperties;
@@ -31,6 +32,7 @@ import top.mddata.common.undertow.UndertowServerFactoryCustomizer;
 @RequiredArgsConstructor
 public class WebConfiguration extends BaseConfig implements WebMvcConfigurer {
     private final IgnoreProperties ignoreProperties;
+    private final ApiPermSupport apiPermSupport;
 
     @Bean
     @ConditionalOnClass(Undertow.class)
@@ -47,7 +49,7 @@ public class WebConfiguration extends BaseConfig implements WebMvcConfigurer {
     @Bean
     @ConditionalOnProperty(prefix = SystemProperties.PREFIX, name = "mode", havingValue = "boot")
     public TokenContextFilterConfigurer getTokenContextFilterConfigurer() {
-        return new TokenContextFilterConfigurer(ignoreProperties);
+        return new TokenContextFilterConfigurer(ignoreProperties, apiPermSupport);
     }
 
     @Override

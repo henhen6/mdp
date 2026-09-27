@@ -10,6 +10,7 @@ import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.spring.pathmatch.SaPathPatternParserUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -25,9 +26,8 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 import top.mddata.base.base.R;
 import top.mddata.common.properties.IgnoreProperties;
+import top.mddata.gateway.inner.apiperm.GatewayApiPermSupport;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +47,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AuthenticationSaInterceptor implements WebFilter, Ordered {
     private final IgnoreProperties ignoreProperties;
+    private final GatewayApiPermSupport gatewayApiPermSupport;
 
     @Override
     public int getOrder() {
@@ -58,15 +59,6 @@ public class AuthenticationSaInterceptor implements WebFilter, Ordered {
 
         // 写入WebFilterChain对象
         exchange.getAttributes().put(SaReactorHolder.EXCHANGE_KEY, chain);
-        // TODO 待处理
-        if (true) {
-            return chain.filter(exchange).contextWrite(ctx -> {
-                ctx = ctx.put(SaReactorHolder.CHAIN_KEY, exchange);
-                return ctx;
-            }).doFinally(r -> {
-                SaReactorSyncHolder.clearContext();
-            });
-        }
 
         // ---------- 全局认证处理
         try {
@@ -111,67 +103,15 @@ public class AuthenticationSaInterceptor implements WebFilter, Ordered {
             }
 
             // 接口权限
-            Map<String, Set<String>> anyone = ignoreProperties.buildAnyone();
-            // TODO 待实现
-            Map<String, Set<String>> allApi = new LinkedHashMap<>();
-//            Map<String, Set<String>> allApi = defResourceFacade.listAllApi();
-
-            allApi.forEach((api, auth) -> {
-                List<String> list = StrUtil.split(api, "###");
-                String uri = list.get(0);
-                String requestMethod = list.get(1);
-                SaRouter.match(uri).matchMethod(requestMethod)
-                        .notMatch(r -> {
-                            String path = SaHolder.getRequest().getRequestPath();
-                            String method = SaHolder.getRequest().getMethod();
-                            for (Map.Entry<String, Set<String>> map : anyone.entrySet()) {
-                                String key = map.getKey();
-                                Set<String> value = map.getValue();
-                                if (StrUtil.equalsAny(key, method, SaHttpMethod.ALL.name())) {
-                                    for (String ignore : value) {
-                                        if (StrUtil.equals(ignore, path)) {
-                                            return true;
-                                        }
-
-                                        if (SaPathPatternParserUtil.match(ignore, path)) {
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-                            return false;
-                        })
-                        .check(r -> StpUtil.checkPermissionOr(auth.toArray(String[]::new)));
-            });
-
-
-//            if (!ignoreProperties.getNotConfigUriAllow()) {
-//                String path = SaHolder.getRequest().getRequestPath();
-//                String method = SaHolder.getRequest().getMethod();
-//                ResourceApiVO resourceApi = new ResourceApiVO();
-//                resourceApi.setUri(path);
-//                resourceApi.setRequestMethod(method);
-//
-//
-//                if (!ignoreProperties.isIgnoreAnyone(method, path)) {
-//                    boolean flag = false;
-//                    for (Map.Entry<String, Set<String>> map : allApi.entrySet()) {
-//                        List<String> list = StrUtil.split(map.getKey(), "###");
-//                        String uri = list.get(0);
-//                        String requestMethod = list.get(1);
-//
-//                        if (StrUtil.equalsAny(requestMethod, method, SaHttpMethod.ALL.name())) {
-//                            if (StrUtil.equals(uri, path) || SaPathPatternParserUtil.match(uri, path)) {
-//                                flag = true;
-//                            }
-//                        }
-//                    }
-//
-//                    if (!flag) {
-//                        throw new NotPermissionException(resourceApi.getUri(), StpUtil.TYPE).setCode(SaErrorCode.CODE_11051);
-//                    }
-//                }
-//            }
+            String path = SaHolder.getRequest().getRequestPath();
+            String method = SaHolder.getRequest().getMethod();
+            if (!gatewayApiPermSupport.pass(path, method)) {
+                ServerHttpResponse resp = exchange.getResponse();
+                R<?> deny = R.fail("无权限访问该接口：" + path);
+                resp.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+                DataBuffer buffer = resp.bufferFactory().wrap(JSON.toJSONString(deny).getBytes());
+                return resp.writeWith(Mono.just(buffer));
+            }
 
         } catch (StopMatchException e) {
             log.error(e.getMessage(), e);

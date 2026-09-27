@@ -20,6 +20,7 @@
 
     <modules>
         <module>md-cache-key</module>
+        <module>md-resource-api</module>
         <module>md-common-pojo</module>
         <module>md-common-dao</module>
         <module>md-common-config</module>

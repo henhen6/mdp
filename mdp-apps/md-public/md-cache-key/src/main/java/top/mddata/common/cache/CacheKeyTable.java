@@ -43,6 +43,10 @@ public interface CacheKeyTable {
         String ROLE_DATA_SCOPE = "role_data_scope";
         /** 菜单数据权限开关 */
         String RESOURCE_MENU = "resource_menu";
+        /** 全量已配置接口 */
+        String RESOURCE_API_ALL = "resource_api_all";
+        /** 用户接口放行集 */
+        String USER_RESOURCE_API = "user_resource_api";
     }
 
     interface Workbench {

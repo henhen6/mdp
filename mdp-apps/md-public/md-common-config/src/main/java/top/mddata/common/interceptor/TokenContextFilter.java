@@ -1,5 +1,6 @@
 package top.mddata.common.interceptor;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
@@ -13,6 +14,7 @@ import org.slf4j.MDC;
 import org.springframework.web.method.HandlerMethod;
 import top.mddata.base.constant.ContextConstants;
 import top.mddata.base.util.ContextUtil;
+import top.mddata.common.apiperm.ApiPermSupport;
 import top.mddata.common.properties.IgnoreProperties;
 
 import static top.mddata.base.constant.ContextConstants.APP_ID;
@@ -36,14 +38,15 @@ import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
 @Slf4j
 public class TokenContextFilter extends SaInterceptor {
     private final IgnoreProperties ignoreProperties;
+    private final ApiPermSupport apiPermSupport;
 
-    public TokenContextFilter(IgnoreProperties ignoreProperties) {
+    public TokenContextFilter(IgnoreProperties ignoreProperties, ApiPermSupport apiPermSupport) {
         this.ignoreProperties = ignoreProperties;
+        this.apiPermSupport = apiPermSupport;
 
-        // TODO 接口拦截器 待实现
         this.auth = handler -> {
-
-
+            HttpServletRequest req = (HttpServletRequest) SaHolder.getRequest().getSource();
+            apiPermSupport.check(req.getRequestURI(), req.getMethod());
         };
     }
 

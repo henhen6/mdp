@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import com.google.common.collect.Multimap;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.row.Db;
+import com.mybatisflex.core.row.Row;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.common.cache.console.permission.RoleResourceCacheKeyBuilder;
+import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder;
 import top.mddata.console.dto.permission.RoleResourceRelDto;
 import top.mddata.console.entity.permission.RoleResourceRel;
 import top.mddata.console.mapper.permission.RoleResourceRelMapper;
@@ -24,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 角色资源关联 服务层实现。
@@ -51,6 +55,9 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
         roleAppIdList.forEach(appId -> roleIdList.forEach(roleId -> keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), appId))));
         roleIdList.forEach(roleId -> keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), null)));
         cacheOps.del(keys);
+
+        // 授权变更影响这些角色下所有用户的接口放行集
+        invalidateUserResourceApiCacheByRoleIds(roleIdList);
     }
 
     @Override
@@ -66,6 +73,9 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
         appIdList.forEach(appId -> keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), appId)));
         keys.add(RoleResourceCacheKeyBuilder.build(Convert.toLong(roleId), null));
         cacheOps.del(keys);
+
+        // 授权变更影响该角色下所有用户的接口放行集
+        invalidateUserResourceApiCacheByRoleIds(List.of(roleId));
     }
 
     @Override
@@ -111,9 +121,32 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
 
         boolean flag = saveBatch(list);
         cacheOps.del(keys);
+
+        // 授权变更影响该角色下所有用户的接口放行集
+        invalidateUserResourceApiCacheByRoleIds(List.of(roleId));
+
         return flag;
     }
 
+
+    @Override
+    public void invalidateUserResourceApiCacheByRoleIds(Collection<? extends Serializable> roleIdList) {
+        if (CollUtil.isEmpty(roleIdList)) {
+            return;
+        }
+        String roleIds = roleIdList.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        List<Row> userRows = Db.selectListByQuery(QueryWrapper.create()
+                .select("DISTINCT user_id AS userId").from("mdc_user_role_rel")
+                .where("role_id IN (" + roleIds + ")"));
+        List<CacheKey> userKeys = userRows.stream()
+                .map(r -> UserResourceApiCacheKeyBuilder.build(r.getLong("userId")))
+                .toList();
+        if (!userKeys.isEmpty()) {
+            cacheOps.del(userKeys);
+        }
+    }
 
     @Override
     @Transactional(readOnly = true)

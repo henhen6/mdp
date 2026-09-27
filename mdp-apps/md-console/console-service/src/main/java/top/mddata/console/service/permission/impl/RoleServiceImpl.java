@@ -129,6 +129,13 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
     }
 
     @Override
+    protected void updateAfter(Object updateDto, Role entity) {
+        // 角色任何更新（含停用/启用）都失效该角色下所有用户的接口放行集缓存B
+        // 角色更新为低频操作，全量失效可接受
+        roleResourceRelService.invalidateUserResourceApiCacheByRoleIds(List.of(entity.getId()));
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean removeByIds(Collection<? extends Serializable> idList) {
         idList.forEach(id -> systemProtectService.checkRoleNotProtected(

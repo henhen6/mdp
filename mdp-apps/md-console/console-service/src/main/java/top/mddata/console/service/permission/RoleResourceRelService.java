@@ -43,4 +43,13 @@ public interface RoleResourceRelService extends SuperService<RoleResourceRel> {
      * @param appIdList 应用ID
      */
     void removeByRoleIdAndAppIds(Long roleId, List<Long> appIdList);
+
+    /**
+     * 失效指定角色集合下所有用户的接口放行集缓存B。
+     *
+     * <p>低频操作（角色授权变更、角色启停等），可接受全量失效。
+     *
+     * @param roleIdList 角色ID集合
+     */
+    void invalidateUserResourceApiCacheByRoleIds(Collection<? extends Serializable> roleIdList);
 }

@@ -36,6 +36,11 @@
             <artifactId>md-common-pojo</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>top.mddata.apps</groupId>
+            <artifactId>md-resource-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.dromara.sms4j</groupId>

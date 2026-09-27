@@ -36,6 +36,19 @@ public class IgnoreProperties {
      */
     private Boolean authEnabled = true;
     /**
+     * 未配置（未纳管）接口是否放行。
+     * true：只拦截已配置接口（联调期推荐）；false：未配置一律拒绝（白名单）。
+     */
+    private Boolean notConfigUriAllow = true;
+    /**
+     * 网关前缀，接口权限路径归一化时剥离
+     */
+    private String gatewayPrefix = "api";
+    /**
+     * 服务前缀集合，接口权限路径归一化时剥离第一段
+     */
+    private Set<String> servicePrefixes = CollUtil.newHashSet("console", "workbench", "open");
+    /**
      * 前端校验按钮 是否区分大小写
      */
     private Boolean caseSensitive = false;
@@ -126,10 +139,15 @@ public class IgnoreProperties {
         for (Map.Entry<String, Set<String>> entry : all.entrySet()) {
             String m = entry.getKey();
             Set<String> paths = entry.getValue();
+            boolean match;
             if (HttpMethod.ALL.name().equalsIgnoreCase(m)) {
-                return paths.stream().anyMatch(url -> ANT_PATH_MATCHER.match(url, path));
+                match = paths.stream().anyMatch(url -> ANT_PATH_MATCHER.match(url, path));
             } else {
-                return m.equalsIgnoreCase(method) && paths.stream().anyMatch(url -> ANT_PATH_MATCHER.match(url, path));
+                match = m.equalsIgnoreCase(method)
+                        && paths.stream().anyMatch(url -> ANT_PATH_MATCHER.match(url, path));
+            }
+            if (match) {
+                return true;
             }
         }
         return false;

@@ -22,6 +22,21 @@
         </dependency>
         <dependency>
             <groupId>top.mddata.apps</groupId>
+            <artifactId>md-resource-api</artifactId>
+            <version>${revision}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-webmvc</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-web</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.apps</groupId>
             <artifactId>md-common-pojo</artifactId>
             <version>${revision}</version>
             <exclusions>

@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.UserOrgRel;
 import top.mddata.common.entity.UserRoleRel;
@@ -47,7 +49,14 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
         if (CollUtil.isEmpty(roleIdList)) {
             return;
         }
+        List<Long> userIds = list(QueryWrapper.create().in(UserRoleRel::getRoleId, roleIdList))
+                .stream()
+                .map(UserRoleRel::getUserId)
+                .distinct()
+                .toList();
         super.remove(QueryWrapper.create().in(UserRoleRel::getRoleId, roleIdList));
+        // 角色级联删除关联，失效受影响用户的接口放行集缓存
+        invalidateUserResourceApiCache(userIds);
     }
 
     @Override
@@ -69,7 +78,10 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
                 })
                 .collect(Collectors.toList());
 
-        return super.saveBatch(saveList);
+        boolean result = super.saveBatch(saveList);
+        // 角色绑定变更，失效对应用户的接口放行集缓存
+        invalidateUserResourceApiCache(dto.getUserIdList());
+        return result;
     }
 
     @Override
@@ -77,8 +89,25 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
     public Boolean delete(UserRoleRelDto dto) {
         systemProtectService.checkUsersNotProtected(dto.getUserIdList(), "解绑角色");
 
-        return super.remove(QueryWrapper.create().eq(UserRoleRel::getRoleId, dto.getRoleId()).in(UserRoleRel::getUserId, dto.getUserIdList()));
+        Boolean result = super.remove(
+                QueryWrapper.create().eq(UserRoleRel::getRoleId, dto.getRoleId())
+                        .in(UserRoleRel::getUserId, dto.getUserIdList()));
+        // 角色解绑变更，失效对应用户的接口放行集缓存
+        invalidateUserResourceApiCache(dto.getUserIdList());
+        return result;
+    }
 
+    /**
+     * 失效指定用户的接口放行集缓存B。
+     */
+    private void invalidateUserResourceApiCache(Collection<Long> userIdList) {
+        if (CollUtil.isEmpty(userIdList)) {
+            return;
+        }
+        List<CacheKey> keys = userIdList.stream()
+                .map(UserResourceApiCacheKeyBuilder::build)
+                .toList();
+        cacheOps.del(keys);
     }
 
     @Override
