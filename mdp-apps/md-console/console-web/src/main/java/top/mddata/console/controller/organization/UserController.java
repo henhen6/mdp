@@ -137,7 +137,10 @@ public class UserController extends SuperController<UserService, User> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         OrgVisibilityService.appendUserVisibilityFilter(wrapper,
                 orgVisibilityService.currentVisibleRootOrgIds(), ContextUtil.getUserId());
-        List<UserVo> listVo = superService.listAs(wrapper, UserVo.class);
+        // 与 page 对齐走关系查询：补查 orgIdList，echo 才能回显用户所属公司/部门
+        List<User> userList = superService.getMapper().selectListWithRelationsByQuery(wrapper);
+        List<UserVo> listVo = BeanUtil.copyToList(userList, UserVo.class);
+        echoService.action(listVo);
         return R.success(listVo);
     }
 
