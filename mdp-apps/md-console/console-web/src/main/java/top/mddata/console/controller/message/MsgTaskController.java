@@ -23,6 +23,7 @@ import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
 import top.mddata.console.dto.message.MsgSendDto;
 import top.mddata.console.dto.message.MsgTaskDto;
 import top.mddata.console.entity.message.MsgTask;
+import top.mddata.console.entity.message.MsgTaskRecipient;
 import top.mddata.console.mapper.message.MsgTaskMapper;
 import top.mddata.console.query.message.MsgTaskQuery;
 import top.mddata.console.service.message.MsgTaskRecipientService;
@@ -103,10 +104,11 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
     public R<MsgTaskVo> get(@RequestParam Long id) {
         MsgTask entity = superService.getById(id);
         MsgTaskVo vo = BeanUtil.toBean(entity, MsgTaskVo.class);
-//        if (vo != null) {
-//            List<MsgTaskRecipient> msgTaskRecipientList = msgTaskRecipientService.listByMsgTaskId(vo.getId());
-//            vo.setRecipientList(msgTaskRecipientList.stream().map(MsgTaskRecipient::getRecipient).toList());
-//        }
+        if (vo != null) {
+            // 接收人存于子表 mdc_msg_task_recipient，实体无此字段，需单独查询回填
+            List<MsgTaskRecipient> msgTaskRecipientList = msgTaskRecipientService.listByMsgTaskId(vo.getId());
+            vo.setRecipientList(msgTaskRecipientList.stream().map(MsgTaskRecipient::getRecipient).toList());
+        }
         return R.success(vo);
     }
 
