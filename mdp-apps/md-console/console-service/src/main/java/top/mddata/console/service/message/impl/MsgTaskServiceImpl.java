@@ -62,6 +62,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         entity.setStatus(MsgTaskStatusEnum.DRAFT.getCode());
         entity.setChannel(MsgChannelEnum.WEB.getCode());
         entity.setSenderId(ContextUtil.getUserId());
+        entity.setOrgId(ContextUtil.getCurrentDeptOrCompanyId());
 
         return entity;
     }
@@ -128,6 +129,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         entity.setStatus(MsgTaskStatusEnum.WAITING.getCode());
         entity.setChannel(MsgChannelEnum.WEB.getCode());
         entity.setSenderId(ContextUtil.getUserId());
+        entity.setOrgId(ContextUtil.getCurrentDeptOrCompanyId());
         entity.setTemplateId(defNoticeTemplate.getId());
 
         if (data.getId() == null) {
@@ -179,6 +181,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         entity.setType(msgTemplate.getMsgType());
         entity.setStatus(MsgTaskStatusEnum.WAITING.getCode());
         entity.setSenderId(ContextUtil.getUserId());
+        entity.setOrgId(ContextUtil.getCurrentDeptOrCompanyId());
         entity.setContent("");
         entity.setTitle("");
 

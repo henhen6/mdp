@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
-import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.constant.RoleCode;

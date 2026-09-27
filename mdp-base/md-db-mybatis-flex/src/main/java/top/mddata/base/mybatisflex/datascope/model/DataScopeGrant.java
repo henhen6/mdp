@@ -1,4 +1,4 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.repository.CacheOps;
 import top.mddata.base.model.cache.CacheKey;
-import top.mddata.base.mybatisflex.datascope.DataScopeCurrentUser;
-import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
-import top.mddata.base.mybatisflex.datascope.DataScopeGrant;
-import top.mddata.base.mybatisflex.datascope.DataScopeProvider;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeCurrentUser;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeGrant;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeProvider;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.common.cache.console.permission.MenuDataScopeCacheKeyBuilder;
 import top.mddata.common.cache.console.permission.RoleDataScopeCacheKeyBuilder;
@@ -60,7 +60,8 @@ public class DataScopeProviderImpl implements DataScopeProvider {
         Long userId = ContextUtil.getUserId();
         currentUser.setUserId(userId);
         currentUser.setCompanyId(ContextUtil.getCurrentCompanyId());
-        currentUser.setDeptId(ContextUtil.getCurrentDeptId());
+        // 部门基准取组织单元（部门优先、公司回落，规则见 ContextUtil.getCurrentDeptOrCompanyId）
+        currentUser.setDeptId(ContextUtil.getCurrentDeptOrCompanyId());
         if (userId == null) {
             return currentUser;
         }

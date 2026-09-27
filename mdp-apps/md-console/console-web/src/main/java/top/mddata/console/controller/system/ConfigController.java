@@ -19,6 +19,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
 import top.mddata.console.dto.system.ConfigDto;
 import top.mddata.console.entity.system.Config;
 import top.mddata.console.query.system.ConfigQuery;
@@ -95,6 +96,8 @@ public class ConfigController extends SuperController<ConfigService, Config> {
      * @param params 分页对象
      * @return 分页对象
      */
+    // 数据权限埋点：mdc_config 有 org_id 列，支持全五档；菜单启用数据权限后生效
+    @DataScope(code = "console:system:config", orgColumn = "org_id")
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询系统配置")
     @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)

@@ -1,4 +1,11 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.engine;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
+import top.mddata.base.mybatisflex.datascope.context.DataScopeContext;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeCurrentUser;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeGrant;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeCustomHandler;
 
 import org.junit.jupiter.api.Test;
 import top.mddata.base.exception.ArgumentException;
@@ -6,7 +13,9 @@ import top.mddata.base.exception.ArgumentException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -147,7 +156,7 @@ class DataScopeSqlRewriterTest {
         String sql = DataScopeSqlRewriter.rewrite("SELECT id FROM mdc_user",
                 stub("menu:user", "dept_id", "created_by"),
                 List.of(grant(DataScopeEnum.DEPT)), noDept, Map.of());
-        assertTrue(sql.contains("1 = 0"), sql);
+        assertTrue(sql.contains("id IS NULL"), sql);
     }
 
     @Test
@@ -175,10 +184,17 @@ class DataScopeSqlRewriterTest {
     }
 
     @Test
-    void denyAll注入1等于0() {
+    void denyAll注入永假条件() {
         String sql = DataScopeSqlRewriter.denyAll("SELECT id FROM mdc_user WHERE state = 1");
-        assertTrue(sql.contains("1 = 0"), sql);
+        // 永假条件用主键 IS NULL 表达（1 = 0 会被 Druid WallFilter 拦截）
+        assertTrue(sql.contains("mdc_user.id IS NULL"), sql);
         assertTrue(sql.contains("state = 1"), sql);
+    }
+
+    @Test
+    void denyAll带别名按别名拼永假条件() {
+        String sql = DataScopeSqlRewriter.denyAll("SELECT u.id FROM mdc_user u WHERE u.state = 1");
+        assertTrue(sql.contains("u.id IS NULL"), sql);
     }
 
     @Test
@@ -224,6 +240,32 @@ class DataScopeSqlRewriterTest {
         String sql = DataScopeSqlRewriter.rewrite("SELECT id FROM mdc_user",
                 stub("menu:user", "dept_id", "created_by"),
                 List.of(grant(DataScopeEnum.COMPANY_AND_CHILD)), noCompany, Map.of());
-        assertTrue(sql.contains("1 = 0"), sql);
+        assertTrue(sql.contains("id IS NULL"), sql);
+    }
+
+    /**
+     * 回归：自定义 handler 内部若查库会再次经过拦截器，执行期间上下文必须被隔离；
+     * 返回后外层上下文必须恢复
+     */
+    @Test
+    void 自定义handler执行期间上下文被隔离_返回后恢复() {
+        AtomicReference<DataScope> seenInHandler = new AtomicReference<>();
+        DataScopeCustomHandler handler = (currentUser, ds, alias) -> {
+            seenInHandler.set(DataScopeContext.get());
+            return "area_id = 1";
+        };
+        DataScope annotation = stub("menu:order", "dept_id", "created_by");
+        DataScopeContext.setAndGetPrevious(annotation);
+        try {
+            String sql = DataScopeSqlRewriter.rewrite("SELECT id FROM mdc_order",
+                    annotation, List.of(new DataScopeGrant(1L, DataScopeEnum.CUSTOM, "h")),
+                    user(), Map.of("h", handler));
+
+            assertTrue(sql.contains("area_id = 1"), sql);
+            assertNull(seenInHandler.get());
+            assertEquals("menu:order", DataScopeContext.get().code());
+        } finally {
+            DataScopeContext.restore(null);
+        }
     }
 }

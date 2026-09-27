@@ -1,4 +1,6 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.context;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
 
 /**
  * 数据权限上下文（ThreadLocal）。

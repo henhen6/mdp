@@ -1,4 +1,4 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.model;
 
 import org.junit.jupiter.api.Test;
 

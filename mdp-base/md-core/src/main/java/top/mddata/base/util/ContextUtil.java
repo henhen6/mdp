@@ -389,6 +389,21 @@ public final class ContextUtil {
     }
 
     /**
+     * 获取当前用户的组织单元ID：部门优先，用户直接挂公司节点（部门为空）时回落为公司。
+     * <p>
+     * "本部门"类场景的统一取值规则（数据权限本部门档、业务数据记录操作人组织单元）：
+     * 本部门 = 我的组织单元，是部门按部门、是公司按公司。
+     * 需要严格"部门"语义（部门为空就是空）时，请使用 {@link #getCurrentDeptId()}。
+     * </p>
+     *
+     * @return 组织单元ID（部门ID ?? 公司ID），两者皆空返回 null
+     */
+    public static Long getCurrentDeptOrCompanyId() {
+        Long deptId = getCurrentDeptId();
+        return deptId != null ? deptId : getCurrentCompanyId();
+    }
+
+    /**
      * 获取当前顶级公司组织性质
      * <p>
      * 从上下文中获取用户当前所属顶级公司的组织性质标识。

@@ -13,7 +13,7 @@ import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
-import top.mddata.base.mybatisflex.datascope.DataScope;
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;

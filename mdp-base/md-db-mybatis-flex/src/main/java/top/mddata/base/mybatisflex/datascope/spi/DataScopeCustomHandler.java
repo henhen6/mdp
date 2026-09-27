@@ -1,4 +1,7 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.spi;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeCurrentUser;
 
 /**
  * 自定义数据范围处理器 SPI。

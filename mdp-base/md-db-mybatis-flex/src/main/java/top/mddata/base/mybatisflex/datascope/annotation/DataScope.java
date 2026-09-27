@@ -1,4 +1,4 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

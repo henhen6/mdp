@@ -1,4 +1,7 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.engine;
+
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeGrant;
 
 import org.junit.jupiter.api.Test;
 

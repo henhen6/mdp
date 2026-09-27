@@ -19,6 +19,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
 import top.mddata.console.dto.message.MsgSendDto;
 import top.mddata.console.dto.message.MsgTaskDto;
 import top.mddata.console.entity.message.MsgTask;
@@ -115,6 +116,8 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      * @param params 分页对象
      * @return 分页对象
      */
+    // 数据权限埋点：org_id = 发布人当前部门（发布时写入），支持全五档
+    @DataScope(code = "console:message:msg", orgColumn = "org_id")
     @PostMapping("/page")
     @Operation(summary = "分页列表查询", description = "分页查询消息任务")
     @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)

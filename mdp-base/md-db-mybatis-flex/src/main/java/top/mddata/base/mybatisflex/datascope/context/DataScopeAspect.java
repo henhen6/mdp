@@ -1,4 +1,6 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.context;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.After;

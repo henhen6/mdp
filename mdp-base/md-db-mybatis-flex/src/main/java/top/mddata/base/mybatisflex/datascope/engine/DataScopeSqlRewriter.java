@@ -1,4 +1,11 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.engine;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
+import top.mddata.base.mybatisflex.datascope.context.DataScopeContext;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeCurrentUser;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeGrant;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeCustomHandler;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
@@ -6,6 +13,7 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.Join;
@@ -57,11 +65,32 @@ public final class DataScopeSqlRewriter {
     }
 
     /**
-     * 注入 1 = 0（菜单已启用但无任何授权：无数据）
+     * 注入永假条件（菜单已启用但无任何授权：无数据）
      */
     public static String denyAll(String sql) {
         PlainSelect plainSelect = parsePlainSelect(sql);
-        return inject(plainSelect, "1 = 0");
+        return inject(plainSelect, alwaysFalseOf(plainSelect));
+    }
+
+    /**
+     * 永假条件：主键必然非空，id IS NULL 恒为假。
+     * 不用 1 = 0：会被 Druid WallFilter 的永假条件规则拦截
+     */
+    private static String alwaysFalse(String alias) {
+        return column(alias, "id") + " IS NULL";
+    }
+
+    /**
+     * 按 FROM 主表拼永假条件：有别名用别名（别名声明后表名不可再引用），
+     * 无别名用表名；FROM 为子查询的罕见场景退回裸列
+     */
+    private static String alwaysFalseOf(PlainSelect plainSelect) {
+        if (plainSelect.getFromItem() instanceof Table table) {
+            String prefix = table.getAlias() != null
+                    ? table.getAlias().getName() : table.getName();
+            return alwaysFalse(prefix);
+        }
+        return alwaysFalse(null);
     }
 
     private static PlainSelect parsePlainSelect(String sql) {
@@ -151,7 +180,7 @@ public final class DataScopeSqlRewriter {
             ArgumentAssert.notNull(handler,
                     "数据权限：角色[{}]配置的自定义实现[{}]不存在",
                     grant.getRoleId(), grant.getScopeImpl());
-            String condition = handler.buildCondition(currentUser, annotation, alias);
+            String condition = invokeHandlerIsolated(handler, currentUser, annotation, alias);
             if (StrUtil.isNotBlank(condition)) {
                 conditions.add("(" + condition + ")");
             }
@@ -164,15 +193,31 @@ public final class DataScopeSqlRewriter {
                 : "(" + StrUtil.join(" OR ", conditions) + ")";
     }
 
+    /**
+     * 调用自定义 handler（隔离上下文）：handler 内部若查库会再次经过拦截器，
+     * 不隔离会导致与 findEnabledMenuId 一样的自递归
+     */
+    private static String invokeHandlerIsolated(DataScopeCustomHandler handler,
+                                                DataScopeCurrentUser currentUser,
+                                                DataScope annotation, String alias) {
+        DataScope previous = DataScopeContext.setAndGetPrevious(null);
+        try {
+            return handler.buildCondition(currentUser, annotation, alias);
+        } finally {
+            DataScopeContext.restore(previous);
+        }
+    }
+
     private static String buildBuiltInCondition(DataScopeEnum scope, DataScope annotation,
                                                 DataScopeCurrentUser currentUser, String alias) {
         return switch (scope) {
             case COMPANY_AND_CHILD -> orgTreeCondition(annotation,
                     currentUser.getCompanyId(), alias);
             case DEPT_AND_CHILD -> orgTreeCondition(annotation, currentUser.getDeptId(), alias);
-            case DEPT -> eqCondition(column(alias, orgColumn(annotation)), currentUser.getDeptId());
+            case DEPT -> eqCondition(column(alias, orgColumn(annotation)),
+                    currentUser.getDeptId(), alias);
             case SELF -> eqCondition(column(alias, annotation.userColumn()),
-                    currentUser.getUserId());
+                    currentUser.getUserId(), alias);
             default -> throw new ArgumentException(
                     "数据权限：不支持的内置档位：" + scope);
         };
@@ -190,15 +235,15 @@ public final class DataScopeSqlRewriter {
      */
     private static String orgTreeCondition(DataScope annotation, Long rootOrgId, String alias) {
         if (rootOrgId == null) {
-            return "1 = 0";
+            return alwaysFalse(alias);
         }
         return "%s IN (SELECT id FROM mdc_org WHERE tree_path LIKE '%%/%d/%%')"
                 .formatted(column(alias, orgColumn(annotation)), rootOrgId);
     }
 
-    private static String eqCondition(String column, Long value) {
+    private static String eqCondition(String column, Long value, String alias) {
         if (value == null) {
-            return "1 = 0";
+            return alwaysFalse(alias);
         }
         return "%s = %d".formatted(column, value);
     }

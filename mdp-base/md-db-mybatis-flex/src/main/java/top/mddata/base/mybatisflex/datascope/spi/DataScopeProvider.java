@@ -1,4 +1,6 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.spi;
+
+import top.mddata.base.mybatisflex.datascope.model.DataScopeCurrentUser;
 
 /**
  * 数据权限数据提供方 SPI。

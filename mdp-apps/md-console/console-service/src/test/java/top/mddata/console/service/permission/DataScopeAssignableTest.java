@@ -1,7 +1,7 @@
 package top.mddata.console.service.permission;
 
 import org.junit.jupiter.api.Test;
-import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
 
 import java.util.List;
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
-import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.permission.RoleDataScopeCacheKeyBuilder;

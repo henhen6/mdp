@@ -1,4 +1,12 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.engine;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
+import top.mddata.base.mybatisflex.datascope.context.DataScopeContext;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeCurrentUser;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeGrant;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeCustomHandler;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeProvider;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -6,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -109,13 +119,14 @@ class DataScopeInterceptorTest {
     }
 
     @Test
-    void 无任何授权_注入无数据() {
+    void 无任何授权_注入永假条件() {
         DataScopeContext.setAndGetPrevious(stub("menu:user"));
         DataScopeCurrentUser user = userWithGrant(DataScopeEnum.SELF);
         user.setGrants(List.of());
         DataScopeInterceptor interceptor = interceptor(true, user);
         String sql = interceptor.process("SELECT id FROM mdc_user");
-        assertTrue(sql.contains("1 = 0"), sql);
+        // 永假条件用主键 IS NULL 表达（1 = 0 会被 Druid WallFilter 拦截）
+        assertTrue(sql.contains("mdc_user.id IS NULL"), sql);
     }
 
     @Test
@@ -124,5 +135,40 @@ class DataScopeInterceptorTest {
         DataScopeInterceptor interceptor = interceptor(true, userWithGrant(DataScopeEnum.SELF));
         String sql = interceptor.process("SELECT id FROM mdc_user");
         assertTrue(sql.contains("created_by = 7"), sql);
+    }
+
+    /**
+     * 回归：Provider 内部查询会再次经过拦截器，调用期间上下文必须被隔离，
+     * 否则无限自递归（StackOverflowError）；返回后外层上下文必须恢复
+     */
+    @Test
+    void provider调用期间上下文被隔离_返回后恢复() {
+        DataScopeContext.setAndGetPrevious(stub("menu:user"));
+        AtomicReference<DataScope> seenInFindMenu = new AtomicReference<>();
+        AtomicReference<DataScope> seenInGetUser = new AtomicReference<>();
+        DataScopeProvider provider = new DataScopeProvider() {
+            @Override
+            public boolean isFilter() {
+                return true;
+            }
+
+            @Override
+            public Long findEnabledMenuId(String menuCode) {
+                seenInFindMenu.set(DataScopeContext.get());
+                return 1L;
+            }
+
+            @Override
+            public DataScopeCurrentUser getCurrentUser(Long menuId) {
+                seenInGetUser.set(DataScopeContext.get());
+                return userWithGrant(DataScopeEnum.SELF);
+            }
+        };
+        String sql = new DataScopeInterceptor(provider, Map.of()).process("SELECT id FROM mdc_user");
+
+        assertTrue(sql.contains("created_by = 7"), sql);
+        assertNull(seenInFindMenu.get());
+        assertNull(seenInGetUser.get());
+        assertEquals("menu:user", DataScopeContext.get().code());
     }
 }

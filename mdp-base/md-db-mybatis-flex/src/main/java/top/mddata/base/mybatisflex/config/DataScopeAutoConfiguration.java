@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import top.mddata.base.db.properties.DatabaseProperties;
-import top.mddata.base.mybatisflex.datascope.DataScopeAspect;
-import top.mddata.base.mybatisflex.datascope.DataScopeCustomHandler;
-import top.mddata.base.mybatisflex.datascope.DataScopeInterceptor;
-import top.mddata.base.mybatisflex.datascope.DataScopeProvider;
+import top.mddata.base.mybatisflex.datascope.context.DataScopeAspect;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeCustomHandler;
+import top.mddata.base.mybatisflex.datascope.engine.DataScopeInterceptor;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeProvider;
 
 import java.util.Map;
 

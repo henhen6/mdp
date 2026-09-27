@@ -1,7 +1,7 @@
 package top.mddata.console.service.permission;
 
 import top.mddata.base.mvcflex.service.SuperService;
-import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
 import top.mddata.console.entity.permission.Role;
 
 import java.util.Arrays;

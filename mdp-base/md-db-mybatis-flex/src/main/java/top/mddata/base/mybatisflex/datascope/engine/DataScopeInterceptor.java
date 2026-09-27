@@ -1,4 +1,12 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.engine;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
+import top.mddata.base.mybatisflex.datascope.context.DataScopeContext;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeCurrentUser;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeGrant;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeCustomHandler;
+import top.mddata.base.mybatisflex.datascope.spi.DataScopeProvider;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
@@ -78,11 +86,20 @@ public class DataScopeInterceptor implements Interceptor {
         if (dataScope == null || !dataScopeProvider.isFilter()) {
             return null;
         }
-        Long menuId = dataScopeProvider.findEnabledMenuId(dataScope.code());
-        if (menuId == null) {
-            return null;
+        Long menuId;
+        DataScopeCurrentUser currentUser;
+        // 菜单与授权查询是引擎内部查询，会再次经过本拦截器，
+        // 必须隔离上下文，否则无限自递归（StackOverflowError）
+        DataScope previous = DataScopeContext.setAndGetPrevious(null);
+        try {
+            menuId = dataScopeProvider.findEnabledMenuId(dataScope.code());
+            if (menuId == null) {
+                return null;
+            }
+            currentUser = dataScopeProvider.getCurrentUser(menuId);
+        } finally {
+            DataScopeContext.restore(previous);
         }
-        DataScopeCurrentUser currentUser = dataScopeProvider.getCurrentUser(menuId);
         if (currentUser == null || currentUser.getUserId() == null) {
             // 系统线程（worker/MQ）无登录上下文，不过滤
             return null;

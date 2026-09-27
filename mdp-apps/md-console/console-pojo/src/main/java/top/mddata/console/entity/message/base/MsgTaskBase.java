@@ -127,4 +127,9 @@ public class MsgTaskBase extends SuperEntity<Long> implements Serializable {
      */
     private Long senderId;
 
+    /**
+     * 发布人当前部门id（数据权限组织列）
+     */
+    private Long orgId;
+
 }

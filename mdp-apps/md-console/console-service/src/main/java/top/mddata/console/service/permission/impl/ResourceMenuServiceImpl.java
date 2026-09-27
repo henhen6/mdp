@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
-import top.mddata.base.mybatisflex.datascope.DataScopeEnum;
+import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
 import top.mddata.base.util.StrPool;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.BeanPlusUtil;

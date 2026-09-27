@@ -1,4 +1,6 @@
-package top.mddata.base.mybatisflex.datascope;
+package top.mddata.base.mybatisflex.datascope.context;
+
+import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
