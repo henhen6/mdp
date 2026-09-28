@@ -4,8 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import com.google.common.collect.Multimap;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.row.Db;
-import com.mybatisflex.core.row.Row;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,8 @@ import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.common.cache.console.permission.RoleResourceCacheKeyBuilder;
 import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder;
+import top.mddata.common.entity.UserRoleRel;
+import top.mddata.common.mapper.UserRoleRelMapper;
 import top.mddata.console.dto.permission.RoleResourceRelDto;
 import top.mddata.console.entity.permission.RoleResourceRel;
 import top.mddata.console.mapper.permission.RoleResourceRelMapper;
@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 角色资源关联 服务层实现。
@@ -39,6 +38,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRelMapper, RoleResourceRel> implements RoleResourceRelService {
+    private final UserRoleRelMapper userRoleRelMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeByRoleIds(Collection<? extends Serializable> roleIdList) {
@@ -134,14 +135,12 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
         if (CollUtil.isEmpty(roleIdList)) {
             return;
         }
-        String roleIds = roleIdList.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-        List<Row> userRows = Db.selectListByQuery(QueryWrapper.create()
-                .select("DISTINCT user_id AS userId").from("mdc_user_role_rel")
-                .where("role_id IN (" + roleIds + ")"));
-        List<CacheKey> userKeys = userRows.stream()
-                .map(r -> UserResourceApiCacheKeyBuilder.build(r.getLong("userId")))
+        List<Long> userIds = userRoleRelMapper.selectListByQuery(QueryWrapper.create()
+                        .select(UserRoleRel::getUserId)
+                        .where(UserRoleRel::getRoleId).in(roleIdList))
+                .stream().map(UserRoleRel::getUserId).distinct().toList();
+        List<CacheKey> userKeys = userIds.stream()
+                .map(UserResourceApiCacheKeyBuilder::build)
                 .toList();
         if (!userKeys.isEmpty()) {
             cacheOps.del(userKeys);

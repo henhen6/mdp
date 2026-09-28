@@ -2,22 +2,21 @@ package top.mddata.console.service.permission.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.row.Db;
-import com.mybatisflex.core.row.Row;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.cache.console.permission.ResourceApiAllCacheKeyBuilder;
-import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder;
 import top.mddata.console.dto.permission.ResourceApiBindDto;
 import top.mddata.console.dto.permission.ResourceApiSaveDto;
 import top.mddata.console.entity.permission.ResourceApi;
+import top.mddata.console.entity.permission.RoleResourceRel;
 import top.mddata.console.mapper.permission.ResourceApiMapper;
+import top.mddata.console.mapper.permission.RoleResourceRelMapper;
 import top.mddata.console.service.permission.ResourceApiService;
+import top.mddata.console.service.permission.RoleResourceRelService;
 import top.mddata.console.vo.permission.ResourceApiVo;
 
 import java.io.Serializable;
@@ -39,6 +38,8 @@ import java.util.stream.Collectors;
 public class ResourceApiServiceImpl
         extends SuperServiceImpl<ResourceApiMapper, ResourceApi>
         implements ResourceApiService {
+    private final RoleResourceRelMapper roleResourceRelMapper;
+    private final RoleResourceRelService roleResourceRelService;
 
     @Override
     @Transactional(readOnly = true)
@@ -135,26 +136,16 @@ public class ResourceApiServiceImpl
 
     /**
      * 配置变更失效：全量缓存A + 引用该资源的角色下所有用户的缓存B。
-     * 授权链：mdc_role_resource_rel → mdc_user_role_rel，两步直查（不 join）。
+     * 授权链：mdc_role_resource_rel → mdc_user_role_rel，两步查询（不 join）。
      */
     private void invalidateCache(Long resourceId) {
         cacheOps.del(ResourceApiAllCacheKeyBuilder.build());
-        List<Row> roleRows = Db.selectListByQuery(QueryWrapper.create()
-                .select("DISTINCT role_id AS roleId").from("mdc_role_resource_rel")
-                .where("resource_id = ?", resourceId));
-        if (roleRows.isEmpty()) {
-            return;
-        }
-        String roleIds = roleRows.stream().map(r -> String.valueOf(r.getLong("roleId")))
-                .collect(Collectors.joining(","));
-        List<Row> userRows = Db.selectListByQuery(QueryWrapper.create()
-                .select("DISTINCT user_id AS userId").from("mdc_user_role_rel")
-                .where("role_id IN (" + roleIds + ")"));
-        List<CacheKey> keys = userRows.stream()
-                .map(r -> UserResourceApiCacheKeyBuilder.build(r.getLong("userId")))
-                .toList();
-        if (!keys.isEmpty()) {
-            cacheOps.del(keys);
+        List<Long> roleIds = roleResourceRelMapper.selectListByQuery(QueryWrapper.create()
+                        .select(RoleResourceRel::getRoleId)
+                        .where(RoleResourceRel::getResourceId).eq(resourceId))
+                .stream().map(RoleResourceRel::getRoleId).distinct().toList();
+        if (!roleIds.isEmpty()) {
+            roleResourceRelService.invalidateUserResourceApiCacheByRoleIds(roleIds);
         }
     }
 }
