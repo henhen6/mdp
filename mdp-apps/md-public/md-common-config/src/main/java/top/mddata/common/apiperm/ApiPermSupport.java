@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import top.mddata.base.apiperm.engine.ApiPermChecker;
+import top.mddata.base.apiperm.spi.ApiPermProvider;
 import top.mddata.base.exception.ArgumentException;
 import top.mddata.common.properties.IgnoreProperties;
 
@@ -16,7 +17,7 @@ import top.mddata.common.properties.IgnoreProperties;
 @Component
 @RequiredArgsConstructor
 public class ApiPermSupport {
-    private final ApiPermProviderImpl apiPermProvider;
+    private final ApiPermProvider apiPermProvider;
     private final IgnoreProperties ignoreProperties;
 
     public void check(String uri, String method) {
