@@ -85,6 +85,7 @@ public class ApiPermProviderImpl implements ApiPermProvider {
     }
 
     private UserApiPerm loadUserPerm(Long userId) {
+        // 查询用户拥有的所有角色ID和角色编码。
         List<Row> roleRows = Db.selectListByQuery(QueryWrapper.create()
                 .select("r.id AS roleId", "r.code AS code")
                 .from("mdc_user_role_rel").as("ur")
@@ -104,6 +105,7 @@ public class ApiPermProviderImpl implements ApiPermProvider {
      */
     static UserApiPerm assemble(List<RoleRow> roles,
                                 Function<List<Long>, List<ApiPattern>> apiLoader) {
+        // 运营者管理员，视为拥有所有权限
         boolean operationsAdmin = roles.stream()
                 .anyMatch(r -> RoleCode.OPERATIONS_ADMIN.equals(r.code()));
         if (operationsAdmin) {
@@ -117,6 +119,8 @@ public class ApiPermProviderImpl implements ApiPermProvider {
     }
 
     /**
+     * 根据角色ID查询角色拥有的接口权限集。
+     *
      * 角色 → 资源 → 接口：先查授权资源 id，再按资源 id 反查接口。
      *
      * <p>忽略 resource_type：授权表 mdc_role_resource_rel 的 resource_type 列从未写入（全为空串），

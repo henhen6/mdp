@@ -46,7 +46,7 @@ public class TokenContextFilter extends SaInterceptor {
 
         this.auth = handler -> {
             HttpServletRequest req = (HttpServletRequest) SaHolder.getRequest().getSource();
-            apiPermSupport.check(req.getRequestURI(), req.getMethod());
+            this.apiPermSupport.check(req.getRequestURI(), req.getMethod());
         };
     }
 

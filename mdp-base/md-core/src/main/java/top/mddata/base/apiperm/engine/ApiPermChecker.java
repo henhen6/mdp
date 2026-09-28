@@ -24,9 +24,11 @@ public final class ApiPermChecker {
             return true;
         }
         String path = normalizePath(rawPath, provider.getGatewayPrefix(), provider.getServicePrefixes());
+        // 判断该接口是否配置
         if (!isManaged(provider.findAllPatterns(), path, method)) {
             return provider.isNotConfigAllow();
         }
+        // 查该接口拥有的接口权限
         UserApiPerm userPerm = provider.findUserPerm(userId);
         if (userPerm.isOperationsAdmin()) {
             return true;
@@ -34,7 +36,15 @@ public final class ApiPermChecker {
         return userPerm.getPatterns().stream().anyMatch(p -> p.matches(path, method));
     }
 
-    /** 任一已配置模式命中即纳管 */
+    /**
+     * 该方法的作用是判断当前接口是否已经配置到系统中了。
+     *
+     * 目的是为了解决新开发的一个接口，没有配置权限时，所有人都没有该接口的访问权限。
+     *
+     * @param allPatterns 全量接口
+     * @param path        当前接口
+     * @param method      当前方法
+     * */
     public static boolean isManaged(Collection<ApiPattern> allPatterns, String path, String method) {
         return allPatterns.stream().anyMatch(p -> p.matches(path, method));
     }

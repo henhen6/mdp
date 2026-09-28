@@ -22,7 +22,7 @@ public interface ApiPermProvider {
     /** 服务前缀集合（如 console/workbench/open），归一化时剥离 */
     Set<String> getServicePrefixes();
 
-    /** 全量已配置接口（缓存A） */
+    /** 查询系统中已配置的全量接口 */
     List<ApiPattern> findAllPatterns();
 
     /** 当前用户放行集（缓存B） */
