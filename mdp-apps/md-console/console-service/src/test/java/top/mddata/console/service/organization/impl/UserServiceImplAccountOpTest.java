@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -104,6 +105,18 @@ class UserServiceImplAccountOpTest {
         dto.setState(true);
         userService.updateBefore(dto);
         verify(accountOperationGuard).check(10L, AccountOperation.ENABLE);
+    }
+
+    @Test
+    void state与部门同时变更时只查一次库() {
+        when(mapper.selectOneById(10L)).thenReturn(dbUser(10L, true));
+        UserUpdateDto dto = new UserUpdateDto();
+        dto.setId(10L);
+        dto.setState(false);
+        dto.setOrgIdList(List.of(20L));
+        userService.updateBefore(dto);
+        verify(accountOperationGuard).check(10L, AccountOperation.DISABLE);
+        verify(mapper, times(1)).selectOneById(10L);
     }
 
     @Test
