@@ -1,8 +1,10 @@
 package top.mddata.base.mvcflex.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.TypeUtil;
 import com.google.common.collect.ImmutableMap;
@@ -24,10 +26,13 @@ import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.repository.CacheOps;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.model.cache.CacheKeyBuilder;
+import top.mddata.base.mvcflex.context.UpdateFieldContext;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.base.utils.CollHelper;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +43,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 若子类 cacheKeyBuilder() 方法返回null，则该类中的所有方法均直接操作数据库。
@@ -108,12 +114,35 @@ public abstract class SuperServiceImpl<M extends BaseMapper<Entity>, Entity exte
     /**
      * 修改之前处理参数等操作
      *
+     * <p>UpdateEntity 只把"调用过 setter 的字段"更新到数据库。
+     * HTTP 表单入口：按请求体实际提交的字段更新——提交为 null 的字段显式置空，
+     * 未提交的字段不动（避免 DTO 有而表单未渲染的字段被误置 null）。
+     * 非 HTTP 入口（内部调用、测试）：维持全量拷贝的旧语义。</p>
+     *
      * @param update 修改对象
      */
     protected Entity updateBefore(Object update) {
-        // 这个方法可以让你在调用updateById时，将手动设置过的所有字段，就修改到数据库。 没有手动调用过set的字段，不会更新
         Entity entity = UpdateEntity.of(getEntityClass());
-        BeanUtil.copyProperties(update, entity);
+        Set<String> presentFields = UpdateFieldContext.get();
+        if (presentFields == null) {
+            BeanUtil.copyProperties(update, entity);
+            return entity;
+        }
+        BeanUtil.copyProperties(update, entity, CopyOptions.create().setIgnoreNullValue(true));
+        Map<String, PropertyDescriptor> dtoProperties = propertyDescriptorMap(update.getClass());
+        Map<String, PropertyDescriptor> entityProperties = propertyDescriptorMap(getEntityClass());
+        for (String field : presentFields) {
+            PropertyDescriptor dtoPd = dtoProperties.get(field);
+            PropertyDescriptor entityPd = entityProperties.get(field);
+            if (dtoPd == null || dtoPd.getReadMethod() == null
+                    || entityPd == null || entityPd.getWriteMethod() == null) {
+                continue;
+            }
+            if (ReflectUtil.invoke(update, dtoPd.getReadMethod()) == null) {
+                // 显式调用实体 setter(null) 触发 UpdateEntity 追踪，该列将被更新为 NULL
+                ReflectUtil.invoke(entity, entityPd.getWriteMethod(), new Object[]{null});
+            }
+        }
         return entity;
     }
 
@@ -134,6 +163,11 @@ public abstract class SuperServiceImpl<M extends BaseMapper<Entity>, Entity exte
      * @param entity   实体
      */
     protected void updateAfter(Object update, Entity entity) {
+    }
+
+    private static Map<String, PropertyDescriptor> propertyDescriptorMap(Class<?> clazz) {
+        return Arrays.stream(BeanUtil.getPropertyDescriptors(clazz))
+                .collect(Collectors.toMap(PropertyDescriptor::getName, pd -> pd, (a, b) -> a));
     }
 
     @Override
