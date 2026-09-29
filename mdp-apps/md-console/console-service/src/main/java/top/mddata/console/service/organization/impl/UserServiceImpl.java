@@ -171,15 +171,17 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
 
     @Override
     protected User updateBefore(Object updateDto) {
+        UserUpdateDto dto = (UserUpdateDto) updateDto;
+        ArgumentAssert.isFalse(checkUsername(dto.getUsername(), dto.getId()), "用户名[{}]， 重复", dto.getUsername());
+        if (StrUtil.isNotEmpty(dto.getEmail())) {
+            ArgumentAssert.isFalse(checkEmail(dto.getEmail(), dto.getId()), "邮箱[{}]， 重复", dto.getEmail());
+        }
+        if (StrUtil.isNotEmpty(dto.getPhone())) {
+            ArgumentAssert.isFalse(checkPhone(dto.getPhone(), dto.getId()), "手机号[{}]， 重复", dto.getPhone());
+        }
+        checkStateChange(dto);
+
         User sysUser = super.updateBefore(updateDto);
-        checkStateChange(sysUser);
-        ArgumentAssert.isFalse(checkUsername(sysUser.getUsername(), sysUser.getId()), "用户名[{}]， 重复", sysUser.getUsername());
-        if (StrUtil.isNotEmpty(sysUser.getEmail())) {
-            ArgumentAssert.isFalse(checkEmail(sysUser.getEmail(), sysUser.getId()), "邮箱[{}]， 重复", sysUser.getEmail());
-        }
-        if (StrUtil.isNotEmpty(sysUser.getPhone())) {
-            ArgumentAssert.isFalse(checkPhone(sysUser.getPhone(), sysUser.getId()), "手机号[{}]， 重复", sysUser.getPhone());
-        }
         // dto.getAvatarFileId() 是file表的id， sysUser.setAvatar 是对象id
         // 注意：前端传递的avatar是文件id，存入数据库时，需要设置为唯一的对象id（通常为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
         sysUser.setAvatar(sysUser.getId());
@@ -195,7 +197,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
      * state 真实变化时触发账号操作矩阵校验：true→false 为禁用，false→true 为启用。
      * state 为 null（前端未传该字段）或与库中现值一致时不拦截，其余字段修改不受影响。
      */
-    private void checkStateChange(User sysUser) {
+    private void checkStateChange(UserUpdateDto sysUser) {
         if (sysUser.getState() == null) {
             return;
         }
@@ -204,8 +206,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         if (sysUser.getState().equals(dbUser.getState())) {
             return;
         }
-        AccountOperation op = Boolean.TRUE.equals(sysUser.getState())
-                ? AccountOperation.ENABLE : AccountOperation.DISABLE;
+        AccountOperation op = sysUser.getState() ? AccountOperation.ENABLE : AccountOperation.DISABLE;
         accountOperationGuard.check(sysUser.getId(), op);
     }
 
