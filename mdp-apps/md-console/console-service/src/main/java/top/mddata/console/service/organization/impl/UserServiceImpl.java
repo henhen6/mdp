@@ -179,35 +179,18 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         if (StrUtil.isNotEmpty(dto.getPhone())) {
             ArgumentAssert.isFalse(checkPhone(dto.getPhone(), dto.getId()), "手机号[{}]， 重复", dto.getPhone());
         }
-        checkStateChange(dto);
+
+        // state 变更校验与部门变更的 last* 校正都依赖库中现值，合并为一次查询（均不涉及时零查询）
+        User dbUser = needDbUser(dto) ? getExistingUser(dto.getId()) : null;
+        checkStateChange(dto, dbUser);
 
         User sysUser = super.updateBefore(updateDto);
         // dto.getAvatarFileId() 是file表的id， sysUser.setAvatar 是对象id
         // 注意：前端传递的avatar是文件id，存入数据库时，需要设置为唯一的对象id（通常为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
         sysUser.setAvatar(sysUser.getId());
 
-        // 防止修改了用户所属的部门信息后，登录时，切换到不存在的单位或部门。
-        sysUser.setLastTopCompanyId(null);
-        sysUser.setLastCompanyId(null);
-        sysUser.setLastDeptId(null);
+        correctLastOrgIfChanged(dto, sysUser, dbUser);
         return sysUser;
-    }
-
-    /**
-     * state 真实变化时触发账号操作矩阵校验：true→false 为禁用，false→true 为启用。
-     * state 为 null（前端未传该字段）或与库中现值一致时不拦截，其余字段修改不受影响。
-     */
-    private void checkStateChange(UserUpdateDto sysUser) {
-        if (sysUser.getState() == null) {
-            return;
-        }
-        User dbUser = getById(sysUser.getId());
-        ArgumentAssert.notNull(dbUser, "用户[{}]不存在", sysUser.getId());
-        if (sysUser.getState().equals(dbUser.getState())) {
-            return;
-        }
-        AccountOperation op = sysUser.getState() ? AccountOperation.ENABLE : AccountOperation.DISABLE;
-        accountOperationGuard.check(sysUser.getId(), op);
     }
 
     @Override
@@ -241,6 +224,58 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         cacheOps.del(cacheKeys);
     }
 
+    private boolean needDbUser(UserUpdateDto dto) {
+        return dto.getState() != null || dto.getOrgIdList() != null;
+    }
+
+    private User getExistingUser(Long id) {
+        User dbUser = getById(id);
+        ArgumentAssert.notNull(dbUser, "用户[{}]不存在", id);
+        return dbUser;
+    }
+
+    /**
+     * 部门关系变更时，仅清理已失效的最近登录组织上下文（与登录时 findOrg 同款 contains 规则），
+     * 防止登录切换到已不属于该用户的单位或部门。
+     * 未提交 orgIdList（未修改部门）时保持原样；失效项置空后由登录时 findOrg 重新默认分配。
+     */
+    private void correctLastOrgIfChanged(UserUpdateDto dto, User sysUser, User dbUser) {
+        List<Long> newOrgIds = dto.getOrgIdList();
+        if (newOrgIds == null) {
+            return;
+        }
+        correctLastOrg(dbUser, newOrgIds, sysUser);
+    }
+
+    /**
+     * 逐项校验最近登录组织上下文：仍在新组织关系中则保留，否则仅失效项置空（纯函数，便于单测）。
+     */
+    static void correctLastOrg(User dbUser, List<Long> newOrgIds, User target) {
+        if (dbUser.getLastDeptId() != null && !newOrgIds.contains(dbUser.getLastDeptId())) {
+            target.setLastDeptId(null);
+        }
+        if (dbUser.getLastCompanyId() != null && !newOrgIds.contains(dbUser.getLastCompanyId())) {
+            target.setLastCompanyId(null);
+        }
+        if (dbUser.getLastTopCompanyId() != null && !newOrgIds.contains(dbUser.getLastTopCompanyId())) {
+            target.setLastTopCompanyId(null);
+        }
+    }
+
+    /**
+     * state 真实变化时触发账号操作矩阵校验：true→false 为禁用，false→true 为启用。
+     * state 为 null（前端未传该字段）或与库中现值一致时不拦截，其余字段修改不受影响。
+     */
+    private void checkStateChange(UserUpdateDto sysUser, User dbUser) {
+        if (sysUser.getState() == null) {
+            return;
+        }
+        if (sysUser.getState().equals(dbUser.getState())) {
+            return;
+        }
+        AccountOperation op = sysUser.getState() ? AccountOperation.ENABLE : AccountOperation.DISABLE;
+        accountOperationGuard.check(sysUser.getId(), op);
+    }
 
     @Override
     @Transactional(readOnly = true)

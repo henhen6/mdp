@@ -206,14 +206,14 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         if (CollUtil.isEmpty(orgList)) {
             return null;
         }
-        Org sysOrg = null;
+        Org org = null;
         if (lastOrgId != null) {
-            sysOrg = orgList.stream().filter(item -> lastOrgId.equals(item.getId())).findFirst().orElse(null);
+            org = orgList.stream().filter(item -> lastOrgId.equals(item.getId())).findFirst().orElse(null);
         }
-        if (sysOrg == null && !orgList.isEmpty()) {
-            sysOrg = orgList.get(0);
+        if (org == null && !orgList.isEmpty()) {
+            org = orgList.get(0);
         }
-        return sysOrg;
+        return org;
     }
 
     @Override
