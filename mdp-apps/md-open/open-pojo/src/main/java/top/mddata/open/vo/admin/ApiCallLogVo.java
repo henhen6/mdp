@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "调用日志Vo")
+@Schema(description = "调用日志")
 @Table(ApiCallLogBase.TABLE_NAME)
 public class ApiCallLogVo implements Serializable {
 
@@ -49,9 +49,9 @@ public class ApiCallLogVo implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
-    @Schema(description = "应用秘钥")
+    @Schema(description = "应用Key")
     private String appKey;
 
     /**
@@ -134,9 +134,9 @@ public class ApiCallLogVo implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 异常消息
+     * 异常信息
      */
-    @Schema(description = "异常消息")
+    @Schema(description = "异常信息")
     private String errorMsg;
 
     /**

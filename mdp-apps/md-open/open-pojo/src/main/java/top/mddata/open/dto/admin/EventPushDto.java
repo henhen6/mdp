@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件推送任务Dto")
+@Schema(description = "事件推送任务")
 public class EventPushDto implements Serializable {
 
     @Serial
@@ -43,11 +43,11 @@ public class EventPushDto implements Serializable {
     private Long eventTriggerId;
 
     /**
-     * 事件类型
+     * 事件编码
      */
-    @NotEmpty(message = "请填写事件类型")
-    @Size(max = 255, message = "事件类型长度不能超过{max}")
-    @Schema(description = "事件类型")
+    @NotEmpty(message = "请填写事件编码")
+    @Size(max = 255, message = "事件编码长度不能超过{max}")
+    @Schema(description = "事件编码")
     private String eventCode;
 
     /**
@@ -58,18 +58,18 @@ public class EventPushDto implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
-    @NotEmpty(message = "请填写应用秘钥")
-    @Size(max = 100, message = "应用秘钥长度不能超过{max}")
-    @Schema(description = "应用秘钥")
+    @NotEmpty(message = "请填写应用Key")
+    @Size(max = 100, message = "应用Key长度不能超过{max}")
+    @Schema(description = "应用Key")
     private String appKey;
 
     /**
-     * 回调url
+     * 回调地址
      */
-    @Size(max = 255, message = "回调url长度不能超过{max}")
-    @Schema(description = "回调url")
+    @Size(max = 255, message = "回调地址长度不能超过{max}")
+    @Schema(description = "回调地址")
     private String notifyUrl;
 
     /**
@@ -80,9 +80,9 @@ public class EventPushDto implements Serializable {
     private String requestData;
 
     /**
-     * 最后请求时间
+     * 最近请求时间
      */
-    @Schema(description = "最后请求时间")
+    @Schema(description = "最近请求时间")
     private LocalDateTime lastRequestTime;
 
     /**

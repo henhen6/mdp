@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "请求日志Dto")
+@Schema(description = "请求日志")
 public class RequestLogDetailDto implements Serializable {
 
     @Serial
@@ -41,10 +41,10 @@ public class RequestLogDetailDto implements Serializable {
     private String requestParam;
 
     /**
-     * 返回值
+     * 响应体
      */
-    @Size(max = 536870911, message = "返回值长度不能超过{max}")
-    @Schema(description = "返回值")
+    @Size(max = 536870911, message = "响应体长度不能超过{max}")
+    @Schema(description = "响应体")
     private String responseBody;
 
     /**

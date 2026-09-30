@@ -68,7 +68,7 @@ public class ConfigBase extends SuperEntity<Long> implements Serializable {
     private String remark;
 
     /**
-     * 当前机构id
+     * 所属组织
      */
     private Long orgId;
 

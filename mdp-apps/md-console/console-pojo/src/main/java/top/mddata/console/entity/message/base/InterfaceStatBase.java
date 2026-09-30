@@ -43,7 +43,7 @@ public class InterfaceStatBase extends SuperEntity<Long> implements Serializable
     private Integer failCount;
 
     /**
-     * 最后执行时间
+     * 最近执行时间
      */
     private LocalDateTime lastExecAt;
 

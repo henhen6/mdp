@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "任务接收人Vo")
+@Schema(description = "任务接收人")
 @Table(MsgTaskRecipientBase.TABLE_NAME)
 public class MsgTaskRecipientVo implements Serializable {
 

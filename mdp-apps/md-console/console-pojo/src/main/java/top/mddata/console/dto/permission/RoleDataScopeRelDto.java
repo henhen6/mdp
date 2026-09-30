@@ -23,8 +23,11 @@ public class RoleDataScopeRelDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 所属角色
+     */
     @NotNull(message = "请填写角色")
-    @Schema(description = "角色id")
+    @Schema(description = "所属角色")
     private Long roleId;
 
     /**
@@ -40,15 +43,25 @@ public class RoleDataScopeRelDto implements Serializable {
         @Serial
         private static final long serialVersionUID = 1L;
 
+        /**
+         * 所属菜单
+         */
         @NotNull(message = "请填写菜单")
-        @Schema(description = "菜单id")
+        @Schema(description = "所属菜单")
         private Long menuId;
 
+        /**
+         * 数据范围
+         * [10-全部 20-本公司及以下 30-本部门及以下 40-本部门 50-仅本人 90-自定义]
+         */
         @NotBlank(message = "请填写数据范围档位")
-        @Schema(description = "数据范围档位")
+        @Schema(description = "数据范围")
         private String dataScope;
 
-        @Schema(description = "自定义实现的 Spring Bean 名（仅自定义档必填）")
+        /**
+         * 自定义实现的Spring Bean名（仅data_scope=90时非空）
+         */
+        @Schema(description = "自定义实现的Spring Bean名")
         private String dataScopeImpl;
     }
 }

@@ -53,7 +53,7 @@ public class EventPushLogBase extends BaseEntity<Long> implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 状态
+     * 执行状态
      * [1-执行成功 2-执行失败]
      */
     private String execStatus;

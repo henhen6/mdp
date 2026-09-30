@@ -59,9 +59,9 @@ public class OauthScopeVo implements Serializable {
     private String icon;
 
     /**
-     * 介绍
+     * 简介
      */
-    @Schema(description = "介绍")
+    @Schema(description = "简介")
     private String intro;
 
     /**
@@ -77,9 +77,9 @@ public class OauthScopeVo implements Serializable {
     private String confirmPrompt;
 
     /**
-     * 权重
+     * 排序
      */
-    @Schema(description = "权重")
+    @Schema(description = "排序")
     private Long weight;
 
     /**

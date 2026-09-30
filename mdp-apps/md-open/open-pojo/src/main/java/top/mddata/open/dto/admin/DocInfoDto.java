@@ -77,11 +77,11 @@ public class DocInfoDto implements Serializable {
     private Integer sourceType;
 
     /**
-     * 文档版本号
+     * 文档版本
      */
-    @NotEmpty(message = "请填写文档版本号")
-    @Size(max = 16, message = "文档版本号长度不能超过{max}")
-    @Schema(description = "文档版本号")
+    @NotEmpty(message = "请填写文档版本")
+    @Size(max = 16, message = "文档版本长度不能超过{max}")
+    @Schema(description = "文档版本")
     private String docVersion;
 
     /**

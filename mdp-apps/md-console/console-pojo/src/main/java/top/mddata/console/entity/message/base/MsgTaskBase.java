@@ -52,15 +52,14 @@ public class MsgTaskBase extends SuperEntity<Long> implements Serializable {
 
     /**
      * 消息分类
-     * 站内信专属
-     * [1-待办 2-预警 3-提醒]
+     * [1-待办 2-公告 3-预警]
      */
     private Integer msgCategory;
 
     /**
      * 接收范围
-     * 站内信专属
      * [0-所有人 1-指定用户 2-指定角色 3-指定部门]
+     * 站内信专属
      */
     private Integer recipientScope;
 
@@ -118,17 +117,17 @@ public class MsgTaskBase extends SuperEntity<Long> implements Serializable {
     private String bizType;
 
     /**
-     * 发布人
+     * 发送人
      */
     private String author;
 
     /**
-     * 发布人ID
+     * 发送人ID
      */
     private Long senderId;
 
     /**
-     * 发布人当前部门id（数据权限组织列）
+     * 发布人当前部门id
      */
     private Long orgId;
 

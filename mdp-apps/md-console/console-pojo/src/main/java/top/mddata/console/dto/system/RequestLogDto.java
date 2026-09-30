@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "请求日志Dto")
+@Schema(description = "请求日志")
 public class RequestLogDto implements Serializable {
 
     @Serial
@@ -92,11 +92,10 @@ public class RequestLogDto implements Serializable {
     private String httpUri;
 
     /**
-     * 请求类型
-     * #HttpMethod{GET:GET请求;POST:POST请求;PUT:PUT请求;DELETE:DELETE请求;PATCH:PATCH请求;TRACE:TRACE请求;HEAD:HEAD请求;OPTIONS:OPTIONS请求;}
+     * 请求方式
      */
-    @Size(max = 10, message = "请求类型长度不能超过{max}")
-    @Schema(description = "请求类型")
+    @Size(max = 10, message = "请求方式长度不能超过{max}")
+    @Schema(description = "请求方式")
     private String httpMethod;
 
     /**
@@ -113,22 +112,22 @@ public class RequestLogDto implements Serializable {
     private LocalDateTime startTime;
 
     /**
-     * 完成时间
+     * 结束时间
      */
-    @Schema(description = "完成时间")
+    @Schema(description = "结束时间")
     private LocalDateTime finishTime;
 
     /**
-     * 消耗时间
+     * 耗时
      */
-    @Schema(description = "消耗时间")
+    @Schema(description = "耗时")
     private Long consumingTime;
 
     /**
-     * 浏览器请求头
+     * 浏览器
      */
     @Size(max = 500, message = "浏览器长度不能超过{max}")
-    @Schema(description = "浏览器请求头")
+    @Schema(description = "浏览器")
     private String ua;
 
     /**
@@ -166,5 +165,8 @@ public class RequestLogDto implements Serializable {
     @Size(max = 1024, message = "异常堆栈长度不能超过{max}")
     @Schema(description = "请求线程变量")
     private String httpThreadLocal;
+    /**
+     * 创建人
+     */
     private Long createdBy;
 }

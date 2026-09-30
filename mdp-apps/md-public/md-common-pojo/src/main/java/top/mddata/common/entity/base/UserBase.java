@@ -53,7 +53,7 @@ public class UserBase extends SuperEntity<Long> implements Serializable {
     private String salt;
 
     /**
-     * 电话号码
+     * 手机号
      */
     private String phone;
 
@@ -68,7 +68,7 @@ public class UserBase extends SuperEntity<Long> implements Serializable {
     private String name;
 
     /**
-     * 邮箱地址
+     * 邮箱
      */
     private String email;
 
@@ -79,22 +79,22 @@ public class UserBase extends SuperEntity<Long> implements Serializable {
     private Boolean state;
 
     /**
-     * 上次登录的部门
+     * 最近登录部门
      */
     private Long lastDeptId;
 
     /**
-     * 上次登录的单位
+     * 最近登录单位
      */
     private Long lastCompanyId;
 
     /**
-     * 上次登录的顶级单位
+     * 最近登录顶级单位
      */
     private Long lastTopCompanyId;
 
     /**
-     * 输错密码时间
+     * 最近密码错误时间
      */
     private LocalDateTime pwErrorLastTime;
 
@@ -109,17 +109,17 @@ public class UserBase extends SuperEntity<Long> implements Serializable {
     private LocalDateTime pwExpireTime;
 
     /**
-     * 最后登录时间
+     * 最近登录时间
      */
     private LocalDateTime lastLoginTime;
 
     /**
-     * 微信登录openId
+     * 微信OpenID
      */
     private String wxOpenid;
 
     /**
-     * 钉钉openId
+     * 钉钉OpenID
      */
     private String ddOpenid;
 

@@ -93,7 +93,10 @@ public class FilePartDto implements Serializable {
     @Data
     @Schema(description = "初始化分片上传响应")
     public static class InitPartUploadResp implements Serializable {
-        @Schema(description = "上传ID")
+        /**
+         * 上传ID，仅在手动分片上传时使用
+         */
+        @Schema(description = "上传ID，仅在手动分片上传时使用")
         private String uploadId;
         @Schema(description = "分片大小(字节)")
         private Long chunkSize;
@@ -104,34 +107,55 @@ public class FilePartDto implements Serializable {
     @Data
     @Schema(description = "分片上传请求")
     public static class UploadPartDto implements Serializable {
-        @Schema(description = "上传ID")
+        /**
+         * 上传ID，仅在手动分片上传时使用
+         */
+        @Schema(description = "上传ID，仅在手动分片上传时使用")
         private String uploadId;
-        @Schema(description = "分片号(从1开始)")
+        /**
+         * 分片号。每一个上传的分片都有一个分片号，一般情况下取值范围是1~10000
+         */
+        @Schema(description = "分片号。每一个上传的分片都有一个分片号，一般情况下取值范围是1~10000")
         private Integer partNumber;
     }
 
     @Data
     @Schema(description = "分片上传响应")
     public static class UploadPartResp implements Serializable {
-        @Schema(description = "分片号")
+        /**
+         * 分片号。每一个上传的分片都有一个分片号，一般情况下取值范围是1~10000
+         */
+        @Schema(description = "分片号。每一个上传的分片都有一个分片号，一般情况下取值范围是1~10000")
         private Integer partNumber;
-        @Schema(description = "分片标识")
+        /**
+         * 分片 ETag
+         */
+        @Schema(description = "分片 ETag")
         private String eTag;
     }
 
     @Data
     @Schema(description = "已上传分片信息")
     public static class UploadedPart implements Serializable {
-        @Schema(description = "分片号")
+        /**
+         * 分片号。每一个上传的分片都有一个分片号，一般情况下取值范围是1~10000
+         */
+        @Schema(description = "分片号。每一个上传的分片都有一个分片号，一般情况下取值范围是1~10000")
         private Integer partNumber;
-        @Schema(description = "分片标识")
+        /**
+         * 分片 ETag
+         */
+        @Schema(description = "分片 ETag")
         private String eTag;
     }
 
     @Data
     @Schema(description = "查询上传进度响应")
     public static class UploadProgressResp implements Serializable {
-        @Schema(description = "上传ID")
+        /**
+         * 上传ID，仅在手动分片上传时使用
+         */
+        @Schema(description = "上传ID，仅在手动分片上传时使用")
         private String uploadId;
         @Schema(description = "已上传分片列表")
         private List<UploadedPart> uploadedParts;
@@ -142,11 +166,17 @@ public class FilePartDto implements Serializable {
     @Data
     @Schema(description = "完成合并请求")
     public static class CompletePartUploadDto implements Serializable {
-        @Schema(description = "上传ID")
+        /**
+         * 上传ID，仅在手动分片上传时使用
+         */
+        @Schema(description = "上传ID，仅在手动分片上传时使用")
         private String uploadId;
 
         @Schema(description = "对象类型")
         private String objectType;
+        /**
+         * 存储平台
+         */
         @Schema(description = "存储平台")
         private String platform;
 
@@ -164,7 +194,10 @@ public class FilePartDto implements Serializable {
     @Data
     @Schema(description = "取消上传请求")
     public static class AbortPartUploadDto implements Serializable {
-        @Schema(description = "上传ID")
+        /**
+         * 上传ID，仅在手动分片上传时使用
+         */
+        @Schema(description = "上传ID，仅在手动分片上传时使用")
         private String uploadId;
     }
 

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "任务接收人Query")
+@Schema(description = "任务接收人")
 public class MsgTaskRecipientQuery extends ExtraParams implements Serializable {
 
     @Serial

@@ -32,12 +32,12 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 应用ID
+     * 应用Key
      */
     private String appKey;
 
     /**
-     * 应用秘钥
+     * 应用密钥
      */
     private String appSecret;
 
@@ -62,6 +62,9 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
      * 状态
      */
     private Boolean state;
+    /**
+     * 排序
+     */
     private Integer weight;
 
     /**
@@ -80,12 +83,12 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
     private String remark;
 
     /**
-     * 开始有效期
+     * 生效时间
      */
     private LocalDateTime validityStart;
 
     /**
-     * 结束有效期
+     * 失效时间
      */
     private LocalDateTime validityEnd;
 
@@ -94,7 +97,7 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
      */
     private String homeUrl;
     /**
-     * 自动登录地址
+     * 单点登录自动登录地址
      * ticket模式单点登录
      */
     private String ssoAutoLoginUrl;
@@ -112,7 +115,7 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
     private Boolean isPublic;
 
     /**
-     * 允许的IP
+     * IP白名单
      */
     private String allowIp;
 
@@ -133,12 +136,12 @@ public class AppBase extends SuperEntity<Long> implements Serializable {
     private String ssoAllowUrl;
 
     /**
-     * 允许的重定向uri
+     * 允许授权地址
      */
     private String oauth2AllowRedirectUris;
 
     /**
-     * 允许的授权类型
+     * 授权模式
      */
     private String oauth2AllowGrantTypes;
 

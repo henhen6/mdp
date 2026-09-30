@@ -53,13 +53,13 @@ public class MsgTemplateBase extends SuperEntity<Long> implements Serializable {
     private Boolean state;
 
     /**
-     * 模板编码
+     * 短信模板编码
      * 第三方模板编码（如，消息类型为短信时，第三方短信商的模版id）
      */
     private String smsTemplateId;
 
     /**
-     * 签名
+     * 短信签名
      */
     private String smsSign;
 

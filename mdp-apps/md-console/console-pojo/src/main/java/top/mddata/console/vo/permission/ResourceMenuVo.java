@@ -34,7 +34,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "菜单Vo")
+@Schema(description = "菜单")
 @Table(ResourceMenuBase.TABLE_NAME)
 public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements Serializable, EchoVO {
 
@@ -127,9 +127,9 @@ public class ResourceMenuVo extends TreeEntity<Long, ResourceMenuVo> implements 
     private Long parentId;
 
     /**
-     * 顺序号
+     * 排序
      */
-    @Schema(description = "顺序号")
+    @Schema(description = "排序")
     private Integer weight;
 
     /**

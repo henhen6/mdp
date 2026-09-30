@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "回调任务Query")
+@Schema(description = "回调任务")
 public class NotifyInfoQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -46,9 +46,9 @@ public class NotifyInfoQuery extends ExtraParams implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
-    @Schema(description = "应用秘钥")
+    @Schema(description = "应用Key")
     private String appKey;
 
     /**
@@ -64,9 +64,9 @@ public class NotifyInfoQuery extends ExtraParams implements Serializable {
     private String apiVersion;
 
     /**
-     * 回调url
+     * 回调地址
      */
-    @Schema(description = "回调url")
+    @Schema(description = "回调地址")
     private String notifyUrl;
 
     /**
@@ -76,9 +76,9 @@ public class NotifyInfoQuery extends ExtraParams implements Serializable {
     private String requestData;
 
     /**
-     * 最后请求时间
+     * 最近请求时间
      */
-    @Schema(description = "最后请求时间")
+    @Schema(description = "最近请求时间")
     private LocalDateTime lastRequestTime;
 
     /**

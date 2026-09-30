@@ -22,7 +22,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "开发者修改应用通知配置")
+@Schema(description = "应用秘钥")
 public class AppKeysUpdateDto implements Serializable {
 
     @Serial
@@ -38,6 +38,6 @@ public class AppKeysUpdateDto implements Serializable {
     /**
      * 开发者应用公钥（RSA2签名校验用）
      */
-    @Schema(description = "开发者应用公钥")
+    @Schema(description = "开发者应用公钥（RSA2签名校验用）")
     private String publicKeyApp;
 }

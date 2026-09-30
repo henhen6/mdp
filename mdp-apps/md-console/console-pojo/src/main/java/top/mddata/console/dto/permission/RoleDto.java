@@ -55,10 +55,10 @@ public class RoleDto implements Serializable {
     private String name;
 
     /**
-     * 说明
+     * 备注
      */
-    @Size(max = 255, message = "说明长度不能超过{max}")
-    @Schema(description = "说明")
+    @Size(max = 255, message = "备注长度不能超过{max}")
+    @Schema(description = "备注")
     private String remarks;
 
     /**

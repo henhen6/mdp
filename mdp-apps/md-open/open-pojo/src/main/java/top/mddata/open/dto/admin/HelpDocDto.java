@@ -21,7 +21,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "帮助文档Dto")
+@Schema(description = "帮助文档")
 public class HelpDocDto implements Serializable {
 
     @Serial
@@ -73,9 +73,9 @@ public class HelpDocDto implements Serializable {
     private Integer contentType;
 
     /**
-     * 父级id
+     * 上级文档
      */
-    @Schema(description = "父级id")
+    @Schema(description = "上级文档")
     private Long parentId;
 
 }

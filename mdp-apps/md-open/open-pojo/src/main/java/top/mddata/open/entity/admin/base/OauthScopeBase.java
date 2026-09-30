@@ -46,7 +46,7 @@ public class OauthScopeBase extends SuperEntity<Long> implements Serializable {
     private String icon;
 
     /**
-     * 介绍
+     * 简介
      */
     private String intro;
 
@@ -61,7 +61,7 @@ public class OauthScopeBase extends SuperEntity<Long> implements Serializable {
     private String confirmPrompt;
 
     /**
-     * 权重
+     * 排序
      */
     private Long weight;
 

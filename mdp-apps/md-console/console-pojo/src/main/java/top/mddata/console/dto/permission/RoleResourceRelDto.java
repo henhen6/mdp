@@ -32,10 +32,10 @@ public class RoleResourceRelDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * ID
+     * 所属角色
      */
-    @NotNull(message = "请填写角色ID", groups = BaseEntity.Update.class)
-    @Schema(description = "角色ID")
+    @NotNull(message = "请填写角色所属角色", groups = BaseEntity.Update.class)
+    @Schema(description = "所属角色")
     private Long roleId;
     /**
      * 编码

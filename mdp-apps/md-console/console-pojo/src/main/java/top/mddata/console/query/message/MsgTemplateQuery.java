@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "消息模板Query")
+@Schema(description = "消息模板")
 public class MsgTemplateQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -65,16 +65,16 @@ public class MsgTemplateQuery extends ExtraParams implements Serializable {
     private Boolean state;
 
     /**
-     * 模板编码
+     * 短信模板编码
      * 第三方模板编码（如，消息类型为短信时，第三方短信商的模版id）
      */
-    @Schema(description = "模板编码")
+    @Schema(description = "短信模板编码")
     private String smsTemplateId;
 
     /**
-     * 签名
+     * 短信签名
      */
-    @Schema(description = "签名")
+    @Schema(description = "短信签名")
     private String smsSign;
 
     /**

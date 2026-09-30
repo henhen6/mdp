@@ -27,7 +27,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "菜单Dto")
+@Schema(description = "菜单")
 public class ResourceMenuDto implements Serializable {
 
     @Serial
@@ -123,12 +123,15 @@ public class ResourceMenuDto implements Serializable {
     private Long parentId;
 
     /**
-     * 顺序号
+     * 排序
      */
-    @Schema(description = "顺序号")
+    @Schema(description = "排序")
     private Integer weight;
 
 
+    /**
+     * 元数据
+     */
     @Valid
     @Schema(description = "元数据")
     private RouterMeta meta;

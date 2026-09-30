@@ -19,7 +19,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件订阅Dto")
+@Schema(description = "事件订阅")
 public class EventSubscriptionDto implements Serializable {
 
     @Serial

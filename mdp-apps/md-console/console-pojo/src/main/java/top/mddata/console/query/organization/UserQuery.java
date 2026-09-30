@@ -52,9 +52,9 @@ public class UserQuery extends ExtraParams implements Serializable {
     private String sex;
 
     /**
-     * 电话号码
+     * 手机号
      */
-    @Schema(description = "电话号码")
+    @Schema(description = "手机号")
     private String phone;
 
     /**
@@ -70,9 +70,9 @@ public class UserQuery extends ExtraParams implements Serializable {
     private String name;
 
     /**
-     * 邮箱地址
+     * 邮箱
      */
-    @Schema(description = "邮箱地址")
+    @Schema(description = "邮箱")
     private String email;
 
     /**
@@ -83,21 +83,21 @@ public class UserQuery extends ExtraParams implements Serializable {
     private Boolean state;
 
     /**
-     * 上次登录的部门
+     * 最近登录部门
      */
-    @Schema(description = "上次登录的部门")
+    @Schema(description = "最近登录部门")
     private Long lastDeptId;
 
     /**
-     * 上次登录的单位
+     * 最近登录单位
      */
-    @Schema(description = "上次登录的单位")
+    @Schema(description = "最近登录单位")
     private Long lastCompanyId;
 
     /**
-     * 上次登录的顶级单位
+     * 最近登录顶级单位
      */
-    @Schema(description = "上次登录的顶级单位")
+    @Schema(description = "最近登录顶级单位")
     private Long lastTopCompanyId;
 
     /**

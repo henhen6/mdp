@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "消息模板Vo")
+@Schema(description = "消息模板")
 @Table(MsgTemplateBase.TABLE_NAME)
 public class MsgTemplateVo implements Serializable {
 
@@ -68,16 +68,16 @@ public class MsgTemplateVo implements Serializable {
     private Boolean state;
 
     /**
-     * 模板编码
+     * 短信模板编码
      * 第三方模板编码（如，消息类型为短信时，第三方短信商的模版id）
      */
-    @Schema(description = "模板编码")
+    @Schema(description = "短信模板编码")
     private String smsTemplateId;
 
     /**
-     * 签名
+     * 短信签名
      */
-    @Schema(description = "签名")
+    @Schema(description = "短信签名")
     private String smsSign;
 
     /**

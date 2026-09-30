@@ -74,9 +74,9 @@ public class AppDto implements Serializable {
     @Schema(description = "状态")
     private Boolean state;
     /**
-     * 权重
+     * 排序
      */
-    @Schema(description = "权重")
+    @Schema(description = "排序")
     private Integer weight;
 
     /**
@@ -100,15 +100,15 @@ public class AppDto implements Serializable {
     private String remark;
 
     /**
-     * 开始有效期
+     * 生效时间
      */
-    @Schema(description = "开始有效期")
+    @Schema(description = "生效时间")
     private LocalDateTime validityStart;
 
     /**
-     * 结束有效期
+     * 失效时间
      */
-    @Schema(description = "结束有效期")
+    @Schema(description = "失效时间")
     private LocalDateTime validityEnd;
 
     /**
@@ -119,11 +119,11 @@ public class AppDto implements Serializable {
     private String homeUrl;
 
     /**
-     * 自动登录地址
+     * 单点登录自动登录地址
      * ticket模式单点登录
      */
-    @Size(max = 512, message = "自动登录地址长度不能超过{max}")
-    @Schema(description = "自动登录地址")
+    @Size(max = 512, message = "单点登录自动登录地址长度不能超过{max}")
+    @Schema(description = "单点登录自动登录地址")
     private String ssoAutoLoginUrl;
 
     /**
@@ -143,10 +143,10 @@ public class AppDto implements Serializable {
     private Boolean isPublic;
 
     /**
-     * 允许的IP
+     * IP白名单
      */
-    @Size(max = 512, message = "允许的IP长度不能超过{max}")
-    @Schema(description = "允许的IP")
+    @Size(max = 512, message = "IP白名单长度不能超过{max}")
+    @Schema(description = "IP白名单")
     private String allowIp;
 
     /**
@@ -172,16 +172,16 @@ public class AppDto implements Serializable {
     private String ssoAllowUrl;
 
     /**
-     * 允许的重定向uri
+     * 允许授权地址
      */
-    @Size(max = 5120, message = "允许的重定向uri长度不能超过{max}")
-    @Schema(description = "允许的重定向uri")
+    @Size(max = 5120, message = "允许授权地址长度不能超过{max}")
+    @Schema(description = "允许授权地址")
     private String oauth2AllowRedirectUris;
 
     /**
-     * 允许的授权类型
+     * 授权模式
      */
-    @Schema(description = "允许的授权类型")
+    @Schema(description = "授权模式")
     private List<String> oauth2AllowGrantTypes;
 
     /**

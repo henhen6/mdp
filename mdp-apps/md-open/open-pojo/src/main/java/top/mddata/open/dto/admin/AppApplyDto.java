@@ -42,11 +42,11 @@ public class AppApplyDto implements Serializable {
     private Long id;
 
     /**
-     * 名称
+     * 应用名称
      */
-    @NotEmpty(message = "请填写名称")
-    @Size(max = 255, message = "名称长度不能超过{max}")
-    @Schema(description = "名称")
+    @NotEmpty(message = "请填写应用名称")
+    @Size(max = 255, message = "应用名称长度不能超过{max}")
+    @Schema(description = "应用名称")
     private String name;
 
     /**

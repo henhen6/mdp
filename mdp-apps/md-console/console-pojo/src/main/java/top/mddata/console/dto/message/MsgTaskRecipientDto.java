@@ -21,7 +21,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "任务接收人Dto")
+@Schema(description = "任务接收人")
 public class MsgTaskRecipientDto implements Serializable {
 
     @Serial

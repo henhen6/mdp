@@ -39,7 +39,8 @@ public class InterfaceConfigBase extends SuperEntity<Long> implements Serializab
     private String name;
     /**
      * 接口类型
-     * [1-短信 2-邮件 3-微信]
+     * [1-站内信 2-短信 3-邮件]
+     *
      */
     private Integer msgType;
 
@@ -60,12 +61,12 @@ public class InterfaceConfigBase extends SuperEntity<Long> implements Serializab
     private String implClass;
 
     /**
-     * 实现ID
+     * MagicApi
      */
     private String magicApiId;
 
     /**
-     * 配置参数
+     * 参数配置
      * (JSON存储：AppId, SecretKey等)
      */
     @Column(typeHandler = Fastjson2TypeHandler.class)

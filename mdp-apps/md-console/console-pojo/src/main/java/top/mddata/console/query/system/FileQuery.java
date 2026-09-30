@@ -56,9 +56,9 @@ public class FileQuery extends ExtraParams implements Serializable {
     private Integer fileType;
 
     /**
-     * 文件访问地址
+     * 访问地址
      */
-    @Schema(description = "文件访问地址")
+    @Schema(description = "访问地址")
     private String url;
 
     /**
@@ -81,9 +81,9 @@ public class FileQuery extends ExtraParams implements Serializable {
     private String originalFilename;
 
     /**
-     * 桶
+     * 存储桶
      */
-    @Schema(description = "桶")
+    @Schema(description = "存储桶")
     private String bucket;
 
     /**
@@ -99,9 +99,9 @@ public class FileQuery extends ExtraParams implements Serializable {
     private String path;
 
     /**
-     * 文件扩展名
+     * 扩展名
      */
-    @Schema(description = "文件扩展名")
+    @Schema(description = "扩展名")
     private String ext;
 
     /**

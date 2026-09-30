@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "接口执行日志记录Query")
+@Schema(description = "接口执行日志记录")
 public class InterfaceLogQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -39,9 +39,9 @@ public class InterfaceLogQuery extends ExtraParams implements Serializable {
     @Schema(description = "接口ID")
     private Long interfaceStatId;
     /**
-     * 消息任务ID
+     * 任务ID
      */
-    @Schema(description = "消息任务ID")
+    @Schema(description = "任务ID")
     private Long msgTaskId;
     /**
      * 执行开始时间

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件推送任务Vo")
+@Schema(description = "事件推送任务")
 @Table(EventPushBase.TABLE_NAME)
 public class EventPushVo implements Serializable {
 
@@ -43,9 +43,9 @@ public class EventPushVo implements Serializable {
     private Long eventTriggerId;
 
     /**
-     * 事件类型
+     * 事件编码
      */
-    @Schema(description = "事件类型")
+    @Schema(description = "事件编码")
     private String eventCode;
 
     /**
@@ -55,15 +55,15 @@ public class EventPushVo implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
-    @Schema(description = "应用秘钥")
+    @Schema(description = "应用Key")
     private String appKey;
 
     /**
-     * 回调url
+     * 回调地址
      */
-    @Schema(description = "回调url")
+    @Schema(description = "回调地址")
     private String notifyUrl;
 
     /**
@@ -73,9 +73,9 @@ public class EventPushVo implements Serializable {
     private String requestData;
 
     /**
-     * 最后请求时间
+     * 最近请求时间
      */
-    @Schema(description = "最后请求时间")
+    @Schema(description = "最近请求时间")
     private LocalDateTime lastRequestTime;
 
     /**

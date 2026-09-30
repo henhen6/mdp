@@ -38,7 +38,7 @@ public class ApiCallLogBase extends BaseEntity<Long> implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
     private String appKey;
 
@@ -109,7 +109,7 @@ public class ApiCallLogBase extends BaseEntity<Long> implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 异常消息
+     * 异常信息
      */
     private String errorMsg;
 

@@ -64,15 +64,15 @@ public class RoleQuery extends ExtraParams implements Serializable {
     private Integer orgNature;
 
     /**
-     * 是否模版
+     * 是否模板
      */
-    @Schema(description = "是否模版")
+    @Schema(description = "是否模板")
     private Boolean templateRole;
 
     /**
-     * 说明
+     * 备注
      */
-    @Schema(description = "说明")
+    @Schema(description = "备注")
     private String remarks;
 
     /**

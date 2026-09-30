@@ -28,7 +28,7 @@ public class AppApplyBase extends SuperEntity<Long> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 名称
+     * 应用名称
      */
     private String name;
 

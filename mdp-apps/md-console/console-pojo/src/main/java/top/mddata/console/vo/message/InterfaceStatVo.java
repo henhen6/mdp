@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "接口统计Vo")
+@Schema(description = "接口统计")
 @Table(InterfaceStatBase.TABLE_NAME)
 public class InterfaceStatVo implements Serializable {
 
@@ -55,9 +55,9 @@ public class InterfaceStatVo implements Serializable {
     private Integer failCount;
 
     /**
-     * 最后执行时间
+     * 最近执行时间
      */
-    @Schema(description = "最后执行时间")
+    @Schema(description = "最近执行时间")
     private LocalDateTime lastExecAt;
 
     /**

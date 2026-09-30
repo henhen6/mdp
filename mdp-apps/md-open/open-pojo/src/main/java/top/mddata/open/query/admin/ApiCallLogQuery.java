@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "调用日志Query")
+@Schema(description = "调用日志")
 public class ApiCallLogQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -46,9 +46,9 @@ public class ApiCallLogQuery extends ExtraParams implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
-    @Schema(description = "应用秘钥")
+    @Schema(description = "应用Key")
     private String appKey;
 
     /**
@@ -131,9 +131,9 @@ public class ApiCallLogQuery extends ExtraParams implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 异常消息
+     * 异常信息
      */
-    @Schema(description = "异常消息")
+    @Schema(description = "异常信息")
     private String errorMsg;
 
     /**

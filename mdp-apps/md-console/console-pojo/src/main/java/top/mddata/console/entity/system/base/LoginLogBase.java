@@ -37,7 +37,7 @@ public class LoginLogBase extends BaseEntity<Long> implements Serializable {
     private String name;
 
     /**
-     * 登录人账号
+     * 登录账号
      */
     private String account;
 

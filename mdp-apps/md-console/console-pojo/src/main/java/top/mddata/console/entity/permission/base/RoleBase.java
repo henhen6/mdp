@@ -53,12 +53,12 @@ public class RoleBase extends SuperEntity<Long> implements Serializable {
     private Integer orgNature;
 
     /**
-     * 是否模版
+     * 是否模板
      */
     private Boolean templateRole;
 
     /**
-     * 说明
+     * 备注
      */
     private String remarks;
 

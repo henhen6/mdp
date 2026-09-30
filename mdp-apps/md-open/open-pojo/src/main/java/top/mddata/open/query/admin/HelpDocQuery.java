@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "帮助文档Query")
+@Schema(description = "帮助文档")
 public class HelpDocQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -66,9 +66,9 @@ public class HelpDocQuery extends ExtraParams implements Serializable {
     private Integer contentType;
 
     /**
-     * 父级id
+     * 上级文档
      */
-    @Schema(description = "父级id")
+    @Schema(description = "上级文档")
     private Long parentId;
 
     /**

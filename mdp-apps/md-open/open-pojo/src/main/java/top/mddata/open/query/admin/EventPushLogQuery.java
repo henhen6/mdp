@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "事件推送日志Query")
+@Schema(description = "事件推送日志")
 public class EventPushLogQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -66,10 +66,10 @@ public class EventPushLogQuery extends ExtraParams implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 状态
+     * 执行状态
      * [1-执行成功 2-执行失败]
      */
-    @Schema(description = "状态")
+    @Schema(description = "执行状态")
     private String execStatus;
 
     /**

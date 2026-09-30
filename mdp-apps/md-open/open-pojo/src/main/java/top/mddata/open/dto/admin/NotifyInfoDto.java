@@ -22,7 +22,7 @@ import java.util.Map;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "回调任务Dto")
+@Schema(description = "回调任务")
 public class NotifyInfoDto implements Serializable {
 
     @Serial
@@ -42,11 +42,11 @@ public class NotifyInfoDto implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
-    @NotEmpty(message = "请填写应用秘钥")
-    @Size(max = 100, message = "应用秘钥长度不能超过{max}")
-    @Schema(description = "应用秘钥")
+    @NotEmpty(message = "请填写应用Key")
+    @Size(max = 100, message = "应用Key长度不能超过{max}")
+    @Schema(description = "应用Key")
     private String appKey;
 
     /**
@@ -82,10 +82,10 @@ public class NotifyInfoDto implements Serializable {
     private String clientIp;
 
     /**
-     * 回调url
+     * 回调地址
      */
-    @Size(max = 255, message = "回调url长度不能超过{max}")
-    @Schema(description = "回调url")
+    @Size(max = 255, message = "回调地址长度不能超过{max}")
+    @Schema(description = "回调地址")
     private String notifyUrl;
 
     /**

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "请求日志Query")
+@Schema(description = "请求日志")
 public class RequestLogDetailQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -40,9 +40,9 @@ public class RequestLogDetailQuery extends ExtraParams implements Serializable {
     private String requestParam;
 
     /**
-     * 返回值
+     * 响应体
      */
-    @Schema(description = "返回值")
+    @Schema(description = "响应体")
     private String responseBody;
 
     /**

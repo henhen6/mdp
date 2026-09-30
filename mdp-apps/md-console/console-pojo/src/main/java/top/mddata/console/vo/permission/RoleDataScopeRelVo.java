@@ -51,14 +51,15 @@ public class RoleDataScopeRelVo implements Serializable {
     private Long menuId;
 
     /**
-     * 数据范围（编码见 DataScopeEnum：10/20/30/40/50/90）
+     * 数据范围
+     * [10-全部 20-本公司及以下 30-本部门及以下 40-本部门 50-仅本人 90-自定义]
      */
     @Schema(description = "数据范围")
     private String dataScope;
 
     /**
-     * 自定义实现的 Spring Bean 名（仅 dataScope=90 时非空）
+     * 自定义实现的Spring Bean名（仅data_scope=90时非空）
      */
-    @Schema(description = "自定义实现的 Spring Bean 名")
+    @Schema(description = "自定义实现的Spring Bean名（仅data_scope=90时非空）")
     private String dataScopeImpl;
 }

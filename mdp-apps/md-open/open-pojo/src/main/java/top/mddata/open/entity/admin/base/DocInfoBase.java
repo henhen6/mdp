@@ -58,7 +58,7 @@ public class DocInfoBase extends SuperEntity<Long> implements Serializable {
     private Integer sourceType;
 
     /**
-     * 文档版本号
+     * 文档版本
      */
     private String docVersion;
 

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件类型Vo")
+@Schema(description = "事件类型")
 @Table(EventTypeBase.TABLE_NAME)
 public class EventTypeVo implements Serializable {
 

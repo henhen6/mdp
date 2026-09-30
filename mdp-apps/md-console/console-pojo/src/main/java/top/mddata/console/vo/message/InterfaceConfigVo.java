@@ -25,7 +25,7 @@ import java.util.List;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "接口Vo")
+@Schema(description = "接口")
 @Table(InterfaceConfigBase.TABLE_NAME)
 public class InterfaceConfigVo implements Serializable {
 
@@ -51,7 +51,8 @@ public class InterfaceConfigVo implements Serializable {
     private String name;
     /**
      * 接口类型
-     * [1-短信 2-邮件 3-微信]
+     * [1-站内信 2-短信 3-邮件]
+     *
      */
     @Schema(description = "接口类型")
     private Integer msgType;
@@ -75,16 +76,16 @@ public class InterfaceConfigVo implements Serializable {
     private String implClass;
 
     /**
-     * 实现ID
+     * MagicApi
      */
-    @Schema(description = "实现ID")
+    @Schema(description = "MagicApi")
     private String magicApiId;
 
     /**
-     * 配置参数
+     * 参数配置
      * (JSON存储：AppId, SecretKey等)
      */
-    @Schema(description = "配置参数")
+    @Schema(description = "参数配置")
     @Column(typeHandler = Fastjson2TypeHandler.class)
     private List<InterfaceConfigJsonDto> configJson;
 

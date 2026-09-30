@@ -94,17 +94,16 @@ public class ApiQuery extends ExtraParams implements Serializable {
     private Integer permission;
 
     /**
-     * 需要token
+     * 需要Token
      * [0-否 1-是]
      */
-    @Schema(description = "需要token")
+    @Schema(description = "需要Token")
     private Integer needToken;
 
     /**
-     * 需要签名校验
-     * [0-否 1-是]
+     * 是否需要签名校验[0-否 1-是]
      */
-    @Schema(description = "需要签名校验")
+    @Schema(description = "是否需要签名校验[0-否 1-是]")
     private Integer needSign;
 
     /**

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件触发Vo")
+@Schema(description = "事件触发")
 @Table(EventTriggerBase.TABLE_NAME)
 public class EventTriggerVo implements Serializable {
 

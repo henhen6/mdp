@@ -23,7 +23,7 @@ import java.util.List;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "消息任务Query")
+@Schema(description = "消息任务")
 public class MsgTaskQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -65,7 +65,7 @@ public class MsgTaskQuery extends ExtraParams implements Serializable {
 
     /**
      * 消息分类
-     * [1-待办 2-预警 3-提醒]
+     * [1-待办 2-公告 3-预警]
      */
     @Schema(description = "消息分类")
     private Integer msgCategory;
@@ -133,15 +133,15 @@ public class MsgTaskQuery extends ExtraParams implements Serializable {
     private String bizType;
 
     /**
-     * 发布人
+     * 发送人
      */
-    @Schema(description = "发布人")
+    @Schema(description = "发送人")
     private String author;
 
     /**
-     * 发布人ID
+     * 发送人ID
      */
-    @Schema(description = "发布人ID")
+    @Schema(description = "发送人ID")
     private Long senderId;
 
     /**

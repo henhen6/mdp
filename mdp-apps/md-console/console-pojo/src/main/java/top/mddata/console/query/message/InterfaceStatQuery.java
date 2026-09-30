@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "接口统计Query")
+@Schema(description = "接口统计")
 public class InterfaceStatQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -52,9 +52,9 @@ public class InterfaceStatQuery extends ExtraParams implements Serializable {
     private Integer failCount;
 
     /**
-     * 最后执行时间
+     * 最近执行时间
      */
-    @Schema(description = "最后执行时间")
+    @Schema(description = "最近执行时间")
     private LocalDateTime lastExecAt;
 
     /**

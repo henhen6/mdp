@@ -21,7 +21,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "接口Dto")
+@Schema(description = "接口")
 public class InterfaceConfigDto implements Serializable {
 
     @Serial
@@ -50,7 +50,7 @@ public class InterfaceConfigDto implements Serializable {
     private String name;
     /**
      * 接口类型
-     * [1-短信 2-邮件 3-微信]
+     * [1-站内信 2-短信 3-邮件]
      */
     @NotNull(message = "请填写接口类型")
     @Schema(description = "接口类型")
@@ -78,10 +78,10 @@ public class InterfaceConfigDto implements Serializable {
     private String implClass;
 
     /**
-     * 实现ID
+     * MagicApi
      */
-    @Size(max = 255, message = "实现ID长度不能超过{max}")
-    @Schema(description = "实现ID")
+    @Size(max = 255, message = "MagicApi长度不能超过{max}")
+    @Schema(description = "MagicApi")
     private String magicApiId;
 
     /**

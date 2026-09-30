@@ -49,8 +49,6 @@ public class PositionVo implements Serializable, EchoVO {
 
     /**
      * 所属组织
-     * #sys_org
-     * @Echo(api = EchoApi.ORG_ID_CLASS)
      */
     @Schema(description = "所属组织")
     @Echo(api = EchoApi.ORG_CLASS)

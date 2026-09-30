@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "接口Query")
+@Schema(description = "接口")
 public class InterfaceConfigQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -44,7 +44,8 @@ public class InterfaceConfigQuery extends ExtraParams implements Serializable {
     private String name;
     /**
      * 接口类型
-     * [1-短信 2-邮件 3-微信]
+     * [1-站内信 2-短信 3-邮件]
+     *
      */
     @Schema(description = "接口类型")
     private Integer msgType;
@@ -68,9 +69,9 @@ public class InterfaceConfigQuery extends ExtraParams implements Serializable {
     private String implClass;
 
     /**
-     * 实现ID
+     * MagicApi
      */
-    @Schema(description = "实现ID")
+    @Schema(description = "MagicApi")
     private String magicApiId;
 
 

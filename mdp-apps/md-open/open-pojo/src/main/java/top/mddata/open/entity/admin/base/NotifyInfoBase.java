@@ -38,7 +38,7 @@ public class NotifyInfoBase extends SuperEntity<Long> implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
     private String appKey;
 
@@ -53,23 +53,25 @@ public class NotifyInfoBase extends SuperEntity<Long> implements Serializable {
     private String apiVersion;
 
     /**
-     * 回调url
+     * 回调地址
      */
     private String notifyUrl;
 
     /**
-     * 加密模式（冗余自 AppKeys，避免推送时再查库）
-     * [0-明文模式 1-兼容模式 2-安全模式]
+     * 加密模式
+     * （冗余自 AppKeys，避免回调时再查库），[0-明文模式 1-兼容模式 2-安全模式]
      */
     private Integer notifyEncryptionType;
 
     /**
-     * 签名校验令牌（冗余自 AppKeys）
+     * 签名校验令牌
+     * （冗余自 AppKeys）
      */
     private String notifyToken;
 
     /**
-     * AES加解密密钥（冗余自 AppKeys）
+     * AES加解密密钥
+     * （冗余自 AppKeys）
      */
     private String notifyEncodingAesKey;
 
@@ -79,7 +81,7 @@ public class NotifyInfoBase extends SuperEntity<Long> implements Serializable {
     private String requestData;
 
     /**
-     * 最后请求时间
+     * 最近请求时间
      */
     private LocalDateTime lastRequestTime;
 

@@ -39,17 +39,20 @@ public class AppQuery extends ExtraParams implements Serializable {
     private Long id;
 
     /**
-     * 应用ID
+     * 应用Key
      */
-    @Schema(description = "应用ID")
+    @Schema(description = "应用Key")
     private String appKey;
-    @Schema(description = "权重")
+    /**
+     * 排序
+     */
+    @Schema(description = "排序")
     private Integer weight;
 
     /**
-     * 应用秘钥
+     * 应用密钥
      */
-    @Schema(description = "应用秘钥")
+    @Schema(description = "应用密钥")
     private String appSecret;
 
     /**
@@ -97,15 +100,15 @@ public class AppQuery extends ExtraParams implements Serializable {
     private String remark;
 
     /**
-     * 开始有效期
+     * 生效时间
      */
-    @Schema(description = "开始有效期")
+    @Schema(description = "生效时间")
     private LocalDateTime validityStart;
 
     /**
-     * 结束有效期
+     * 失效时间
      */
-    @Schema(description = "结束有效期")
+    @Schema(description = "失效时间")
     private LocalDateTime validityEnd;
 
     /**
@@ -129,9 +132,9 @@ public class AppQuery extends ExtraParams implements Serializable {
     private Boolean isPublic;
 
     /**
-     * 允许的IP
+     * IP白名单
      */
-    @Schema(description = "允许的IP")
+    @Schema(description = "IP白名单")
     private String allowIp;
 
     /**
@@ -154,19 +157,19 @@ public class AppQuery extends ExtraParams implements Serializable {
     private String ssoAllowUrl;
 
     /**
-     * 允许的重定向uri
+     * 允许授权地址
      */
-    @Schema(description = "允许的重定向uri")
+    @Schema(description = "允许授权地址")
     private String oauth2AllowRedirectUris;
 
     /**
-     * 允许的授权类型
+     * 授权模式
      */
-    @Schema(description = "允许的授权类型")
+    @Schema(description = "授权模式")
     private String oauth2AllowGrantTypes;
 
     /**
-     * Refresh-Token刷新策略
+     * Refresh-Token刷新策略\r
      * [0-否 1-是 -1-全局配置]
      */
     @Schema(description = "Refresh-Token刷新策略")

@@ -22,7 +22,7 @@ import java.util.List;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "应用秘钥Vo")
+@Schema(description = "应用秘钥")
 @Table(AppKeysBase.TABLE_NAME)
 public class AppKeysVo implements Serializable {
 
@@ -62,28 +62,27 @@ public class AppKeysVo implements Serializable {
     private Boolean notifyState;
 
     /**
-     * 加密模式
-     * [0-明文模式 1-兼容模式 2-安全模式]
+     * 加密模式，[0-明文模式 1-兼容模式 2-安全模式]
      */
-    @Schema(description = "加密模式")
+    @Schema(description = "加密模式，[0-明文模式 1-兼容模式 2-安全模式]")
     private Integer notifyEncryptionType;
 
     /**
-     * 签名校验令牌
+     * 签名校验令牌，平台和开发者共同持有，用于生成和验证 signature / msg_signature
      */
-    @Schema(description = "签名校验令牌")
+    @Schema(description = "签名校验令牌，平台和开发者共同持有，用于生成和验证 signature / msg_signature")
     private String notifyToken;
 
     /**
-     * AES加解密密钥（43字符）
+     * AES加解密密钥（43字符），平台和开发者共同持有。生成方式：Base64Decode(encodingAesKey + "=") 得到32字节AESKey
      */
-    @Schema(description = "AES加解密密钥")
+    @Schema(description = "AES加解密密钥（43字符），平台和开发者共同持有。生成方式：Base64Decode(encodingAesKey + \"=\") 得到32字节AESKey")
     private String notifyEncodingAesKey;
 
     /**
      * 开发者应用公钥（RSA2签名校验用）
      */
-    @Schema(description = "开发者应用公钥")
+    @Schema(description = "开发者应用公钥（RSA2签名校验用）")
     private String publicKeyApp;
 
     @Schema(description = "订阅的事件")

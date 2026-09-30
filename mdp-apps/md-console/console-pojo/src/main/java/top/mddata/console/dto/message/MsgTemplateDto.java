@@ -21,7 +21,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "消息模板Dto")
+@Schema(description = "消息模板")
 public class MsgTemplateDto implements Serializable {
 
     @Serial
@@ -63,18 +63,18 @@ public class MsgTemplateDto implements Serializable {
     private Boolean state;
 
     /**
-     * 模板编码
+     * 短信模板编码
      * 第三方模板编码（如，消息类型为短信时，第三方短信商的模版id）
      */
-    @Size(max = 255, message = "模板编码长度不能超过{max}")
-    @Schema(description = "模板编码")
+    @Size(max = 255, message = "短信模板编码长度不能超过{max}")
+    @Schema(description = "短信模板编码")
     private String smsTemplateId;
 
     /**
-     * 签名
+     * 短信签名
      */
-    @Size(max = 255, message = "签名长度不能超过{max}")
-    @Schema(description = "签名")
+    @Size(max = 255, message = "短信签名长度不能超过{max}")
+    @Schema(description = "短信签名")
     private String smsSign;
 
     /**

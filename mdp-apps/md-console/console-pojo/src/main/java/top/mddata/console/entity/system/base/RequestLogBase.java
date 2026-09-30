@@ -89,8 +89,7 @@ public class RequestLogBase extends BaseEntity<Long> implements Serializable {
     private String httpUri;
 
     /**
-     * 请求类型
-     * #HttpMethod{GET:GET请求;POST:POST请求;PUT:PUT请求;DELETE:DELETE请求;PATCH:PATCH请求;TRACE:TRACE请求;HEAD:HEAD请求;OPTIONS:OPTIONS请求;}
+     * 请求方式
      */
     private String httpMethod;
 
@@ -105,17 +104,17 @@ public class RequestLogBase extends BaseEntity<Long> implements Serializable {
     private LocalDateTime startTime;
 
     /**
-     * 完成时间
+     * 结束时间
      */
     private LocalDateTime finishTime;
 
     /**
-     * 消耗时间
+     * 耗时
      */
     private Long consumingTime;
 
     /**
-     * 浏览器请求头
+     * 浏览器
      */
     private String ua;
 

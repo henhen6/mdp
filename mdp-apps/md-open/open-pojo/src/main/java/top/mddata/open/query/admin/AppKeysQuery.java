@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "应用秘钥Query")
+@Schema(description = "应用秘钥")
 public class AppKeysQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -52,10 +52,9 @@ public class AppKeysQuery extends ExtraParams implements Serializable {
     private Boolean notifyState;
 
     /**
-     * 加密模式
-     * [0-明文模式 1-兼容模式 2-安全模式]
+     * 加密模式，[0-明文模式 1-兼容模式 2-安全模式]
      */
-    @Schema(description = "加密模式")
+    @Schema(description = "加密模式，[0-明文模式 1-兼容模式 2-安全模式]")
     private Integer notifyEncryptionType;
 
     /**

@@ -37,7 +37,7 @@ public class GroupApiRelBase extends BaseEntity<Long> implements Serializable {
     private Long groupId;
 
     /**
-     * 所属文档
+     * 所属接口
      * api_info.id
      */
     private Long apiId;

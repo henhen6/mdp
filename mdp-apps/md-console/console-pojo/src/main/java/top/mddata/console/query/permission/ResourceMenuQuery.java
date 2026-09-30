@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "菜单Query")
+@Schema(description = "菜单")
 public class ResourceMenuQuery extends ExtraParams implements Serializable {
 
     @Serial
@@ -107,9 +107,9 @@ public class ResourceMenuQuery extends ExtraParams implements Serializable {
     private Long parentId;
 
     /**
-     * 顺序号
+     * 排序
      */
-    @Schema(description = "顺序号")
+    @Schema(description = "排序")
     private Integer weight;
 
     /**

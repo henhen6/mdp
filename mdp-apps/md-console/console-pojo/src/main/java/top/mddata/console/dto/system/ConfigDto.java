@@ -93,9 +93,9 @@ public class ConfigDto implements Serializable {
     private String remark;
 
     /**
-     * 当前机构id
+     * 所属组织
      */
-    @Schema(description = "当前机构id")
+    @Schema(description = "所属组织")
     private Long orgId;
 
 }

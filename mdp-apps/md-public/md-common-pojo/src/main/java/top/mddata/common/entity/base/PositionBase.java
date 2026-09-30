@@ -32,8 +32,6 @@ public class PositionBase extends SuperEntity<Long> implements Serializable {
 
     /**
      * 所属组织
-     * #sys_org
-     * @Echo(api = EchoApi.ORG_ID_CLASS)
      */
     private Long orgId;
 

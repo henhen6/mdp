@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "接口执行日志记录Vo")
+@Schema(description = "接口执行日志记录")
 @Table(InterfaceLogBase.TABLE_NAME)
 public class InterfaceLogVo implements Serializable {
 
@@ -42,9 +42,9 @@ public class InterfaceLogVo implements Serializable {
     @Schema(description = "接口ID")
     private Long interfaceStatId;
     /**
-     * 消息任务ID
+     * 任务ID
      */
-    @Schema(description = "消息任务ID")
+    @Schema(description = "任务ID")
     private Long msgTaskId;
 
     /**

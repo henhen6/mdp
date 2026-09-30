@@ -39,8 +39,6 @@ public class PositionQuery extends ExtraParams implements Serializable {
 
     /**
      * 所属组织
-     * #sys_org
-     * @Echo(api = EchoApi.ORG_ID_CLASS)
      */
     @Schema(description = "所属组织")
     private Long orgId;

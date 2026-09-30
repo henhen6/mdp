@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "事件触发Query")
+@Schema(description = "事件触发")
 public class EventTriggerQuery extends ExtraParams implements Serializable {
 
     @Serial

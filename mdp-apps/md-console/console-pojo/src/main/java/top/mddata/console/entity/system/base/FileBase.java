@@ -42,7 +42,7 @@ public class FileBase extends SuperEntity<Long> implements Serializable {
     private Integer fileType;
 
     /**
-     * 文件访问地址
+     * 访问地址
      */
     private String url;
 
@@ -63,7 +63,7 @@ public class FileBase extends SuperEntity<Long> implements Serializable {
     private String originalFilename;
 
     /**
-     * 桶
+     * 存储桶
      */
     private String bucket;
 
@@ -78,7 +78,7 @@ public class FileBase extends SuperEntity<Long> implements Serializable {
     private String path;
 
     /**
-     * 文件扩展名
+     * 扩展名
      */
     private String ext;
 

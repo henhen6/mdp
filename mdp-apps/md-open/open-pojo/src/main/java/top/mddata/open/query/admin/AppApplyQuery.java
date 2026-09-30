@@ -38,9 +38,9 @@ public class AppApplyQuery extends ExtraParams implements Serializable {
     private Long id;
 
     /**
-     * 名称
+     * 应用名称
      */
-    @Schema(description = "名称")
+    @Schema(description = "应用名称")
     private String name;
 
     /**

@@ -59,11 +59,11 @@ public class FileDto implements Serializable {
     private Integer fileType;
 
     /**
-     * 文件访问地址
+     * 访问地址
      */
-    @NotEmpty(message = "请填写文件访问地址")
-    @Size(max = 512, message = "文件访问地址长度不能超过{max}")
-    @Schema(description = "文件访问地址")
+    @NotEmpty(message = "请填写访问地址")
+    @Size(max = 512, message = "访问地址长度不能超过{max}")
+    @Schema(description = "访问地址")
     private String url;
 
     /**
@@ -88,10 +88,10 @@ public class FileDto implements Serializable {
     private String originalFilename;
 
     /**
-     * 桶
+     * 存储桶
      */
-    @Size(max = 255, message = "桶长度不能超过{max}")
-    @Schema(description = "桶")
+    @Size(max = 255, message = "存储桶长度不能超过{max}")
+    @Schema(description = "存储桶")
     private String bucket;
 
     /**
@@ -109,10 +109,10 @@ public class FileDto implements Serializable {
     private String path;
 
     /**
-     * 文件扩展名
+     * 扩展名
      */
-    @Size(max = 32, message = "文件扩展名长度不能超过{max}")
-    @Schema(description = "文件扩展名")
+    @Size(max = 32, message = "扩展名长度不能超过{max}")
+    @Schema(description = "扩展名")
     private String ext;
 
     /**

@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "回调任务日志Dto")
+@Schema(description = "回调任务日志")
 public class NotifyInfoLogDto implements Serializable {
 
     @Serial
@@ -36,10 +36,10 @@ public class NotifyInfoLogDto implements Serializable {
     private Long id;
 
     /**
-     * 所属推送
+     * 所属回调
      */
-    @NotNull(message = "请填写所属推送")
-    @Schema(description = "所属推送")
+    @NotNull(message = "请填写所属回调")
+    @Schema(description = "所属回调")
     private Long notifyInfoId;
 
     /**
@@ -69,12 +69,12 @@ public class NotifyInfoLogDto implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 状态
+     * 执行状态
      * [1-执行成功 2-执行失败]
      */
-    @NotEmpty(message = "请填写状态")
-    @Size(max = 1, message = "状态长度不能超过{max}")
-    @Schema(description = "状态")
+    @NotEmpty(message = "请填写执行状态")
+    @Size(max = 1, message = "执行状态长度不能超过{max}")
+    @Schema(description = "执行状态")
     private String execStatus;
 
     /**

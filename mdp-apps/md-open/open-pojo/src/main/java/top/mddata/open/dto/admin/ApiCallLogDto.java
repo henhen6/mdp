@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "调用日志Dto")
+@Schema(description = "调用日志")
 public class ApiCallLogDto implements Serializable {
 
     @Serial
@@ -49,10 +49,10 @@ public class ApiCallLogDto implements Serializable {
     private Long appId;
 
     /**
-     * 应用秘钥
+     * 应用Key
      */
-    @Size(max = 255, message = "应用秘钥长度不能超过{max}")
-    @Schema(description = "应用秘钥")
+    @Size(max = 255, message = "应用Key长度不能超过{max}")
+    @Schema(description = "应用Key")
     private String appKey;
 
     /**
@@ -146,10 +146,10 @@ public class ApiCallLogDto implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 异常消息
+     * 异常信息
      */
-    @Size(max = 536870911, message = "异常消息长度不能超过{max}")
-    @Schema(description = "异常消息")
+    @Size(max = 536870911, message = "异常信息长度不能超过{max}")
+    @Schema(description = "异常信息")
     private String errorMsg;
 
 }

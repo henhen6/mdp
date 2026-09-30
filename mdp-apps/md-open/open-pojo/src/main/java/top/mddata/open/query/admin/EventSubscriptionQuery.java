@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "事件订阅Query")
+@Schema(description = "事件订阅")
 public class EventSubscriptionQuery extends ExtraParams implements Serializable {
 
     @Serial

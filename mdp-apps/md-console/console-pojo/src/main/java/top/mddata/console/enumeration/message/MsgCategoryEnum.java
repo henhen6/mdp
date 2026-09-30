@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * <p>
  * 消息分类
- * [1-待办 2-预警 3-提醒]
+ * [1-待办 2-公告 3-预警]
  * </p>
  *
  * @author henhen
@@ -30,11 +30,11 @@ public enum MsgCategoryEnum implements BaseEnum<Integer> {
     /**
      * WARN="预警"
      */
-    EARLY_WARNING(2, "预警"),
+    EARLY_WARNING(3, "预警"),
     /**
-     * NOTIFY="提醒"
+     * NOTICE="公告"
      */
-    NOTICE(3, "提醒");
+    NOTICE(2, "公告");
 
     private Integer code;
     @Schema(description = "描述")

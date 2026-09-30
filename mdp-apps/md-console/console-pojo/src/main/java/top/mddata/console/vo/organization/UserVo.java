@@ -62,9 +62,9 @@ public class UserVo implements Serializable, EchoVO {
     private String sex;
 
     /**
-     * 电话号码
+     * 手机号
      */
-    @Schema(description = "电话号码")
+    @Schema(description = "手机号")
     private String phone;
 
     /**
@@ -80,9 +80,9 @@ public class UserVo implements Serializable, EchoVO {
     private String name;
 
     /**
-     * 邮箱地址
+     * 邮箱
      */
-    @Schema(description = "邮箱地址")
+    @Schema(description = "邮箱")
     private String email;
 
     /**
@@ -93,21 +93,21 @@ public class UserVo implements Serializable, EchoVO {
     private Boolean state;
 
     /**
-     * 上次登录的部门
+     * 最近登录部门
      */
-    @Schema(description = "上次登录的部门")
+    @Schema(description = "最近登录部门")
     private Long lastDeptId;
 
     /**
-     * 上次登录的单位
+     * 最近登录单位
      */
-    @Schema(description = "上次登录的单位")
+    @Schema(description = "最近登录单位")
     private Long lastCompanyId;
 
     /**
-     * 上次登录的顶级单位
+     * 最近登录顶级单位
      */
-    @Schema(description = "上次登录的顶级单位")
+    @Schema(description = "最近登录顶级单位")
     private Long lastTopCompanyId;
 
     /**
@@ -128,20 +128,20 @@ public class UserVo implements Serializable, EchoVO {
     private List<Long> orgIdList;
 
     /**
-     * 创建日期
+     * 创建时间
      */
-    @Schema(description = "创建日期")
+    @Schema(description = "创建时间")
     private LocalDateTime createdAt;
 
 
     /**
-     * 修改日期
+     * 修改时间
      */
-    @Schema(description = "修改日期")
+    @Schema(description = "修改时间")
     private LocalDateTime updatedAt;
 
     /**
-     * 输错密码时间
+     * 最近密码错误时间
      */
     private LocalDateTime pwErrorLastTime;
 
@@ -156,7 +156,7 @@ public class UserVo implements Serializable, EchoVO {
     private LocalDateTime pwExpireTime;
 
     /**
-     * 最后登录时间
+     * 最近登录时间
      */
     private LocalDateTime lastLoginTime;
 }

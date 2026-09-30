@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "回调任务日志Vo")
+@Schema(description = "回调任务日志")
 @Table(NotifyInfoLogBase.TABLE_NAME)
 public class NotifyInfoLogVo implements Serializable {
 
@@ -37,9 +37,9 @@ public class NotifyInfoLogVo implements Serializable {
     private Long id;
 
     /**
-     * 所属推送
+     * 所属回调
      */
-    @Schema(description = "所属推送")
+    @Schema(description = "所属回调")
     private Long notifyInfoId;
 
     /**
@@ -67,10 +67,10 @@ public class NotifyInfoLogVo implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 状态
+     * 执行状态
      * [1-执行成功 2-执行失败]
      */
-    @Schema(description = "状态")
+    @Schema(description = "执行状态")
     private String execStatus;
 
     /**

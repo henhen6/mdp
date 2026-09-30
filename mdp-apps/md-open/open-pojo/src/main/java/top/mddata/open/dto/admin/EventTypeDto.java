@@ -21,7 +21,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件类型Dto")
+@Schema(description = "事件类型")
 public class EventTypeDto implements Serializable {
 
     @Serial

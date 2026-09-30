@@ -32,7 +32,7 @@ public class RequestLogDetailBase extends BaseEntity<Long> implements Serializab
     private String requestParam;
 
     /**
-     * 返回值
+     * 响应体
      */
     private String responseBody;
 

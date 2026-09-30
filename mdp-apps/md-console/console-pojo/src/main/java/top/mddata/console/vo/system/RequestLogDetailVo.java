@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "请求日志Vo")
+@Schema(description = "请求日志")
 @Table(RequestLogDetailBase.TABLE_NAME)
 public class RequestLogDetailVo implements Serializable {
 
@@ -43,9 +43,9 @@ public class RequestLogDetailVo implements Serializable {
     private String requestParam;
 
     /**
-     * 返回值
+     * 响应体
      */
-    @Schema(description = "返回值")
+    @Schema(description = "响应体")
     private String responseBody;
 
     /**

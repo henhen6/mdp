@@ -42,21 +42,18 @@ public class AppKeysBase extends SuperEntity<Long> implements Serializable {
     private Boolean notifyState;
 
     /**
-     * 加密模式
-     * [0-明文模式 1-兼容模式 2-安全模式]
+     * 加密模式，[0-明文模式 1-兼容模式 2-安全模式]
      */
     private Integer notifyEncryptionType;
 
     /**
-     * 签名校验令牌
-     * 平台和开发者共同持有，用于生成和验证 signature / msg_signature
+     * 签名校验令牌，平台和开发者共同持有，用于生成和验证 signature / msg_signature
      */
     private String notifyToken;
 
     /**
-     * AES加解密密钥（43字符）
+     * AES加解密密钥（43字符），平台和开发者共同持有。生成方式：Base64Decode(encodingAesKey + "=") 得到32字节AESKey
      * 平台和开发者共同持有，用于消息体的加密和解密
-     * 生成方式：Base64Decode(encodingAesKey + "=") 得到32字节AESKey
      */
     private String notifyEncodingAesKey;
 

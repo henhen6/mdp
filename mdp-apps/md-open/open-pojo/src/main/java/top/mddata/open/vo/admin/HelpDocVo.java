@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "帮助文档Vo")
+@Schema(description = "帮助文档")
 @Table(HelpDocBase.TABLE_NAME)
 public class HelpDocVo extends TreeEntity<Long, HelpDocVo> implements Serializable {
 
@@ -73,9 +73,9 @@ public class HelpDocVo extends TreeEntity<Long, HelpDocVo> implements Serializab
     private Integer contentType;
 
     /**
-     * 父级id
+     * 上级文档
      */
-    @Schema(description = "父级id")
+    @Schema(description = "上级文档")
     private Long parentId;
 
     /**

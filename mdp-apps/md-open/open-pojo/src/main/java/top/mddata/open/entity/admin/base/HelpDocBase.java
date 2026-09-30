@@ -59,7 +59,7 @@ public class HelpDocBase<E extends TreeEntity<Long, E>> extends TreeEntity<Long,
     private Integer contentType;
 
     /**
-     * 父级id
+     * 上级文档
      */
     private Long parentId;
 

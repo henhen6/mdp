@@ -70,9 +70,9 @@ public class DocInfoQuery extends ExtraParams implements Serializable {
     private Integer sourceType;
 
     /**
-     * 文档版本号
+     * 文档版本
      */
-    @Schema(description = "文档版本号")
+    @Schema(description = "文档版本")
     private String docVersion;
 
     /**

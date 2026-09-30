@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件推送日志Dto")
+@Schema(description = "事件推送日志")
 public class EventPushLogDto implements Serializable {
 
     @Serial
@@ -69,12 +69,12 @@ public class EventPushLogDto implements Serializable {
     private LocalDateTime responseTime;
 
     /**
-     * 状态
+     * 执行状态
      * [1-执行成功 2-执行失败]
      */
-    @NotEmpty(message = "请填写状态")
-    @Size(max = 1, message = "状态长度不能超过{max}")
-    @Schema(description = "状态")
+    @NotEmpty(message = "请填写执行状态")
+    @Size(max = 1, message = "执行状态长度不能超过{max}")
+    @Schema(description = "执行状态")
     private String execStatus;
 
     /**

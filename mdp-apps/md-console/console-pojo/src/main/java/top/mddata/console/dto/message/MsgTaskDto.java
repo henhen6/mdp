@@ -23,7 +23,7 @@ import java.util.List;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "消息任务Dto")
+@Schema(description = "消息任务")
 public class MsgTaskDto implements Serializable {
 
     @Serial
@@ -39,7 +39,7 @@ public class MsgTaskDto implements Serializable {
 
     /**
      * 消息分类
-     * [1-待办 2-预警 3-提醒]
+     * [1-待办 2-公告 3-预警]
      */
     @Schema(description = "消息分类")
     @NotNull(message = "请填写消息分类")
@@ -79,10 +79,10 @@ public class MsgTaskDto implements Serializable {
     @Schema(description = "发送时间")
     private LocalDateTime sendTime;
     /**
-     * 发布人
+     * 发送人
      */
-    @Size(max = 255, message = "发布人长度不能超过{max}")
-    @Schema(description = "发布人")
+    @Size(max = 255, message = "发送人长度不能超过{max}")
+    @Schema(description = "发送人")
     private String author;
     /**
      * 备注

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Data
 @FieldNameConstants
-@Schema(description = "事件触发Dto")
+@Schema(description = "事件触发")
 public class EventTriggerDto implements Serializable {
 
     @Serial

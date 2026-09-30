@@ -48,10 +48,10 @@ public class GroupApiRelVo implements Serializable {
     private Long groupId;
 
     /**
-     * 所属文档
+     * 所属接口
      * api_info.id
      */
-    @Schema(description = "所属文档")
+    @Schema(description = "所属接口")
     private Long apiId;
 
     /**

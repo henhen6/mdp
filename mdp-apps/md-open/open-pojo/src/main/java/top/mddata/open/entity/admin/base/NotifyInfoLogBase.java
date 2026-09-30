@@ -28,7 +28,7 @@ public class NotifyInfoLogBase extends BaseEntity<Long> implements Serializable 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 所属推送
+     * 所属回调
      */
     private Long notifyInfoId;
 
@@ -53,7 +53,7 @@ public class NotifyInfoLogBase extends BaseEntity<Long> implements Serializable 
     private LocalDateTime responseTime;
 
     /**
-     * 状态
+     * 执行状态
      * [1-执行成功 2-执行失败]
      */
     private String execStatus;

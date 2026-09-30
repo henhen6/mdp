@@ -82,8 +82,7 @@ public class ResourceMenuBase<E extends TreeEntity<Long, E>> extends TreeEntity<
     private Boolean state;
 
     /**
-     * 数据权限开关
-     * [0-关闭 1-启用]
+     * 数据权限开关[0-关闭 1-启用]
      */
     private Boolean dataScopeState;
 
@@ -98,7 +97,7 @@ public class ResourceMenuBase<E extends TreeEntity<Long, E>> extends TreeEntity<
     private Long parentId;
 
     /**
-     * 顺序号
+     * 排序
      */
     private Integer weight;
 

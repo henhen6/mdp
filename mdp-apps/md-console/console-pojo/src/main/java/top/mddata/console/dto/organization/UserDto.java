@@ -74,10 +74,10 @@ public class UserDto implements Serializable {
     private String sex;
 
     /**
-     * 电话号码
+     * 手机号
      */
-    @Size(max = 20, message = "电话号码长度不能超过{max}")
-    @Schema(description = "电话号码")
+    @Size(max = 20, message = "手机号长度不能超过{max}")
+    @Schema(description = "手机号")
     @NotEmptyPattern(regexp = REGEX_MOBILE, message = "请输入11位的手机号")
     private String phone;
 
@@ -98,10 +98,10 @@ public class UserDto implements Serializable {
     private String name;
 
     /**
-     * 邮箱地址
+     * 邮箱
      */
-    @Size(max = 128, message = "邮箱地址长度不能超过{max}")
-    @Schema(description = "邮箱地址")
+    @Size(max = 128, message = "邮箱长度不能超过{max}")
+    @Schema(description = "邮箱")
     @NotEmptyPattern(regexp = REGEX_EMAIL, message = "邮箱格式不合法")
     private String email;
 
