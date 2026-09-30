@@ -224,6 +224,22 @@ public enum ErrorEnum implements I18nMessage {
         this.subCode = subCode;
     }
 
+    /**
+     * 根据code获取枚举
+     *
+     * @param code 错误码
+     * @param subCode 错误码
+     * @return 枚举
+     */
+    public static ErrorEnum getByCode(String code, String subCode) {
+        for (ErrorEnum value : ErrorEnum.values()) {
+            if (value.getCode().equals(code) && value.getSubCode().equals(subCode)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     public IError getError(Locale locale, Object... params) {
         OpenMessage codeMsg = OpenMessageFactory.getMessage(codeEnum, locale, params);
         OpenMessage subCodeMsg = OpenMessageFactory.getMessage(this, locale, params);
@@ -243,22 +259,6 @@ public enum ErrorEnum implements I18nMessage {
     @Override
     public String getConfigKey() {
         return subCode;
-    }
-
-    /**
-     * 根据code获取枚举
-     *
-     * @param code 错误码
-     * @param subCode 错误码
-     * @return 枚举
-     */
-    public static ErrorEnum getByCode(String code, String subCode) {
-        for (ErrorEnum value : ErrorEnum.values()) {
-            if (value.getCode().equals(code) && value.getSubCode().equals(subCode)) {
-                return value;
-            }
-        }
-        return null;
     }
 
 }

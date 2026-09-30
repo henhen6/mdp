@@ -4,12 +4,12 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import top.mddata.common.enumeration.BooleanEnum;
+import top.mddata.gateway.sop.common.ApiDto;
 import top.mddata.gateway.sop.common.RouteContext;
 import top.mddata.gateway.sop.exception.ApiException;
 import top.mddata.gateway.sop.interceptor.RouteInterceptor;
 import top.mddata.gateway.sop.manager.AppManager;
 import top.mddata.gateway.sop.message.ErrorEnum;
-import top.mddata.gateway.sop.common.ApiDto;
 import top.mddata.gateway.sop.request.ApiRequestContext;
 
 /**

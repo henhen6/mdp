@@ -122,7 +122,7 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
 
         // 禁用拦截以查库旧 code 为准，不依赖前端回传的 code
         boolean protectedRoleDisabled = RoleCode.OPERATIONS_ADMIN.equals(oldRole.getCode())
-                && Boolean.FALSE.equals(entity.getState());
+                                        && Boolean.FALSE.equals(entity.getState());
         ArgumentAssert.isFalse(protectedRoleDisabled, "禁用角色失败：角色[运营管理员]受系统保护");
 
         return entity;

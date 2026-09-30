@@ -2,6 +2,7 @@ package top.mddata.console.controller.organization;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +24,6 @@ import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.Position;
-import com.mybatisflex.core.query.QueryMethods;
 import top.mddata.console.dto.organization.PositionDto;
 import top.mddata.console.query.organization.PositionQuery;
 import top.mddata.console.service.organization.OrgVisibilityService;

@@ -66,14 +66,14 @@ public interface UserMapper extends SuperMapper<User> {
      */
     @Select({
             """
-            SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date, COUNT(*) AS value
-              FROM mdc_user
-             WHERE deleted_at = 0
-               AND created_at >= #{startTime, jdbcType=TIMESTAMP}
-               AND created_at <= #{endTime, jdbcType=TIMESTAMP}
-             GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
-             ORDER BY date ASC
-            """
+                    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS date, COUNT(*) AS value
+                      FROM mdc_user
+                     WHERE deleted_at = 0
+                       AND created_at >= #{startTime, jdbcType=TIMESTAMP}
+                       AND created_at <= #{endTime, jdbcType=TIMESTAMP}
+                     GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+                     ORDER BY date ASC
+                    """
     })
     List<Map<String, Object>> countByDayRange(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
@@ -86,13 +86,13 @@ public interface UserMapper extends SuperMapper<User> {
      */
     @Select({
             """
-            SELECT
-                state AS code,
-                COUNT(*) AS count
-              FROM mdc_user
-             WHERE deleted_at = 0
-             GROUP BY state
-            """
+                    SELECT
+                        state AS code,
+                        COUNT(*) AS count
+                      FROM mdc_user
+                     WHERE deleted_at = 0
+                     GROUP BY state
+                    """
     })
     List<Map<String, Object>> countByState();
 
@@ -107,17 +107,17 @@ public interface UserMapper extends SuperMapper<User> {
      */
     @Select({
             """
-            SELECT
-                o.nature AS code,
-                COUNT(*) AS count
-              FROM mdc_user u
-              JOIN mdc_user_org_rel r ON r.user_id = u.id
-              JOIN mdc_org o ON o.id = r.org_id
-             WHERE u.deleted_at = 0
-               AND o.deleted_at = 0
-               AND o.nature IS NOT NULL
-             GROUP BY o.nature
-            """
+                    SELECT
+                        o.nature AS code,
+                        COUNT(*) AS count
+                      FROM mdc_user u
+                      JOIN mdc_user_org_rel r ON r.user_id = u.id
+                      JOIN mdc_org o ON o.id = r.org_id
+                     WHERE u.deleted_at = 0
+                       AND o.deleted_at = 0
+                       AND o.nature IS NOT NULL
+                     GROUP BY o.nature
+                    """
     })
     List<Map<String, Object>> countByNature();
 
@@ -132,12 +132,12 @@ public interface UserMapper extends SuperMapper<User> {
      */
     @Select({
             """
-            SELECT COUNT(*) AS value
-              FROM mdc_user
-             WHERE deleted_at = 0
-               AND created_at >= #{startTime, jdbcType=TIMESTAMP}
-               AND created_at <= #{endTime, jdbcType=TIMESTAMP}
-            """
+                    SELECT COUNT(*) AS value
+                      FROM mdc_user
+                     WHERE deleted_at = 0
+                       AND created_at >= #{startTime, jdbcType=TIMESTAMP}
+                       AND created_at <= #{endTime, jdbcType=TIMESTAMP}
+                    """
     })
     Long countNewUsersInMonth(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 }

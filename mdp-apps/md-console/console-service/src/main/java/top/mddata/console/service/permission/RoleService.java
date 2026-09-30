@@ -16,6 +16,27 @@ import java.util.List;
  */
 public interface RoleService extends SuperService<Role> {
     /**
+     * 计算操作人可分配的数据范围档位：不得高于权限集合对该菜单的授权档。
+     *
+     * <p>按优先级过滤：全部 &gt; 自定义 &gt; 公司及以下 &gt;
+     * 部门及以下 &gt; 部门 &gt; 仅本人；返回列表按优先级从高到低排序，
+     * 供前端下拉展示。</p>
+     *
+     * @param permSetScope 权限集合角色对该菜单的授权档，
+     *                     null 表示未授权（不可分配）
+     * @return 可分配档位列表
+     */
+    static List<DataScopeEnum> getAssignableDataScopes(DataScopeEnum permSetScope) {
+        if (permSetScope == null) {
+            return List.of();
+        }
+        return Arrays.stream(DataScopeEnum.values())
+                .filter(scope -> scope.priority() <= permSetScope.priority())
+                .sorted(Comparator.comparingInt(DataScopeEnum::priority).reversed())
+                .toList();
+    }
+
+    /**
      * 获取用户角色编码
      * @param userId 用户ID
      * @return 角色编码
@@ -76,25 +97,4 @@ public interface RoleService extends SuperService<Role> {
      * @return 应用id列表
      */
     List<Long> listAppIdsByRoleId(Long roleId);
-
-    /**
-     * 计算操作人可分配的数据范围档位：不得高于权限集合对该菜单的授权档。
-     *
-     * <p>按优先级过滤：全部 &gt; 自定义 &gt; 公司及以下 &gt;
-     * 部门及以下 &gt; 部门 &gt; 仅本人；返回列表按优先级从高到低排序，
-     * 供前端下拉展示。</p>
-     *
-     * @param permSetScope 权限集合角色对该菜单的授权档，
-     *                     null 表示未授权（不可分配）
-     * @return 可分配档位列表
-     */
-    static List<DataScopeEnum> getAssignableDataScopes(DataScopeEnum permSetScope) {
-        if (permSetScope == null) {
-            return List.of();
-        }
-        return Arrays.stream(DataScopeEnum.values())
-                .filter(scope -> scope.priority() <= permSetScope.priority())
-                .sorted(Comparator.comparingInt(DataScopeEnum::priority).reversed())
-                .toList();
-    }
 }

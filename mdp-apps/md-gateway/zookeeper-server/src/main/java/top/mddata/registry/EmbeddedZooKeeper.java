@@ -89,12 +89,70 @@ public class EmbeddedZooKeeper implements SmartLifecycle {
     }
 
     /**
+     * Workaround for SocketUtils.findRandomPort() deprecation.
+     *
+     * @param min min port
+     * @param max max port
+     * @return a random generated available port
+     */
+    private static int findRandomPort(int min, int max) {
+        if (min < 1024) {
+            throw new IllegalArgumentException("Max port shouldn't be less than 1024.");
+        }
+
+        if (max > 65535) {
+            throw new IllegalArgumentException("Max port shouldn't be greater than 65535.");
+        }
+
+        if (min > max) {
+            throw new IllegalArgumentException("Min port shouldn't be greater than max port.");
+        }
+
+        int port = 0;
+        int counter = 0;
+
+        // Workaround for legacy JDK doesn't support Random.nextInt(min, max).
+        List<Integer> randomInts = RANDOM.ints(min, max + 1)
+                .limit(max - min)
+                .mapToObj(Integer::valueOf)
+                .collect(Collectors.toList());
+
+        do {
+            if (counter > max - min) {
+                throw new IllegalStateException("Unable to find a port between " + min + "-" + max);
+            }
+
+            port = randomInts.get(counter);
+            counter++;
+        } while (isPortInUse(port));
+
+        return port;
+    }
+
+    private static boolean isPortInUse(int port) {
+        try (ServerSocket ignored = new ServerSocket(port)) {
+            return false;
+        } catch (IOException e) {
+            // continue
+        }
+        return true;
+    }
+
+    /**
      * Returns the port that clients should use to connect to this embedded server.
      *
      * @return dynamically determined client port
      */
     public int getClientPort() {
         return this.clientPort;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAutoStartup() {
+        return this.autoStartup;
     }
 
     /**
@@ -110,8 +168,8 @@ public class EmbeddedZooKeeper implements SmartLifecycle {
      * {@inheritDoc}
      */
     @Override
-    public boolean isAutoStartup() {
-        return this.autoStartup;
+    public int getPhase() {
+        return this.phase;
     }
 
     /**
@@ -121,14 +179,6 @@ public class EmbeddedZooKeeper implements SmartLifecycle {
      */
     public void setPhase(int phase) {
         this.phase = phase;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getPhase() {
-        return this.phase;
     }
 
     /**
@@ -215,7 +265,7 @@ public class EmbeddedZooKeeper implements SmartLifecycle {
             try {
                 Properties properties = new Properties();
                 File file = new File(System.getProperty("java.io.tmpdir")
-                        + File.separator + UUID.randomUUID());
+                                     + File.separator + UUID.randomUUID());
                 file.deleteOnExit();
                 properties.setProperty("dataDir", file.getAbsolutePath());
                 properties.setProperty("clientPort", String.valueOf(clientPort));
@@ -238,55 +288,5 @@ public class EmbeddedZooKeeper implements SmartLifecycle {
                 }
             }
         }
-    }
-
-    /**
-     * Workaround for SocketUtils.findRandomPort() deprecation.
-     *
-     * @param min min port
-     * @param max max port
-     * @return a random generated available port
-     */
-    private static int findRandomPort(int min, int max) {
-        if (min < 1024) {
-            throw new IllegalArgumentException("Max port shouldn't be less than 1024.");
-        }
-
-        if (max > 65535) {
-            throw new IllegalArgumentException("Max port shouldn't be greater than 65535.");
-        }
-
-        if (min > max) {
-            throw new IllegalArgumentException("Min port shouldn't be greater than max port.");
-        }
-
-        int port = 0;
-        int counter = 0;
-
-        // Workaround for legacy JDK doesn't support Random.nextInt(min, max).
-        List<Integer> randomInts = RANDOM.ints(min, max + 1)
-                .limit(max - min)
-                .mapToObj(Integer::valueOf)
-                .collect(Collectors.toList());
-
-        do {
-            if (counter > max - min) {
-                throw new IllegalStateException("Unable to find a port between " + min + "-" + max);
-            }
-
-            port = randomInts.get(counter);
-            counter++;
-        } while (isPortInUse(port));
-
-        return port;
-    }
-
-    private static boolean isPortInUse(int port) {
-        try (ServerSocket ignored = new ServerSocket(port)) {
-            return false;
-        } catch (IOException e) {
-            // continue
-        }
-        return true;
     }
 }

@@ -14,6 +14,19 @@ import java.util.Collection;
 public interface SystemProtectService {
 
     /**
+     * 是否系统内置组织（3 根公司 + 默认部门）
+     *
+     * @param orgId 组织id
+     * @return true=内置组织
+     */
+    static boolean isBuiltInOrg(Long orgId) {
+        if (orgId == null) {
+            return false;
+        }
+        return BuiltInOrgId.ALL.contains(orgId);
+    }
+
+    /**
      * 用户是否运营者（持有启用状态的运营管理员角色）
      *
      * @param userId 用户id
@@ -44,17 +57,4 @@ public interface SystemProtectService {
      * @param action 操作描述
      */
     void checkOrgNotBuiltIn(Collection<Long> orgIds, String action);
-
-    /**
-     * 是否系统内置组织（3 根公司 + 默认部门）
-     *
-     * @param orgId 组织id
-     * @return true=内置组织
-     */
-    static boolean isBuiltInOrg(Long orgId) {
-        if (orgId == null) {
-            return false;
-        }
-        return BuiltInOrgId.ALL.contains(orgId);
-    }
 }

@@ -18,12 +18,11 @@ import java.util.Map;
 @Service
 public class SerdeImpl implements Serde {
 
-    static JSONWriter.Context writeContext;
-
     /**
      * remove specify class field refer to dubbo generic invoke
      */
     private static final SimplePropertyPreFilter CLASS_NAME_PRE_FILTER = new SimplePropertyPreFilter(HashMap.class);
+    static JSONWriter.Context writeContext;
 
     static {
         CLASS_NAME_PRE_FILTER.getExcludes().add("class");

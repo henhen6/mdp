@@ -62,8 +62,8 @@ public class RoleTemplateServiceImpl extends SuperServiceImpl<RoleMapper, Role> 
         // 禁用拦截以查库旧 code 为准，运营管理员及其权限集合 template_role=true，模板页同样能触达
         Role oldRole = getById(entity.getId());
         boolean protectedRole = oldRole != null
-                && (RoleCode.OPERATIONS_ADMIN.equals(oldRole.getCode())
-                || RoleCode.OPERATIONS_ADMIN_COLL.equals(oldRole.getCode()));
+                                && (RoleCode.OPERATIONS_ADMIN.equals(oldRole.getCode())
+                                    || RoleCode.OPERATIONS_ADMIN_COLL.equals(oldRole.getCode()));
         ArgumentAssert.isFalse(protectedRole && Boolean.FALSE.equals(entity.getState()),
                 "禁用角色失败：角色[{}]受系统保护", protectedRole ? oldRole.getName() : null);
 

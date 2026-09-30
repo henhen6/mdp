@@ -89,6 +89,21 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     private final OrgVisibilityService orgVisibilityService;
     private final AccountOperationGuard accountOperationGuard;
 
+    /**
+     * 逐项校验最近登录组织上下文：仍在新组织关系中则保留，否则仅失效项置空（纯函数，便于单测）。
+     */
+    static void correctLastOrg(User dbUser, List<Long> newOrgIds, User target) {
+        if (dbUser.getLastDeptId() != null && !newOrgIds.contains(dbUser.getLastDeptId())) {
+            target.setLastDeptId(null);
+        }
+        if (dbUser.getLastCompanyId() != null && !newOrgIds.contains(dbUser.getLastCompanyId())) {
+            target.setLastCompanyId(null);
+        }
+        if (dbUser.getLastTopCompanyId() != null && !newOrgIds.contains(dbUser.getLastTopCompanyId())) {
+            target.setLastTopCompanyId(null);
+        }
+    }
+
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
         return new UserCacheKeyBuilder();
@@ -245,21 +260,6 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
             return;
         }
         correctLastOrg(dbUser, newOrgIds, sysUser);
-    }
-
-    /**
-     * 逐项校验最近登录组织上下文：仍在新组织关系中则保留，否则仅失效项置空（纯函数，便于单测）。
-     */
-    static void correctLastOrg(User dbUser, List<Long> newOrgIds, User target) {
-        if (dbUser.getLastDeptId() != null && !newOrgIds.contains(dbUser.getLastDeptId())) {
-            target.setLastDeptId(null);
-        }
-        if (dbUser.getLastCompanyId() != null && !newOrgIds.contains(dbUser.getLastCompanyId())) {
-            target.setLastCompanyId(null);
-        }
-        if (dbUser.getLastTopCompanyId() != null && !newOrgIds.contains(dbUser.getLastTopCompanyId())) {
-            target.setLastTopCompanyId(null);
-        }
     }
 
     /**

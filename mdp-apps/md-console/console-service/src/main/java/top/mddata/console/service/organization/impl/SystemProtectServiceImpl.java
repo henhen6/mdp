@@ -70,8 +70,8 @@ public class SystemProtectServiceImpl implements SystemProtectService {
         Role role = roleMapper.selectOneByQuery(QueryWrapper.create().eq(Role::getId, roleId));
         // 运营管理员及其权限集合角色是运营体系的根基，删除会导致运营者权限失效
         boolean protectedRole = role != null
-                && (RoleCode.OPERATIONS_ADMIN.equals(role.getCode())
-                || RoleCode.OPERATIONS_ADMIN_COLL.equals(role.getCode()));
+                                && (RoleCode.OPERATIONS_ADMIN.equals(role.getCode())
+                                    || RoleCode.OPERATIONS_ADMIN_COLL.equals(role.getCode()));
         ArgumentAssert.isFalse(protectedRole, "{}失败：角色[{}]受系统保护",
                 action, protectedRole ? role.getName() : null);
     }

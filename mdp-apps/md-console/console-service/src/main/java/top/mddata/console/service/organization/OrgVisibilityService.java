@@ -19,20 +19,6 @@ import java.util.List;
 public interface OrgVisibilityService {
 
     /**
-     * 当前操作人身份
-     *
-     * @return 用户身份
-     */
-    UserIdentityEnum currentIdentity();
-
-    /**
-     * 当前操作人可见的组织树根节点id列表。
-     *
-     * @return null=不限制（运营者）；空列表=什么都不可见（开发者）；其余=可见根节点
-     */
-    List<Long> currentVisibleRootOrgIds();
-
-    /**
      * 身份到可见根节点的映射（纯函数）
      *
      * @param identity 用户身份
@@ -76,4 +62,18 @@ public interface OrgVisibilityService {
             }
         });
     }
+
+    /**
+     * 当前操作人身份
+     *
+     * @return 用户身份
+     */
+    UserIdentityEnum currentIdentity();
+
+    /**
+     * 当前操作人可见的组织树根节点id列表。
+     *
+     * @return null=不限制（运营者）；空列表=什么都不可见（开发者）；其余=可见根节点
+     */
+    List<Long> currentVisibleRootOrgIds();
 }

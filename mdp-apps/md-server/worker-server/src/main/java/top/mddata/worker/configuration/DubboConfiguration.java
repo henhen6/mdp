@@ -23,15 +23,13 @@ import static top.mddata.base.constant.Constants.UTIL_PACKAGE;
 @EnableDubbo(scanBasePackages = UTIL_PACKAGE)
 @Slf4j
 public class DubboConfiguration {
-    public DubboConfiguration() {
-        log.info("dubbo 已加载");
-    }
-
-
     @Autowired
     private NotifyInfoService notifyInfoService;
     @Autowired
     private EventPushService eventPushService;
+    public DubboConfiguration() {
+        log.info("dubbo 已加载");
+    }
 
     /**
      * 每10 分钟执行一次

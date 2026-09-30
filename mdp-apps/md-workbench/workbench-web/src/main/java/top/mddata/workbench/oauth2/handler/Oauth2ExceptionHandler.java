@@ -84,28 +84,20 @@ public class Oauth2ExceptionHandler {
         return switch (code) {
             case SaOAuth2ErrorCode.CODE_30101, SaOAuth2ErrorCode.CODE_30105, SaOAuth2ErrorCode.CODE_30115 ->
                     Oauth2ErrorConstants.INVALID_CLIENT;
-            case SaOAuth2ErrorCode.CODE_30102, SaOAuth2ErrorCode.CODE_30112 ->
-                    Oauth2ErrorConstants.INVALID_SCOPE;
-            case SaOAuth2ErrorCode.CODE_30106, SaOAuth2ErrorCode.CODE_30107 ->
-                    Oauth2ErrorConstants.INVALID_TOKEN;
-            case SaOAuth2ErrorCode.CODE_30108, SaOAuth2ErrorCode.CODE_30109 ->
-                    Oauth2ErrorConstants.INSUFFICIENT_SCOPE;
+            case SaOAuth2ErrorCode.CODE_30102, SaOAuth2ErrorCode.CODE_30112 -> Oauth2ErrorConstants.INVALID_SCOPE;
+            case SaOAuth2ErrorCode.CODE_30106, SaOAuth2ErrorCode.CODE_30107 -> Oauth2ErrorConstants.INVALID_TOKEN;
+            case SaOAuth2ErrorCode.CODE_30108, SaOAuth2ErrorCode.CODE_30109 -> Oauth2ErrorConstants.INSUFFICIENT_SCOPE;
             case SaOAuth2ErrorCode.CODE_30110, SaOAuth2ErrorCode.CODE_30111,
                  SaOAuth2ErrorCode.CODE_30120, SaOAuth2ErrorCode.CODE_30122,
-                 SaOAuth2ErrorCode.CODE_30161 ->
-                    Oauth2ErrorConstants.INVALID_GRANT;
-            case SaOAuth2ErrorCode.CODE_30125 ->
-                    Oauth2ErrorConstants.UNSUPPORTED_RESPONSE_TYPE;
-            case SaOAuth2ErrorCode.CODE_30126 ->
-                    Oauth2ErrorConstants.UNSUPPORTED_GRANT_TYPE;
+                 SaOAuth2ErrorCode.CODE_30161 -> Oauth2ErrorConstants.INVALID_GRANT;
+            case SaOAuth2ErrorCode.CODE_30125 -> Oauth2ErrorConstants.UNSUPPORTED_RESPONSE_TYPE;
+            case SaOAuth2ErrorCode.CODE_30126 -> Oauth2ErrorConstants.UNSUPPORTED_GRANT_TYPE;
             case SaOAuth2ErrorCode.CODE_30131, SaOAuth2ErrorCode.CODE_30132,
                  SaOAuth2ErrorCode.CODE_30133, SaOAuth2ErrorCode.CODE_30134,
-                 SaOAuth2ErrorCode.CODE_30141, SaOAuth2ErrorCode.CODE_30142 ->
-                    Oauth2ErrorConstants.UNAUTHORIZED_CLIENT;
+                 SaOAuth2ErrorCode.CODE_30141, SaOAuth2ErrorCode.CODE_30142 -> Oauth2ErrorConstants.UNAUTHORIZED_CLIENT;
             case SaOAuth2ErrorCode.CODE_30103, SaOAuth2ErrorCode.CODE_30113,
                  SaOAuth2ErrorCode.CODE_30114, SaOAuth2ErrorCode.CODE_30127,
-                 SaOAuth2ErrorCode.CODE_30151, SaOAuth2ErrorCode.CODE_30191 ->
-                    Oauth2ErrorConstants.INVALID_REQUEST;
+                 SaOAuth2ErrorCode.CODE_30151, SaOAuth2ErrorCode.CODE_30191 -> Oauth2ErrorConstants.INVALID_REQUEST;
             default -> Oauth2ErrorConstants.SERVER_ERROR;
         };
     }
@@ -115,14 +107,10 @@ public class Oauth2ExceptionHandler {
      */
     private HttpStatus mapStatus(String error) {
         return switch (error) {
-            case Oauth2ErrorConstants.INVALID_CLIENT, Oauth2ErrorConstants.INVALID_TOKEN ->
-                    HttpStatus.UNAUTHORIZED;
-            case Oauth2ErrorConstants.INSUFFICIENT_SCOPE ->
-                    HttpStatus.FORBIDDEN;
-            case Oauth2ErrorConstants.SERVER_ERROR ->
-                    HttpStatus.INTERNAL_SERVER_ERROR;
-            case Oauth2ErrorConstants.TEMPORARILY_UNAVAILABLE ->
-                    HttpStatus.SERVICE_UNAVAILABLE;
+            case Oauth2ErrorConstants.INVALID_CLIENT, Oauth2ErrorConstants.INVALID_TOKEN -> HttpStatus.UNAUTHORIZED;
+            case Oauth2ErrorConstants.INSUFFICIENT_SCOPE -> HttpStatus.FORBIDDEN;
+            case Oauth2ErrorConstants.SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case Oauth2ErrorConstants.TEMPORARILY_UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
             default -> HttpStatus.BAD_REQUEST;
         };
     }

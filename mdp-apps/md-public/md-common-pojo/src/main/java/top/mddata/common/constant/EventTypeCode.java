@@ -14,9 +14,11 @@ public interface EventTypeCode {
         String USER_EDIT = "user:edit";
         String USER_DELETE = "user:delete";
     }
+
     interface Workbench {
 
     }
+
     interface Open {
 
     }

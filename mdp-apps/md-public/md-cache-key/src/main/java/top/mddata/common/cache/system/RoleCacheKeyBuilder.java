@@ -19,8 +19,6 @@ public class RoleCacheKeyBuilder implements CacheKeyBuilder {
     }
 
 
-
-
     @Override
     public String getTable() {
         return "role";

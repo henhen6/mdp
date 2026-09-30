@@ -22,7 +22,7 @@ mdp:
     applicationName: ${spring.application.name}
     applicationDescription: '@project.description@'
     version: '@project.version@'
-####### gateway config #######
+  ####### gateway config #######
   gateway:
     # 接口请求入口前缀
     path: /api
@@ -31,7 +31,7 @@ mdp:
     serialize:
       # 序列化日期格式
       date-format: yyyy-MM-dd HH:mm:ss
-####### 参数名称定义 #######
+  ####### 参数名称定义 #######
   api:
     app-key-name: appKey
     api-name: method

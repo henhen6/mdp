@@ -35,12 +35,22 @@ public class ApiPermProviderImpl implements ApiPermProvider {
     private final IgnoreProperties ignoreProperties;
 
     /**
-     * 用户角色行（仅供 assemble 使用）。
-     *
-     * @param roleId 角色ID
-     * @param code   角色编码
+     * 组装用户放行集（纯函数，便于单测）。
+     * 运营者短路：含 OPERATIONS_ADMIN 角色即豁免，不再查接口表。
      */
-    public record RoleRow(Long roleId, String code) {
+    static UserApiPerm assemble(List<RoleRow> roles,
+                                Function<List<Long>, List<ApiPattern>> apiLoader) {
+        // 运营者管理员，视为拥有所有权限
+        boolean operationsAdmin = roles.stream()
+                .anyMatch(r -> RoleCode.OPERATIONS_ADMIN.equals(r.code()));
+        if (operationsAdmin) {
+            return new UserApiPerm(true, Set.of());
+        }
+        List<Long> roleIds = roles.stream().map(RoleRow::roleId).toList();
+        if (roleIds.isEmpty()) {
+            return new UserApiPerm(false, Set.of());
+        }
+        return new UserApiPerm(false, new HashSet<>(apiLoader.apply(roleIds)));
     }
 
     @Override
@@ -100,25 +110,6 @@ public class ApiPermProviderImpl implements ApiPermProvider {
     }
 
     /**
-     * 组装用户放行集（纯函数，便于单测）。
-     * 运营者短路：含 OPERATIONS_ADMIN 角色即豁免，不再查接口表。
-     */
-    static UserApiPerm assemble(List<RoleRow> roles,
-                                Function<List<Long>, List<ApiPattern>> apiLoader) {
-        // 运营者管理员，视为拥有所有权限
-        boolean operationsAdmin = roles.stream()
-                .anyMatch(r -> RoleCode.OPERATIONS_ADMIN.equals(r.code()));
-        if (operationsAdmin) {
-            return new UserApiPerm(true, Set.of());
-        }
-        List<Long> roleIds = roles.stream().map(RoleRow::roleId).toList();
-        if (roleIds.isEmpty()) {
-            return new UserApiPerm(false, Set.of());
-        }
-        return new UserApiPerm(false, new HashSet<>(apiLoader.apply(roleIds)));
-    }
-
-    /**
      * 根据角色ID查询角色拥有的接口权限集。
      *
      * 角色 → 资源 → 接口：先查授权资源 id，再按资源 id 反查接口。
@@ -146,5 +137,14 @@ public class ApiPermProviderImpl implements ApiPermProvider {
                 .map(r -> new ApiPattern(r.getString("uri"), r.getString("requestMethod")))
                 .distinct()
                 .toList();
+    }
+
+    /**
+     * 用户角色行（仅供 assemble 使用）。
+     *
+     * @param roleId 角色ID
+     * @param code   角色编码
+     */
+    public record RoleRow(Long roleId, String code) {
     }
 }

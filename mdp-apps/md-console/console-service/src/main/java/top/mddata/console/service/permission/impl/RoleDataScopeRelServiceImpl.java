@@ -53,6 +53,62 @@ public class RoleDataScopeRelServiceImpl
     // 用 Mapper 在 DAO 层打破循环依赖，避免 @Lazy
     private final ResourceMenuMapper resourceMenuMapper;
 
+    private static DataScopeMenuTreeVo toNode(ResourceMenu menu, boolean configurable) {
+        DataScopeMenuTreeVo node = new DataScopeMenuTreeVo();
+        node.setMenuId(menu.getId());
+        node.setName(menu.getName());
+        node.setAppId(menu.getAppId());
+        node.setParentId(menu.getParentId());
+        node.setWeight(menu.getWeight());
+        node.setConfigurable(configurable);
+        return node;
+    }
+
+    /**
+     * 解析已启用菜单的全部祖先 id（排除已启用菜单自身，避免重复节点）
+     */
+    public static Set<Long> parseAncestorIds(Collection<ResourceMenu> enabledMenus) {
+        Set<Long> enabledIds = enabledMenus.stream()
+                .map(ResourceMenu::getId)
+                .collect(Collectors.toSet());
+        Set<Long> ancestorIds = new HashSet<>();
+        for (ResourceMenu menu : enabledMenus) {
+            if (StrUtil.isBlank(menu.getTreePath())) {
+                continue;
+            }
+            for (String idStr : StrUtil.split(menu.getTreePath(), MyTreeUtil.TREE_SPLIT)) {
+                Long ancestorId = StrUtil.isBlank(idStr) ? null : Convert.toLong(idStr);
+                if (ancestorId != null && !enabledIds.contains(ancestorId)) {
+                    ancestorIds.add(ancestorId);
+                }
+            }
+        }
+        return ancestorIds;
+    }
+
+    /**
+     * 按 parentId 组树；父不在集合中的节点提升为根；每层按 weight 升序
+     */
+    public static List<DataScopeMenuTreeVo> buildTree(List<DataScopeMenuTreeVo> nodes) {
+        Map<Long, DataScopeMenuTreeVo> byId = new LinkedHashMap<>();
+        nodes.forEach(node -> byId.putIfAbsent(node.getMenuId(), node));
+        List<DataScopeMenuTreeVo> roots = new ArrayList<>();
+        for (DataScopeMenuTreeVo node : byId.values()) {
+            DataScopeMenuTreeVo parent = node.getParentId() == null
+                    ? null : byId.get(node.getParentId());
+            if (parent == null || parent == node) {
+                roots.add(node);
+            } else {
+                parent.getChildren().add(node);
+            }
+        }
+        Comparator<DataScopeMenuTreeVo> byWeight = Comparator.comparing(
+                node -> node.getWeight() == null ? Integer.MAX_VALUE : node.getWeight());
+        byId.values().forEach(node -> node.getChildren().sort(byWeight));
+        roots.sort(byWeight);
+        return roots;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveRoleDataScope(RoleDataScopeRelDto dto) {
@@ -182,61 +238,5 @@ public class RoleDataScopeRelServiceImpl
             ancestors.forEach(ancestor -> nodes.add(toNode(ancestor, false)));
         }
         return buildTree(nodes);
-    }
-
-    private static DataScopeMenuTreeVo toNode(ResourceMenu menu, boolean configurable) {
-        DataScopeMenuTreeVo node = new DataScopeMenuTreeVo();
-        node.setMenuId(menu.getId());
-        node.setName(menu.getName());
-        node.setAppId(menu.getAppId());
-        node.setParentId(menu.getParentId());
-        node.setWeight(menu.getWeight());
-        node.setConfigurable(configurable);
-        return node;
-    }
-
-    /**
-     * 解析已启用菜单的全部祖先 id（排除已启用菜单自身，避免重复节点）
-     */
-    public static Set<Long> parseAncestorIds(Collection<ResourceMenu> enabledMenus) {
-        Set<Long> enabledIds = enabledMenus.stream()
-                .map(ResourceMenu::getId)
-                .collect(Collectors.toSet());
-        Set<Long> ancestorIds = new HashSet<>();
-        for (ResourceMenu menu : enabledMenus) {
-            if (StrUtil.isBlank(menu.getTreePath())) {
-                continue;
-            }
-            for (String idStr : StrUtil.split(menu.getTreePath(), MyTreeUtil.TREE_SPLIT)) {
-                Long ancestorId = StrUtil.isBlank(idStr) ? null : Convert.toLong(idStr);
-                if (ancestorId != null && !enabledIds.contains(ancestorId)) {
-                    ancestorIds.add(ancestorId);
-                }
-            }
-        }
-        return ancestorIds;
-    }
-
-    /**
-     * 按 parentId 组树；父不在集合中的节点提升为根；每层按 weight 升序
-     */
-    public static List<DataScopeMenuTreeVo> buildTree(List<DataScopeMenuTreeVo> nodes) {
-        Map<Long, DataScopeMenuTreeVo> byId = new LinkedHashMap<>();
-        nodes.forEach(node -> byId.putIfAbsent(node.getMenuId(), node));
-        List<DataScopeMenuTreeVo> roots = new ArrayList<>();
-        for (DataScopeMenuTreeVo node : byId.values()) {
-            DataScopeMenuTreeVo parent = node.getParentId() == null
-                    ? null : byId.get(node.getParentId());
-            if (parent == null || parent == node) {
-                roots.add(node);
-            } else {
-                parent.getChildren().add(node);
-            }
-        }
-        Comparator<DataScopeMenuTreeVo> byWeight = Comparator.comparing(
-                node -> node.getWeight() == null ? Integer.MAX_VALUE : node.getWeight());
-        byId.values().forEach(node -> node.getChildren().sort(byWeight));
-        roots.sort(byWeight);
-        return roots;
     }
 }

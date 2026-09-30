@@ -41,6 +41,23 @@ public class ResourceApiServiceImpl
     private final RoleResourceRelMapper roleResourceRelMapper;
     private final RoleResourceRelService roleResourceRelService;
 
+    /**
+     * 过滤出未关联的新接口（纯函数）：按 uri+requestMethod 判重，含入参自身去重。
+     */
+    public static List<ResourceApiBindDto.ApiItem> filterNewApis(List<ResourceApi> existed,
+                                                                 List<ResourceApiBindDto.ApiItem> apiList) {
+        Set<String> seen = existed.stream()
+                .map(e -> key(e.getUri(), e.getRequestMethod()))
+                .collect(Collectors.toCollection(HashSet::new));
+        return apiList.stream()
+                .filter(item -> seen.add(key(item.getUri(), item.getRequestMethod())))
+                .toList();
+    }
+
+    private static String key(String uri, String method) {
+        return uri + "###" + method;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<ResourceApiVo> listByResource(Long resourceId) {
@@ -83,23 +100,6 @@ public class ResourceApiServiceImpl
             invalidateCache(dto.getResourceId());
         }
         return freshList.size();
-    }
-
-    /**
-     * 过滤出未关联的新接口（纯函数）：按 uri+requestMethod 判重，含入参自身去重。
-     */
-    public static List<ResourceApiBindDto.ApiItem> filterNewApis(List<ResourceApi> existed,
-                                                                 List<ResourceApiBindDto.ApiItem> apiList) {
-        Set<String> seen = existed.stream()
-                .map(e -> key(e.getUri(), e.getRequestMethod()))
-                .collect(Collectors.toCollection(HashSet::new));
-        return apiList.stream()
-                .filter(item -> seen.add(key(item.getUri(), item.getRequestMethod())))
-                .toList();
-    }
-
-    private static String key(String uri, String method) {
-        return uri + "###" + method;
     }
 
     @Override

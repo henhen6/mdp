@@ -17,6 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class ResourceApiServiceTest {
 
+    private static ResourceApiBindDto.ApiItem item(String uri, String method) {
+        ResourceApiBindDto.ApiItem it = new ResourceApiBindDto.ApiItem();
+        it.setUri(uri);
+        it.setRequestMethod(method);
+        return it;
+    }
+
     @Test
     void filterNewApis_已关联的跳过() {
         ResourceApi existed = new ResourceApi();
@@ -35,12 +42,5 @@ class ResourceApiServiceTest {
         List<ResourceApiBindDto.ApiItem> result = ResourceApiServiceImpl.filterNewApis(
                 List.of(), List.of(item("/a/page", "POST"), item("/a/page", "POST")));
         assertEquals(1, result.size());
-    }
-
-    private static ResourceApiBindDto.ApiItem item(String uri, String method) {
-        ResourceApiBindDto.ApiItem it = new ResourceApiBindDto.ApiItem();
-        it.setUri(uri);
-        it.setRequestMethod(method);
-        return it;
     }
 }

@@ -30,6 +30,13 @@ public enum BooleanEnum implements BaseEnum<Boolean> {
     private final String str;
     private final String desc;
 
+    public static BooleanEnum of(Integer value) {
+        return Objects.equals(value, TRUE.integer) ? TRUE : FALSE;
+    }
+
+    public static BooleanEnum of(Boolean value) {
+        return Objects.equals(value, TRUE.bool) ? TRUE : FALSE;
+    }
 
     @Override
     public Boolean getCode() {
@@ -55,13 +62,5 @@ public enum BooleanEnum implements BaseEnum<Boolean> {
             return FALSE.getBool();
         }
         return val.equals(this.getBool());
-    }
-
-    public static BooleanEnum of(Integer value) {
-        return Objects.equals(value, TRUE.integer) ? TRUE : FALSE;
-    }
-
-    public static BooleanEnum of(Boolean value) {
-        return Objects.equals(value, TRUE.bool) ? TRUE : FALSE;
     }
 }

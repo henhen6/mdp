@@ -56,6 +56,7 @@ public interface CacheKeyTable {
          */
         String USER = "user";
     }
+
     interface Open {
         /**
          * 应用

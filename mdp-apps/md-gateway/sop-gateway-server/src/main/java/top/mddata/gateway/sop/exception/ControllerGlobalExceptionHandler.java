@@ -1,5 +1,6 @@
 package top.mddata.gateway.sop.exception;
 
+import com.gitee.sop.support.message.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.mddata.gateway.sop.message.ErrorEnum;
-import com.gitee.sop.support.message.ApiResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;

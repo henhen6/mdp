@@ -40,16 +40,16 @@ public interface OrgMapper extends SuperMapper<Org> {
      */
     @Select({
             """
-            SELECT o.id AS orgId, o.name AS name, COUNT(our.user_id) AS value
-              FROM mdc_org o
-              LEFT JOIN mdc_user_org_rel our ON our.org_id = o.id
-              LEFT JOIN mdc_user u ON u.id = our.user_id AND u.deleted_at = 0
-             WHERE o.deleted_at = 0
-               AND o.state = 1
-             GROUP BY o.id, o.name
-             ORDER BY value DESC, o.weight  DESC, o.created_at  DESC
-             LIMIT #{limit}
-            """
+                    SELECT o.id AS orgId, o.name AS name, COUNT(our.user_id) AS value
+                      FROM mdc_org o
+                      LEFT JOIN mdc_user_org_rel our ON our.org_id = o.id
+                      LEFT JOIN mdc_user u ON u.id = our.user_id AND u.deleted_at = 0
+                     WHERE o.deleted_at = 0
+                       AND o.state = 1
+                     GROUP BY o.id, o.name
+                     ORDER BY value DESC, o.weight  DESC, o.created_at  DESC
+                     LIMIT #{limit}
+                    """
     })
     List<Map<String, Object>> rankByUserCount(@Param("limit") int limit);
 }
