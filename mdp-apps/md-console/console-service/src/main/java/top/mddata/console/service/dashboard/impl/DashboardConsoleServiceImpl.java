@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.base.utils.DefValueHelper;
 import top.mddata.common.constant.FileObjectType;
-import top.mddata.common.entity.Org;
-import top.mddata.common.entity.User;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.console.enumeration.message.MsgCategoryEnum;
@@ -58,17 +56,18 @@ public class DashboardConsoleServiceImpl implements DashboardConsoleService {
         LocalDateTime monthStart = today.with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
         LocalDateTime monthEnd = today.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
 
+        // 用户、组织、本月新增用户按组织性质限定数据域：运营=全量，总公司/开发者=其顶级公司子树
+        DashboardUserServiceImpl.OrgScope scope = DashboardUserServiceImpl.resolveScope();
+
         // 统计启用状态的用户总数
-        vo.setUserCount(userMapper.selectCountByQuery(
-                QueryWrapper.create().eq(User::getState, true)));
+        vo.setUserCount(userMapper.countUsersInScope(scope.treePathPrefix()));
 
         // 统计本月新增用户数
-        Long userNewCount = userMapper.countNewUsersInMonth(monthStart, monthEnd);
+        Long userNewCount = userMapper.countNewUsersInMonth(monthStart, monthEnd, scope.treePathPrefix());
         vo.setUserNewCount(DefValueHelper.nvl(userNewCount, 0L));
 
         // 统计启用状态的组织总数
-        vo.setOrgCount(orgMapper.selectCountByQuery(
-                QueryWrapper.create().eq(Org::getState, true)));
+        vo.setOrgCount(orgMapper.selectCountByQuery(DashboardUserServiceImpl.baseOrgWrapper(scope)));
 
         // 统计文件总数
         vo.setFileCount(fileMapper.selectCountByQuery(QueryWrapper.create()));

@@ -232,7 +232,11 @@ public class DashboardUserServiceImpl implements DashboardUserService {
     /**
      * 解析当前登录人的统计数据域：运营=全量；其他性质=顶级公司 treePath 子树
      */
-    private OrgScope resolveScope() {
+    /**
+     * 解析当前登录人的统计数据域：运营=全量；其他性质=顶级公司 treePath 子树。
+     * 包级静态，供同包的概览统计服务复用
+     */
+    static OrgScope resolveScope() {
         Integer nature = ContextUtil.getCurrentTopCompanyNature();
         if (nature == null || OrgNatureEnum.OPERATIONS.getCode().equals(nature)) {
             // nature 缺失（老 token/内部调用）时按全量处理，保持向后兼容

@@ -271,16 +271,24 @@ public interface UserMapper extends SuperMapper<User> {
             """
                     <script>
                     SELECT COUNT(*) AS value
-                      FROM mdc_user
-                     WHERE deleted_at = 0
+                      FROM mdc_user u
+                     WHERE u.deleted_at = 0
                        <if test="startTime != null">
-                       AND created_at >= #{startTime, jdbcType=TIMESTAMP}
+                       AND u.created_at >= #{startTime, jdbcType=TIMESTAMP}
                        </if>
                        <if test="endTime != null">
-                       AND created_at &lt;= #{endTime, jdbcType=TIMESTAMP}
+                       AND u.created_at &lt;= #{endTime, jdbcType=TIMESTAMP}
+                       </if>
+                       <if test="treePathPrefix != null">
+                       AND EXISTS (
+                             SELECT 1 FROM mdc_user_org_rel r
+                               JOIN mdc_org o ON o.id = r.org_id AND o.deleted_at = 0
+                              WHERE r.user_id = u.id
+                                AND o.tree_path LIKE #{treePathPrefix, jdbcType=VARCHAR})
                        </if>
                     </script>
                     """
     })
-    Long countNewUsersInMonth(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+    Long countNewUsersInMonth(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime,
+                              @Param("treePathPrefix") String treePathPrefix);
 }

@@ -166,7 +166,7 @@ class DynamicSqlNullSwitchTest {
     @Test
     void countNewUsersInMonth_时间条件动态拼接() throws Exception {
         String allNullSql = sqlOf(UserMapper.class, "countNewUsersInMonth",
-                new Class[]{LocalDateTime.class, LocalDateTime.class}, new HashMap<>());
+                new Class[]{LocalDateTime.class, LocalDateTime.class, String.class}, new HashMap<>());
         assertFalse(allNullSql.contains("created_at >="), "null startTime 不应拼接: " + allNullSql);
         assertFalse(allNullSql.contains("created_at <="), "null endTime 不应拼接: " + allNullSql);
 
@@ -174,7 +174,7 @@ class DynamicSqlNullSwitchTest {
         params.put("startTime", LocalDateTime.now());
         params.put("endTime", LocalDateTime.now());
         String rangedSql = sqlOf(UserMapper.class, "countNewUsersInMonth",
-                new Class[]{LocalDateTime.class, LocalDateTime.class}, params);
+                new Class[]{LocalDateTime.class, LocalDateTime.class, String.class}, params);
         assertTrue(rangedSql.contains("created_at >="), "应拼接起始时间: " + rangedSql);
         assertTrue(rangedSql.contains("created_at <="), "应拼接截止时间: " + rangedSql);
     }
