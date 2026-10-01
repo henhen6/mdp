@@ -23,21 +23,27 @@ public interface RoleMapper extends SuperMapper<Role> {
      *
      * <p>手写 SQL，已手动过滤 deleted_at = 0。</p>
      *
-     * @param limit 排行榜上限
+     * @param orgNature 角色组织性质 [1-总公司 90-开发者 99-运营]，null 表示全量
+     * @param limit     排行榜上限
      * @return 角色用户排行，key=roleId、name(角色名)、value(用户数)
      */
     @Select({
             """
+                    <script>
                     SELECT r.id AS roleId, r.name AS name, COUNT(urr.user_id) AS value
                       FROM mdc_role r
                       LEFT JOIN mdc_user_role_rel urr ON urr.role_id = r.id
                       LEFT JOIN mdc_user u ON u.id = urr.user_id AND u.deleted_at = 0
                      WHERE r.deleted_at = 0
                        AND r.state = 1
+                       <if test="orgNature != null">
+                       AND r.org_nature = #{orgNature, jdbcType=INTEGER}
+                       </if>
                      GROUP BY r.id, r.name
                      ORDER BY value DESC, r.created_at DESC
                      LIMIT #{limit}
+                    </script>
                     """
     })
-    List<Map<String, Object>> rankByUserCount(@Param("limit") int limit);
+    List<Map<String, Object>> rankByUserCount(@Param("orgNature") Integer orgNature, @Param("limit") int limit);
 }

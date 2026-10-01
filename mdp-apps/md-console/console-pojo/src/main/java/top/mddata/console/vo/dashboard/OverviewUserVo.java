@@ -27,4 +27,7 @@ public class OverviewUserVo implements Serializable {
 
     @Schema(description = "角色数量")
     private Long roleCount;
+
+    @Schema(description = "当前登录人顶级公司组织性质 [1-总公司 90-开发者 99-运营]")
+    private Integer nature;
 }

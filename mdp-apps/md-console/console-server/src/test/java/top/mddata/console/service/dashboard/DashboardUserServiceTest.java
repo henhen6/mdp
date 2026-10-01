@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.OverviewUserVo;
 import top.mddata.console.vo.dashboard.RankVo;
-import top.mddata.console.vo.dashboard.TrendVo;
+import top.mddata.console.vo.dashboard.TrendChartVo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,24 +46,27 @@ class DashboardUserServiceTest {
         // 指定日期范围
         LocalDate start = LocalDate.of(2026, 7, 1);
         LocalDate end = LocalDate.of(2026, 7, 7);
-        List<TrendVo> trend = dashboardUserService.getUserTrend(start, end);
+        TrendChartVo trend = dashboardUserService.getUserTrend(start, end);
         assertNotNull(trend);
-        assertEquals(7, trend.size());
+        assertEquals(7, trend.getDates().size());
+        assertNotNull(trend.getSeries());
+        // 每条曲线的数据点与日期等长
+        trend.getSeries().forEach(series -> assertEquals(7, series.getData().size()));
     }
 
     @Test
-    void getUserTrendNullDefaultsToLast7Days() {
-        // null 参数应默认近7天
-        List<TrendVo> trend = dashboardUserService.getUserTrend(null, null);
+    void getUserTrendNullDefaultsToLast30Days() {
+        // null 参数应默认近30天
+        TrendChartVo trend = dashboardUserService.getUserTrend(null, null);
         assertNotNull(trend);
-        assertEquals(7, trend.size());
+        assertEquals(30, trend.getDates().size());
     }
 
     @Test
     void getUserTrendOnlyStartDate() {
         // 只有开始日期
         LocalDate start = LocalDate.of(2026, 7, 1);
-        List<TrendVo> trend = dashboardUserService.getUserTrend(start, null);
+        TrendChartVo trend = dashboardUserService.getUserTrend(start, null);
         assertNotNull(trend);
     }
 
@@ -71,7 +74,7 @@ class DashboardUserServiceTest {
     void getUserTrendOnlyEndDate() {
         // 只有结束日期
         LocalDate end = LocalDate.of(2026, 7, 7);
-        List<TrendVo> trend = dashboardUserService.getUserTrend(null, end);
+        TrendChartVo trend = dashboardUserService.getUserTrend(null, end);
         assertNotNull(trend);
     }
 
@@ -91,13 +94,19 @@ class DashboardUserServiceTest {
 
     @Test
     void getStatusDistribution() {
-        List<DistributionVo> distribution = dashboardUserService.getStatusDistribution();
+        List<DistributionVo> distribution = dashboardUserService.getStatusDistribution(null, null);
+        assertNotNull(distribution);
+    }
+
+    @Test
+    void getGenderDistribution() {
+        List<DistributionVo> distribution = dashboardUserService.getGenderDistribution(null, null);
         assertNotNull(distribution);
     }
 
     @Test
     void getTypeDistribution() {
-        List<DistributionVo> distribution = dashboardUserService.getTypeDistribution();
+        List<DistributionVo> distribution = dashboardUserService.getTypeDistribution(null, null);
         assertNotNull(distribution);
     }
 }

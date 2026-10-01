@@ -13,7 +13,7 @@ import top.mddata.console.service.dashboard.DashboardUserService;
 import top.mddata.console.vo.dashboard.DistributionVo;
 import top.mddata.console.vo.dashboard.OverviewUserVo;
 import top.mddata.console.vo.dashboard.RankVo;
-import top.mddata.console.vo.dashboard.TrendVo;
+import top.mddata.console.vo.dashboard.TrendChartVo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,13 +45,13 @@ public class DashboardUserController {
     /**
      * 用户增长趋势
      *
-     * @param startDate 开始日期（yyyy-MM-dd），默认近7天
+     * @param startDate 开始日期（yyyy-MM-dd），默认近30天
      * @param endDate   截止日期（yyyy-MM-dd），默认今天
      */
     @GetMapping("/trend")
-    @Operation(summary = "用户增长趋势", description = "按天统计指定日期区间内的新增用户数")
+    @Operation(summary = "用户增长趋势", description = "按天统计指定日期区间内的新增用户数；运营=4条曲线，其他性质=1条曲线")
     @RequestLog(value = "查询用户增长趋势", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<TrendVo>> getUserTrend(
+    public R<TrendChartVo> getUserTrend(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate) {
         return R.success(dashboardUserService.getUserTrend(startDate, endDate));
@@ -79,21 +79,46 @@ public class DashboardUserController {
 
     /**
      * 用户状态分布
+     *
+     * @param startDate 开始日期（yyyy-MM-dd），默认近30天
+     * @param endDate   截止日期（yyyy-MM-dd），默认今天
      */
     @GetMapping("/statusDistribution")
-    @Operation(summary = "用户状态分布", description = "正常/禁用用户占比")
+    @Operation(summary = "用户状态分布", description = "指定日期区间内新增用户的正常/禁用占比，默认近30天")
     @RequestLog(value = "查询用户状态分布", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<DistributionVo>> getStatusDistribution() {
-        return R.success(dashboardUserService.getStatusDistribution());
+    public R<List<DistributionVo>> getStatusDistribution(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        return R.success(dashboardUserService.getStatusDistribution(startDate, endDate));
+    }
+
+    /**
+     * 新增用户性别分布
+     *
+     * @param startDate 开始日期（yyyy-MM-dd），默认近30天
+     * @param endDate   截止日期（yyyy-MM-dd），默认今天
+     */
+    @GetMapping("/genderDistribution")
+    @Operation(summary = "新增用户性别分布", description = "指定日期区间内新增用户的男/女/未知占比，默认近30天")
+    @RequestLog(value = "查询新增用户性别分布", logType = RequestLog.LogType.QUERY, response = false)
+    public R<List<DistributionVo>> getGenderDistribution(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        return R.success(dashboardUserService.getGenderDistribution(startDate, endDate));
     }
 
     /**
      * 用户类型分布
+     *
+     * @param startDate 开始日期（yyyy-MM-dd），默认近30天
+     * @param endDate   截止日期（yyyy-MM-dd），默认今天
      */
     @GetMapping("/typeDistribution")
-    @Operation(summary = "用户类型分布", description = "普通用户/管理员/开发者/运维占比")
+    @Operation(summary = "用户类型分布", description = "指定日期区间内新增用户的组织性质占比，仅运营性质可见")
     @RequestLog(value = "查询用户类型分布", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<DistributionVo>> getTypeDistribution() {
-        return R.success(dashboardUserService.getTypeDistribution());
+    public R<List<DistributionVo>> getTypeDistribution(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        return R.success(dashboardUserService.getTypeDistribution(startDate, endDate));
     }
 }
