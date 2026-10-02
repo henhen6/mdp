@@ -47,6 +47,10 @@ public interface CacheKeyTable {
         String RESOURCE_API_ALL = "resource_api_all";
         /** 用户接口放行集 */
         String USER_RESOURCE_API = "user_resource_api";
+        /** 用户字段受限集 */
+        String USER_FIELD_PERM = "user_field_perm";
+        /** 接口URI → 字段权限菜单 预解析映射 */
+        String RESOURCE_FIELD_URI_MENU = "resource_field_uri_menu";
     }
 
     interface Workbench {

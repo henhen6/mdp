@@ -13,6 +13,7 @@ import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.CollHelper;
 import top.mddata.common.cache.console.permission.RoleResourceCacheKeyBuilder;
+import top.mddata.common.cache.console.permission.UserFieldPermCacheKeyBuilder;
 import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.mapper.UserRoleRelMapper;
@@ -142,6 +143,8 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
         List<CacheKey> userKeys = userIds.stream()
                 .map(UserResourceApiCacheKeyBuilder::build)
                 .toList();
+        // 角色资源/角色本身变更同样影响这些用户的字段受限集
+        userIds.stream().map(UserFieldPermCacheKeyBuilder::build).forEach(userKeys::add);
         if (!userKeys.isEmpty()) {
             cacheOps.del(userKeys);
         }

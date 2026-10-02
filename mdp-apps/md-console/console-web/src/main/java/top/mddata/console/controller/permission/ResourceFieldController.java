@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
+import top.mddata.base.fieldperm.model.FieldRule;
+import top.mddata.base.fieldperm.spi.FieldPermProvider;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.util.ContextUtil;
 import top.mddata.console.dto.permission.ResourceFieldDto;
 import top.mddata.console.entity.permission.ResourceField;
 import top.mddata.console.query.permission.ResourceFieldQuery;
@@ -26,6 +29,7 @@ import top.mddata.console.service.permission.ResourceFieldService;
 import top.mddata.console.vo.permission.ResourceFieldVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 字段权限 控制层。
@@ -39,6 +43,7 @@ import java.util.List;
 @RequestMapping("/permission/resourceField")
 @RequiredArgsConstructor
 public class ResourceFieldController extends SuperController<ResourceFieldService, ResourceField> {
+    private final FieldPermProvider fieldPermProvider;
     /**
      * 添加字段权限。
      *
@@ -109,6 +114,24 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, ResourceFieldVo.class);
         return R.success(page);
+    }
+
+    /**
+     * 查询当前登录用户在指定菜单下的受限字段规则（前端列隐藏/脱敏渲染用）。
+     *
+     * @param menuId 菜单ID
+     * @return property → 受限规则；无限制返回空Map
+     */
+    @GetMapping("/current")
+    @Operation(summary = "查询当前用户受限字段", description = "查询当前用户在指定菜单下的受限字段规则")
+    @RequestLog(value = "查询当前用户受限字段", logType = RequestLog.LogType.QUERY)
+    public R<Map<String, FieldRule>> current(@RequestParam Long menuId) {
+        Long userId = ContextUtil.getUserId();
+        if (userId == null) {
+            return R.success(Map.of());
+        }
+        Map<String, FieldRule> rules = fieldPermProvider.findUserPerm(userId).rulesOf(menuId);
+        return R.success(rules == null ? Map.of() : rules);
     }
 
     /**

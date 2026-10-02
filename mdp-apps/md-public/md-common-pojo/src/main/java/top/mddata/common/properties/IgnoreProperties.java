@@ -41,6 +41,11 @@ public class IgnoreProperties {
      */
     private Boolean notConfigUriAllow = true;
     /**
+     * 是否启用字段权限鉴权（响应层字段隐藏/脱敏）。
+     * false：所有用户看到字段原文（新功能灰度期可关闭）。
+     */
+    private Boolean fieldAuthEnabled = true;
+    /**
      * 网关前缀，接口权限路径归一化时剥离
      */
     private String gatewayPrefix = "api";

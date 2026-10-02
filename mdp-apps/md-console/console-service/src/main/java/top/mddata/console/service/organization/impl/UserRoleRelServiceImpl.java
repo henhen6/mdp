@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.common.cache.console.permission.UserFieldPermCacheKeyBuilder;
 import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder;
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.UserOrgRel;
@@ -23,6 +24,7 @@ import top.mddata.console.service.organization.UserOrgRelService;
 import top.mddata.console.service.organization.UserRoleRelService;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,9 +106,11 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
         if (CollUtil.isEmpty(userIdList)) {
             return;
         }
-        List<CacheKey> keys = userIdList.stream()
+        List<CacheKey> keys = new ArrayList<>(userIdList.stream()
                 .map(UserResourceApiCacheKeyBuilder::build)
-                .toList();
+                .toList());
+        // 用户角色变更同样影响其字段受限集
+        userIdList.stream().map(UserFieldPermCacheKeyBuilder::build).forEach(keys::add);
         cacheOps.del(keys);
     }
 

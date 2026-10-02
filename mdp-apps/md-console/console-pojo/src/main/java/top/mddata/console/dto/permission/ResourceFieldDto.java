@@ -62,6 +62,21 @@ public class ResourceFieldDto implements Serializable {
     private String name;
 
     /**
+     * 处理动作
+     * [10-隐藏 20-脱敏]
+     */
+    @NotNull(message = "请填写处理动作")
+    @Schema(description = "处理动作")
+    private Integer ruleType;
+
+    /**
+     * 脱敏规则(rule_type=20时必填)，取 MaskManager 注册名
+     */
+    @Size(max = 64, message = "脱敏规则长度不能超过{max}")
+    @Schema(description = "脱敏规则")
+    private String maskRule;
+
+    /**
      * 状态
      * [0-禁用 1-启用]
      */

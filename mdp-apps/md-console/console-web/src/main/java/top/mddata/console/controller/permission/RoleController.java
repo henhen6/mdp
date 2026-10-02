@@ -26,10 +26,12 @@ import top.mddata.base.util.ContextUtil;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.dto.permission.RoleDataScopeRelDto;
 import top.mddata.console.dto.permission.RoleDto;
+import top.mddata.console.dto.permission.RoleFieldRelDto;
 import top.mddata.console.dto.permission.RoleResourceRelDto;
 import top.mddata.console.entity.permission.Role;
 import top.mddata.console.query.permission.RoleQuery;
 import top.mddata.console.service.permission.RoleDataScopeRelService;
+import top.mddata.console.service.permission.RoleFieldRelService;
 import top.mddata.console.service.permission.RoleResourceRelService;
 import top.mddata.console.service.permission.RoleService;
 import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
@@ -56,6 +58,7 @@ import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 @RequiredArgsConstructor
 public class RoleController extends SuperController<RoleService, Role> {
     private final RoleResourceRelService roleResourceRelService;
+    private final RoleFieldRelService roleFieldRelService;
     private final RoleDataScopeRelService roleDataScopeRelService;
     private final EchoService echoService;
 
@@ -168,6 +171,32 @@ public class RoleController extends SuperController<RoleService, Role> {
     @RequestLog(value = "新增角色资源", logType = RequestLog.LogType.ADD, request = false)
     public R<Boolean> saveRoleResource(@Validated @RequestBody RoleResourceRelDto dto) {
         return R.success(roleResourceRelService.saveRoleResource(dto));
+    }
+
+    /**
+     * 查询角色已受限的字段规则ID集合。
+     *
+     * @param roleId 角色id
+     * @return 字段规则ID集合
+     */
+    @Operation(summary = "查询角色已受限的字段规则集合")
+    @GetMapping("/findFieldIdsByRoleId")
+    @RequestLog(value = "查询角色已受限的字段规则集合", logType = RequestLog.LogType.QUERY)
+    public R<List<Long>> findFieldIdsByRoleId(@RequestParam Long roleId) {
+        return R.success(roleFieldRelService.findFieldIdsByRoleId(roleId));
+    }
+
+    /**
+     * 保存角色字段受限关系（拒绝模型：提交的集合 = 该角色被限制查看的字段）。
+     *
+     * @param dto 角色字段受限关系
+     * @return {@code true} 保存成功，{@code false} 保存失败
+     */
+    @PostMapping("/saveRoleField")
+    @Operation(summary = "保存角色字段受限关系", description = "保存角色字段受限关系")
+    @RequestLog(value = "保存角色字段受限关系", logType = RequestLog.LogType.UPDATE, request = false)
+    public R<Boolean> saveRoleField(@Validated @RequestBody RoleFieldRelDto dto) {
+        return R.success(roleFieldRelService.saveRoleField(dto));
     }
 
     @GetMapping("/assignableAppIds")
