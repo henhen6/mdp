@@ -40,43 +40,6 @@ public class EnumService {
     private static final Map<Option, List<Option>> ENUM_MAP = new LinkedHashMap<>();
     private final SystemProperties systemProperties;
 
-    public static void main(String[] args) {
-        String enumPackage = "top.mddata";
-        if (StrUtil.isEmpty(enumPackage)) {
-            log.warn("请在配置文件中配置{}.enumPackage", SystemProperties.PREFIX);
-            return;
-        }
-        Set<Class<?>> enumClass = ClassUtils.scanPackage(enumPackage, CLASS_FILTER);
-
-        StringJoiner enumSb = new StringJoiner(StrPool.COMMA);
-        enumClass.forEach(item -> {
-            Object[] enumConstants = item.getEnumConstants();
-            BaseEnum<Serializable>[] baseEnums = Arrays.stream(enumConstants).map(constant -> (BaseEnum<Serializable>) constant).toArray(BaseEnum[]::new);
-
-            // 解析数据类型
-            Type typeArgument = TypeUtil.getTypeArgument(baseEnums[0].getClass().getGenericInterfaces()[0]);
-
-            DataTypeEnum dataType = DataTypeEnum.match(typeArgument.getTypeName());
-
-            Option key = new Option();
-            // 2. 获取Schema注解的title属性
-            Schema schemaAnnotation = item.getAnnotation(Schema.class);
-            if (schemaAnnotation != null) {
-                String title = schemaAnnotation.description();
-                key.setLabel(title);
-            } else {
-                // 3. 获取类注释的首行内容
-                log.warn("{}类上没有@Schema注解", item.getSimpleName());
-                key.setLabel(item.getSimpleName());
-            }
-            key.setValue(item.getSimpleName());
-            key.setRemark(dataType.getCode());
-
-            ENUM_MAP.put(key, Option.mapOptions(baseEnums));
-            enumSb.add(item.getSimpleName());
-        });
-    }
-
     @PostConstruct
     public void init() {
         String enumPackage = systemProperties.getEnumPackage();
