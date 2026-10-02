@@ -8,13 +8,16 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,12 @@ public class FieldPermEngine {
     private static final List<String> SKIP_PACKAGES = List.of(
             "java.", "javax.", "jakarta.", "sun.",
             "org.springframework.", "com.mybatisflex.", "org.apache.", "com.fasterxml.");
+
+    /**
+     * mybatis-flex 分页对象类名。md-core 不依赖 mybatis-flex-core，按类名识别：
+     * Page 是分页响应容器（records 承载业务数据），必须放行以下钻
+     */
+    private static final String MYBATIS_FLEX_PAGE = "com.mybatisflex.core.paginate.Page";
 
     private static final Map<Class<?>, BeanMeta> META_CACHE = new ConcurrentHashMap<>();
 
@@ -124,18 +133,18 @@ public class FieldPermEngine {
 
     /** 命中规则的属性：隐藏置 null；脱敏仅处理非空 String */
     private void applyRules(Object bean, Map<String, FieldRule> rules, WalkContext ctx) {
-        Map<String, PropertyDescriptor> properties = metaOf(bean.getClass()).allProperties;
+        BeanMeta meta = metaOf(bean.getClass());
         rules.forEach((property, rule) -> {
-            PropertyDescriptor pd = properties.get(property);
-            if (pd == null || pd.getWriteMethod() == null) {
+            PropertyDescriptor pd = meta.allProperties.get(property);
+            if (pd == null && !meta.fields.containsKey(property)) {
                 return;
             }
             if (rule.isHide()) {
-                write(bean, pd, null);
+                write(bean, meta, pd, property, null);
             } else if (rule.isMask()) {
-                Object value = read(bean, pd);
+                Object value = pd == null ? null : read(bean, pd);
                 if (value instanceof String s && !s.isEmpty()) {
-                    write(bean, pd, masker.mask(rule.getMaskRule(), s));
+                    write(bean, meta, pd, property, masker.mask(rule.getMaskRule(), s));
                 }
             }
         });
@@ -154,11 +163,22 @@ public class FieldPermEngine {
         }
     }
 
-    private void write(Object bean, PropertyDescriptor pd, Object value) {
+    private void write(Object bean, BeanMeta meta, PropertyDescriptor pd, String property, Object value) {
         try {
-            pd.getWriteMethod().invoke(bean, value);
+            if (pd != null && pd.getWriteMethod() != null) {
+                pd.getWriteMethod().invoke(bean, value);
+                return;
+            }
+            // 项目模型类普遍使用 @Accessors(chain = true) 链式 setter（返回类型非 void），
+            // 不符合 JavaBeans 写方法规范导致 Introspector 不提供 writeMethod，回退为字段直写
+            Field field = meta.fields.get(property);
+            if (field == null) {
+                return;
+            }
+            field.setAccessible(true);
+            field.set(bean, value);
         } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
-            log.error("字段权限写入属性失败: {}#{}", bean.getClass().getName(), pd.getName(), e);
+            log.error("字段权限写入属性失败: {}#{}", bean.getClass().getName(), property, e);
         }
     }
 
@@ -177,11 +197,24 @@ public class FieldPermEngine {
                     complex.add(pd);
                 }
             }
-            return new BeanMeta(all, List.copyOf(complex));
+            return new BeanMeta(all, List.copyOf(complex), collectFields(clazz));
         } catch (IntrospectionException e) {
             log.error("字段权限内省失败: {}", clazz.getName(), e);
-            return new BeanMeta(Map.of(), List.of());
+            return new BeanMeta(Map.of(), List.of(), Map.of());
         }
+    }
+
+    /** 收集类及父类的实例字段（排除 static/合成字段），供链式 setter 类回退直写 */
+    private static Map<String, Field> collectFields(Class<?> clazz) {
+        Map<String, Field> fields = new HashMap<>();
+        for (Class<?> c = clazz; c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field field : c.getDeclaredFields()) {
+                if (!field.isSynthetic() && !Modifier.isStatic(field.getModifiers())) {
+                    fields.putIfAbsent(field.getName(), field);
+                }
+            }
+        }
+        return Collections.unmodifiableMap(fields);
     }
 
     /**
@@ -202,6 +235,10 @@ public class FieldPermEngine {
 
     private static boolean isSkippedPackage(Class<?> type) {
         String name = type.getName();
+        // Page 虽在 com.mybatisflex 包下，但其 records 是业务数据，不能按框架内部对象跳过
+        if (MYBATIS_FLEX_PAGE.equals(name)) {
+            return false;
+        }
         return SKIP_PACKAGES.stream().anyMatch(name::startsWith);
     }
 
@@ -212,7 +249,8 @@ public class FieldPermEngine {
     }
 
     private record BeanMeta(Map<String, PropertyDescriptor> allProperties,
-                            List<PropertyDescriptor> complexProperties) {
+                            List<PropertyDescriptor> complexProperties,
+                            Map<String, Field> fields) {
         private BeanMeta {
             allProperties = Collections.unmodifiableMap(allProperties);
         }

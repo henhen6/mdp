@@ -51,6 +51,12 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- 仅供测试构造分页对象（Page），主代码按类名识别不引依赖 -->
+        <dependency>
+            <groupId>com.mybatis-flex</groupId>
+            <artifactId>mybatis-flex-core</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 </project>

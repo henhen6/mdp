@@ -1,6 +1,8 @@
 package top.mddata.base.fieldperm.engine;
 
+import com.mybatisflex.core.paginate.Page;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.junit.jupiter.api.Test;
 import top.mddata.base.base.R;
 import top.mddata.base.fieldperm.model.FieldRule;
@@ -36,6 +38,14 @@ class FieldPermEngineTest {
     static class OrgVo {
         private String name;
         private String phone;
+    }
+
+    /** 复现项目生成模型类的风格：链式 setter 返回类型非 void，Introspector 不提供 writeMethod */
+    @Data
+    @Accessors(chain = true)
+    static class ChainVo {
+        private String phone;
+        private String name;
     }
 
     private static UserVo user() {
@@ -94,6 +104,41 @@ class FieldPermEngineTest {
             assertNull(vo.getPhone());
             assertNull(vo.getOrg().getPhone());
         });
+    }
+
+    /**
+     * 回归：mybatis-flex Page 在 com.mybatisflex 包下，曾被 SKIP_PACKAGES 整体拦截，
+     * 导致分页接口（R&lt;Page&lt;UserVo&gt;&gt;）的 records 永远遍历不到
+     */
+    @Test
+    void R包装的分页数据应下钻records() {
+        Page<UserVo> page = new Page<>();
+        page.setRecords(List.of(user(), user()));
+        R<Page<UserVo>> r = R.success(page);
+
+        engine.apply(r, Map.of("phone", FieldRule.hide()));
+
+        page.getRecords().forEach(vo -> {
+            assertNull(vo.getPhone());
+            assertNull(vo.getOrg().getPhone());
+        });
+        // 分页元数据不受影响
+        assertEquals(2, page.getRecords().size());
+    }
+
+    /**
+     * 回归：项目 VO/Entity 统一使用 {@code @Accessors(chain = true)}，链式 setter 返回 this，
+     * 不符合 JavaBeans 写方法规范（pd.getWriteMethod() == null），必须回退字段直写
+     */
+    @Test
+    void 链式setter类回退字段直写() {
+        ChainVo vo = new ChainVo().setPhone("13812345678").setName("张三丰");
+        engine.apply(vo, Map.of(
+                "phone", FieldRule.mask(BuiltinMasker.MOBILE),
+                "name", FieldRule.hide()));
+
+        assertEquals("138****5678", vo.getPhone());
+        assertNull(vo.getName());
     }
 
     @Test
