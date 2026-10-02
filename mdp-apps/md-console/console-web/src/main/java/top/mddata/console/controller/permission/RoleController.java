@@ -35,6 +35,7 @@ import top.mddata.console.service.permission.RoleFieldRelService;
 import top.mddata.console.service.permission.RoleResourceRelService;
 import top.mddata.console.service.permission.RoleService;
 import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
+import top.mddata.console.vo.permission.ResourceFieldVo;
 import top.mddata.console.vo.permission.RoleDataScopeRelVo;
 import top.mddata.console.vo.permission.RoleVo;
 
@@ -197,6 +198,19 @@ public class RoleController extends SuperController<RoleService, Role> {
     @RequestLog(value = "保存角色字段受限关系", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Boolean> saveRoleField(@Validated @RequestBody RoleFieldRelDto dto) {
         return R.success(roleFieldRelService.saveRoleField(dto));
+    }
+
+    /**
+     * 查询当前操作人可分配的字段规则集合。
+     *
+     * @return 权限集合角色已分配且启用中的字段规则
+     */
+    @GetMapping("/assignableFieldList")
+    @Operation(summary = "可分配的字段规则集合",
+            description = "取当前操作人权限集合角色已分配且启用中的字段规则")
+    @RequestLog(value = "查询可分配的字段规则集合", logType = RequestLog.LogType.QUERY)
+    public R<List<ResourceFieldVo>> assignableFieldList() {
+        return R.success(roleFieldRelService.findAssignableFieldList());
     }
 
     @GetMapping("/assignableAppIds")

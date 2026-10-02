@@ -3,6 +3,7 @@ package top.mddata.console.service.permission;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.dto.permission.RoleFieldRelDto;
 import top.mddata.console.entity.permission.RoleFieldRel;
+import top.mddata.console.vo.permission.ResourceFieldVo;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,6 +32,14 @@ public interface RoleFieldRelService extends SuperService<RoleFieldRel> {
      * @return 保存结果
      */
     Boolean saveRoleField(RoleFieldRelDto dto);
+
+    /**
+     * 查询当前操作人可分配的字段规则
+     * （其组织性质的权限集合角色已授权、且启用中的字段）
+     *
+     * @return 字段规则集合；权限集合角色不存在时返回空集合
+     */
+    List<ResourceFieldVo> findAssignableFieldList();
 
     /**
      * 失效指定角色集合下所有用户的字段受限集缓存
