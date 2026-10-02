@@ -189,111 +189,86 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private TempOrg findOrg(User sysUser) {
-        // 当前所属部门
-        Long currentDeptId = null;
-        // 当前所属单位
-        Long currentCompanyId = null;
-        Integer currentCompanyNature = null;
-        // 当前所属顶级单位
-        Long currentTopCompanyId = null;
-        Integer currentTopCompanyNature = null;
-
+    /**
+     * 解析用户当前组织上下文（部门/单位/顶级单位）。
+     *
+     * <p>包可见以便单测。</p>
+     */
+    TempOrg findOrg(User sysUser) {
         if (sysUser == null) {
-            return TempOrg.builder()
-                    .currentTopCompanyId(currentTopCompanyId)
-                    .currentTopCompanyNature(currentTopCompanyNature)
-                    .currentCompanyId(currentCompanyId)
-                    .currentCompanyNature(currentCompanyNature)
-                    .currentDeptId(currentDeptId).build();
+            return TempOrg.builder().build();
         }
         Long userId = sysUser.getId();
-        User updateUser = UpdateEntity.of(User.class, userId);
 
         List<Long> orgIdList = ssoUserService.findOrgIdByUserId(userId);
+        Long currentDeptId = resolveDeptId(sysUser, userId, orgIdList);
+        Org company = resolveCompany(sysUser, userId, currentDeptId);
+        Org topCompany = resolveTopCompany(company);
 
-//            查最后一次登录时 所属部门
-        if (sysUser.getLastDeptId() == null) {
-            // 上次登录部门为空，则随机选择一个部门
-            List<Org> deptList = ssoUserService.findDeptByUserId(userId, null);
-            Org defaultDept = ssoUserService.getDefaultOrg(deptList, null);
-
-            currentDeptId = defaultDept != null ? defaultDept.getId() : null;
-            updateUser.setLastDeptId(currentDeptId);
-
-        } else {
-            if (CollUtil.contains(orgIdList, sysUser.getLastDeptId())) {
-                currentDeptId = sysUser.getLastDeptId();
-            } else {
-                updateUser.setLastDeptId(null);
-            }
-        }
-
-//            查最后一次登录时 所属单位
-        Org defaultCompany = null;
-        if (sysUser.getLastCompanyId() == null) {
-            if (currentDeptId != null) {
-                defaultCompany = ssoUserService.getCompanyByDeptId(currentDeptId);
-            } else {
-                // currentDeptId 为空，员工可能直接挂在单位下、也可能不属于任何部门
-                List<Org> companyList = ssoUserService.findCompanyByUserId(userId);
-                defaultCompany = ssoUserService.getDefaultOrg(companyList, sysUser.getLastCompanyId());
-            }
-
-            currentCompanyId = defaultCompany != null ? defaultCompany.getId() : null;
-            updateUser.setLastCompanyId(currentCompanyId);
-        } else {
-
-            if (CollUtil.contains(orgIdList, sysUser.getLastCompanyId())) {
-                currentCompanyId = sysUser.getLastCompanyId();
-                defaultCompany = ssoUserService.getOrgByIdCache(currentCompanyId);
-            } else {
-                updateUser.setLastCompanyId(null);
-            }
-
-        }
-
-        // 查询单位的组织性质
-        if (defaultCompany != null) {
-            currentCompanyNature = ssoUserService.getOrgNatureByOrgId(defaultCompany.getId());
-        }
-
-        // 查最后一次登录时 所属顶级单位
-        Org rootCompany = null;
-        if (sysUser.getLastTopCompanyId() == null) {
-            if (defaultCompany != null) {
-                Long rootId = MyTreeUtil.getTopNodeId(defaultCompany.getTreePath());
-                if (rootId != null) {
-                    rootCompany = ssoUserService.getOrgByIdCache(rootId);
-                } else {
-                    rootCompany = defaultCompany;
-                }
-            }
-            currentTopCompanyId = rootCompany != null ? rootCompany.getId() : null;
-            updateUser.setLastTopCompanyId(currentTopCompanyId);
-        } else {
-            if (CollUtil.contains(orgIdList, sysUser.getLastTopCompanyId())) {
-                currentTopCompanyId = sysUser.getLastTopCompanyId();
-                rootCompany = ssoUserService.getOrgByIdCache(currentTopCompanyId);
-            } else {
-                updateUser.setLastTopCompanyId(null);
-            }
-        }
-
-        // 查询顶级单位的组织性质
-        if (rootCompany != null) {
-            currentTopCompanyNature = ssoUserService.getOrgNatureByOrgId(rootCompany.getId());
-        }
-
+        User updateUser = UpdateEntity.of(User.class, userId);
+        updateUser.setLastDeptId(currentDeptId);
+        updateUser.setLastCompanyId(company != null ? company.getId() : null);
+        updateUser.setLastTopCompanyId(topCompany != null ? topCompany.getId() : null);
         ssoUserService.updateById(updateUser);
 
         return TempOrg.builder()
-                .currentTopCompanyNature(currentTopCompanyNature)
-                .currentTopCompanyId(currentTopCompanyId)
-                .currentCompanyNature(currentCompanyNature)
-                .currentCompanyId(currentCompanyId)
                 .currentDeptId(currentDeptId)
+                .currentCompanyId(company != null ? company.getId() : null)
+                .currentCompanyNature(company != null ? ssoUserService.getOrgNatureByOrgId(company.getId()) : null)
+                .currentTopCompanyId(topCompany != null ? topCompany.getId() : null)
+                .currentTopCompanyNature(topCompany != null ? ssoUserService.getOrgNatureByOrgId(topCompany.getId()) : null)
                 .build();
+    }
+
+    /**
+     * 解析当前部门：上次部门仍属于用户直属机构时保留，否则从其部门中重选一个。
+     */
+    private Long resolveDeptId(User sysUser, Long userId, List<Long> orgIdList) {
+        Long lastDeptId = sysUser.getLastDeptId();
+        if (lastDeptId != null && CollUtil.contains(orgIdList, lastDeptId)) {
+            return lastDeptId;
+        }
+        List<Org> deptList = ssoUserService.findDeptByUserId(userId, null);
+        Org defaultDept = ssoUserService.getDefaultOrg(deptList, null);
+        return defaultDept != null ? defaultDept.getId() : null;
+    }
+
+    /**
+     * 解析当前单位：上次单位仍在用户所属单位（含上级单位）中时保留；
+     * 否则优先按当前部门推导（保证单位与部门一致），再退化为单位列表首个。
+     *
+     * <p>保留校验必须用"所属单位及上级单位"集合，而非直属机构集合：
+     * 只挂部门的用户直属集合不含公司，用后者校验会把单位恒判失效并清空
+     * （SSO 换 token 时公司参数丢失的历史 bug）。</p>
+     */
+    private Org resolveCompany(User sysUser, Long userId, Long currentDeptId) {
+        List<Org> companyList = ssoUserService.findCompanyByUserId(userId);
+        Long lastCompanyId = sysUser.getLastCompanyId();
+        Org company = null;
+        if (lastCompanyId != null) {
+            company = companyList.stream()
+                    .filter(item -> lastCompanyId.equals(item.getId()))
+                    .findFirst().orElse(null);
+        }
+        if (company == null && currentDeptId != null) {
+            company = ssoUserService.getCompanyByDeptId(currentDeptId);
+        }
+        if (company == null && !companyList.isEmpty()) {
+            company = companyList.get(0);
+        }
+        return company;
+    }
+
+    /**
+     * 解析顶级单位：由当前单位的 treePath 唯一推导，保证顶级单位与当前单位同源，
+     * 不信任可能残留脏值的 lastTopCompanyId。
+     */
+    private Org resolveTopCompany(Org company) {
+        if (company == null) {
+            return null;
+        }
+        Long rootId = MyTreeUtil.getTopNodeId(company.getTreePath());
+        return rootId != null ? ssoUserService.getOrgByIdCache(rootId) : company;
     }
 
 
@@ -387,10 +362,13 @@ public class AuthServiceImpl implements AuthService {
         return b;
     }
 
+    /**
+     * 组织上下文解析结果。包可见以便单测断言。
+     */
     @Builder
     @AllArgsConstructor
     @Getter
-    private static class TempOrg {
+    static class TempOrg {
         /**
          * 当前公司id
          */
