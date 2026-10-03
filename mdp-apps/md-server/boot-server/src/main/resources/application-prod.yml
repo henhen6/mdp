@@ -1,4 +1,8 @@
 mdp:
+  # 未配置到 mdc_resource_api 的接口一律拒绝（白名单模式）：
+  # 菜单删除/接口解绑后接口自动不可调，符合"下掉功能"的运维直觉
+  ignore:
+    not-config-uri-allow: false
   system:
     forgetPasswordUrl: 'http://workbench.mddata.top/#/auth/forget-password-update?token='
   log:
