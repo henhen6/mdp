@@ -11,6 +11,7 @@ import com.mybatisflex.core.constant.SqlOperator;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.query.SqlOperators;
+import com.mybatisflex.core.update.UpdateWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户 服务层实现。
@@ -88,6 +90,42 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     private final RoleService roleService;
     private final OrgVisibilityService orgVisibilityService;
     private final AccountOperationGuard accountOperationGuard;
+
+    /**
+     * 联系方式归一化：phone/email 允许为空，空白串与 null 等价，统一归一为 null。
+     * phone/email 列有唯一索引（uk_phone/uk_email），空串是真实值，
+     * 多用户空串会撞索引；MySQL 唯一索引允许多个 NULL。
+     */
+    static void normalizeContact(User user) {
+        if (StrUtil.isBlankIfStr(user.getPhone())) {
+            user.setPhone(null);
+        }
+        if (StrUtil.isBlankIfStr(user.getEmail())) {
+            user.setEmail(null);
+        }
+    }
+
+    /**
+     * PATCH 更新的联系方式归一化（纯函数，便于单测）。
+     * 只处理已提交进 updates 的字段——未提交字段必须保持不动，
+     * 直接调 setter 会把字段误加入 updates 导致 SET NULL。
+     */
+    static void normalizeContactUpdates(User sysUser) {
+        if (!(sysUser instanceof UpdateWrapper wrapper)) {
+            normalizeContact(sysUser);
+            return;
+        }
+        Map<String, Object> updates = wrapper.getUpdates();
+        blankToNull(updates, "phone");
+        blankToNull(updates, "email");
+    }
+
+    private static void blankToNull(Map<String, Object> updates, String property) {
+        Object value = updates.get(property);
+        if (value instanceof String s && StrUtil.isBlank(s)) {
+            updates.put(property, null);
+        }
+    }
 
     /**
      * 逐项校验最近登录组织上下文：仍在新组织关系中则保留，否则仅失效项置空（纯函数，便于单测）。
@@ -121,6 +159,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         User entity = BeanUtil.toBean(save, getEntityClass());
         entity.setId(uidGenerator.getUid());
+        normalizeContact(entity);
 
         String password;
         String salt = RandomUtil.randomString(20);
@@ -200,6 +239,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         checkStateChange(dto, dbUser);
 
         User sysUser = super.updateBefore(updateDto);
+        normalizeContactUpdates(sysUser);
         // dto.getAvatarFileId() 是file表的id， sysUser.setAvatar 是对象id
         // 注意：前端传递的avatar是文件id，存入数据库时，需要设置为唯一的对象id（通常为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
         sysUser.setAvatar(sysUser.getId());
@@ -346,12 +386,19 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     @Transactional(readOnly = true)
     public Boolean checkPhone(String phone, Long id) {
+        // 空值视为"未填写"，不参与唯一性判断（与 normalizeContact 的空串归一化语义一致）
+        if (StrUtil.isBlank(phone)) {
+            return false;
+        }
         return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getPhone, phone).ne(User::getId, id)) > 0;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Boolean checkEmail(String email, Long id) {
+        if (StrUtil.isBlank(email)) {
+            return false;
+        }
         return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getEmail, email).ne(User::getId, id)) > 0;
     }
 
@@ -476,5 +523,6 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         defUser.setUserSource(UserSourceEnum.PLATFORM.getCode());
         String expireTime = configService.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
         defUser.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
+        normalizeContact(defUser);
     }
 }

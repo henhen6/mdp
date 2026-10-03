@@ -57,12 +57,31 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
         return new UserCacheKeyBuilder();
     }
 
+    private static String blankToNull(String val) {
+        return StrUtil.isBlankIfStr(val) ? null : val;
+    }
+
+    /**
+     * phone/email 允许为空：空白串归一化为 null。
+     * uk_phone/uk_email 唯一索引不允许多个空串，MySQL 唯一索引允许多个 NULL。
+     */
+    private static void normalizeContact(User user) {
+        user.setPhone(blankToNull(user.getPhone()));
+        user.setEmail(blankToNull(user.getEmail()));
+    }
+
+    private static void normalizeContact(UserSaveDto dto) {
+        dto.setPhone(blankToNull(dto.getPhone()));
+        dto.setEmail(blankToNull(dto.getEmail()));
+    }
+
     @Override
     public UserBatchSaveResp batchSave(UserBatchSaveDto list) {
         try {
             List<UserSaveDto> dto = list.getList();
             ArgumentAssert.notEmpty(dto, "用户信息不能为空");
             ArgumentAssert.isFalse(dto.size() > 500, "每次保存的用户数量不能超过500条");
+            dto.forEach(UserOpenServiceImpl::normalizeContact);
 
             List<String> usernameList2 = dto.stream().map(UserSaveDto::getUsername).filter(StrUtil::isNotEmpty).distinct().toList();
             ArgumentAssert.isTrue(dto.size() == usernameList2.size(), "用户名存在重复数据");
@@ -145,6 +164,8 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
             ArgumentAssert.isTrue(existEmail <= 0, "邮箱[{}]存在重复数据", dto.getEmail());
         }
         User user = BeanUtil.toBean(dto, User.class);
+        // 归一化后空值为 null：update 忽略 null 字段（不更新），同时避免空串撞唯一索引
+        normalizeContact(user);
         mapper.update(user);
 
         delCache(user);
