@@ -21,6 +21,8 @@ import cn.dev33.satoken.sso.exception.SaSsoException;
 import cn.dev33.satoken.util.SaFoxUtil;
 
 import java.io.Serial;
+import cn.dev33.satoken.json.SaJsonType;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,7 +32,7 @@ import java.util.List;
  * @author click33
  * @since 1.43.0
  */
-public class SaSsoClientModel implements Serializable {
+public class SaSsoClientModel implements SaJsonType, Serializable {
 
     @Serial
     private static final long serialVersionUID = -6541180061782004705L;

@@ -18,6 +18,8 @@ package cn.dev33.satoken.sso.model;
 import cn.dev33.satoken.util.SaResult;
 import lombok.Data;
 
+import cn.dev33.satoken.json.SaJsonType;
+
 import java.io.Serializable;
 
 /**
@@ -27,7 +29,7 @@ import java.io.Serializable;
  * @since 1.38.0
  */
 @Data
-public class SaCheckTicketResult implements Serializable {
+public class SaCheckTicketResult implements SaJsonType, Serializable {
 
     private static final long serialVersionUID = 1406115065849845073L;
 
