@@ -64,10 +64,18 @@
 - 工作台：http://workbench.mddata.top
 - 控制台：http://console.mddata.top
 - 开发者平台：http://open.mddata.top
-- 演示环境：
-  - 运维管理员账号密码：ops_admin/admin
-  - 开发者管理员账号密码：open_admin/admin
-  - 企业管理员账号密码：admin/admin
+- 演示账号：
+
+    | 账号                                      | 密码                                           | 备注                                           |
+    |---------------------------------------------|----------------------------------------------|----------------------------------------------|
+    | ops_admin | admin |  超管，运营MDP平台内置数据的管理账号 |
+    | ops_user | admin |  超管，运营MDP平台内置数据的普通账号 |
+    | open_admin | admin |  开发者管理，管理第三方开发者的管理账号 |
+    | open_user | admin |  第三方开发者，负责与MDP平台对接单点登录、数据的开发人员 |
+    | admin | admin |  总公司管理，使用MDP平台开展业务的最高管理员 |
+    | user | admin |  总公司普通人，使用MDP平台的普通用户 |
+
+
 
 ## 第三应用
 
