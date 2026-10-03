@@ -1,6 +1,7 @@
 package top.mddata.console.service.permission.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.common.cache.console.permission.RoleDataScopeCacheKeyBuilder;
 import top.mddata.common.constant.RoleCode;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
@@ -18,7 +20,9 @@ import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.entity.permission.Role;
 import top.mddata.console.entity.permission.RoleAppRel;
 import top.mddata.console.entity.permission.RoleDataScopeRel;
+import top.mddata.console.entity.permission.RoleFieldRel;
 import top.mddata.console.mapper.permission.RoleDataScopeRelMapper;
+import top.mddata.console.mapper.permission.RoleFieldRelMapper;
 import top.mddata.console.mapper.permission.RoleMapper;
 import top.mddata.console.service.organization.SystemProtectService;
 import top.mddata.console.service.organization.UserRoleRelService;
@@ -46,6 +50,9 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
     private final UserRoleRelService userRoleRelService;
     private final SystemProtectService systemProtectService;
     private final RoleDataScopeRelMapper roleDataScopeRelMapper;
+    // 级联删除依赖 Mapper 而非领域 Service：RoleDataScopeRelService/RoleFieldRelService
+    // 均依赖本 Service（授权校验），注入 Service 会形成构造器循环依赖
+    private final RoleFieldRelMapper roleFieldRelMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -141,11 +148,40 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
         idList.forEach(id -> systemProtectService.checkRoleNotProtected(
                 Long.valueOf(String.valueOf(id)), "删除角色"));
 
+        // 级联清除：数据权限、字段权限、功能权限、应用权限、角色绑定的用户。
+        // 功能权限删除内部的用户缓存失效（含 user_field_perm）放各领域删除之后，兜住全部变更
+        removeDataScopeByRoleIds(idList);
+        removeFieldByRoleIds(idList);
         roleResourceRelService.removeByRoleIds(idList);
         roleAppRelService.removeByRoleIds(idList);
         userRoleRelService.removeByRoleIds(idList);
 
         return super.removeByIds(idList);
+    }
+
+    /**
+     * 按角色删除数据权限授权，并按涉及的角色与菜单失效 RoleDataScope 缓存
+     */
+    private void removeDataScopeByRoleIds(Collection<? extends Serializable> roleIdList) {
+        List<RoleDataScopeRel> relList = roleDataScopeRelMapper.selectListByQuery(QueryWrapper.create()
+                .select(RoleDataScopeRel::getRoleId, RoleDataScopeRel::getMenuId)
+                .where(RoleDataScopeRel::getRoleId).in(roleIdList));
+        if (CollUtil.isEmpty(relList)) {
+            return;
+        }
+        roleDataScopeRelMapper.deleteByQuery(QueryWrapper.create()
+                .where(RoleDataScopeRel::getRoleId).in(roleIdList));
+        cacheOps.del(relList.stream()
+                .map(rel -> RoleDataScopeCacheKeyBuilder.build(rel.getRoleId(), rel.getMenuId()))
+                .toList());
+    }
+
+    /**
+     * 按角色删除字段受限关系（用户字段受限集缓存由功能权限删除统一失效）
+     */
+    private void removeFieldByRoleIds(Collection<? extends Serializable> roleIdList) {
+        roleFieldRelMapper.deleteByQuery(QueryWrapper.create()
+                .where(RoleFieldRel::getRoleId).in(roleIdList));
     }
 
     @Override

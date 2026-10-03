@@ -55,4 +55,12 @@ public interface RoleFieldRelService extends SuperService<RoleFieldRel> {
      * @param fieldIdList 字段规则ID集合
      */
     void invalidateUserFieldPermCacheByFieldIds(Collection<Long> fieldIdList);
+
+    /**
+     * 按角色删除字段受限关系（删除角色时级联调用），
+     * 并失效相关用户的字段受限集缓存
+     *
+     * @param roleIdList 角色ID集合
+     */
+    void removeByRoleIds(Collection<? extends Serializable> roleIdList);
 }

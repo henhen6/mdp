@@ -119,6 +119,18 @@ public class RoleFieldRelServiceImpl extends SuperServiceImpl<RoleFieldRelMapper
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByRoleIds(Collection<? extends Serializable> roleIdList) {
+        if (CollUtil.isEmpty(roleIdList)) {
+            return;
+        }
+        mapper.deleteByQuery(QueryWrapper.create()
+                .where(RoleFieldRel::getRoleId).in(roleIdList));
+        // 字段受限关系变更影响这些角色下所有用户的字段受限集
+        invalidateUserFieldPermCacheByRoleIds(roleIdList);
+    }
+
+    @Override
     public void invalidateUserFieldPermCacheByRoleIds(Collection<? extends Serializable> roleIdList) {
         if (CollUtil.isEmpty(roleIdList)) {
             return;

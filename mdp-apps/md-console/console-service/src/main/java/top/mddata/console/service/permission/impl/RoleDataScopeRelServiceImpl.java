@@ -26,6 +26,7 @@ import top.mddata.console.service.permission.RoleService;
 import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
 import top.mddata.console.vo.permission.RoleDataScopeRelVo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -202,6 +203,25 @@ public class RoleDataScopeRelServiceImpl
     public List<RoleDataScopeRelVo> findDataScopeByRoleId(Long roleId) {
         return listAs(QueryWrapper.create().eq(RoleDataScopeRel::getRoleId, roleId),
                 RoleDataScopeRelVo.class);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByRoleIds(Collection<? extends Serializable> roleIdList) {
+        if (CollUtil.isEmpty(roleIdList)) {
+            return;
+        }
+        List<RoleDataScopeRel> relList = mapper.selectListByQuery(QueryWrapper.create()
+                .select(RoleDataScopeRel::getRoleId, RoleDataScopeRel::getMenuId)
+                .where(RoleDataScopeRel::getRoleId).in(roleIdList));
+        if (CollUtil.isEmpty(relList)) {
+            return;
+        }
+        mapper.deleteByQuery(QueryWrapper.create()
+                .where(RoleDataScopeRel::getRoleId).in(roleIdList));
+        cacheOps.del(relList.stream()
+                .map(rel -> RoleDataScopeCacheKeyBuilder.build(rel.getRoleId(), rel.getMenuId()))
+                .toList());
     }
 
     @Override

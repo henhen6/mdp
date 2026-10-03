@@ -6,6 +6,8 @@ import top.mddata.console.entity.permission.RoleDataScopeRel;
 import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
 import top.mddata.console.vo.permission.RoleDataScopeRelVo;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,4 +44,12 @@ public interface RoleDataScopeRelService extends SuperService<RoleDataScopeRel> 
      * @return 菜单树（按 weight 升序）
      */
     List<DataScopeMenuTreeVo> findAssignableDataScopeMenuTree();
+
+    /**
+     * 按角色删除数据权限授权（删除角色时级联调用），
+     * 并按涉及的角色与菜单失效 RoleDataScope 缓存
+     *
+     * @param roleIdList 角色ID集合
+     */
+    void removeByRoleIds(Collection<? extends Serializable> roleIdList);
 }

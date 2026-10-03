@@ -140,9 +140,10 @@ public class RoleResourceRelServiceImpl extends SuperServiceImpl<RoleResourceRel
                         .select(UserRoleRel::getUserId)
                         .where(UserRoleRel::getRoleId).in(roleIdList))
                 .stream().map(UserRoleRel::getUserId).distinct().toList();
-        List<CacheKey> userKeys = userIds.stream()
+        // Stream.toList() 返回不可变列表，后续还要追加字段受限集 key，必须可变
+        List<CacheKey> userKeys = new ArrayList<>(userIds.stream()
                 .map(UserResourceApiCacheKeyBuilder::build)
-                .toList();
+                .toList());
         // 角色资源/角色本身变更同样影响这些用户的字段受限集
         userIds.stream().map(UserFieldPermCacheKeyBuilder::build).forEach(userKeys::add);
         if (!userKeys.isEmpty()) {
