@@ -200,8 +200,7 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
     @Transactional(readOnly = true)
     public Role getPermSetRoleOfCurrentOperator() {
         Integer nature = ContextUtil.getCurrentTopCompanyNature();
-        ArgumentAssert.notNull(nature,
-                "当前用户的组织性质未知，无法确定可分配范围");
+        ArgumentAssert.notNull(nature, "当前用户的组织性质未知，无法确定可分配范围");
         return getOne(QueryWrapper.create()
                 .eq(Role::getRoleCategory, RoleCategoryEnum.PERM_SET.getCode())
                 .eq(Role::getOrgNature, nature).eq(Role::getState, true));
