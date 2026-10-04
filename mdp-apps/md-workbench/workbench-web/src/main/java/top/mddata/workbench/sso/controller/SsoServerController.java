@@ -84,10 +84,11 @@ public class SsoServerController {
             if (!app.getState()) {
                 return R.fail("当前应用 [" + app.getName() + "] 已被禁用，无法使用");
             }
-
-            R<Boolean> checkResult = appFacade.checkAppByUserId(loginId, app.getId());
-            if (checkResult.getIsSuccess() && !checkResult.getData()) {
-                return R.fail("当前账号暂无权限登入此应用，请联系管理员授权");
+            if (app.getIsPublic() == null || !app.getIsPublic()) {
+                R<Boolean> checkResult = appFacade.checkAppByUserId(loginId, app.getId());
+                if (checkResult.getIsSuccess() && !checkResult.getData()) {
+                    return R.fail("当前账号暂无权限登入此应用，请联系管理员授权");
+                }
             }
         }
 

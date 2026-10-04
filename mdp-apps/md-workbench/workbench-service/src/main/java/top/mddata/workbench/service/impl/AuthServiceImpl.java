@@ -96,9 +96,6 @@ public class AuthServiceImpl implements AuthService {
         // 5. 检查用户状态
         strategy.checkUserState(login, ssoUser);
 
-        //        TODO 判断用户是否可以登录该应用
-
-
         Long userId = ssoUser.getId();
 
         // 创建Account-Session
