@@ -162,6 +162,19 @@ public class AppController extends SuperController<AppService, App> {
         return R.success(superService.listNeedPushApp());
     }
 
+    /**
+     * 查询角色已分配的应用（服务间门面调用）
+     *
+     * @param roleId 角色ID
+     * @return 应用列表
+     */
+    @GetMapping("/listByRoleId")
+    @Operation(summary = "查询角色已分配的应用", description = "查询角色已分配的应用（按权重降序）")
+    @RequestLog(value = "查询角色已分配的应用", logType = RequestLog.LogType.QUERY)
+    public R<List<AppVo>> listByRoleId(@RequestParam Long roleId) {
+        return R.success(superService.listByRoleId(roleId));
+    }
+
 
     /**
      * 查询用户能访问的应用

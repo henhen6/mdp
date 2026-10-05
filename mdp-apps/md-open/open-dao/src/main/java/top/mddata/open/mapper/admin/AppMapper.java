@@ -41,4 +41,12 @@ public interface AppMapper extends SuperMapper<App> {
                     """
     })
     List<Map<String, Object>> countByDay(@Param("startTime") LocalDateTime startTime);
+
+    /**
+     * 查询角色已分配的应用（按权重降序）。
+     *
+     * @param roleId 角色ID
+     * @return 应用列表
+     */
+    List<App> listByRoleId(@Param("roleId") Long roleId);
 }

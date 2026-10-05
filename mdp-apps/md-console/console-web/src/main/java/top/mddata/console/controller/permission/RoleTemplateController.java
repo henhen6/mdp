@@ -24,9 +24,9 @@ import top.mddata.console.dto.permission.RoleTemploateDto;
 import top.mddata.console.entity.permission.Role;
 import top.mddata.console.query.permission.RoleQuery;
 import top.mddata.console.service.permission.RoleDataScopeRelService;
+import top.mddata.console.service.permission.RoleFieldRelService;
 import top.mddata.console.service.permission.RoleTemplateService;
-import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
-import top.mddata.console.vo.permission.RoleDataScopeRelVo;
+import top.mddata.console.vo.permission.RoleFieldAuthVo;
 import top.mddata.console.vo.permission.RoleVo;
 
 import java.util.List;
@@ -44,6 +44,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleTemplateController extends SuperController<RoleTemplateService, Role> {
     private final RoleDataScopeRelService roleDataScopeRelService;
+    private final RoleFieldRelService roleFieldRelService;
     private final EchoService echoService;
 
     /**
@@ -131,28 +132,16 @@ public class RoleTemplateController extends SuperController<RoleTemplateService,
     }
 
     /**
-     * 查询角色的数据权限授权。
+     * 字段权限授权页面聚合数据（角色模板：应用全量菜单 + 全部启用字段）。
      *
-     * @param roleId 角色id
-     * @return 授权列表
+     * @param roleId 角色模板ID
+     * @return 按应用分组的菜单字段树及各应用已受限字段
      */
-    @GetMapping("/findDataScopeByRoleId")
-    @Operation(summary = "查询角色数据权限", description = "查询角色的数据权限授权")
-    @RequestLog(value = "查询角色数据权限", logType = RequestLog.LogType.QUERY)
-    public R<List<RoleDataScopeRelVo>> findDataScopeByRoleId(@RequestParam Long roleId) {
-        return R.success(roleDataScopeRelService.findDataScopeByRoleId(roleId));
-    }
-
-    /**
-     * 可授权的数据权限菜单树。
-     *
-     * @return 菜单树（含仅展示的祖先节点；可配置节点带可分配档位）
-     */
-    @GetMapping("/assignableDataScopeMenus")
-    @Operation(summary = "可授权的数据权限菜单树", description = "已启用数据权限的菜单树及各节点可分配档位")
-    @RequestLog(value = "查询可授权的数据权限菜单树", logType = RequestLog.LogType.QUERY)
-    public R<List<DataScopeMenuTreeVo>> assignableDataScopeMenus() {
-        return R.success(roleDataScopeRelService.findAssignableDataScopeMenuTree());
+    @GetMapping("/fieldAuthTree")
+    @Operation(summary = "字段权限授权聚合数据", description = "按应用分组返回菜单字段树及已受限字段（模板角色取全量资源）")
+    @RequestLog(value = "查询字段权限授权聚合数据", logType = RequestLog.LogType.QUERY)
+    public R<RoleFieldAuthVo> fieldAuthTree(@RequestParam Long roleId) {
+        return R.success(roleFieldRelService.fieldAuthTree(roleId, true));
     }
 
 }

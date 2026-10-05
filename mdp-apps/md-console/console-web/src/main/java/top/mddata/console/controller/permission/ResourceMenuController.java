@@ -144,19 +144,7 @@ public class ResourceMenuController extends SuperController<ResourceMenuService,
     @PostMapping("/treeByRoleId")
     @RequestLog(value = "按照树结构查询系统的所有资源", logType = RequestLog.LogType.QUERY)
     public R<List<ResourceMenuVo>> treeByRoleId(@Validated(ResourceMenuQuery.TreeByRoleId.class) @RequestBody ResourceMenuQuery query) {
-
         QueryWrapper queryWrapper = QueryWrapper.create().eq(ResourceMenu::getAppId, query.getAppId());
-
-        /*
-        QueryWrapper inWrapper = QueryWrapper.create().select(RoleResourceRel::getResourceId).from(RoleResourceRel.class)
-                .innerJoin(Role.class).on(RoleResourceRel::getRoleId, Role::getId)
-                .eq(RoleResourceRel::getAppId, query.getAppId())
-                .eq(Role::getRoleCategory, RoleCategoryEnum.PERM_SET.getCode())
-                .eq(Role::getOrgNature, ContextUtil.getCurrentCompanyNature())
-                .eq(Role::getTemplateRole, BooleanEnum.TRUE.getInteger())
-                .eq(Role::getState, BooleanEnum.TRUE.getInteger());
-        queryWrapper.in(ResourceMenu::getId, inWrapper);
-        */
 
         QueryWrapper existsWrapper = QueryWrapper.create().select("1").from(RoleResourceRel.class)
                 .innerJoin(Role.class).on(RoleResourceRel::getRoleId, Role::getId)

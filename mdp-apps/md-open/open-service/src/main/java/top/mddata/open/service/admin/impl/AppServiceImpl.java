@@ -105,6 +105,7 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
         otherParams.put("templateRole", 1);
         otherParams.put("hasAppByRole", query.getHasApp() != null && query.getHasApp());
 
+        // 参考文档： https://mybatis-flex.com/zh/intro/use-mybatis-native.html#xml-%E5%88%86%E9%A1%B5
         Page<App> pageResult = mapper.xmlPaginate("pageByRoleId", page, otherParams);
 
         return BeanPageUtil.toBeanPage(pageResult, AppVo.class);
@@ -115,6 +116,12 @@ public class AppServiceImpl extends SuperServiceImpl<AppMapper, App> implements 
     @Transactional(readOnly = true)
     public List<AppVo> listNeedPushApp() {
         return listAs(QueryWrapper.create().eq(App::getSsoPush, true), AppVo.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AppVo> listByRoleId(Long roleId) {
+        return BeanUtil.copyToList(mapper.listByRoleId(roleId), AppVo.class);
     }
 
     @Override

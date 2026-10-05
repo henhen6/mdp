@@ -30,6 +30,14 @@ public interface AppFacade {
     R<Boolean> checkAppByUserId(Long userId, Long appId);
 
     /**
+     * 查询角色已分配的应用（按权重降序）
+     *
+     * @param roleId 角色ID
+     * @return 应用列表
+     */
+    R<List<AppVo>> listByRoleId(Long roleId);
+
+    /**
      * 根据id查询应用
      *
      * @param appKey 应用标识

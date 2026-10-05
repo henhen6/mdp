@@ -44,4 +44,13 @@ public interface AppApi {
     @GetMapping("/getAppByAppKey")
     R<AppVo> getAppByAppKey(@RequestParam String appKey);
 
+    /**
+     * 查询角色已分配的应用（按权重降序）
+     *
+     * @param roleId 角色ID
+     * @return 应用列表
+     */
+    @GetMapping("/listByRoleId")
+    R<List<AppVo>> listByRoleId(@RequestParam Long roleId);
+
 }

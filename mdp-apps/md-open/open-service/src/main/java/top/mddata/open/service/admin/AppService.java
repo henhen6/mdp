@@ -36,6 +36,14 @@ public interface AppService extends SuperService<App> {
     List<AppVo> listNeedPushApp();
 
     /**
+     * 查询角色已分配的应用（按权重降序）
+     *
+     * @param roleId 角色ID
+     * @return 应用列表
+     */
+    List<AppVo> listByRoleId(Long roleId);
+
+    /**
      * 根据应用标识查询应用
      *
      * @param appKey 应用标识

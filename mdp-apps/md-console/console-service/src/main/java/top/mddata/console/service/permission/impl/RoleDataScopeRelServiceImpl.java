@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.base.R;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.mybatisflex.datascope.model.DataScopeEnum;
@@ -24,7 +25,10 @@ import top.mddata.console.mapper.permission.RoleDataScopeRelMapper;
 import top.mddata.console.service.permission.RoleDataScopeRelService;
 import top.mddata.console.service.permission.RoleService;
 import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
+import top.mddata.console.vo.permission.RoleDataScopeAuthVo;
 import top.mddata.console.vo.permission.RoleDataScopeRelVo;
+import top.mddata.open.facade.admin.AppFacade;
+import top.mddata.open.vo.admin.AppVo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,6 +57,7 @@ public class RoleDataScopeRelServiceImpl
     private final RoleService roleService;
     // 用 Mapper 在 DAO 层打破循环依赖，避免 @Lazy
     private final ResourceMenuMapper resourceMenuMapper;
+    private final AppFacade appFacade;
 
     private static DataScopeMenuTreeVo toNode(ResourceMenu menu, boolean configurable) {
         DataScopeMenuTreeVo node = new DataScopeMenuTreeVo();
@@ -258,5 +263,61 @@ public class RoleDataScopeRelServiceImpl
             ancestors.forEach(ancestor -> nodes.add(toNode(ancestor, false)));
         }
         return buildTree(nodes);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoleDataScopeAuthVo dataScopeAuthData(Long roleId) {
+        Role targetRole = roleService.getById(roleId);
+        ArgumentAssert.notNull(targetRole, "角色[{}]不存在", roleId);
+
+        RoleDataScopeAuthVo result = new RoleDataScopeAuthVo();
+        // 角色已分配的应用（经 open 服务门面，按权重降序）
+        R<List<AppVo>> r = appFacade.listByRoleId(roleId);
+        ArgumentAssert.isTrue(r != null && r.getIsSuccess(), "查询角色已分配应用失败");
+        List<AppVo> apps = r.getData() == null ? List.of() : r.getData();
+        if (CollUtil.isEmpty(apps)) {
+            return result;
+        }
+
+        List<DataScopeMenuTreeVo> tree = findAssignableDataScopeMenuTree();
+        // 菜单森林按应用分区；菜单树由操作人权限集合决定，可能含角色未分配应用的菜单，
+        // 这些菜单不生成面板，但其既有授权仍包含在 authorizedList 中、随保存原样提交
+        Map<Long, List<DataScopeMenuTreeVo>> nodesByApp = new LinkedHashMap<>();
+        for (DataScopeMenuTreeVo node : tree) {
+            nodesByApp.computeIfAbsent(node.getAppId(), k -> new ArrayList<>()).add(node);
+        }
+        for (AppVo app : apps) {
+            RoleDataScopeAuthVo.AppGroup group = new RoleDataScopeAuthVo.AppGroup();
+            group.setAppId(app.getId());
+            group.setAppName(app.getName());
+            group.setMenuTreeData(nodesByApp.getOrDefault(app.getId(), List.of()));
+            result.getAppGroupList().add(group);
+        }
+
+        // 可配置节点平铺（前端初始化与保存遍历用）
+        List<RoleDataScopeAuthVo.MenuBrief> configurableMenus = new ArrayList<>();
+        flattenConfigurable(tree, configurableMenus);
+        result.setConfigurableMenus(configurableMenus);
+        result.setAuthorizedList(findDataScopeByRoleId(roleId));
+        return result;
+    }
+
+    /**
+     * 把菜单树拍平，收集全部可配置节点摘要
+     */
+    private void flattenConfigurable(List<DataScopeMenuTreeVo> tree,
+            List<RoleDataScopeAuthVo.MenuBrief> into) {
+        for (DataScopeMenuTreeVo node : tree) {
+            if (Boolean.TRUE.equals(node.getConfigurable())) {
+                RoleDataScopeAuthVo.MenuBrief brief = new RoleDataScopeAuthVo.MenuBrief();
+                brief.setMenuId(node.getMenuId());
+                brief.setName(node.getName());
+                into.add(brief);
+            }
+            if (CollUtil.isNotEmpty(node.getChildren())) {
+                flattenConfigurable(node.getChildren(), into);
+            }
+        }
     }
 }

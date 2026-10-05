@@ -34,9 +34,8 @@ import top.mddata.console.service.permission.RoleDataScopeRelService;
 import top.mddata.console.service.permission.RoleFieldRelService;
 import top.mddata.console.service.permission.RoleResourceRelService;
 import top.mddata.console.service.permission.RoleService;
-import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
-import top.mddata.console.vo.permission.ResourceFieldVo;
-import top.mddata.console.vo.permission.RoleDataScopeRelVo;
+import top.mddata.console.vo.permission.RoleDataScopeAuthVo;
+import top.mddata.console.vo.permission.RoleFieldAuthVo;
 import top.mddata.console.vo.permission.RoleVo;
 
 import java.util.Collection;
@@ -175,19 +174,6 @@ public class RoleController extends SuperController<RoleService, Role> {
     }
 
     /**
-     * 查询角色已受限的字段规则ID集合。
-     *
-     * @param roleId 角色id
-     * @return 字段规则ID集合
-     */
-    @Operation(summary = "查询角色已受限的字段规则集合")
-    @GetMapping("/findFieldIdsByRoleId")
-    @RequestLog(value = "查询角色已受限的字段规则集合", logType = RequestLog.LogType.QUERY)
-    public R<List<Long>> findFieldIdsByRoleId(@RequestParam Long roleId) {
-        return R.success(roleFieldRelService.findFieldIdsByRoleId(roleId));
-    }
-
-    /**
      * 保存角色字段受限关系（拒绝模型：提交的集合 = 该角色被限制查看的字段）。
      *
      * @param dto 角色字段受限关系
@@ -201,16 +187,16 @@ public class RoleController extends SuperController<RoleService, Role> {
     }
 
     /**
-     * 查询当前操作人可分配的字段规则集合。
+     * 字段权限授权页面聚合数据（角色管理：权限集合已分配的菜单 + 字段池）。
      *
-     * @return 权限集合角色已分配且启用中的字段规则
+     * @param roleId 角色ID
+     * @return 按应用分组的菜单字段树及各应用已受限字段
      */
-    @GetMapping("/assignableFieldList")
-    @Operation(summary = "可分配的字段规则集合",
-            description = "取当前操作人权限集合角色已分配且启用中的字段规则")
-    @RequestLog(value = "查询可分配的字段规则集合", logType = RequestLog.LogType.QUERY)
-    public R<List<ResourceFieldVo>> assignableFieldList() {
-        return R.success(roleFieldRelService.findAssignableFieldList());
+    @GetMapping("/fieldAuthTree")
+    @Operation(summary = "字段权限授权聚合数据", description = "按应用分组返回菜单字段树及已受限字段（普通角色按权限集合约束资源范围）")
+    @RequestLog(value = "查询字段权限授权聚合数据", logType = RequestLog.LogType.QUERY)
+    public R<RoleFieldAuthVo> fieldAuthTree(@RequestParam Long roleId) {
+        return R.success(roleFieldRelService.fieldAuthTree(roleId, false));
     }
 
     @GetMapping("/assignableAppIds")
@@ -251,27 +237,15 @@ public class RoleController extends SuperController<RoleService, Role> {
     }
 
     /**
-     * 查询角色的数据权限授权。
+     * 数据权限授权页面聚合数据（角色管理与角色模板共用）。
      *
-     * @param roleId 角色id
-     * @return 授权列表
+     * @param roleId 角色ID
+     * @return 按应用分组的可配置菜单树、可配置节点平铺及已授权列表
      */
-    @GetMapping("/findDataScopeByRoleId")
-    @Operation(summary = "查询角色数据权限", description = "查询角色的数据权限授权")
-    @RequestLog(value = "查询角色数据权限", logType = RequestLog.LogType.QUERY)
-    public R<List<RoleDataScopeRelVo>> findDataScopeByRoleId(@RequestParam Long roleId) {
-        return R.success(roleDataScopeRelService.findDataScopeByRoleId(roleId));
-    }
-
-    /**
-     * 可授权的数据权限菜单树。
-     *
-     * @return 菜单树（含仅展示的祖先节点；可配置节点带可分配档位）
-     */
-    @GetMapping("/assignableDataScopeMenus")
-    @Operation(summary = "可授权的数据权限菜单树", description = "已启用数据权限的菜单树及各节点可分配档位")
-    @RequestLog(value = "查询可授权的数据权限菜单树", logType = RequestLog.LogType.QUERY)
-    public R<List<DataScopeMenuTreeVo>> assignableDataScopeMenus() {
-        return R.success(roleDataScopeRelService.findAssignableDataScopeMenuTree());
+    @GetMapping("/dataScopeAuthData")
+    @Operation(summary = "数据权限授权聚合数据", description = "按应用分组返回可配置菜单树、可配置节点平铺及已授权列表")
+    @RequestLog(value = "查询数据权限授权聚合数据", logType = RequestLog.LogType.QUERY)
+    public R<RoleDataScopeAuthVo> dataScopeAuthData(@RequestParam Long roleId) {
+        return R.success(roleDataScopeRelService.dataScopeAuthData(roleId));
     }
 }

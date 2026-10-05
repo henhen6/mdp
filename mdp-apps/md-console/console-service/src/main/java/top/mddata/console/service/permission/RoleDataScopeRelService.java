@@ -4,6 +4,7 @@ import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.dto.permission.RoleDataScopeRelDto;
 import top.mddata.console.entity.permission.RoleDataScopeRel;
 import top.mddata.console.vo.permission.DataScopeMenuTreeVo;
+import top.mddata.console.vo.permission.RoleDataScopeAuthVo;
 import top.mddata.console.vo.permission.RoleDataScopeRelVo;
 
 import java.io.Serializable;
@@ -52,4 +53,14 @@ public interface RoleDataScopeRelService extends SuperService<RoleDataScopeRel> 
      * @param roleIdList 角色ID集合
      */
     void removeByRoleIds(Collection<? extends Serializable> roleIdList);
+
+    /**
+     * 数据权限授权页面聚合数据：按应用分组的可配置菜单树
+     * （角色已分配应用全量展示，无可配置菜单的应用为空组）、
+     * 可配置节点平铺列表及角色已授权列表
+     *
+     * @param roleId 角色id
+     * @return 聚合数据
+     */
+    RoleDataScopeAuthVo dataScopeAuthData(Long roleId);
 }

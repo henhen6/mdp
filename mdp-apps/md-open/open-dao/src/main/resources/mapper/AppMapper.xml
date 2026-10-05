@@ -117,4 +117,13 @@
             limit ${pageOffset}, ${pageSize}
         </where>
     </select>
+
+    <!-- 查询角色已分配的应用（供其他服务经门面聚合授权页面数据使用） -->
+    <select id="listByRoleId" resultType="top.mddata.open.entity.admin.App">
+        select
+        <include refid="Base_Column_List"/>
+        from mdo_app
+        where exists (select 1 from mdc_role_app_rel ar where ar.app_id = mdo_app.id and ar.role_id = #{roleId})
+        order by mdo_app.weight desc
+    </select>
 </mapper>

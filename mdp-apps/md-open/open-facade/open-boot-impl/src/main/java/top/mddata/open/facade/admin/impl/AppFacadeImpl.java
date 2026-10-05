@@ -34,6 +34,11 @@ public class AppFacadeImpl implements AppFacade {
     }
 
     @Override
+    public R<List<AppVo>> listByRoleId(Long roleId) {
+        return R.success(appService.listByRoleId(roleId));
+    }
+
+    @Override
     public R<AppVo> getAppByAppKey(String key) {
         return R.success(appService.getAppByAppKey(key));
     }
