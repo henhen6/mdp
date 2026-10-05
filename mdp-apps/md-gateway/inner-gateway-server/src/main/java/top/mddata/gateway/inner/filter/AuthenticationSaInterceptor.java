@@ -5,11 +5,8 @@ import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.exception.StopMatchException;
 import cn.dev33.satoken.reactor.context.SaReactorHolder;
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
-import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
-import cn.dev33.satoken.spring.pathmatch.SaPathPatternParserUtil;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +24,6 @@ import reactor.core.publisher.Mono;
 import top.mddata.base.base.R;
 import top.mddata.common.properties.IgnoreProperties;
 import top.mddata.gateway.inner.apiperm.GatewayApiPermSupport;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 注册 Sa-Token全局过滤器
@@ -66,29 +60,15 @@ public class AuthenticationSaInterceptor implements WebFilter, Ordered {
             SaReactorSyncHolder.setContext(exchange);
 
             // 执行全局过滤器
-            Map<String, Set<String>> anyUser = ignoreProperties.buildAnyUser();
             // 验证token 排除掉需要租户ID，但不需要登录
             SaRouter
                     .match("/**")    // 拦截的 path 列表，可以写多个 */
                     .notMatch(r -> {
                         String path = SaHolder.getRequest().getRequestPath();
                         String method = SaHolder.getRequest().getMethod();
-                        for (Map.Entry<String, Set<String>> map : anyUser.entrySet()) {
-                            String key = map.getKey();
-                            Set<String> value = map.getValue();
-                            if (StrUtil.equalsAny(key, method, SaHttpMethod.ALL.name())) {
-                                for (String ignore : value) {
-                                    if (StrUtil.equals(ignore, path)) {
-                                        return true;
-                                    }
-
-                                    if (SaPathPatternParserUtil.match(ignore, path)) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                        return false;
+                        // 白名单匹配统一走 isIgnoreUser（AntPathMatcher 通道）：
+                        // baseUri 默认名单含多段 ** 通配，sa-token 1.46 的 PathPatternParser 不支持
+                        return ignoreProperties.isIgnoreUser(method, path);
                     })
                     .check(r -> StpUtil.checkLogin());
 

@@ -1,11 +1,9 @@
-package top.mddata.common.configuration;
+package top.mddata.gateway.inner.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Repository;
-import top.mddata.base.db.properties.DatabaseProperties;
 
 import static top.mddata.base.constant.Constants.UTIL_PACKAGE;
 
@@ -18,7 +16,6 @@ import static top.mddata.base.constant.Constants.UTIL_PACKAGE;
  */
 @Configuration
 @Slf4j
-//@EnableConfigurationProperties({DatabaseProperties.class})
 @MapperScan(basePackages = UTIL_PACKAGE, annotationClass = Repository.class)
 public class MybatisFlexConfiguration {
 

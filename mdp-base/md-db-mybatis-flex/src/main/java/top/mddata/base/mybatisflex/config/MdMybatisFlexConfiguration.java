@@ -21,6 +21,7 @@ import com.mybatisflex.spring.boot.MybatisFlexProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.db.config.DbConfiguration;
@@ -36,10 +37,15 @@ import java.util.Properties;
 /**
  * Mybatis flex 常用重用拦截器
  *
+ * <p>作为 AutoConfiguration.imports 声明的自动配置，必须自包含激活其依赖的
+ * {@link DatabaseProperties}——该属性类此前仅在 md-common-config 激活，
+ * 不依赖 md-common-config 的服务（如 inner-gateway-server）启动时缺 bean 失败。</p>
+ *
  * @author henhen6
  * @since 2018/10/24
  */
 @Slf4j
+@EnableConfigurationProperties(DatabaseProperties.class)
 public class MdMybatisFlexConfiguration extends DbConfiguration implements MyBatisFlexCustomizer {
     protected final MybatisFlexProperties mybatisFlexProperties;
 

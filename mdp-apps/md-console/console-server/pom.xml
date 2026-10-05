@@ -28,6 +28,11 @@
         </dependency>
         <dependency>
             <groupId>top.mddata.apps</groupId>
+            <artifactId>console-cloud-impl</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.apps</groupId>
             <artifactId>workbench-cloud-impl</artifactId>
             <version>${revision}</version>
         </dependency>

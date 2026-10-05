@@ -18,7 +18,7 @@ import static top.mddata.base.constant.Constants.UTIL_PACKAGE;
  */
 @Configuration
 @Slf4j
-@EnableConfigurationProperties({DatabaseProperties.class})
+//@EnableConfigurationProperties({DatabaseProperties.class})
 @MapperScan(basePackages = UTIL_PACKAGE, annotationClass = Repository.class)
 public class MybatisFlexConfiguration {
 

@@ -69,7 +69,7 @@ public class GateController {
                     }
                 })
         );
-        map.put(application, "gateway");
+//        map.put(application, "gateway");
         return R.success(map);
     }
 
