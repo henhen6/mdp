@@ -55,6 +55,14 @@ public interface RoleDataScopeRelService extends SuperService<RoleDataScopeRel> 
     void removeByRoleIds(Collection<? extends Serializable> roleIdList);
 
     /**
+     * 按菜单删除数据权限授权（删除菜单时级联调用），
+     * 并按涉及的角色与菜单失效 RoleDataScope 缓存
+     *
+     * @param menuIdList 菜单ID集合
+     */
+    void removeByMenuIds(Collection<? extends Serializable> menuIdList);
+
+    /**
      * 数据权限授权页面聚合数据：按应用分组的可配置菜单树
      * （角色已分配应用全量展示，无可配置菜单的应用为空组）、
      * 可配置节点平铺列表及角色已授权列表

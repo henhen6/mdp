@@ -20,6 +20,7 @@ import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.BeanPlusUtil;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.permission.MenuDataScopeCacheKeyBuilder;
+import top.mddata.common.cache.console.permission.ResourceFieldUriMenuCacheKeyBuilder;
 import top.mddata.common.constant.console.AdminConstant;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.permission.MenuTypeEnum;
@@ -32,8 +33,11 @@ import top.mddata.console.entity.permission.RoleResourceRel;
 import top.mddata.console.mapper.permission.ResourceMenuMapper;
 import top.mddata.console.mapper.permission.RoleMapper;
 import top.mddata.console.service.permission.ResourceApiService;
+import top.mddata.console.service.permission.ResourceFieldService;
 import top.mddata.console.service.permission.ResourceMenuService;
+import top.mddata.console.mapper.permission.RoleResourceRelMapper;
 import top.mddata.console.service.permission.RoleDataScopeRelService;
+import top.mddata.console.service.permission.RoleResourceRelService;
 import top.mddata.console.vo.permission.ResourceMenuVo;
 import top.mddata.console.vo.permission.RouterMeta;
 
@@ -61,6 +65,9 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     private final RoleMapper roleMapper;
     private final RoleDataScopeRelService roleDataScopeRelService;
     private final ResourceApiService resourceApiService;
+    private final ResourceFieldService resourceFieldService;
+    private final RoleResourceRelService roleResourceRelService;
+    private final RoleResourceRelMapper roleResourceRelMapper;
 
     /**
      * 是否所有的子都是视图
@@ -339,7 +346,39 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
     @Override
     protected void updateAfter(Object updateDto, ResourceMenu entity) {
         super.updateAfter(updateDto, entity);
-        grantPermSetRolesIfEnabled(entity);
+        // PATCH 语义下 entity 只含提交字段，下游逻辑依赖完整实体（code/treePath/dataScopeState）
+        ResourceMenu full = getById(entity.getId());
+        grantPermSetRolesIfEnabled(full);
+        invalidateDownstreamPermCache(full);
+    }
+
+    /**
+     * 菜单更新（启用/禁用/调树）后失效下游权限缓存：
+     * 禁用父级影响整棵子树——按自身+子孙资源反查引用角色，
+     * 失效其下用户的接口放行集（含字段受限集），并全量失效 uri-menu 预解析映射。
+     * 菜单更新为低频操作，失效可接受。
+     */
+    private void invalidateDownstreamPermCache(ResourceMenu menu) {
+        if (menu == null || menu.getId() == null) {
+            return;
+        }
+        List<Long> menuIds = new ArrayList<>();
+        if (StrUtil.isNotEmpty(menu.getTreePath())) {
+            menuIds.addAll(list(QueryWrapper.create()
+                            .select(ResourceMenu::getId)
+                            .likeLeft(ResourceMenu::getTreePath, menu.getTreePath()))
+                    .stream().map(ResourceMenu::getId).toList());
+        }
+        menuIds.add(menu.getId());
+
+        List<Long> roleIds = roleResourceRelMapper.selectListByQuery(QueryWrapper.create()
+                        .select(RoleResourceRel::getRoleId)
+                        .where(RoleResourceRel::getResourceId).in(menuIds))
+                .stream().map(RoleResourceRel::getRoleId).distinct().toList();
+        if (CollUtil.isNotEmpty(roleIds)) {
+            roleResourceRelService.invalidateUserResourceApiCacheByRoleIds(roleIds);
+        }
+        cacheOps.del(ResourceFieldUriMenuCacheKeyBuilder.build());
     }
 
     /**
@@ -513,8 +552,10 @@ public class ResourceMenuServiceImpl extends SuperServiceImpl<ResourceMenuMapper
 //        删除他的子集
         sysMenus.forEach(sysMenu -> remove(QueryWrapper.create().likeLeft(ResourceMenu::getTreePath, sysMenu.getTreePath())));
         boolean result = super.removeByIds(idList);
-        // 级联清理接口权限配置，防悬挂关联（菜单删除是低频操作，批量处理可接受）
+        // 级联清理接口权限、字段规则、数据权限配置，防悬挂关联（菜单删除是低频操作，批量处理可接受）
         resourceApiService.deleteByResource(allMenuIds);
+        resourceFieldService.deleteByMenuIds(allMenuIds);
+        roleDataScopeRelService.removeByMenuIds(allMenuIds);
         return result;
     }
 

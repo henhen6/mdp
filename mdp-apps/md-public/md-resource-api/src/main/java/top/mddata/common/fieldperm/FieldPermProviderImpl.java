@@ -136,11 +136,17 @@ public class FieldPermProviderImpl implements FieldPermProvider {
 
         // 不能用 Collectors.toMap：根菜单 parent_id 为 NULL，其底层 HashMap.merge 遇 null value 抛 NPE
         Map<Long, Long> parentOf = new HashMap<>();
+        Set<Long> disabledMenuIds = new HashSet<>();
         Db.selectListByQuery(QueryWrapper.create()
-                        .select("id", "parent_id AS parentId")
+                        .select("id", "parent_id AS parentId", "state")
                         .from("mdc_resource_menu")
                         .where("deleted_at = 0"))
-                .forEach(r -> parentOf.put(r.getLong("id"), r.getLong("parentId")));
+                .forEach(r -> {
+                    parentOf.put(r.getLong("id"), r.getLong("parentId"));
+                    if (Boolean.FALSE.equals(r.getBoolean("state"))) {
+                        disabledMenuIds.add(r.getLong("id"));
+                    }
+                });
 
         Set<Long> fieldMenuIds = new HashSet<>(Db.selectListByQuery(QueryWrapper.create()
                         .select("DISTINCT menu_id AS menuId")
@@ -149,14 +155,15 @@ public class FieldPermProviderImpl implements FieldPermProvider {
                         .and("deleted_at = 0"))
                 .stream().map(r -> r.getLong("menuId")).toList());
 
-        return resolveUriMenu(apis, parentOf, fieldMenuIds);
+        return resolveUriMenu(apis, parentOf, fieldMenuIds, disabledMenuIds);
     }
 
-    /** 预解析（纯函数，便于单测）：URI+method → 沿上级链找到的最近字段规则菜单 */
-    static Map<String, Long> resolveUriMenu(List<ApiRow> apis, Map<Long, Long> parentOf, Set<Long> fieldMenuIds) {
+    /** 预解析（纯函数，便于单测）：URI+method → 沿上级链找到的最近字段规则菜单；自身或祖先禁用则不映射 */
+    static Map<String, Long> resolveUriMenu(List<ApiRow> apis, Map<Long, Long> parentOf, Set<Long> fieldMenuIds,
+                                            Set<Long> disabledMenuIds) {
         Map<String, Long> result = new HashMap<>();
         for (ApiRow api : apis) {
-            Long menuId = resolveMenu(api.resourceId(), parentOf, fieldMenuIds);
+            Long menuId = resolveMenu(api.resourceId(), parentOf, fieldMenuIds, disabledMenuIds);
             if (menuId != null) {
                 result.put(uriMenuKey(api.uri(), api.method()), menuId);
             }
@@ -165,11 +172,16 @@ public class FieldPermProviderImpl implements FieldPermProvider {
     }
 
     /** 从绑定资源（菜单或按钮）沿上级链找最近一个配置了启用字段规则的菜单 */
-    private static Long resolveMenu(Long resourceId, Map<Long, Long> parentOf, Set<Long> fieldMenuIds) {
+    private static Long resolveMenu(Long resourceId, Map<Long, Long> parentOf, Set<Long> fieldMenuIds,
+                                    Set<Long> disabledMenuIds) {
         // 防御脏数据 parent 成环
         Set<Long> seen = new HashSet<>();
         Long id = resourceId;
         while (id != null && seen.add(id)) {
+            // 菜单禁用（B1 读时过滤）：自身或祖先被禁用，字段规则整枝失效，启用后自动恢复
+            if (disabledMenuIds.contains(id)) {
+                return null;
+            }
             if (fieldMenuIds.contains(id)) {
                 return id;
             }

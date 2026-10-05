@@ -11,6 +11,7 @@ import top.mddata.console.entity.permission.RoleDataScopeRel;
 import top.mddata.console.mapper.permission.ResourceMenuMapper;
 import top.mddata.console.mapper.permission.RoleDataScopeRelMapper;
 import top.mddata.console.service.permission.RoleService;
+import top.mddata.open.facade.admin.AppFacade;
 
 import java.util.List;
 
@@ -41,7 +42,8 @@ class RoleDataScopeRelServiceImplRemoveTest {
     void setUp() {
         roleDataScopeRelMapper = mock(RoleDataScopeRelMapper.class);
         cacheOps = mock(CacheOps.class);
-        service = new RoleDataScopeRelServiceImpl(mock(RoleService.class), mock(ResourceMenuMapper.class));
+        service = new RoleDataScopeRelServiceImpl(mock(RoleService.class), mock(ResourceMenuMapper.class),
+                mock(AppFacade.class));
         ReflectionTestUtils.setField(service, "mapper", roleDataScopeRelMapper);
         ReflectionTestUtils.setField(service, "cacheOps", cacheOps);
     }
@@ -82,6 +84,29 @@ class RoleDataScopeRelServiceImplRemoveTest {
     @Test
     void 角色集合为空时短路() {
         service.removeByRoleIds(List.of());
+
+        verify(roleDataScopeRelMapper, never()).selectListByQuery(any(QueryWrapper.class));
+        verify(roleDataScopeRelMapper, never()).deleteByQuery(any(QueryWrapper.class));
+    }
+
+    @Test
+    void 按菜单删除授权并失效缓存() {
+        when(roleDataScopeRelMapper.selectListByQuery(any(QueryWrapper.class)))
+                .thenReturn(List.of(rel()));
+
+        service.removeByMenuIds(List.of(MENU_ID));
+
+        verify(roleDataScopeRelMapper).deleteByQuery(any(QueryWrapper.class));
+        @SuppressWarnings("unchecked")
+        org.mockito.ArgumentCaptor<List<CacheKey>> captor = org.mockito.ArgumentCaptor.forClass(List.class);
+        verify(cacheOps).del(captor.capture());
+        assertEquals(List.of(RoleDataScopeCacheKeyBuilder.build(ROLE_ID, MENU_ID).getKey()),
+                captor.getValue().stream().map(CacheKey::getKey).toList());
+    }
+
+    @Test
+    void 按菜单删除_菜单集合为空时短路() {
+        service.removeByMenuIds(List.of());
 
         verify(roleDataScopeRelMapper, never()).selectListByQuery(any(QueryWrapper.class));
         verify(roleDataScopeRelMapper, never()).deleteByQuery(any(QueryWrapper.class));

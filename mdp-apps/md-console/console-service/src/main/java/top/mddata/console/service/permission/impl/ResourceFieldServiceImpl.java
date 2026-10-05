@@ -9,12 +9,14 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.fieldperm.engine.BuiltinMasker;
 import top.mddata.base.fieldperm.model.FieldRule;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.cache.console.permission.ResourceFieldUriMenuCacheKeyBuilder;
 import top.mddata.console.entity.permission.ResourceField;
+import top.mddata.console.entity.permission.RoleFieldRel;
 import top.mddata.console.mapper.permission.ResourceFieldMapper;
 import top.mddata.console.service.permission.ResourceFieldService;
 import top.mddata.console.service.permission.RoleFieldRelService;
@@ -117,6 +119,28 @@ public class ResourceFieldServiceImpl extends SuperServiceImpl<ResourceFieldMapp
                 .and(ResourceField::getProperty).eq(entity.getProperty())
                 .and(ResourceField::getId).ne(entity.getId()));
         ArgumentAssert.isTrue(count == 0, "该菜单下已存在字段【{}】的规则", entity.getProperty());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean deleteByMenuIds(Collection<? extends Serializable> menuIdList) {
+        if (CollUtil.isEmpty(menuIdList)) {
+            return false;
+        }
+        List<Long> fieldIds = mapper.selectListByQuery(QueryWrapper.create()
+                        .select(ResourceField::getId)
+                        .where(ResourceField::getMenuId).in(menuIdList))
+                .stream().map(ResourceField::getId).toList();
+        if (fieldIds.isEmpty()) {
+            return false;
+        }
+        // 先删字段规则与角色字段关系，再统一失效缓存（uri-menu 预解析 + 相关用户受限集）
+        mapper.deleteByQuery(QueryWrapper.create()
+                .where(ResourceField::getMenuId).in(menuIdList));
+        roleFieldRelService.remove(QueryWrapper.create()
+                .where(RoleFieldRel::getFieldId).in(fieldIds));
+        invalidate(fieldIds);
+        return true;
     }
 
     /**

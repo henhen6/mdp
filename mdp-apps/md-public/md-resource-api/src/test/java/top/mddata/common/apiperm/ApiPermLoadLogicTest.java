@@ -47,6 +47,37 @@ class ApiPermLoadLogicTest {
     }
 
     @Test
+    void 禁用分支闭包_禁用中间菜单含全部后代() {
+        // 树：1 - 2(禁用) - 3 - 4；5(启用)
+        List<ApiPermProviderImpl.MenuStateRow> menus = List.of(
+                new ApiPermProviderImpl.MenuStateRow(1L, null, true),
+                new ApiPermProviderImpl.MenuStateRow(2L, 1L, false),
+                new ApiPermProviderImpl.MenuStateRow(3L, 2L, true),
+                new ApiPermProviderImpl.MenuStateRow(4L, 3L, true),
+                new ApiPermProviderImpl.MenuStateRow(5L, null, true));
+
+        assertEquals(Set.of(2L, 3L, 4L), ApiPermProviderImpl.resolveDisabledBranchIds(menus));
+    }
+
+    @Test
+    void 禁用分支闭包_无禁用与null状态视为启用() {
+        List<ApiPermProviderImpl.MenuStateRow> menus = List.of(
+                new ApiPermProviderImpl.MenuStateRow(1L, null, true),
+                new ApiPermProviderImpl.MenuStateRow(2L, 1L, null));
+
+        assertTrue(ApiPermProviderImpl.resolveDisabledBranchIds(menus).isEmpty());
+    }
+
+    @Test
+    void 禁用分支闭包_父子互指脏数据不死循环() {
+        List<ApiPermProviderImpl.MenuStateRow> menus = List.of(
+                new ApiPermProviderImpl.MenuStateRow(1L, 2L, false),
+                new ApiPermProviderImpl.MenuStateRow(2L, 1L, true));
+
+        assertEquals(Set.of(1L, 2L), ApiPermProviderImpl.resolveDisabledBranchIds(menus));
+    }
+
+    @Test
     void testToSql() {
         QueryWrapper wrapper = QueryWrapper.create()
                 .select("r.id AS roleId", "r.code AS code")

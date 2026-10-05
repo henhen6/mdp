@@ -48,6 +48,8 @@ public class DataScopeProviderImpl implements DataScopeProvider {
                     .from("mdc_resource_menu")
                     .where("code = ?", menuCode)
                     .and("data_scope_state = ?", Boolean.TRUE)
+                    // 菜单禁用时其数据权限配置一并失效（B1 读时过滤），启用后自动恢复
+                    .and("state = ?", Boolean.TRUE)
                     .and("deleted_at = 0"));
             return row == null ? null : row.getLong("id");
         });

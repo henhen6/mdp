@@ -230,6 +230,26 @@ public class RoleDataScopeRelServiceImpl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByMenuIds(Collection<? extends Serializable> menuIdList) {
+        if (CollUtil.isEmpty(menuIdList)) {
+            return;
+        }
+        List<RoleDataScopeRel> relList = mapper.selectListByQuery(QueryWrapper.create()
+                .select(RoleDataScopeRel::getRoleId, RoleDataScopeRel::getMenuId)
+                .where(RoleDataScopeRel::getMenuId).in(menuIdList));
+        if (CollUtil.isEmpty(relList)) {
+            return;
+        }
+        mapper.deleteByQuery(QueryWrapper.create()
+                .where(RoleDataScopeRel::getMenuId).in(menuIdList));
+        cacheOps.del(relList.stream()
+                .map(rel -> RoleDataScopeCacheKeyBuilder.build(rel.getRoleId(), rel.getMenuId()))
+                .toList());
+    }
+
+
+    @Override
     @Transactional(readOnly = true)
     public List<DataScopeMenuTreeVo> findAssignableDataScopeMenuTree() {
         List<ResourceMenu> enabledMenus = resourceMenuMapper.selectListByQuery(QueryWrapper.create()

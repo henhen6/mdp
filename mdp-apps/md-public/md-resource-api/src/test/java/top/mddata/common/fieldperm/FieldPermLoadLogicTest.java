@@ -61,7 +61,7 @@ class FieldPermLoadLogicTest {
                 new ApiRow("/organization/user/getById", "GET", 101L),
                 new ApiRow("/organization/role/page", "POST", 200L));
 
-        Map<String, Long> result = FieldPermProviderImpl.resolveUriMenu(apis, parentOf, fieldMenuIds);
+        Map<String, Long> result = FieldPermProviderImpl.resolveUriMenu(apis, parentOf, fieldMenuIds, Set.of());
 
         assertEquals(100L, result.get("POST /organization/user/page"));
         // getById 挂在按钮上，沿上级链解析到 100
@@ -77,12 +77,12 @@ class FieldPermLoadLogicTest {
         parentOf.put(100L, null);
         parentOf.put(101L, 100L);
         Map<String, Long> result = FieldPermProviderImpl.resolveUriMenu(
-                List.of(new ApiRow("/a/b", "GET", 101L)), parentOf, Set.of(100L));
+                List.of(new ApiRow("/a/b", "GET", 101L)), parentOf, Set.of(100L), Set.of());
         assertEquals(100L, result.get("GET /a/b"));
 
         // 上级链无任何字段规则菜单时返回空
         Map<String, Long> empty = FieldPermProviderImpl.resolveUriMenu(
-                List.of(new ApiRow("/a/b", "GET", 101L)), parentOf, Set.of(999L));
+                List.of(new ApiRow("/a/b", "GET", 101L)), parentOf, Set.of(999L), Set.of());
         assertTrue(empty.isEmpty());
     }
 
@@ -91,7 +91,26 @@ class FieldPermLoadLogicTest {
         // 脏数据：1 ↔ 2 互为父级
         Map<Long, Long> parentOf = Map.of(1L, 2L, 2L, 1L);
         Map<String, Long> result = FieldPermProviderImpl.resolveUriMenu(
-                List.of(new ApiRow("/a/b", "GET", 1L)), parentOf, Set.of(99L));
+                List.of(new ApiRow("/a/b", "GET", 1L)), parentOf, Set.of(99L), Set.of());
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void uri菜单预解析_自身或祖先禁用则不映射() {
+        // 100(有字段规则,禁用) - 101(按钮)；200(启用) - 201(按钮)，202(禁用) - 203(按钮)
+        Map<Long, Long> parentOf = Map.of(101L, 100L, 201L, 200L, 203L, 202L, 202L, 200L);
+        Map<String, Long> result = FieldPermProviderImpl.resolveUriMenu(
+                List.of(
+                        new ApiRow("/a/disabled", "GET", 101L),
+                        new ApiRow("/a/enabled", "GET", 201L),
+                        new ApiRow("/a/disabledParent", "GET", 203L)),
+                parentOf, Set.of(100L, 200L), Set.of(100L, 202L));
+
+        // 字段规则菜单自身被禁用 → 不映射
+        assertNull(result.get("GET /a/disabled"));
+        // 按钮的祖先被禁用 → 不映射
+        assertNull(result.get("GET /a/disabledParent"));
+        // 全链启用 → 正常映射
+        assertEquals(200L, result.get("GET /a/enabled"));
     }
 }

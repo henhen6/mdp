@@ -10,8 +10,10 @@ import top.mddata.common.cache.console.permission.UserFieldPermCacheKeyBuilder;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.mapper.UserRoleRelMapper;
 import top.mddata.console.mapper.permission.ResourceFieldMapper;
+import top.mddata.console.mapper.permission.ResourceMenuMapper;
 import top.mddata.console.mapper.permission.RoleFieldRelMapper;
 import top.mddata.console.service.permission.RoleService;
+import top.mddata.open.facade.admin.AppFacade;
 
 import java.util.List;
 
@@ -44,7 +46,8 @@ class RoleFieldRelServiceImplRemoveTest {
         userRoleRelMapper = mock(UserRoleRelMapper.class);
         cacheOps = mock(CacheOps.class);
         service = new RoleFieldRelServiceImpl(userRoleRelMapper,
-                mock(ResourceFieldMapper.class), mock(RoleService.class));
+                mock(ResourceFieldMapper.class), mock(ResourceMenuMapper.class), mock(RoleService.class),
+                mock(AppFacade.class));
         ReflectionTestUtils.setField(service, "mapper", roleFieldRelMapper);
         ReflectionTestUtils.setField(service, "cacheOps", cacheOps);
     }

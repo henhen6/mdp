@@ -16,8 +16,13 @@ import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder
 import top.mddata.common.constant.RoleCode;
 import top.mddata.common.properties.IgnoreProperties;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -127,8 +132,16 @@ public class ApiPermProviderImpl implements ApiPermProvider {
         if (relRows.isEmpty()) {
             return List.of();
         }
-        String ids = relRows.stream().map(r -> String.valueOf(r.getLong("resourceId")))
-                .collect(Collectors.joining(","));
+        // 菜单禁用（B1 读时过滤）：自身或祖先被禁用的资源，其接口授权能力整枝失效，启用后自动恢复
+        Set<Long> disabledBranchIds = resolveDisabledBranchIds(loadMenuStates());
+        List<Long> resourceIds = relRows.stream()
+                .map(r -> r.getLong("resourceId"))
+                .filter(id -> !disabledBranchIds.contains(id))
+                .toList();
+        if (resourceIds.isEmpty()) {
+            return List.of();
+        }
+        String ids = resourceIds.stream().map(String::valueOf).collect(Collectors.joining(","));
         List<Row> apiRows = Db.selectListByQuery(QueryWrapper.create()
                 .select("uri", "request_method AS requestMethod")
                 .from("mdc_resource_api")
@@ -137,6 +150,52 @@ public class ApiPermProviderImpl implements ApiPermProvider {
                 .map(r -> new ApiPattern(r.getString("uri"), r.getString("requestMethod")))
                 .distinct()
                 .toList();
+    }
+
+    /**
+     * 禁用分支闭包（纯函数，便于单测）：禁用菜单自身 + 沿 parent 链向下的全部后代。
+     * state 为 null 的历史数据视为启用；父子互指的脏数据不会死循环。
+     */
+    static Set<Long> resolveDisabledBranchIds(List<MenuStateRow> menus) {
+        Map<Long, List<Long>> childrenOf = new HashMap<>();
+        for (MenuStateRow menu : menus) {
+            childrenOf.computeIfAbsent(menu.parentId(), k -> new ArrayList<>()).add(menu.id());
+        }
+        Set<Long> disabled = new HashSet<>();
+        Deque<Long> queue = new ArrayDeque<>();
+        for (MenuStateRow menu : menus) {
+            if (Boolean.FALSE.equals(menu.state())) {
+                queue.add(menu.id());
+            }
+        }
+        while (!queue.isEmpty()) {
+            Long id = queue.poll();
+            if (!disabled.add(id)) {
+                continue;
+            }
+            queue.addAll(childrenOf.getOrDefault(id, List.of()));
+        }
+        return disabled;
+    }
+
+    private List<MenuStateRow> loadMenuStates() {
+        return Db.selectListByQuery(QueryWrapper.create()
+                        .select("id", "parent_id AS parentId", "state")
+                        .from("mdc_resource_menu")
+                        .where("deleted_at = 0"))
+                .stream()
+                .map(r -> new MenuStateRow(r.getLong("id"), r.getLong("parentId"), r.getBoolean("state")))
+                .toList();
+    }
+
+    /**
+     * 菜单状态行（仅供 resolveDisabledBranchIds 使用）。
+     *
+     * @param id       菜单ID
+     * @param parentId 上级菜单ID
+     * @param state    启用状态（null 视为启用）
+     */
+    public record MenuStateRow(Long id, Long parentId, Boolean state) {
     }
 
     /**
