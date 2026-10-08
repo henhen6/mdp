@@ -118,23 +118,18 @@ mdp:
     queueCapacity: 10000
     keepAliveSeconds: 300
     threadNamePrefix: 'mdp-async-executor-'
-  swagger:
+  nextdoc4j:
+    title: 主数据平台
+    description: 主数据平台内部接口文档
     license: Powered By henhen6
-    licenseUrl: https://mddata.top
-    termsOfServiceUrl: https://mddata.top
+    licenseUrl: http://mddata.top
+    termsOfServiceUrl: http://mddata.top
     version: '@project.version@'
     contact: # 联系人信息
-      url: https://mddata.top
+      url: http://mddata.top
       name: henhen6
       email: henhen6@qq.com
-    global-operation-parameters: # 全局参数
-      - name: Token
-        description: 用户信息
-        modelRef: String
-        parameterType: header
-        required: true
-        # 默认值只是方便本地开发时，少填参数，生产环境请禁用swagger或者禁用默认参数
-        defaultValue: "test"
+
   file:
     delFile: false
     suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db,mp3,mp4
@@ -270,18 +265,30 @@ management:
     health:
       show-details: when_authorized  # 仅认证通过后显示详细健康信息
 
-# knife4j 文档通用配置 详情看: Knife4jProperties
-knife4j:
-  enable: true
-  setting:
-    enableReloadCacheParameter: true
-    enableVersion: true
-    enableDynamicParameter: true
-    enableFooter: false
-    enableFooterCustom: true
-    footerCustomContent: Apache License 2.0 | Copyright  2024 [mddata](https://mddata.top)
+# NextDoc4j 在线文档总开关
+nextdoc4j:
+  enabled: true
+  plugin:
+    security:
+      # 启用认证展示与调试自动注入
+      enabled: true
+  extension:
+    enabled: true
+    brand:
+      # 2. 自定义系统标题（覆盖 SpringDoc 默认标题）
+      title: "MDP内部 API 文档"
+      # 3. 自定义页脚（支持 Markdown 超链接与应用上下文动态变量）
+      footer-text: 'Copyright © 2026 [MDP](http://mddata.top) ⋅ [${spring.application.name}]'
 
 springdoc:
+  components:
+    security-schemes:
+      Token:
+        type: HTTP
+        in: HEADER
+        name: Token
+        scheme: ''
+        description: "请输入 Token，格式： {token}"
   # 默认是false，需要设置为true
   default-flat-param-object: true
   swagger-ui:

@@ -29,6 +29,8 @@
         <seata.version>2.0.0</seata.version>
         <nacos.version>3.2.4</nacos.version>
         <dubbo.version>3.3.6</dubbo.version>
+        <metrics-core.version>4.2.40</metrics-core.version>
+        <snappy-java.version>1.1.10.11</snappy-java.version>
         <sentinel.version>1.8.6</sentinel.version>
 
         <spring-boot-admin.version>3.5.11</spring-boot-admin.version>
@@ -41,9 +43,9 @@
         <powerjob.worker.version>5.1.2</powerjob.worker.version>
 
         <!-- 文档相关 -->
-        <springdoc.version>2.8.5</springdoc.version>
-        <knife4j-swagger-models-v3.version>2.2.28</knife4j-swagger-models-v3.version>
-        <knife4j.version>4.5.0</knife4j.version>
+        <springdoc.version>2.8.17</springdoc.version>
+        <swagger-core.version>2.2.47</swagger-core.version>
+        <nextdoc4j.version>1.4.1</nextdoc4j.version>
         <smart-doc.version>3.1.2</smart-doc.version>
         <torna-sdk.version>1.0.16</torna-sdk.version>
 
@@ -183,8 +185,15 @@
             <!-- 文档 -->
             <dependency>
                 <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi</artifactId>
+                <artifactId>springdoc-openapi-bom</artifactId>
                 <version>${springdoc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>top.nextdoc4j</groupId>
+                <artifactId>nextdoc4j-bom</artifactId>
+                <version>${nextdoc4j.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -204,21 +213,42 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-dependencies</artifactId>
-                <version>${knife4j.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
-                <artifactId>dubbo-bom</artifactId>
+                <artifactId>dubbo-spring-boot-3-autoconfigure</artifactId>
                 <version>${dubbo.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-zookeeper-curator5-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${metrics-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>${snappy-java.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba.nacos</groupId>
                 <artifactId>nacos-client</artifactId>
@@ -242,16 +272,21 @@
                 <version>${powerjob.worker.version}</version>
             </dependency>
 
-            <!-- Swagger文档 -->
+            <!-- Swagger文档（springdoc-openapi-bom 不托管 swagger-core 三件套，需显式 pin） -->
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-core-jakarta</artifactId>
+                <version>${swagger-core.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations-jakarta</artifactId>
-                <version>${knife4j-swagger-models-v3.version}</version>
+                <version>${swagger-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-models-jakarta</artifactId>
-                <version>${knife4j-swagger-models-v3.version}</version>
+                <version>${swagger-core.version}</version>
             </dependency>
             <!-- 文档生成 -->
             <dependency>

@@ -20,7 +20,7 @@ public class LoginDto {
      * refresh_token: 刷新token
      * captcha: 验证码
      */
-    @Schema(description = "授权类型", example = "CAPTCHA", allowableValues = "CAPTCHA,USERNAME,EMAIL,PHONE")
+    @Schema(description = "授权类型", example = "CAPTCHA", allowableValues = {"CAPTCHA", "USERNAME", "PHONE", "EMAIL", "TICKET", "OAUTH2"})
     @NotNull(message = "请选择正确的登录方式")
     private AuthTypeEnum authType;
 

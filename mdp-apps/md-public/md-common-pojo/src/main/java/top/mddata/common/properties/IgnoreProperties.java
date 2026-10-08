@@ -72,6 +72,7 @@ public class IgnoreProperties {
             "/**/api-docs-ext/**",
             "/**/swagger-resources/**",
             "/**/webjars/**",
+            "/**/nextdoc/**",
             "/actuator/**",
             "/**/static/**",
             "/**/public/**",

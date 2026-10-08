@@ -117,8 +117,18 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-ui</artifactId>
+            <groupId>top.nextdoc4j</groupId>
+            <artifactId>nextdoc4j-gateway-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- NextDoc4j 要求宿主自行引入 springdoc UI（WebFlux 栈） -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.nextdoc4j</groupId>
+            <artifactId>nextdoc4j-plugin-security-schemes</artifactId>
         </dependency>
 
         <dependency>

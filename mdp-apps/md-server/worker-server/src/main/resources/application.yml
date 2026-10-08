@@ -116,7 +116,7 @@ mdp:
     queueCapacity: 10000
     keepAliveSeconds: 300
     threadNamePrefix: 'mdp-async-executor-'
-  swagger:
+  nextdoc4j:
     license: Powered By henhen6
     licenseUrl: https://mddata.top
     termsOfServiceUrl: https://mddata.top
@@ -125,14 +125,6 @@ mdp:
       url: https://mddata.top
       name: henhen6
       email: henhen6@qq.com
-    global-operation-parameters: # 全局参数
-      - name: Token
-        description: 用户信息
-        modelRef: String
-        parameterType: header
-        required: true
-        # 默认值只是方便本地开发时，少填参数，生产环境请禁用swagger或者禁用默认参数
-        defaultValue: "test"
   file:
     delFile: false
     suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db
@@ -267,16 +259,9 @@ management:
     health:
       show-details: when_authorized  # 仅认证通过后显示详细健康信息
 
-# knife4j 文档通用配置 详情看: Knife4jProperties
-knife4j:
-  enable: true
-  setting:
-    enableReloadCacheParameter: true
-    enableVersion: true
-    enableDynamicParameter: true
-    enableFooter: false
-    enableFooterCustom: true
-    footerCustomContent: Apache License 2.0 | Copyright  2024 [mddata](https://mddata.top)
+# NextDoc4j 在线文档总开关
+nextdoc4j:
+  enabled: true
 
 springdoc:
   # 默认是false，需要设置为true
