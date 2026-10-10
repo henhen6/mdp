@@ -18,7 +18,7 @@
     <url>https://github.com/henhen6/mdp</url>
 
     <properties>
-        <revision>1.6.0-SNAPSHOT</revision>
+        <revision>1.7.0-SNAPSHOT</revision>
         <project-prefix>md</project-prefix>
 
         <spring-cloud-dependencies.version>2025.0.3</spring-cloud-dependencies.version>
@@ -51,6 +51,8 @@
 
         <!-- 认证、安全、登录 -->
         <sa-token.version>1.46.0</sa-token.version>
+        <!-- 微信小程序SDK -->
+        <wx-java.version>4.7.5.B</wx-java.version>
         <!-- 在线接口UI -->
         <magic-api.version>2.2.2</magic-api.version>
         <!-- 短信 -->
@@ -212,6 +214,11 @@
                 <version>${sa-token.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>wx-java-miniapp-spring-boot-starter</artifactId>
+                <version>${wx-java.version}</version>
             </dependency>
 
             <dependency>

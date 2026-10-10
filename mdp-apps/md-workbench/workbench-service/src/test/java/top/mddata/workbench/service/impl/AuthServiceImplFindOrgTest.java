@@ -9,6 +9,7 @@ import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.facade.message.MsgFacade;
 import top.mddata.console.facade.organization.UserFacade;
 import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.WxMaAuthService;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ class AuthServiceImplFindOrgTest {
     void setUp() {
         ssoUserService = mock(SsoUserService.class);
         authService = new AuthServiceImpl(mock(SystemProperties.class), mock(cn.dev33.satoken.config.SaTokenConfig.class),
-                mock(CacheOps.class), ssoUserService, mock(UserFacade.class), mock(MsgFacade.class), Map.of());
+                mock(CacheOps.class), ssoUserService, mock(UserFacade.class), mock(MsgFacade.class), mock(WxMaAuthService.class), Map.of());
     }
 
     private Org company(Long id, String treePath) {

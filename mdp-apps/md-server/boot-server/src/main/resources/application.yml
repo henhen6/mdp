@@ -431,3 +431,11 @@ logging:
 
 dubbo:
   enabled: false
+# 微信小程序（mdp-app 移动端一键登录）
+wx:
+  miniapp:
+    appid: wxbf637d8ff10dfa67
+    secret: 123
+    config-storage:
+      # access_token 存储方式：单机内存；集群部署时可改为 redistemplate
+      type: memory

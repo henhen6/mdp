@@ -7,6 +7,7 @@ import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.dto.RegisterByUsernameDto;
+import top.mddata.workbench.dto.WxMaLoginDto;
 import top.mddata.workbench.vo.LoginVo;
 
 /**
@@ -34,6 +35,14 @@ public interface AuthService {
      * @return 本次登录生成的 token
      */
     String loginByTicket(Object loginId, Long remainTokenTimeout, String deviceId);
+
+    /**
+     * 微信小程序一键登录：查找或注册用户后签发 token
+     *
+     * @param login 微信登录参数（loginCode + phoneCode）
+     * @return 用户信息
+     */
+    R<LoginVo> loginByWxMa(WxMaLoginDto login);
 
     /**
      * 根据邮箱注册
