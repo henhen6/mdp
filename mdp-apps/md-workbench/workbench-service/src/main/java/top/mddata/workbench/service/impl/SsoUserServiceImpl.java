@@ -112,10 +112,14 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         }
 
         // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
-        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
-                .objectId(entity.getAvatar())
-                .objectType(FileObjectType.Console.USER_AVATAR)
-                .build().setKeepFileIds(dto.getAvatarFileId()));
+        // 仅在显式传了头像文件id时才更新文件关联：keepFileIds 为空会删除原头像，
+        // 不传头像字段（编辑资料不改头像）必须跳过，避免误删已有头像
+        if (dto.getAvatarFileId() != null) {
+            fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                    .objectId(entity.getAvatar())
+                    .objectType(FileObjectType.Console.USER_AVATAR)
+                    .build().setKeepFileIds(dto.getAvatarFileId()));
+        }
 
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Console.USER_EDIT)
