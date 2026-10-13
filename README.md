@@ -1,6 +1,6 @@
 # 主数据平台
 
-[![Language](https://img.shields.io/badge/语言-Java17%20%7C%20SpringCloud%20%7C%20Vue3%20-red?style=flat-square&color=42b883)](https://github.com/henhen6/mdp)
+[![Language](https://img.shields.io/badge/语言-Java17%20%20%7C%20Vue3%20-red?style=flat-square&color=42b883)](https://github.com/henhen6/mdp)
 [![License](https://img.shields.io/github/license/henhen6/mdp?color=42b883&style=flat-square)](https://github.com/henhen6/mdp/blob/master/LICENSE)
 [![Author](https://img.shields.io/badge/作者-很很-orange.svg)](https://github.com/henhen6)
 [![Star](https://img.shields.io/github/stars/henhen6/mdp?color=42b883&logo=github&style=flat-square)](https://github.com/henhen6/mdp/stargazers)
