@@ -12,8 +12,8 @@
 
 ## 常用链接
 
-- 官网： http://mddata.top/
-- 文档： http://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
+- 官网： https://mddata.top/
+- 文档： https://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
 - 前端代码： https://gitee.com/henhen6/mdp-web-vben
 
 ## 介绍
@@ -57,13 +57,13 @@
 
 | 应用<br/>（子系统）                   | 后端项目名            | 前端项目名    | 备注                             |
 |--------------------------------| --------------------- | ------------- |--------------------------------|
-| [工作台](http://workbench.mddata.top) | md-workbench，简称mdw | web-workbench | 可以理解为用户中心、用户的统一门户。通常提供给所有用户使用。 |
-| [控制台](http://console.mddata.top) | md-console，简称mdc   | web-console   | 可以理解为后台管理项目，通常提供给管理员使用。        |
-| [开发者平台](http://open.mddata.top) | md-open，简称mdo      | web-open      | 可以理解为开发者中心，通常提供给第三方开发者接入应用使用。  |
+| [工作台](https://workbench.mddata.top) | md-workbench，简称mdw | web-workbench | 可以理解为用户中心、用户的统一门户。通常提供给所有用户使用。 |
+| [控制台](https://console.mddata.top) | md-console，简称mdc   | web-console   | 可以理解为后台管理项目，通常提供给管理员使用。        |
+| [开发者平台](https://open.mddata.top) | md-open，简称mdo      | web-open      | 可以理解为开发者中心，通常提供给第三方开发者接入应用使用。  |
 
-- 工作台：http://workbench.mddata.top
-- 控制台：http://console.mddata.top
-- 开发者平台：http://open.mddata.top
+- 工作台：https://workbench.mddata.top
+- 控制台：https://console.mddata.top
+- 开发者平台：https://open.mddata.top
 - 演示账号：
 
     | 账号                                      | 密码                                           | 备注                                           |

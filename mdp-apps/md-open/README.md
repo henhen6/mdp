@@ -9,7 +9,7 @@
 | format      | String | 否  | 40   | 返回结果格式,JSON/XML                                       | JSON                         |    |
 | charset     | String | 是  | 10   | 请求使用的编码格式，固定填utf8                                     | utf8                         |    |
 | sign_type   | String | 是  | 10   | 生成签名字符串所使用的签名算法类型,固定填:RSA2                            | RSA2                         |    |
-| sign        | String | 是  | 344  | 请求参数的签名，详见 [签名算法](http://open.mddata.top/#/doc/sign)  |                              |    |
+| sign        | String | 是  | 344  | 请求参数的签名，详见 [签名算法](https://open.mddata.top/#/doc/sign)  |                              |    |
 | timestamp   | String | 是  | 19   | 发送请求的时间，格式"yyyy-MM-dd HH:mm:ss"                       | 2014-07-24 03:07:50          |    |
 | method      | String | 是  | 128  | 接口名称 / 事件类型                                           | shop.order.create / user:add |    |
 | version     | String | 否  | 3    | 接口版本                                                  | 1.0                          |    |

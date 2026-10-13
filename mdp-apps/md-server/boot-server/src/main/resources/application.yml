@@ -105,7 +105,7 @@ mdp:
   msg:
     param: # 消息模板中读取的全局参数
       appName: '主数据平台'
-      homeWebsiteUrl: 'http://mddata.top'
+      homeWebsiteUrl: 'https://mddata.top'
     sms: # 短信验证码配置
       length: 6
       type: number
@@ -122,11 +122,11 @@ mdp:
     title: 主数据平台
     description: 主数据平台内部接口文档
     license: Powered By henhen6
-    licenseUrl: http://mddata.top
-    termsOfServiceUrl: http://mddata.top
+    licenseUrl: https://mddata.top
+    termsOfServiceUrl: https://mddata.top
     version: '@project.version@'
     contact: # 联系人信息
-      url: http://mddata.top
+      url: https://mddata.top
       name: henhen6
       email: henhen6@qq.com
 
@@ -278,7 +278,7 @@ nextdoc4j:
       # 2. 自定义系统标题（覆盖 SpringDoc 默认标题）
       title: "MDP内部 API 文档"
       # 3. 自定义页脚（支持 Markdown 超链接与应用上下文动态变量）
-      footer-text: 'Copyright © 2026 [MDP](http://mddata.top) ⋅ [${spring.application.name}]'
+      footer-text: 'Copyright © 2026 [MDP](https://mddata.top) ⋅ [${spring.application.name}]'
 
 springdoc:
   components:

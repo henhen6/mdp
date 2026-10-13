@@ -103,7 +103,7 @@ mdp:
   msg:
     param: # 消息模板中读取的全局参数
       appName: '主数据平台'
-      homeWebsiteUrl: 'http://mddata.top'
+      homeWebsiteUrl: 'https://mddata.top'
     sms: # 短信验证码配置
       length: 6
       type: number
