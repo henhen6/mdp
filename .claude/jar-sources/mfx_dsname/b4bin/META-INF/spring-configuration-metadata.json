@@ -1,0 +1,451 @@
+{
+  "groups": [
+    {
+      "name": "mybatis-flex",
+      "type": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.admin-config",
+      "type": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$AdminConfig",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "sourceMethod": "getAdminConfig()"
+    },
+    {
+      "name": "mybatis-flex.configuration",
+      "type": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "sourceMethod": "getConfiguration()"
+    },
+    {
+      "name": "mybatis-flex.global-config",
+      "type": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "sourceMethod": "getGlobalConfig()"
+    },
+    {
+      "name": "mybatis-flex.global-config.deleted-value-of-logic-delete",
+      "type": "java.lang.Object",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "sourceMethod": "getDeletedValueOfLogicDelete()"
+    },
+    {
+      "name": "mybatis-flex.global-config.key-config",
+      "type": "com.mybatisflex.core.FlexGlobalConfig$KeyConfig",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "sourceMethod": "getKeyConfig()"
+    },
+    {
+      "name": "mybatis-flex.global-config.normal-value-of-logic-delete",
+      "type": "java.lang.Object",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "sourceMethod": "getNormalValueOfLogicDelete()"
+    },
+    {
+      "name": "mybatis-flex.seata-config",
+      "type": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$SeataConfig",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "sourceMethod": "getSeataConfig()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "mybatis-flex.admin-config.enable",
+      "type": "java.lang.Boolean",
+      "description": "启用服务。",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$AdminConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "mybatis-flex.admin-config.endpoint",
+      "type": "java.lang.String",
+      "description": "连接端点。",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$AdminConfig"
+    },
+    {
+      "name": "mybatis-flex.admin-config.secret-key",
+      "type": "java.lang.String",
+      "description": "秘密密钥。",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$AdminConfig"
+    },
+    {
+      "name": "mybatis-flex.check-config-location",
+      "type": "java.lang.Boolean",
+      "description": "Indicates whether perform presence check of the MyBatis xml config file.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "mybatis-flex.config-location",
+      "type": "java.lang.String",
+      "description": "Location of MyBatis xml config file.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.configuration-properties",
+      "type": "java.util.Properties",
+      "description": "Externalized properties for MyBatis configuration.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.configuration.aggressive-lazy-loading",
+      "type": "java.lang.Boolean",
+      "description": "When enabled, any method call will load all the lazy properties of the object. Otherwise, each property is loaded on demand (see also lazyLoadTriggerMethods). Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.arg-name-based-constructor-auto-mapping",
+      "type": "java.lang.Boolean",
+      "description": "When applying constructor auto-mapping, argument name is used to search the column to map instead of relying on the column order. Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.auto-mapping-behavior",
+      "type": "org.apache.ibatis.session.AutoMappingBehavior",
+      "description": "Specifies if and how MyBatis should automatically map columns to fields\/properties. NONE disables auto-mapping. PARTIAL will only auto-map results with no nested result mappings defined inside. FULL will auto-map result mappings of any complexity (containing nested or otherwise). Default is PARTIAL.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.auto-mapping-unknown-column-behavior",
+      "type": "org.apache.ibatis.session.AutoMappingUnknownColumnBehavior",
+      "description": "Specify the behavior when detects an unknown column (or unknown property type) of automatic mapping target. Default is NONE.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.cache-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Globally enables or disables any caches configured in any mapper under this configuration. Default is true.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.call-setters-on-nulls",
+      "type": "java.lang.Boolean",
+      "description": "Specifies if setters or map's put method will be called when a retrieved value is null. It is useful when you rely on Map.keySet() or null value initialization. Note primitives such as (int,boolean,etc.) will not be set to null. Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.configuration-factory",
+      "type": "java.lang.Class<?>",
+      "description": "Specifies the class that provides an instance of Configuration. The returned Configuration instance is used to load lazy properties of deserialized objects. This class must have a method with a signature static Configuration getConfiguration().",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.default-enum-type-handler",
+      "type": "java.lang.Class<? extends org.apache.ibatis.type.TypeHandler>",
+      "description": "Specifies the TypeHandler used by default for Enum.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.default-executor-type",
+      "type": "org.apache.ibatis.session.ExecutorType",
+      "description": "Configures the default executor. SIMPLE executor does nothing special. REUSE executor reuses prepared statements. BATCH executor reuses statements and batches updates. Default is SIMPLE.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.default-fetch-size",
+      "type": "java.lang.Integer",
+      "description": "Sets the driver a hint as to control fetching size for return results. This parameter value can be override by a query setting.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.default-result-set-type",
+      "type": "org.apache.ibatis.mapping.ResultSetType",
+      "description": "Specifies a scroll strategy when omit it per statement settings.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.default-sql-provider-type",
+      "type": "java.lang.Class<?>",
+      "description": "Specifies an sql provider class that holds provider method. This class apply to the type(or value) attribute on sql provider annotation(e.g. @SelectProvider), when these attribute was omitted.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.default-statement-timeout",
+      "type": "java.lang.Integer",
+      "description": "Sets the number of seconds the driver will wait for a response from the database.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.jdbc-type-for-null",
+      "type": "org.apache.ibatis.type.JdbcType",
+      "description": "Specifies the JDBC type for null values when no specific JDBC type was provided for the parameter. Some drivers require specifying the column JDBC type but others work with generic values like NULL, VARCHAR or OTHER. Default is OTHER.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.lazy-load-trigger-methods",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Specifies which Object's methods trigger a lazy load. Default is [equals,clone,hashCode,toString].",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.lazy-loading-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Globally enables or disables lazy loading. When enabled, all relations will be lazily loaded. This value can be superseded for a specific relation by using the fetchType attribute on it. Default is False.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.local-cache-scope",
+      "type": "org.apache.ibatis.session.LocalCacheScope",
+      "description": "MyBatis uses local cache to prevent circular references and speed up repeated nested queries. By default (SESSION) all queries executed during a session are cached. If localCacheScope=STATEMENT local session will be used just for statement execution, no data will be shared between two different calls to the same SqlSession. Default is SESSION.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.log-impl",
+      "type": "java.lang.Class<? extends org.apache.ibatis.logging.Log>",
+      "description": "Specifies which logging implementation MyBatis should use. If this setting is not present logging implementation will be autodiscovered.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.log-prefix",
+      "type": "java.lang.String",
+      "description": "Specifies the prefix string that MyBatis will add to the logger names.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.map-underscore-to-camel-case",
+      "type": "java.lang.Boolean",
+      "description": "Enables automatic mapping from classic database column names A_COLUMN to camel case classic Java property names aColumn. Default is true.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration",
+      "defaultValue": true
+    },
+    {
+      "name": "mybatis-flex.configuration.multiple-result-sets-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Allows or disallows multiple ResultSets to be returned from a single statement (compatible driver required). Default is true.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.nullable-on-for-each",
+      "type": "java.lang.Boolean",
+      "description": "Specifies the default value of 'nullable' attribute on 'foreach' tag. Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.return-instance-for-empty-row",
+      "type": "java.lang.Boolean",
+      "description": "MyBatis, by default, returns null when all the columns of a returned row are NULL. When this setting is enabled, MyBatis returns an empty instance instead. Note that it is also applied to nested results (i.e. collectioin and association). Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.safe-result-handler-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Allows using ResultHandler on nested statements. If allow, set the false. Default is true.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.safe-row-bounds-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Allows using RowBounds on nested statements. If allow, set the false. Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.shrink-whitespaces-in-sql",
+      "type": "java.lang.Boolean",
+      "description": "Removes extra whitespace characters from the SQL. Note that this also affects literal strings in SQL. Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.use-actual-param-name",
+      "type": "java.lang.Boolean",
+      "description": "Allow referencing statement parameters by their actual names declared in the method signature. To use this feature, your project must be compiled in Java 8 with -parameters option. Default is true.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.use-column-label",
+      "type": "java.lang.Boolean",
+      "description": "Uses the column label instead of the column name. Different drivers behave differently in this respect. Refer to the driver documentation, or test out both modes to determine how your driver behaves. Default is true.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.use-generated-keys",
+      "type": "java.lang.Boolean",
+      "description": "Allows JDBC support for generated keys. A compatible driver is required. This setting forces generated keys to be used if set to true, as some drivers deny compatibility but still work (e.g. Derby). Default is false.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.variables",
+      "type": "java.util.Properties",
+      "description": "Specify any configuration variables.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.configuration.vfs-impl",
+      "type": "java.lang.Class<? extends org.apache.ibatis.io.VFS>",
+      "description": "Specifies VFS implementations.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$CoreConfiguration"
+    },
+    {
+      "name": "mybatis-flex.datasource",
+      "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.String>>",
+      "description": "多数据源配置",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "mybatis-flex.default-datasource-key",
+      "type": "java.lang.String",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.default-scripting-language-driver",
+      "type": "java.lang.Class<? extends org.apache.ibatis.scripting.LanguageDriver>",
+      "description": "The default scripting language driver class. (Available when use together with mybatis-spring 2.0.2+)",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.executor-type",
+      "type": "org.apache.ibatis.session.ExecutorType",
+      "description": "Execution mode for {@link org.mybatis.spring.SqlSessionTemplate}.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.global-config.default-page-size",
+      "type": "java.lang.Integer",
+      "description": "默认的分页查询时的每页数据量",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "defaultValue": 10
+    },
+    {
+      "name": "mybatis-flex.global-config.default-relation-query-depth",
+      "type": "java.lang.Integer",
+      "description": "默认的 Relation 注解查询深度",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "defaultValue": 2
+    },
+    {
+      "name": "mybatis-flex.global-config.deleted-value-of-logic-delete",
+      "type": "java.lang.Object",
+      "description": "逻辑删除已删除值标记",
+      "defaultValue": 1
+    },
+    {
+      "name": "mybatis-flex.global-config.ignore-schema",
+      "type": "java.lang.Boolean",
+      "description": "全局忽略 @Table 中配置的 schema",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "mybatis-flex.global-config.key-config.before",
+      "type": "java.lang.Boolean",
+      "description": "是否在数据插入之前执行，只在非自增上配置有效",
+      "sourceType": "com.mybatisflex.core.FlexGlobalConfig$KeyConfig",
+      "defaultValue": true
+    },
+    {
+      "name": "mybatis-flex.global-config.key-config.key-type",
+      "type": "com.mybatisflex.annotation.KeyType",
+      "description": "ID 生成策略",
+      "sourceType": "com.mybatisflex.core.FlexGlobalConfig$KeyConfig"
+    },
+    {
+      "name": "mybatis-flex.global-config.key-config.value",
+      "type": "java.lang.String",
+      "description": "使用的 ID 生成器名称 或者 Sequence 执行的 SQL 内容",
+      "sourceType": "com.mybatisflex.core.FlexGlobalConfig$KeyConfig"
+    },
+    {
+      "name": "mybatis-flex.global-config.logic-delete-column",
+      "type": "java.lang.String",
+      "description": "全局默认逻辑删除字段",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig"
+    },
+    {
+      "name": "mybatis-flex.global-config.normal-value-of-logic-delete",
+      "type": "java.lang.Object",
+      "description": "逻辑删除未删除值标记",
+      "defaultValue": 0
+    },
+    {
+      "name": "mybatis-flex.global-config.print-banner",
+      "type": "java.lang.Boolean",
+      "description": "启动是否打印 banner 和 版本号。",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig",
+      "defaultValue": true
+    },
+    {
+      "name": "mybatis-flex.global-config.tenant-column",
+      "type": "java.lang.String",
+      "description": "全局默认多租户字段",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig"
+    },
+    {
+      "name": "mybatis-flex.global-config.version-column",
+      "type": "java.lang.String",
+      "description": "全局默认逻辑乐观锁字段",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$GlobalConfig"
+    },
+    {
+      "name": "mybatis-flex.inject-sql-session-on-mapper-scan",
+      "type": "java.lang.Boolean",
+      "description": "Set whether inject a SqlSessionTemplate or SqlSessionFactory bean (If you want to back to the behavior of 2.2.1 or before, specify false). If you use together with spring-native, should be set true.",
+      "defaultValue": true
+    },
+    {
+      "name": "mybatis-flex.lazy-initialization",
+      "type": "java.lang.Boolean",
+      "description": "Set whether enable lazy initialization for mapper bean.",
+      "defaultValue": false
+    },
+    {
+      "name": "mybatis-flex.mapper-default-scope",
+      "type": "java.lang.String",
+      "description": "A default scope for mapper bean that scanned by auto-configure.",
+      "defaultValue": ""
+    },
+    {
+      "name": "mybatis-flex.mapper-locations",
+      "type": "java.lang.String[]",
+      "description": "Locations of MyBatis mapper files.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties",
+      "defaultValue": [
+        "classpath*:\/mapper\/**\/*.xml"
+      ]
+    },
+    {
+      "name": "mybatis-flex.seata-config.enable",
+      "type": "java.lang.Boolean",
+      "description": "是否开启",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$SeataConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "mybatis-flex.seata-config.seata-mode",
+      "type": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$SeataMode",
+      "description": "事务模式支持，只支持XA或者AT",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties$SeataConfig",
+      "defaultValue": "at"
+    },
+    {
+      "name": "mybatis-flex.type-aliases-package",
+      "type": "java.lang.String",
+      "description": "Packages to search type aliases. (Package delimiters are \",; \\t\\n\")",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.type-aliases-super-type",
+      "type": "java.lang.Class<?>",
+      "description": "The super class for filtering type alias. If this not specifies, the MyBatis deal as type alias all classes that searched from typeAliasesPackage.",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.type-handlers-package",
+      "type": "java.lang.String",
+      "description": "Packages to search for type handlers. (Package delimiters are \",; \\t\\n\")",
+      "sourceType": "com.mybatisflex.spring.boot.v4.MybatisFlexProperties"
+    },
+    {
+      "name": "mybatis-flex.scripting-language-driver.velocity.userdirective",
+      "deprecated": true,
+      "deprecation": {
+        "level": "error",
+        "reason": "The 'userdirective' is deprecated since Velocity 2.x. This property defined for keeping backward compatibility with older velocity version.",
+        "replacement": "mybatis-flex.scripting-language-driver.velocity.velocity-settings.runtime.custom_directives"
+      }
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

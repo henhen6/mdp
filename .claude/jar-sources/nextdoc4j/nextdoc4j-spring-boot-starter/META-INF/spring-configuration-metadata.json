@@ -1,0 +1,89 @@
+{
+  "groups": [
+    {
+      "name": "nextdoc4j",
+      "type": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata",
+      "sourceType": "top.nextdoc4j.springboot.configuration.NextDoc4jPropertiesConfiguration",
+      "sourceMethod": "getNextDoc4jProperties()"
+    },
+    {
+      "name": "nextdoc4j.auth",
+      "type": "top.nextdoc4j.core.configuration.extension.NextDoc4jBasicAuth",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata",
+      "sourceMethod": "getAuth()"
+    },
+    {
+      "name": "nextdoc4j.extension",
+      "type": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata$NextDoc4jExtensionMetadata",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata",
+      "sourceMethod": "getExtension()"
+    },
+    {
+      "name": "nextdoc4j.extension.brand",
+      "type": "top.nextdoc4j.core.configuration.extension.NextDoc4jBrand",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata$NextDoc4jExtensionMetadata",
+      "sourceMethod": "getBrand()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "nextdoc4j.auth.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "top.nextdoc4j.core.configuration.extension.NextDoc4jBasicAuth"
+    },
+    {
+      "name": "nextdoc4j.auth.password",
+      "type": "java.lang.String",
+      "sourceType": "top.nextdoc4j.core.configuration.extension.NextDoc4jBasicAuth"
+    },
+    {
+      "name": "nextdoc4j.cors",
+      "type": "java.lang.Boolean",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata"
+    },
+    {
+      "name": "nextdoc4j.doc-path",
+      "type": "java.lang.String",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata"
+    },
+    {
+      "name": "nextdoc4j.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata"
+    },
+    {
+      "name": "nextdoc4j.extension.brand.footer-text",
+      "type": "java.lang.String",
+      "sourceType": "top.nextdoc4j.core.configuration.extension.NextDoc4jBrand"
+    },
+    {
+      "name": "nextdoc4j.extension.brand.logo",
+      "type": "java.lang.String",
+      "sourceType": "top.nextdoc4j.core.configuration.extension.NextDoc4jBrand"
+    },
+    {
+      "name": "nextdoc4j.extension.brand.title",
+      "type": "java.lang.String",
+      "sourceType": "top.nextdoc4j.core.configuration.extension.NextDoc4jBrand"
+    },
+    {
+      "name": "nextdoc4j.extension.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata$NextDoc4jExtensionMetadata"
+    },
+    {
+      "name": "nextdoc4j.extension.markdown",
+      "type": "java.util.List<top.nextdoc4j.core.configuration.extension.NextDoc4jMarkdown>",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata$NextDoc4jExtensionMetadata"
+    },
+    {
+      "name": "nextdoc4j.production",
+      "type": "java.lang.Boolean",
+      "sourceType": "top.nextdoc4j.spring.common.configuration.properties.NextDoc4jPropertiesMetadata"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

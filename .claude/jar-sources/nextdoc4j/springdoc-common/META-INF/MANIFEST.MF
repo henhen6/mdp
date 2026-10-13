@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Created-By: Maven JAR Plugin 3.4.2
+Build-Jdk-Spec: 17
+Implementation-Title: springdoc-openapi-starter-common
+Implementation-Version: 2.8.17
+Automatic-Module-Name: org.springdoc.openapi.common
+
