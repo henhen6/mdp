@@ -41,20 +41,26 @@ public class ClientApiCallLogController {
     private final ClientAppHelper clientAppHelper;
 
     /**
-     * 分页查询当前开发者的接口调用日志。即使用户传了 appId 查询条件，
-     * 末尾追加的 in(myAppIds) 仍会把结果限制在本人应用内。
+     * 分页查询当前开发者的接口调用日志。传了 appId 时先校验归属再精确过滤；
+     * 未传时兜底限制在本人全部应用内。
      */
     @PostMapping("/page")
     @Operation(summary = "分页查询", description = "分页查询当前开发者的接口调用日志")
     @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
     public R<Page<ApiCallLogVo>> page(@RequestBody @Validated PageParams<ApiCallLogQuery> params) {
         Page<ApiCallLogVo> page = Page.of(params.getCurrent(), params.getSize());
-        List<Long> appIds = clientAppHelper.myAppIds();
-        if (appIds.isEmpty()) {
-            return R.success(page);
-        }
         QueryWrapper wrapper = PageWrapperHelper.build(params, ApiCallLog.class);
-        wrapper.and(ApiCallLog::getAppId).in(appIds);
+        Long appId = params.getModel() == null ? null : params.getModel().getAppId();
+        if (appId != null) {
+            // 按应用查询：越权直接失败，不做静默降级
+            clientAppHelper.checkOwner(appId);
+        } else {
+            List<Long> appIds = clientAppHelper.myAppIds();
+            if (appIds.isEmpty()) {
+                return R.success(page);
+            }
+            wrapper.and(ApiCallLog::getAppId).in(appIds);
+        }
         apiCallLogService.pageAs(page, wrapper, ApiCallLogVo.class);
         return R.success(page);
     }
