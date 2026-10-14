@@ -67,11 +67,17 @@ public class MethodLogAspect {
      * pageAs/listAs 声明在 IService（com.mybatisflex 包）、list/save 声明在 ServiceImpl，按 top.mddata 包名永远拦不到。
      * 主表达式用 IService+ —— + 表示"该类型及其子类型"，IService 自身声明的 default 方法与
      * SuperService/业务接口/impl 声明的方法全部命中（所有业务 Service 最终都实现 IService）；
-     * within 兜底未走 IService 体系但位于 service 包下的 Bean
+     * within 兜底未走 IService 体系但位于 service 包下的 Bean。
+     * 排除推送管道基础设施（pipeline 包）与任务执行器（TaskExecutor）：它们是内部组件而非业务方法，
+     * 且 TaskExecutor.execute() 为 final——CGLIB 代理无法拦截 final 方法，调用会落在字段全 null 的
+     * 代理实例上直接 NPE（2026-10-14 事故）
      */
     @Pointcut("""
             execution(public * com.mybatisflex.core.service.IService+.*(..)) || \
-            (within(top.mddata..service..*) && execution(public * *(..)))""")
+            (within(top.mddata..service..*) \
+            && !within(top.mddata..service..pipeline..*) \
+            && !within(top.mddata..service..*TaskExecutor) \
+            && execution(public * *(..)))""")
     public void serviceLayer() {
     }
 

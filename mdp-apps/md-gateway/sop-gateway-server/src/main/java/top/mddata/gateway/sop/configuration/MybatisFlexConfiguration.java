@@ -1,0 +1,23 @@
+package top.mddata.gateway.sop.configuration;
+
+import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Repository;
+
+import static top.mddata.base.constant.Constants.UTIL_PACKAGE;
+
+/**
+ * Mybatis 常用重用拦截器
+ * <p>
+ *
+ * @author henhen6
+ * @since 2018/10/24
+ */
+@Configuration
+@Slf4j
+//@EnableConfigurationProperties({DatabaseProperties.class})
+@MapperScan(basePackages = UTIL_PACKAGE, annotationClass = Repository.class)
+public class MybatisFlexConfiguration {
+
+}

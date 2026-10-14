@@ -62,17 +62,17 @@ public final class MdpBizMsgCrypt {
     }
 
     /**
-     * 加密消息并构建请求体 JSON。
-     * 根据加密模式自动选择构建策略，并计算相应签名。
+     * 加密消息并构建请求体。
+     * 签名随返回值返回（不再写实例字段，实例可安全共享给多线程使用）。
      *
      * @param plaintext      明文 JSON 字符串
      * @param timestamp      时间戳
      * @param nonce          随机字符串
      * @param encryptionMode 加密模式（{@link #MODE_PLAINTEXT} / {@link #MODE_COMPATIBLE} / {@link #MODE_ENCRYPTED}）
-     * @return 请求体 JSON；签名通过 {@link #getSignature()} / {@link #getMsgSignature()} 获取
+     * @return 报文体与签名
      * @throws AesException 加密失败时抛出
      */
-    public JSONObject encryptMsg(String plaintext, String timestamp, String nonce, int encryptionMode)
+    public EncryptResult encryptMsg(String plaintext, String timestamp, String nonce, int encryptionMode)
             throws AesException {
         String encrypt;
         if (encryptionMode == MODE_PLAINTEXT) {
@@ -86,8 +86,6 @@ public final class MdpBizMsgCrypt {
         String msgSignature = encryptionMode == MODE_PLAINTEXT
                 ? null
                 : SHA1.getSHA1(token, timestamp, nonce, encrypt);
-        this.signature = signature;
-        this.msgSignature = msgSignature;
 
         // 构建请求体
         JSONObject body = new JSONObject();
@@ -105,20 +103,7 @@ public final class MdpBizMsgCrypt {
             body.put("encrypt", encrypt);
             body.put("appKey", appKey);
         }
-        return body;
-    }
-
-    /** 最近一次 encryptMsg 计算得到的 signature */
-    private String signature;
-    /** 最近一次 encryptMsg 计算得到的 msgSignature（明文模式为 null） */
-    private String msgSignature;
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public String getMsgSignature() {
-        return msgSignature;
+        return new EncryptResult(body, signature, msgSignature);
     }
 
     /**

@@ -125,7 +125,12 @@ public class RouteServiceImpl implements RouteService {
             return resultWrapper.wrap(Optional.empty(), apiResponse);
         } finally {
             if (apiCallLog != null) {
-                SpringUtil.publishEvent(new CallLogEvent(apiCallLog));
+                try {
+                    SpringUtil.publishEvent(new CallLogEvent(apiCallLog));
+                } catch (Exception e) {
+                    // 双保险：即使事件发布失败（如异步队列拒绝策略变更），也不能影响业务响应
+                    log.error("发布调用日志事件失败, callLogId={}", apiCallLog.getId(), e);
+                }
             }
         }
     }

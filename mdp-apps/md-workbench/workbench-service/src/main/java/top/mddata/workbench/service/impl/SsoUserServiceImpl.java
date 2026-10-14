@@ -122,7 +122,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         }
 
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(dto.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -380,7 +380,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         cacheOps.del(cacheKeyList);
 
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -409,7 +409,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         cacheOps.del(cacheKeyList);
 
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -442,7 +442,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
 
         // 广播
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -472,7 +472,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         updateById(user);
         // 广播
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -496,7 +496,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         updateById(user);
         // 广播
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);

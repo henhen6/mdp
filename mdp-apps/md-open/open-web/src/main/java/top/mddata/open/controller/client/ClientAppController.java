@@ -28,8 +28,8 @@ import top.mddata.open.dto.client.AppKeysUpdateDto;
 import top.mddata.open.entity.admin.App;
 import top.mddata.open.entity.admin.AppKeys;
 import top.mddata.open.query.admin.AppQuery;
-import top.mddata.open.service.admin.AppKeysService;
-import top.mddata.open.service.admin.AppService;
+import top.mddata.open.service.app.AppKeysService;
+import top.mddata.open.service.app.AppService;
 import top.mddata.open.vo.admin.AppKeysVo;
 import top.mddata.open.vo.admin.AppVo;
 

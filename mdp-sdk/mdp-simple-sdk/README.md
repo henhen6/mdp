@@ -9,7 +9,7 @@
 SDK依赖了三个jar包
 
 + okhttp.jar 用于网络请求
-+ fastjson.jar 用于json处理
++ fastjson2.jar 用于json处理
 + commons-logging.jar 日志处理
 
 ### 接口封装步骤

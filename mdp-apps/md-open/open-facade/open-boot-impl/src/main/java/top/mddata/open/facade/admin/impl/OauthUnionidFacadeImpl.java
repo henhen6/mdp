@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
 import top.mddata.open.facade.admin.OauthUnionidFacade;
-import top.mddata.open.service.admin.OauthUnionidService;
+import top.mddata.open.service.oauth.OauthUnionidService;
 import top.mddata.open.vo.admin.OauthUnionidVo;
 
 /**

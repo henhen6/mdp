@@ -16,7 +16,13 @@ public interface EventTypeCode {
     }
 
     interface Workbench {
-
+        /**
+         * 用户资料变更（编辑资料、手机号、邮箱、密码等自助修改）
+         * <p>
+         * 码值与 Console.USER_EDIT 一致是有意的——订阅方关心的是「用户数据变了」这一事实，
+         * 不关心变更来源；此处修改只是把 workbench 侧的调用归位到正确命名空间。
+         */
+        String USER_EDIT = Console.USER_EDIT;
     }
 
     interface Open {

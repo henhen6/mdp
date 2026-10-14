@@ -24,7 +24,7 @@ import top.mddata.common.dto.IdDto;
 import top.mddata.open.dto.admin.AppApplyDto;
 import top.mddata.open.entity.admin.AppApply;
 import top.mddata.open.query.admin.AppApplyQuery;
-import top.mddata.open.service.admin.AppApplyService;
+import top.mddata.open.service.app.AppApplyService;
 import top.mddata.open.vo.admin.AppApplyVo;
 
 import java.util.List;

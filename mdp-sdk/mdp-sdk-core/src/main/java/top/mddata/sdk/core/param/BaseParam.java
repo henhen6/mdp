@@ -7,6 +7,8 @@ import top.mddata.sdk.core.common.RequestMethod;
 import top.mddata.sdk.core.common.UploadFile;
 import top.mddata.sdk.core.util.ClassUtil;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +41,23 @@ public abstract class BaseParam<Req, Resp> {
     private static final String EMPTY_JSON = "{}";
 
     private final String method;
-    private final Class<Resp> responseClass = (Class<Resp>) ClassUtil.getSuperClassGenricType(this.getClass(), 1);
+    private final Class<Resp> responseClass = initResponseClass();
+
+    /**
+     * 解析 Resp 泛型对应的 Class。
+     * 常规子类（如 XxxApi extends BaseParam&lt;XxxReq, XxxResp&gt;）直接取父类第 2 个泛型参数；
+     * 单泛型中间父类（如 DownloadRequest&lt;Req&gt;）没有第 2 个泛型参数，返回 null，
+     * 由中间类覆写 getResponseClass() 提供（旧版在此直接抛"泛型索引不正确"，DownloadRequest 子类无法实例化）。
+     */
+    @SuppressWarnings("unchecked")
+    private Class<Resp> initResponseClass() {
+        Type superType = this.getClass().getGenericSuperclass();
+        if (superType instanceof ParameterizedType parameterizedType
+                && parameterizedType.getActualTypeArguments().length > 1) {
+            return (Class<Resp>) ClassUtil.getSuperClassGenricType(this.getClass(), 1);
+        }
+        return null;
+    }
     /**
      * -- SETTER --
      *  指定版本号

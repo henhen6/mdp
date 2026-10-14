@@ -10,6 +10,11 @@
     <artifactId>mdp-sdk-core</artifactId>
     <version>${revision}</version>
 
+    <properties>
+        <!-- 默认打包时跳过测试；执行 mvn test -DskipTests=false 可运行测试 -->
+        <skipTests>true</skipTests>
+    </properties>
+
 
     <dependencies>
         <!-- http请求 -->
@@ -36,10 +41,23 @@
             <version>2.20.0</version>
         </dependency>
 
+        <!-- RSA 签名工具使用，原由 common-util 传递引入 -->
         <dependency>
-            <groupId>io.github.shalousun</groupId>
-            <artifactId>common-util</artifactId>
-            <version>2.2.9</version>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.81</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -52,7 +70,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <skipTests>${skipTests}</skipTests>
                 </configuration>
             </plugin>
             <plugin>

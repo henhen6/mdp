@@ -21,6 +21,6 @@ public interface EventTriggerApi {
      * @param save 事件触发参数
      * @return 事件触发
      */
-    @PostMapping("/admin/eventTrigger/save")
+    @PostMapping("/inner/eventTrigger/save")
     R<EventTrigger> save(@RequestBody EventTriggerDto save);
 }
