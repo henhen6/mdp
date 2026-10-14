@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.open.controller.support.PageWrapperHelper;
@@ -36,6 +37,8 @@ import java.util.List;
 @RequestMapping("/admin/eventPushLog")
 @RequiredArgsConstructor
 public class EventPushLogController extends SuperController<EventPushLogService, EventPushLog> {
+
+    private final EchoService echoService;
 
     /**
      * 根据主键删除事件推送日志。
@@ -77,6 +80,7 @@ public class EventPushLogController extends SuperController<EventPushLogService,
     public R<Page<EventPushLogVo>> page(@RequestBody @Validated PageParams<EventPushLogQuery> params) {
         Page<EventPushLogVo> page = Page.of(params.getCurrent(), params.getSize());
         superService.pageAs(page, PageWrapperHelper.build(params, EventPushLog.class), EventPushLogVo.class);
+        echoService.action(page);
         return R.success(page);
     }
 

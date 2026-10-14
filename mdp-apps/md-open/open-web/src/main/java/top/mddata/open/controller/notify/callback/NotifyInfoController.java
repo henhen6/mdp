@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.common.dto.IdDto;
@@ -38,6 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotifyInfoController extends SuperController<NotifyInfoService, NotifyInfo> {
 
+    private final EchoService echoService;
 
     /**
      * 根据主键删除回调任务。
@@ -79,6 +81,7 @@ public class NotifyInfoController extends SuperController<NotifyInfoService, Not
     public R<Page<NotifyInfoVo>> page(@RequestBody @Validated PageParams<NotifyInfoQuery> params) {
         Page<NotifyInfoVo> page = Page.of(params.getCurrent(), params.getSize());
         superService.pageAs(page, PageWrapperHelper.build(params, NotifyInfo.class), NotifyInfoVo.class);
+        echoService.action(page);
         return R.success(page);
     }
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
@@ -38,6 +39,8 @@ import java.util.List;
 @RequestMapping("/admin/notifyInfoLog")
 @RequiredArgsConstructor
 public class NotifyInfoLogController extends SuperController<NotifyInfoLogService, NotifyInfoLog> {
+
+    private final EchoService echoService;
 
     /**
      * 根据主键删除回调任务日志。
@@ -78,6 +81,7 @@ public class NotifyInfoLogController extends SuperController<NotifyInfoLogServic
     public R<Page<NotifyInfoLogVo>> page(@RequestBody @Validated PageParams<NotifyInfoLogQuery> params) {
         Page<NotifyInfoLogVo> page = Page.of(params.getCurrent(), params.getSize());
         superService.pageAs(page, PageWrapperHelper.build(params, NotifyInfoLog.class), NotifyInfoLogVo.class);
+        echoService.action(page);
         return R.success(page);
     }
 
