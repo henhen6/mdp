@@ -92,8 +92,8 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     private final AccountOperationGuard accountOperationGuard;
 
     /**
-     * 联系方式归一化：phone/email 允许为空，空白串与 null 等价，统一归一为 null。
-     * phone/email 列有唯一索引（uk_phone/uk_email），空串是真实值，
+     * 联系方式归一化：phone/email/idCard 允许为空，空白串与 null 等价，统一归一为 null。
+     * phone/email/idCard 列有唯一索引（uk_phone/uk_email/uk_id_card），空串是真实值，
      * 多用户空串会撞索引；MySQL 唯一索引允许多个 NULL。
      */
     static void normalizeContact(User user) {
@@ -102,6 +102,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         if (StrUtil.isBlankIfStr(user.getEmail())) {
             user.setEmail(null);
+        }
+        if (StrUtil.isBlankIfStr(user.getIdCard())) {
+            user.setIdCard(null);
         }
     }
 
@@ -118,6 +121,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         Map<String, Object> updates = wrapper.getUpdates();
         blankToNull(updates, "phone");
         blankToNull(updates, "email");
+        blankToNull(updates, "idCard");
     }
 
     private static void blankToNull(Map<String, Object> updates, String property) {
@@ -156,6 +160,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         if (StrUtil.isNotEmpty(dto.getPhone())) {
             ArgumentAssert.isFalse(checkPhone(dto.getPhone(), null), "手机号[{}]， 重复", dto.getPhone());
+        }
+        if (StrUtil.isNotEmpty(dto.getIdCard())) {
+            ArgumentAssert.isFalse(checkIdCard(dto.getIdCard(), null), "身份证号[{}]， 重复", dto.getIdCard());
         }
         User entity = BeanUtil.toBean(save, getEntityClass());
         entity.setId(uidGenerator.getUid());
@@ -232,6 +239,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         if (StrUtil.isNotEmpty(dto.getPhone())) {
             ArgumentAssert.isFalse(checkPhone(dto.getPhone(), dto.getId()), "手机号[{}]， 重复", dto.getPhone());
+        }
+        if (StrUtil.isNotEmpty(dto.getIdCard())) {
+            ArgumentAssert.isFalse(checkIdCard(dto.getIdCard(), dto.getId()), "身份证号[{}]， 重复", dto.getIdCard());
         }
 
         // state 变更校验与部门变更的 last* 校正都依赖库中现值，合并为一次查询（均不涉及时零查询）
@@ -400,6 +410,14 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
             return false;
         }
         return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getEmail, email).ne(User::getId, id)) > 0;
+    }
+
+    @Override
+    public Boolean checkIdCard(String idCard, Long id) {
+        if (StrUtil.isBlank(idCard)) {
+            return false;
+        }
+        return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getIdCard, idCard).ne(User::getId, id)) > 0;
     }
 
     @Override

@@ -192,6 +192,13 @@ public class UserController extends SuperController<UserService, User> {
         return R.success(superService.checkPhone(phone, id));
     }
 
+    @GetMapping("/checkIdCard")
+    @Operation(summary = "检测身份证号是否存在", description = "检测身份证号是否存在")
+    @RequestLog(value = "检测身份证号是否存在", logType = RequestLog.LogType.QUERY)
+    public R<Boolean> checkIdCard(@RequestParam String idCard, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkIdCard(idCard, id));
+    }
+
     /**
      * 根据权限角色ID 分页查询角色拥有的用户 或者 没有的用户
      *

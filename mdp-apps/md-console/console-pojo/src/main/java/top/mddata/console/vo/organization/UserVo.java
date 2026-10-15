@@ -86,6 +86,12 @@ public class UserVo implements Serializable, EchoVO {
     private String email;
 
     /**
+     * 身份证号
+     */
+    @Schema(description = "身份证号")
+    private String idCard;
+
+    /**
      * 状态
      * [0-禁用 1-正常]
      */
