@@ -20,6 +20,11 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
+            <groupId>top.mddata.sdk</groupId>
+            <artifactId>mdp-sdk-core</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>top.mddata.base</groupId>
             <artifactId>sop-service-support</artifactId>
         </dependency>
