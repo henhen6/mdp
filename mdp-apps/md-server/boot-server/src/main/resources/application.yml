@@ -134,6 +134,8 @@ mdp:
     delFile: false
     suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db,mp3,mp4
     tempStoragePath: /Users/tangyh/data/mdp/temp/
+    # 公开桶（至少配置一个）：桶内文件 URL 永久有效，用于富文本/markdown 插图等场景
+    publicBucket: PUBLIC_FILE
 
 spring:
   main:
@@ -316,11 +318,19 @@ dromara:
     # 默认使用的存储平台 localPlusExt是自己增强的配置
     default-platform: localPlusExt
     thumbnail-suffix: ".min.jpg" #缩略图后缀，例如【.min.jpg】【.png】
-    #对应平台的配置写在这里，注意缩进要对齐
+    # 对应平台的配置写在这里，注意缩进要对齐
+    # 注意： 无论修改为什么存储，都要配置2个桶， 一个公开，一个私有
     local-plus:
       - platform: localPlus
         domain: http://127.0.0.1:${server.port}/preview/ # 访问域名，例如：“http://127.0.0.1:8030/file/”，注意后面要和 path-patterns 保持一致，“/”结尾，本地存储建议使用相对路径，方便后期更换域名
         base-path: local-plus/ # 基础路径
+        path-patterns: /preview/** # 访问路径
+        storage-path: /Users/tangyh/data/mdp/
+        enableStorage: true
+        enableAccess: true
+      - platform: PUBLIC_FILE
+        domain: http://127.0.0.1:${server.port}/preview/
+        base-path: PUBLIC_FILE/ # 基础路径
         path-patterns: /preview/** # 访问路径
         storage-path: /Users/tangyh/data/mdp/
         enableStorage: true

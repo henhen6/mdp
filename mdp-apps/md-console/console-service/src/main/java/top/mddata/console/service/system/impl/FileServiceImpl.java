@@ -94,8 +94,15 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         // 相对路径
         String path = getDateFolder();
 
+        // x-file-storage 中桶绑定在存储平台上，约定：公开桶名与存储平台名一致。
+        // 传入公开桶即切换到同名公开平台上传；不传 bucket 则进默认平台（私有桶）
+        String bucket = fileUploadDto.getBucket();
+        ArgumentAssert.isTrue(StrUtil.isEmpty(bucket) || fileProperties.getPublicBucket().contains(bucket),
+                "不支持的桶: {}", bucket);
+        String platform = fileProperties.getPublicBucket().contains(bucket) ? bucket : fileUploadDto.getPlatform();
+
         UploadPretreatment uploadPretreatment = fileStorageService.of(file)
-                .setPlatform(StrUtil.isNotEmpty(fileUploadDto.getPlatform()), fileUploadDto.getPlatform())
+                .setPlatform(StrUtil.isNotEmpty(platform), platform)
                 .setHashCalculatorSha256(true)
                 .setHashCalculatorMd5()
                 .setPath(path)
@@ -129,6 +136,15 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         FileVo fileVo = toFileVo(fileInfo);
 
         Long fileId = Long.valueOf(fileInfo.getId());
+        if (StrUtil.isNotEmpty(bucket)) {
+            // FileRecorder 保存的记录不含桶信息，单独补齐，供生成访问地址时区分公开/私有桶
+            File bucketEntity = new File();
+            bucketEntity.setId(fileId);
+            bucketEntity.setBucket(bucket);
+            updateById(bucketEntity);
+            fileVo.setBucket(bucket);
+        }
+
         Map<Long, FileVo> map = findUrlByIds(List.of(fileId));
         if (map.containsKey(fileId)) {
             fileVo.setUrl(map.get(fileId).getUrl());
@@ -238,13 +254,23 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             if (file == null) {
                 return;
             }
-            FileInfo fileInfo = new FileInfo();
-            fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
-            // 有效期1小时
-            Date expiration = DateUtil.offsetHour(new Date(), 1);
-            file.setUrl(fileStorageService.generatePresignedUrl(fileInfo, expiration));
+            file.setUrl(buildUrl(file));
         });
         return map;
+    }
+
+    /**
+     * 生成文件访问地址：公开桶返回上传时生成的永久地址，私有桶返回1小时有效期的签名地址
+     */
+    private String buildUrl(FileVo file) {
+        if (fileProperties.getPublicBucket().contains(file.getBucket())) {
+            return file.getUrl();
+        }
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
+        // 有效期1小时
+        Date expiration = DateUtil.offsetHour(new Date(), 1);
+        return fileStorageService.generatePresignedUrl(fileInfo, expiration);
     }
 
     @Override
@@ -257,11 +283,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             if (file == null) {
                 return;
             }
-            FileInfo fileInfo = new FileInfo();
-            fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
-            // 有效期1小时
-            Date expiration = DateUtil.offsetHour(new Date(), 1);
-            file.setUrl(fileStorageService.generatePresignedUrl(fileInfo, expiration));
+            file.setUrl(buildUrl(file));
         });
         return map;
     }

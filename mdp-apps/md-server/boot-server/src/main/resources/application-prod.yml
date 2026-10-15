@@ -52,3 +52,10 @@ dromara:
         storage-path: /data_mdp/upload-file/
         enableStorage: true
         enableAccess: true
+      - platform: PUBLIC_FILE
+        domain: https://open.mddata.top/preview/ # 访问域名
+        base-path: PUBLIC_FILE/ # 基础路径
+        path-patterns: /preview/** # 访问路径
+        storage-path: /data_mdp/upload-file/
+        enableStorage: true
+        enableAccess: true

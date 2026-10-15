@@ -2,10 +2,12 @@ package top.mddata.console.service.system.properties;
 
 
 import cn.hutool.core.util.StrUtil;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.validation.annotation.Validated;
 import top.mddata.base.constant.Constants;
 import top.mddata.base.exception.BizException;
 
@@ -19,6 +21,7 @@ import java.util.Set;
  */
 @Setter
 @Getter
+@Validated
 @RefreshScope
 @ConfigurationProperties(prefix = FileProperties.PREFIX)
 public class FileProperties {
@@ -30,11 +33,12 @@ public class FileProperties {
     /**
      * 公开桶
      * <p>
-     * 配置后获取连接时改桶下的 url = urlPrefix + path
+     * 公开桶下的文件 url 永久有效（不签名），未命中公开桶的文件 url 为签名时效地址
      * 使用场景：
      * 1. 富文本编辑器
      * 2. 需要url永久访问的场景
      */
+    @NotEmpty(message = "至少需要配置一个公开桶: " + FileProperties.PREFIX + ".public-bucket")
     private Set<String> publicBucket = new HashSet<>();
     /**
      * 支持的文件后缀
