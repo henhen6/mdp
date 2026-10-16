@@ -128,6 +128,9 @@ mdp:
   file:
     delFile: false
     suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db
+    tempStoragePath: /Users/tangyh/data/mdp/temp/
+    # 公开桶（至少配置一个）：桶内文件 URL 永久有效，用于富文本/markdown 插图等场景
+    publicBucket: PUBLIC_FILE
 
 spring:
   main:
@@ -288,6 +291,13 @@ dromara:
       - platform: localPlus
         domain: http://127.0.0.1:${server.port}/preview/ # 访问域名，例如：“http://127.0.0.1:8030/file/”，注意后面要和 path-patterns 保持一致，“/”结尾，本地存储建议使用相对路径，方便后期更换域名
         base-path: local-plus/ # 基础路径
+        path-patterns: /preview/** # 访问路径
+        storage-path: /Users/tangyh/data/mdp/
+        enableStorage: true
+        enableAccess: true
+      - platform: PUBLIC_FILE
+        domain: http://127.0.0.1:${server.port}/preview/
+        base-path: PUBLIC_FILE/ # 基础路径
         path-patterns: /preview/** # 访问路径
         storage-path: /Users/tangyh/data/mdp/
         enableStorage: true

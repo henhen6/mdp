@@ -86,6 +86,13 @@ public class DocDebugBuildParamDto implements Serializable {
     private String format;
 
     /**
+     * 请求前缀风格：api-单入口 method 参数风格（默认），rest-REST 路径风格。
+     * 为空或非法值时按 api 处理
+     */
+    @Schema(description = "请求前缀风格：api-单入口 method 参数风格（默认），rest-REST 路径风格")
+    private String pathType;
+
+    /**
      * 业务参数 JSON 字符串
      */
     @NotBlank(message = "请填写业务参数")

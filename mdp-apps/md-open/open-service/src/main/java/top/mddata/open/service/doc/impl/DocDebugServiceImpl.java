@@ -3,6 +3,7 @@ package top.mddata.open.service.doc.impl;
 import com.alibaba.fastjson2.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import top.mddata.base.exception.BizException;
@@ -32,6 +33,14 @@ public class DocDebugServiceImpl implements DocDebugService {
 
     private final DocInfoService docInfoService;
 
+    /** API 单入口前缀，与网关 mdp.gateway.path 对应；默认值兜底单测手动 new 的场景 */
+    @Value("${mdp.open.debug.api-prefix:/api}")
+    private String apiPrefix = "/api";
+
+    /** REST 入口前缀，与网关 mdp.gateway.rest 对应；默认值兜底单测手动 new 的场景 */
+    @Value("${mdp.open.debug.rest-prefix:/rest}")
+    private String restPrefix = "/rest";
+
     @Override
     public DocDebugBuildParamVo buildParam(DocDebugBuildParamDto dto) {
         // getDocView 内部已校验文档存在且已发布，不存在时抛 BizException("文档不存在")
@@ -52,9 +61,14 @@ public class DocDebugServiceImpl implements DocDebugService {
             throw new BizException("业务参数 bizContent 不是合法的 JSON");
         }
 
+        boolean rest = "rest".equalsIgnoreCase(dto.getPathType());
+
         Map<String, String> form = new LinkedHashMap<>();
-        form.put(config.getMethodName(), doc.getUrl());
-        form.put(config.getVersionName(), version);
+        // rest 风格下接口名与版本由网关从 URL 提取，form 中不放 method/version，签名内容也随之减少
+        if (!rest) {
+            form.put(config.getMethodName(), doc.getUrl());
+            form.put(config.getVersionName(), version);
+        }
         form.put(config.getCharsetName(), charset);
         form.put(config.getFormatName(), format);
         form.put(config.getSignTypeName(), signType);
@@ -70,7 +84,7 @@ public class DocDebugServiceImpl implements DocDebugService {
             form.put(config.getSignName(), sign(form, dto.getPrivateKey(), charset, signType));
         }
 
-        String url = buildUrl(dto.getEnv(), docView.getDocInfoConfig(), doc.getUrl());
+        String url = buildUrl(dto.getEnv(), docView.getDocInfoConfig(), doc.getUrl(), rest, version);
         return DocDebugBuildParamVo.builder().url(url).form(form).build();
     }
 
@@ -107,9 +121,12 @@ public class DocDebugServiceImpl implements DocDebugService {
     }
 
     /**
-     * 拼接完整请求地址，规则与前端文档页 currentUrl 一致
+     * 拼接完整请求地址，规则与前端调试面板 buildEnvUrl 一致。
+     * 环境地址为网关根地址（不含入口前缀），入口前缀（api/rest）由本方法拼接；
+     * api 风格为单入口（接口名走 form 的 method 参数），URL 只到入口前缀；
+     * rest 风格时接口名拼在路径上，版本号以 ?v= 形式放入 query（网关从 query 读取版本）。
      */
-    private String buildUrl(String env, DocSettingVo config, String path) {
+    private String buildUrl(String env, DocSettingVo config, String path, boolean rest, String version) {
         boolean prod = "prod".equals(env);
         String base = prod ? config.getOpenProdUrl() : config.getOpenSandboxUrl();
         if (!StringUtils.hasText(base) || "未配置".equals(base)) {
@@ -118,6 +135,11 @@ public class DocDebugServiceImpl implements DocDebugService {
         if (path.matches("(?i)^https?://.*")) {
             return path;
         }
-        return base.replaceAll("/+$", "") + "/" + path.replaceAll("^/+", "");
+        String prefix = rest ? restPrefix : apiPrefix;
+        String root = base.replaceAll("/+$", "") + "/" + prefix.replaceAll("^/+|/+$", "");
+        if (!rest) {
+            return root;
+        }
+        return root + "/" + path.replaceAll("^/+", "") + "?v=" + version;
     }
 }
