@@ -1,7 +1,8 @@
 package top.mddata.sdk.test.demo;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.alibaba.fastjson2.JSON;
-import junit.framework.TestCase;
 import top.mddata.sdk.core.client.OpenClient;
 import top.mddata.sdk.core.common.Result;
 import top.mddata.sdk.simple.api.token.AccessTokenGetApi;
@@ -21,7 +22,7 @@ import java.util.Random;
  * @author henhen
  * @since 2025/12/18 00:21
  */
-public class NotifyTest extends TestCase {
+public class NotifyTest {
     String url = System.getenv().getOrDefault("MDP_TEST_URL", "http://localhost:23456/api");
     String appKey = System.getenv().getOrDefault("MDP_TEST_APP_KEY", "ruoyi-vue-sso");
     /**
@@ -36,9 +37,8 @@ public class NotifyTest extends TestCase {
     // 声明一个就行
     OpenClient client = new OpenClient(url, appKey, privateKeyIsv);
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
         // 获取 accessToken
         getAccessToken();
     }
@@ -66,6 +66,7 @@ public class NotifyTest extends TestCase {
     /**
      * 测试 查询员工
      */
+    @Test
     public void testSaveBaseEmployee() {
         List<UserSaveDto> list = new ArrayList<>();
         UserSaveDto user1 = new UserSaveDto();

@@ -5,8 +5,8 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONReader;
 import okhttp3.Response;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.mddata.sdk.core.common.DataNameBuilder;
 import top.mddata.sdk.core.common.FileResult;
 import top.mddata.sdk.core.common.OpenConfig;
@@ -31,7 +31,7 @@ import java.util.Map;
  * @author 六如
  */
 public class OpenClient {
-    private static final Log log = LogFactory.getLog(OpenClient.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenClient.class);
 
     /**
      * 默认配置

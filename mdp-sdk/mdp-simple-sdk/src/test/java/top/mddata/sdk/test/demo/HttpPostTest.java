@@ -2,8 +2,7 @@ package top.mddata.sdk.test.demo;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import junit.framework.TestCase;
-import okhttp3.internal.http2.Header;
+import org.junit.jupiter.api.Test;
 import top.mddata.sdk.core.client.OpenHttp;
 import top.mddata.sdk.core.sign.SignUtil;
 
@@ -11,16 +10,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 
 /**
  * 测试 Http 请求
  */
-public class HttpPostTest extends TestCase {
+public class HttpPostTest {
     static OpenHttp httpTool = new OpenHttp();
 
     String url = System.getenv().getOrDefault("MDP_TEST_URL", "http://localhost:23456/api");
@@ -32,13 +31,13 @@ public class HttpPostTest extends TestCase {
     /** 平台提供的私钥。从环境变量读取，禁止提交真实值 */
     String privateKey = System.getenv().getOrDefault("MDP_TEST_PRIVATE_KEY", "请配置环境变量MDP_TEST_PRIVATE_KEY");
 
-    public static String postJson(String url, Map<String, String> params, Header... headers) {
+    public static String postJson(String url, Map<String, String> params) {
+        return postJson(url, params, Collections.emptyMap());
+    }
+
+    public static String postJson(String url, Map<String, String> params, Map<String, String> headers) {
         try {
-            Map<String, String> headerMap = new LinkedHashMap<>();
-            for (Header header : headers) {
-                headerMap.put(header.name.utf8(), header.value.utf8());
-            }
-            return httpTool.requestJson(url, JSON.toJSONString(params), headerMap);
+            return httpTool.requestJson(url, JSON.toJSONString(params), headers);
         } catch (IOException e) {
             throw new RuntimeException("网络请求异常", e);
         }
@@ -64,6 +63,7 @@ public class HttpPostTest extends TestCase {
         return sb.toString().substring(1);
     }
 
+    @Test
     public void testToken() throws Exception {
         getToken();
     }
@@ -121,6 +121,7 @@ public class HttpPostTest extends TestCase {
      bizContent	    String	是		请求参数的集合，最大长度不限，除公共参数外所有请求参数都必须放在这个参数中传递，具体参照各产品快速接入文档
      */
     // 这个请求会路由到story服务
+    @Test
     public void testGetJson() throws Exception {
 
         String token = getToken();
@@ -153,6 +154,7 @@ public class HttpPostTest extends TestCase {
     }
 
     // 输出返回xml格式
+    @Test
     public void testGetXml() throws Exception {
 
         String token = getToken();

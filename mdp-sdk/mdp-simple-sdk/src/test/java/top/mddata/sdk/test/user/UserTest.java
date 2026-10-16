@@ -1,5 +1,7 @@
 package top.mddata.sdk.test.user;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import top.mddata.sdk.core.common.Result;
 import top.mddata.sdk.core.param.IdRequest;
 import top.mddata.sdk.core.request.PageParams;
@@ -28,13 +30,13 @@ import java.util.Random;
 
 public class UserTest extends BaseTest {
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
         // 获取 accessToken，用于需要认证的接口
         getAccessToken();
     }
 
+    @Test
     public void testGetById() {
         UserGetByIdApi api = new UserGetByIdApi();
         api.setBizModel(new IdRequest().setId(680083598598475778L));
@@ -42,6 +44,7 @@ public class UserTest extends BaseTest {
         logResult(result);
     }
 
+    @Test
     public void testSave() {
         List<UserSaveDto> list = new ArrayList<>();
         UserSaveDto user1 = new UserSaveDto();
@@ -70,6 +73,7 @@ public class UserTest extends BaseTest {
     }
 
 
+    @Test
     public void testUpdate() {
         UserUpdateByIdApi api = new UserUpdateByIdApi();
         UserUpdateDto dto = new UserUpdateDto();
@@ -82,6 +86,7 @@ public class UserTest extends BaseTest {
         logResult(result);
     }
 
+    @Test
     public void testPage() {
         UserPageApi api = new UserPageApi();
         PageParams<UserQuery> dto = new PageParams<>(1, 15);

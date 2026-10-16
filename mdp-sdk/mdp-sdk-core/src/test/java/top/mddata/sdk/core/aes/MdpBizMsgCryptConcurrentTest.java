@@ -1,7 +1,7 @@
 package top.mddata.sdk.core.aes;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,8 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * 共享实例并发加密：每个线程的签名必须与自己线程的报文对应（旧版实例字段会串值）。
@@ -55,7 +55,7 @@ public class MdpBizMsgCryptConcurrentTest {
         }
         assertTrue(latch.await(30, TimeUnit.SECONDS));
         pool.shutdown();
-        assertTrue("并发执行有错误: " + errors, errors.isEmpty());
-        assertEquals("每次加密的签名应唯一", threads * 50, signatures.size());
+        assertTrue(errors.isEmpty(), "并发执行有错误: " + errors);
+        assertEquals(threads * 50, signatures.size(), "每次加密的签名应唯一");
     }
 }

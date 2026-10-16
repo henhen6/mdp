@@ -1,7 +1,5 @@
 package top.mddata.sdk.core.util;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,6 +69,6 @@ public class FileUtil {
     }
 
     public static String toString(InputStream inputStream, Charset charset) throws IOException {
-        return IOUtils.toString(inputStream, charset);
+        return new String(toBytes(inputStream), charset);
     }
 }

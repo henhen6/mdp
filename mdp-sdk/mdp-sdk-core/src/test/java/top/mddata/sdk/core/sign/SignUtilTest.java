@@ -1,13 +1,13 @@
 package top.mddata.sdk.core.sign;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SignUtilTest {
 
@@ -21,8 +21,8 @@ public class SignUtilTest {
 
         String content = SignUtil.getSignCheckContentV1(params);
         assertEquals("a=1&b=2", content);
-        assertTrue("调用方入参的 sign 不应被删除", params.containsKey("sign"));
-        assertTrue("调用方入参的 sign_type 不应被删除", params.containsKey("sign_type"));
+        assertTrue(params.containsKey("sign"), "调用方入参的 sign 不应被删除");
+        assertTrue(params.containsKey("sign_type"), "调用方入参的 sign_type 不应被删除");
 
         Map<String, Object> params2 = new HashMap<>();
         params2.put("b", "2");

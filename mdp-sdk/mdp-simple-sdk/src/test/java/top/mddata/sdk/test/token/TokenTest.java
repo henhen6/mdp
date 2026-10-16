@@ -1,5 +1,7 @@
 package top.mddata.sdk.test.token;
 
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import top.mddata.sdk.core.common.Result;
 import top.mddata.sdk.simple.api.token.AccessTokenGetApi;
 import top.mddata.sdk.simple.request.token.AccessTokenGetDto;
@@ -17,6 +19,7 @@ public class TokenTest extends BaseTest {
     /**
      * 测试获取 accessToken（不需要 token，需要签名）
      */
+    @Test
     public void testGetAccessToken() {
         AccessTokenGetApi api = new AccessTokenGetApi();
         AccessTokenGetDto dto = new AccessTokenGetDto()
@@ -37,6 +40,7 @@ public class TokenTest extends BaseTest {
     /**
      * 测试强制刷新 accessToken
      */
+    @Test
     public void testForceRefreshToken() {
         // 先获取一次
         testGetAccessToken();
@@ -61,10 +65,11 @@ public class TokenTest extends BaseTest {
     /**
      * 测试使用 accessToken 调用需要认证的接口
      */
+    @Test
     public void testUseAccessToken() {
         // 先获取 accessToken
         String token = getAccessToken();
-        assertNotNull("accessToken 不应为空", token);
+        assertNotNull(token, "accessToken 不应为空");
 
         // 使用 accessToken 调用接口（这里以 user.getById 为例）
         // client 已经设置了 defaultAccessToken，所以不需要显式传递

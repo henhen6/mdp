@@ -1,7 +1,6 @@
 package top.mddata.sdk.test;
 
 import com.alibaba.fastjson2.JSON;
-import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.mddata.sdk.core.client.OpenClient;
@@ -15,7 +14,7 @@ import top.mddata.sdk.simple.response.token.AccessTokenGetResp;
  * @author henhen
  * @since 2026/1/8 23:44
  */
-public abstract class BaseTest extends TestCase {
+public abstract class BaseTest {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
 

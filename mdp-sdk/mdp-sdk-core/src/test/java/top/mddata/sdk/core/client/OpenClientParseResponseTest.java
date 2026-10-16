@@ -1,14 +1,14 @@
 package top.mddata.sdk.core.client;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import top.mddata.sdk.core.common.Result;
 import top.mddata.sdk.core.param.BaseParam;
 import top.mddata.sdk.core.response.Page;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * OpenClient.parseResponse 泛型反序列化测试
@@ -60,8 +60,8 @@ public class OpenClientParseResponseTest {
         Result<Page<UserResp>> result = client.parseResponse(resp, new UserPageApi());
         List<UserResp> records = result.getData().getRecords();
         assertEquals(1, records.size());
-        assertTrue("records 元素应为 UserResp, 实际=" + records.get(0).getClass().getName(),
-                records.get(0) instanceof UserResp);
+        assertTrue(records.get(0) instanceof UserResp,
+                "records 元素应为 UserResp, 实际=" + records.get(0).getClass().getName());
         assertEquals("张三", records.get(0).getName());
     }
 

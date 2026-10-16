@@ -1,5 +1,7 @@
 package top.mddata.sdk.test.msg;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import top.mddata.sdk.core.common.Result;
 import top.mddata.sdk.core.request.Kv;
 import top.mddata.sdk.simple.api.msg.SendMailApi;
@@ -21,13 +23,13 @@ import java.util.List;
  */
 public class MsgTest extends BaseTest {
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
         // 获取 accessToken，用于需要认证的接口
         getAccessToken();
     }
 
+    @Test
     public void testSendSms() {
         List<Kv> paramList = new ArrayList<>();
         paramList.add(new Kv("code", "1113"));
@@ -45,6 +47,7 @@ public class MsgTest extends BaseTest {
     }
 
 
+    @Test
     public void testSendEmail() {
         List<Kv> paramList = new ArrayList<>();
         paramList.add(new Kv("code", "1111"));
@@ -63,6 +66,7 @@ public class MsgTest extends BaseTest {
     }
 
 
+    @Test
     public void testSendNotice() {
         List<Kv> paramList = new ArrayList<>();
         paramList.add(new Kv("title", "标题"));

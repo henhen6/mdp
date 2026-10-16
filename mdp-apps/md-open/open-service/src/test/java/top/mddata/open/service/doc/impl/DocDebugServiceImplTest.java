@@ -1,6 +1,7 @@
 package top.mddata.open.service.doc.impl;
 
-import com.alibaba.fastjson2.JSON;
+import com.gitee.sop.support.dto.ApiConfig;
+import com.gitee.sop.support.util.SignUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,7 +12,6 @@ import top.mddata.open.vo.admin.DocInfoViewVo;
 import top.mddata.open.vo.admin.DocSettingVo;
 import top.mddata.open.vo.admin.TornaDocInfoViewVo;
 import top.mddata.open.vo.client.DocDebugBuildParamVo;
-import top.mddata.sdk.core.sign.SignUtil;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -115,8 +115,8 @@ class DocDebugServiceImplTest {
         Map<String, String> form = vo.getForm();
         assertTrue(form.containsKey("sign"));
         assertEquals("token-1", form.get("accessToken"));
-        // 用 SDK 的验签方法验证签名链路正确
-        assertTrue(SignUtil.rsaCheckV2(form, publicKey, "UTF-8", "RSA2"));
+        // 用服务端验签方法验证签名链路正确（与网关验签逻辑一致）
+        assertTrue(SignUtil.rsaCheckV2(form, publicKey, "UTF-8", "RSA2", new ApiConfig()));
     }
 
     @Test
@@ -136,7 +136,7 @@ class DocDebugServiceImplTest {
 
         DocDebugBuildParamVo vo = service.buildParam(baseDto().setPrivateKey(pem));
 
-        assertTrue(SignUtil.rsaCheckV2(vo.getForm(), publicKey, "UTF-8", "RSA2"));
+        assertTrue(SignUtil.rsaCheckV2(vo.getForm(), publicKey, "UTF-8", "RSA2", new ApiConfig()));
     }
 
     @Test
@@ -205,7 +205,7 @@ class DocDebugServiceImplTest {
 
         DocDebugBuildParamVo vo = service.buildParam(baseDto().setPathType("rest").setPrivateKey(privateKey));
 
-        assertTrue(SignUtil.rsaCheckV2(vo.getForm(), publicKey, "UTF-8", "RSA2"));
+        assertTrue(SignUtil.rsaCheckV2(vo.getForm(), publicKey, "UTF-8", "RSA2", new ApiConfig()));
     }
 
     @Test

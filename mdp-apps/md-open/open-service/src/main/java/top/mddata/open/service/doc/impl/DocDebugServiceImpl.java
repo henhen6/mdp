@@ -1,6 +1,10 @@
 package top.mddata.open.service.doc.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.gitee.sop.support.constant.SopConstants;
+import com.gitee.sop.support.dto.ApiConfig;
+import com.gitee.sop.support.exception.SignException;
+import com.gitee.sop.support.util.SignUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +18,6 @@ import top.mddata.open.vo.admin.DocInfoViewVo;
 import top.mddata.open.vo.admin.DocSettingVo;
 import top.mddata.open.vo.admin.TornaDocInfoViewVo;
 import top.mddata.open.vo.client.DocDebugBuildParamVo;
-import top.mddata.sdk.core.common.OpenConfig;
-import top.mddata.sdk.core.exception.SopSignException;
-import top.mddata.sdk.core.sign.SignUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +31,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 public class DocDebugServiceImpl implements DocDebugService {
+
+    /** 默认请求格式，与 SDK 侧 OpenConfig.formatType 默认值一致 */
+    private static final String DEFAULT_FORMAT = "json";
 
     private final DocInfoService docInfoService;
 
@@ -50,11 +54,11 @@ public class DocDebugServiceImpl implements DocDebugService {
             throw new BizException("文档不存在或未配置接口地址");
         }
 
-        OpenConfig config = new OpenConfig();
-        String charset = StringUtils.hasText(dto.getCharset()) ? dto.getCharset() : config.getCharset();
-        String signType = StringUtils.hasText(dto.getSignType()) ? dto.getSignType() : config.getSignType();
-        String format = StringUtils.hasText(dto.getFormat()) ? dto.getFormat() : config.getFormatType();
-        String version = resolveVersion(dto.getVersion(), doc.getVersion(), config.getDefaultVersion());
+        ApiConfig config = new ApiConfig();
+        String charset = StringUtils.hasText(dto.getCharset()) ? dto.getCharset() : SopConstants.UTF8;
+        String signType = StringUtils.hasText(dto.getSignType()) ? dto.getSignType() : SignUtil.RSA2;
+        String format = StringUtils.hasText(dto.getFormat()) ? dto.getFormat() : DEFAULT_FORMAT;
+        String version = resolveVersion(dto.getVersion(), doc.getVersion(), SopConstants.DEFAULT_VERSION);
 
         String bizContent = dto.getBizContent().trim();
         if (!JSON.isValid(bizContent)) {
@@ -66,7 +70,7 @@ public class DocDebugServiceImpl implements DocDebugService {
         Map<String, String> form = new LinkedHashMap<>();
         // rest 风格下接口名与版本由网关从 URL 提取，form 中不放 method/version，签名内容也随之减少
         if (!rest) {
-            form.put(config.getMethodName(), doc.getUrl());
+            form.put(config.getApiName(), doc.getUrl());
             form.put(config.getVersionName(), version);
         }
         form.put(config.getCharsetName(), charset);
@@ -78,7 +82,7 @@ public class DocDebugServiceImpl implements DocDebugService {
         if (StringUtils.hasText(dto.getAccessToken())) {
             form.put(config.getAccessTokenName(), dto.getAccessToken());
         }
-        form.put(config.getDataName(), bizContent);
+        form.put(config.getBizContentName(), bizContent);
 
         if (StringUtils.hasText(dto.getPrivateKey())) {
             form.put(config.getSignName(), sign(form, dto.getPrivateKey(), charset, signType));
@@ -105,7 +109,7 @@ public class DocDebugServiceImpl implements DocDebugService {
         try {
             String content = SignUtil.getSignContent(form);
             return SignUtil.rsaSign(content, normalizePrivateKey(privateKey), charset, signType);
-        } catch (SopSignException e) {
+        } catch (SignException e) {
             // 私钥格式错误是开发者填写问题，包装为业务异常给出明确提示（异常详情含签名内容，不向上抛出）
             log.warn("调试参数签名失败: {}", e.getMessage());
             throw new BizException("私钥格式错误或签名算法不支持，请检查私钥与 signType");
@@ -113,7 +117,7 @@ public class DocDebugServiceImpl implements DocDebugService {
     }
 
     /**
-     * 规范化私钥：SDK 的 getPrivateKeyFromPKCS8 只接受纯 Base64 内容，
+     * 规范化私钥：签名工具的 getPrivateKeyFromPKCS8 只接受纯 Base64 内容，
      * 而开发者从 PEM 文件复制的私钥通常带 BEGIN/END 头尾行与换行，直接传入会解码失败
      */
     private String normalizePrivateKey(String privateKey) {
