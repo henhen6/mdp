@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.util.StrPool;
@@ -18,6 +19,7 @@ import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.enumeration.BooleanEnum;
 import top.mddata.console.facade.system.ConfigFacade;
 import top.mddata.open.TreeNode;
+import top.mddata.open.entity.admin.Api;
 import top.mddata.open.entity.admin.DocContent;
 import top.mddata.open.entity.admin.DocGroup;
 import top.mddata.open.entity.admin.DocInfo;
@@ -25,6 +27,7 @@ import top.mddata.open.enumeration.admin.DocSourceTypeEnum;
 import top.mddata.open.mapper.admin.DocGroupMapper;
 import top.mddata.open.mapper.admin.DocInfoMapper;
 import top.mddata.open.query.admin.DocIdsParam;
+import top.mddata.open.service.api.ApiService;
 import top.mddata.open.service.doc.DocContentService;
 import top.mddata.open.service.doc.DocInfoService;
 import top.mddata.open.vo.admin.DocInfoViewVo;
@@ -58,6 +61,7 @@ public class DocInfoServiceImpl extends SuperServiceImpl<DocInfoMapper, DocInfo>
     private final DocContentService docContentService;
     private final TornaClient tornaClient;
     private final ConfigFacade configFacade;
+    private final ApiService apiService;
 
     @Override
     @Transactional(readOnly = true)
@@ -222,7 +226,27 @@ public class DocInfoServiceImpl extends SuperServiceImpl<DocInfoMapper, DocInfo>
         DocInfoViewVo docInfoViewDTO = new DocInfoViewVo();
         docInfoViewDTO.setDocInfoView(tornaDocInfoViewDTO);
         docInfoViewDTO.setDocInfoConfig(docInfoConfigVo);
+        fillApiRequireInfo(tornaDocInfoViewDTO, docInfoViewDTO);
         return docInfoViewDTO;
+    }
+
+    /**
+     * 关联接口注册表带出 needToken/needSign, 供在线调试页按需展示 accessToken/私钥。
+     * 文档由 Torna 推送而来, 与注册表按 接口名+版本 关联; 查不到（文档已推送但接口未注册）时留 null, 由前端回落处理
+     */
+    private void fillApiRequireInfo(TornaDocInfoViewVo docInfoView, DocInfoViewVo docInfoViewDTO) {
+        if (docInfoView == null || !StringUtils.hasText(docInfoView.getUrl())) {
+            return;
+        }
+        QueryWrapper query = QueryWrapper.create().eq(Api::getApiName, docInfoView.getUrl());
+        if (StringUtils.hasText(docInfoView.getVersion())) {
+            query.eq(Api::getApiVersion, docInfoView.getVersion());
+        }
+        Api api = apiService.getOne(query.limit(1));
+        if (api != null) {
+            docInfoViewDTO.setNeedToken(api.getNeedToken());
+            docInfoViewDTO.setNeedSign(api.getNeedSign());
+        }
     }
 
     private DocSettingVo getDocSetting() {
