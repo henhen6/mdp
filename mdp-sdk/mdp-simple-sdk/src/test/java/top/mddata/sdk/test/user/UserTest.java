@@ -84,9 +84,9 @@ public class UserTest extends BaseTest {
 
     public void testPage() {
         UserPageApi api = new UserPageApi();
-        PageParams<UserQuery> dto = new PageParams<>(1, 5);
+        PageParams<UserQuery> dto = new PageParams<>(1, 15);
         UserQuery query = new UserQuery();
-        query.setPhone("13888888888");
+//        query.setPhone("13888888888");
         dto.setModel(query);
         api.setBizModel(dto);
 

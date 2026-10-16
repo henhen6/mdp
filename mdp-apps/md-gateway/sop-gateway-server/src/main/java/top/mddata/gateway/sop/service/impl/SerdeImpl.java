@@ -48,7 +48,8 @@ public class SerdeImpl implements Serde {
 
     @PostConstruct
     public void init() {
-        writeContext = new JSONWriter.Context();
+        // Long 序列化为字符串：雪花 id 等大数超过 JS Number 安全范围（2^53），避免前端解析丢精度
+        writeContext = new JSONWriter.Context(JSONWriter.Feature.WriteLongAsString);
         writeContext.setDateFormat(dateFormat);
         // 移除泛化调用返回class属性
         writeContext.setPropertyPreFilter(CLASS_NAME_PRE_FILTER);

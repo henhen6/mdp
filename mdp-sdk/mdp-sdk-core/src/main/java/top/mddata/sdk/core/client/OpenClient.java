@@ -21,6 +21,7 @@ import top.mddata.sdk.core.sign.SignUtil;
 import top.mddata.sdk.core.sign.StringUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
@@ -236,10 +237,12 @@ public class OpenClient {
             result.setData(null);
             return result;
         }
+        // 优先用完整泛型 Type 反序列化：裸 Class（如 Page.class）会丢失元素类型，集合元素退化为 JSONObject
+        Type responseType = param.getResponseType() != null ? param.getResponseType() : param.getResponseClass();
         if (data instanceof JSONArray arr) {
-            dataObj = (Resp) arr.toJavaList(param.getResponseClass());
+            dataObj = (Resp) arr.to(responseType);
         } else if (data instanceof JSONObject obj) {
-            dataObj = obj.toJavaObject(param.getResponseClass());
+            dataObj = (Resp) obj.to(responseType);
         } else {
             // data 为标量（字符串/数字等）时直接报具体错误，不再延迟到调用方 CCE
             throw new SdkException("响应" + rootNodeName + "节点类型与预期不符, method=" + param.getMethod()

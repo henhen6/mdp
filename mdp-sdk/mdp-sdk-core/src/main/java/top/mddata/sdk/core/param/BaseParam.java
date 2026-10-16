@@ -42,6 +42,7 @@ public abstract class BaseParam<Req, Resp> {
 
     private final String method;
     private final Class<Resp> responseClass = initResponseClass();
+    private final Type responseType = initResponseType();
 
     /**
      * 解析 Resp 泛型对应的 Class。
@@ -55,6 +56,20 @@ public abstract class BaseParam<Req, Resp> {
         if (superType instanceof ParameterizedType parameterizedType
                 && parameterizedType.getActualTypeArguments().length > 1) {
             return (Class<Resp>) ClassUtil.getSuperClassGenricType(this.getClass(), 1);
+        }
+        return null;
+    }
+
+    /**
+     * 解析 Resp 泛型对应的完整 Type，保留 Page&lt;UserResp&gt; 这类参数化信息。
+     * responseClass 只是裸 Class（如 Page.class），按它反序列化时集合元素会退化为 JSONObject；
+     * 与 initResponseClass() 同理：单泛型中间父类（DownloadRequest&lt;Req&gt;）返回 null，由中间类覆写 getResponseType()。
+     */
+    private Type initResponseType() {
+        Type superType = this.getClass().getGenericSuperclass();
+        if (superType instanceof ParameterizedType parameterizedType
+                && parameterizedType.getActualTypeArguments().length > 1) {
+            return parameterizedType.getActualTypeArguments()[1];
         }
         return null;
     }
@@ -174,6 +189,13 @@ public abstract class BaseParam<Req, Resp> {
 
     public Class<Resp> getResponseClass() {
         return responseClass;
+    }
+
+    /**
+     * Resp 的完整泛型 Type（如 Page&lt;UserResp&gt;），用于保留元素类型的反序列化；可能为 null（单泛型中间父类场景）
+     */
+    public Type getResponseType() {
+        return responseType;
     }
 
     public String getVersion() {
