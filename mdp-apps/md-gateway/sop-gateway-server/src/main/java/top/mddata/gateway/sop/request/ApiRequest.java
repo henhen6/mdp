@@ -110,11 +110,6 @@ public class ApiRequest implements Serializable {
     private String notifyUrl;
 
     /**
-     * api调用日志id
-     */
-    private Long apiCallLogId;
-
-    /**
      * 访问令牌，通过 accessToken.get 接口获取
      */
     @Max(512)

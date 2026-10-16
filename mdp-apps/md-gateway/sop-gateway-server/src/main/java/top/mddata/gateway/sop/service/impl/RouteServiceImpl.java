@@ -146,7 +146,7 @@ public class RouteServiceImpl implements RouteService {
         RpcContextAttachment clientAttachment = RpcContext.getClientAttachment();
         String paramInfo = apiInfo.getParamInfo();
         List<ParamInfoDto> paramInfoList = JSON.parseArray(paramInfo, ParamInfoDto.class);
-        OpenContext openRequest = buildOpenContext(apiRequestContext, isv);
+        OpenContext openRequest = buildOpenContext(routeContext, isv);
         clientAttachment.setObjectAttachment(SopConstants.OPEN_CONTEXT, openRequest);
         if (apiRequestContext.getIsRest()) {
             clientAttachment.setObjectAttachment(SopConstants.WEB_CONTEXT, apiRequestContext.getWebContext());
@@ -240,11 +240,13 @@ public class RouteServiceImpl implements RouteService {
         return serde.parseObject(bizContent);
     }
 
-    protected OpenContext buildOpenContext(ApiRequestContext apiRequestContext, AppDto isv) {
+    protected OpenContext buildOpenContext(RouteContext routeContext, AppDto isv) {
+        ApiRequestContext apiRequestContext = routeContext.getApiRequestContext();
         ApiRequest apiRequest = apiRequestContext.getApiRequest();
         DefaultOpenContext defaultOpenRequest = new DefaultOpenContext();
         defaultOpenRequest.setAppId(isv.getId());
-        defaultOpenRequest.setCallLogId(apiRequest.getApiCallLogId());
+        ApiCallLog apiCallLog = routeContext.getApiCallLog();
+        defaultOpenRequest.setCallLogId(apiCallLog == null ? null : apiCallLog.getId());
         defaultOpenRequest.setAppKey(apiRequest.getAppKey());
         defaultOpenRequest.setApiName(apiRequest.getMethod());
         defaultOpenRequest.setVersion(apiRequest.getVersion());

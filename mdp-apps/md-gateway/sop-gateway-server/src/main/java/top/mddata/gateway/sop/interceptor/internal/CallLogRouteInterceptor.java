@@ -48,9 +48,6 @@ public class CallLogRouteInterceptor implements RouteInterceptor {
                 .setId(uidGenerator.getUid());
 
         routeContext.setApiCallLog(callLog);
-
-        // 设置id
-        apiRequestContext.getApiRequest().setApiCallLogId(callLog.getId());
     }
 
     @Override
