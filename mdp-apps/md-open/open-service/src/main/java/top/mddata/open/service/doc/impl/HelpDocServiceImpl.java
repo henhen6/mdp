@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
+import top.mddata.common.constant.FileObjectType;
+import top.mddata.console.dto.system.RelateFilesToBizDto;
+import top.mddata.console.facade.system.FileFacade;
 import top.mddata.open.dto.admin.HelpDocDto;
 import top.mddata.open.entity.admin.HelpDoc;
 import top.mddata.open.mapper.admin.HelpDocMapper;
@@ -31,6 +34,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HelpDocServiceImpl extends SuperServiceImpl<HelpDocMapper, HelpDoc> implements HelpDocService {
     private final UidGenerator uidGenerator;
+    private final FileFacade fileFacade;
+
+    @Override
+    protected void saveAfter(Object save, HelpDoc entity) {
+        relateContentFiles((HelpDocDto) save, entity);
+    }
+
+    @Override
+    protected void updateAfter(Object update, HelpDoc entity) {
+        relateContentFiles((HelpDocDto) update, entity);
+    }
+
+    /**
+     * 关联内容引用的附件：contentFileIds 为 null 时（老客户端未携带）跳过，避免误删；
+     * 空列表是有效指令（内容已无附件），清理该文档全部历史关联
+     */
+    private void relateContentFiles(HelpDocDto dto, HelpDoc entity) {
+        if (dto.getContentFileIds() == null) {
+            return;
+        }
+        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getId())
+                .objectType(FileObjectType.Open.HELP_DOC_CONTENT)
+                .build().addKeepFileIds(dto.getContentFileIds()));
+    }
 
     @Override
     protected HelpDoc saveBefore(Object save) {

@@ -44,5 +44,9 @@ public interface FileObjectType {
          * 应用申请资质文件
          */
         String APP_APPLY_CREDENTIAL_FILE = "APP_APPLY_CREDENTIAL_FILE";
+        /**
+         * 帮助文档内容附件
+         */
+        String HELP_DOC_CONTENT = "HELP_DOC_CONTENT";
     }
 }
