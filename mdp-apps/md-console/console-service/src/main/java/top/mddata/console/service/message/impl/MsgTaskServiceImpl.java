@@ -14,6 +14,7 @@ import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.constant.ConfigKey;
+import top.mddata.common.constant.FileObjectType;
 import top.mddata.console.dto.message.MsgSendDto;
 import top.mddata.console.dto.message.MsgSendMailDto;
 import top.mddata.console.dto.message.MsgSendNoticeDto;
@@ -22,6 +23,7 @@ import top.mddata.console.dto.message.MsgTaskDto;
 import top.mddata.console.entity.message.MsgTask;
 import top.mddata.console.entity.message.MsgTaskRecipient;
 import top.mddata.console.entity.message.MsgTemplate;
+import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.enumeration.message.MsgChannelEnum;
 import top.mddata.console.enumeration.message.MsgRecipientScopeEnum;
 import top.mddata.console.enumeration.message.MsgTaskStatusEnum;
@@ -33,6 +35,7 @@ import top.mddata.console.service.message.MsgTemplateService;
 import top.mddata.console.service.message.event.MsgSendEvent;
 import top.mddata.console.service.message.event.dto.MsgSendEventDto;
 import top.mddata.console.service.system.ConfigService;
+import top.mddata.console.service.system.FileService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
     private final MsgTaskRecipientService msgTaskRecipientService;
     private final MsgTemplateService msgTemplateService;
     private final ConfigService configService; // 同一个服务，直接调用 service。跨服务需要调用 facade
+    private final FileService fileService;
 
     @Override
     protected MsgTask saveBefore(Object save) {
@@ -69,16 +73,19 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
 
     @Override
     protected void saveAfter(Object save, MsgTask entity) {
-        MsgTaskDto dto = (MsgTaskDto) save;
-        List<Long> recipientIdList = dto.getRecipientList();
-        if (CollUtil.isNotEmpty(recipientIdList)) {
-            List<MsgTaskRecipient> recipientList = recipientIdList.stream().map(id -> {
-                MsgTaskRecipient recipient = new MsgTaskRecipient();
-                recipient.setMsgTaskId(entity.getId());
-                recipient.setRecipient(String.valueOf(id));
-                return recipient;
-            }).toList();
-            msgTaskRecipientService.saveBatch(recipientList);
+        // publish 流程以实体调 save()，此处入参不一定是 DTO，需守卫后再取扩展字段
+        if (save instanceof MsgTaskDto dto) {
+            relateContentFiles(dto, entity);
+            List<Long> recipientIdList = dto.getRecipientList();
+            if (CollUtil.isNotEmpty(recipientIdList)) {
+                List<MsgTaskRecipient> recipientList = recipientIdList.stream().map(id -> {
+                    MsgTaskRecipient recipient = new MsgTaskRecipient();
+                    recipient.setMsgTaskId(entity.getId());
+                    recipient.setRecipient(String.valueOf(id));
+                    return recipient;
+                }).toList();
+                msgTaskRecipientService.saveBatch(recipientList);
+            }
         }
     }
 
@@ -96,6 +103,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
     @Override
     protected void updateAfter(Object update, MsgTask entity) {
         MsgTaskDto dto = (MsgTaskDto) update;
+        relateContentFiles(dto, entity);
         List<Long> recipientIdList = dto.getRecipientList();
         msgTaskRecipientService.removeByMsgTaskId(entity.getId());
         if (CollUtil.isNotEmpty(recipientIdList)) {
@@ -107,6 +115,20 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
             }).toList();
             msgTaskRecipientService.saveBatch(recipientList);
         }
+    }
+
+    /**
+     * 关联内容引用的附件：contentFileIds 为 null 时（老客户端未携带）跳过，避免误删；
+     * 空列表是有效指令（内容已无附件），清理该任务全部历史关联
+     */
+    private void relateContentFiles(MsgTaskDto dto, MsgTask entity) {
+        if (dto.getContentFileIds() == null) {
+            return;
+        }
+        fileService.relateFilesToBiz(RelateFilesToBizDto.builder()
+                .objectId(entity.getId())
+                .objectType(FileObjectType.Console.MSG_TASK_CONTENT)
+                .build().addKeepFileIds(dto.getContentFileIds()));
     }
 
     @Override
@@ -148,6 +170,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
             }).toList();
             msgTaskRecipientService.saveBatch(recipientList);
         }
+        // publish 走 save/updateById 直调，不触发 saveAfter/updateAfter 钩子，附件关联需显式调用
+        relateContentFiles(data, entity);
 
         if (data.getIsTiming() != null && data.getIsTiming() && data.getScheduledSendTime() != null) {
             log.info("定时发送消息任务：{}", entity);

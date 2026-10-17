@@ -24,6 +24,10 @@ public interface FileObjectType {
          * 用户头像
          */
         String USER_AVATAR = "USER_AVATAR";
+        /**
+         * 消息任务内容附件
+         */
+        String MSG_TASK_CONTENT = "MSG_TASK_CONTENT";
 
     }
 
