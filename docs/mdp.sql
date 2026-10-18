@@ -11,7 +11,7 @@
  Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 18/10/2026 10:12:50
+ Date: 18/10/2026 11:07:08
 */
 
 SET NAMES utf8mb4;
@@ -22,7 +22,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_config`;
 CREATE TABLE `mdc_config` (
-  `id` bigint NOT NULL COMMENT '参数ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `config_group` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '参数分组',
   `uniq_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '参数标识',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '参数名称',
@@ -32,9 +32,9 @@ CREATE TABLE `mdc_config` (
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
   `org_id` bigint DEFAULT NULL COMMENT '所属组织',
   `created_at` datetime(3) DEFAULT NULL COMMENT '创建时间',
-  `created_by` bigint DEFAULT NULL COMMENT '创建用户',
-  `updated_at` datetime(3) DEFAULT NULL COMMENT '更新时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新用户',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
+  `updated_at` datetime(3) DEFAULT NULL COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
   `deleted_at` bigint NOT NULL DEFAULT '0' COMMENT '删除标识',
   `deleted_by` bigint DEFAULT NULL COMMENT '删除用户',
   PRIMARY KEY (`id`) USING BTREE,
@@ -68,7 +68,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_dict`;
 CREATE TABLE `mdc_dict` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `item_type` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '01' COMMENT '字典项结构\n[01-列表 02-树结构]',
   `dict_group` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字典分组',
   `dict_type` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '30' COMMENT '字典类型\n[10-系统字典 20-枚举字典 30-业务字典]',
@@ -79,8 +79,8 @@ CREATE TABLE `mdc_dict` (
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
   `created_at` datetime(3) DEFAULT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
-  `updated_at` datetime(3) DEFAULT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) DEFAULT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_uniq` (`uniq_key`) USING BTREE,
   KEY `IDX_GROUP_KEY` (`dict_group`,`uniq_key`) USING BTREE COMMENT '分组和标识'
@@ -143,7 +143,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_dict_item`;
 CREATE TABLE `mdc_dict_item` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `dict_id` bigint NOT NULL COMMENT '所属字典',
   `parent_id` bigint DEFAULT NULL COMMENT '父节点',
   `uniq_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '标识',
@@ -161,8 +161,8 @@ CREATE TABLE `mdc_dict_item` (
   `i18n_json` varchar(5120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '国际化配置',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
   `created_at` datetime(3) DEFAULT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
-  `updated_at` datetime(3) DEFAULT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) DEFAULT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_dict_uniq` (`dict_id`,`uniq_key`) USING BTREE,
   KEY `IDX_DICT_KEY` (`dict_id`,`uniq_key`) USING BTREE COMMENT '字典和标识'
@@ -341,7 +341,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_file`;
 CREATE TABLE `mdc_file` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `object_id` bigint DEFAULT NULL COMMENT '业务id',
   `object_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '对象类型',
   `file_type` int DEFAULT '1' COMMENT '文件类型',
@@ -387,7 +387,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_file_part`;
 CREATE TABLE `mdc_file_part` (
-  `id` bigint NOT NULL COMMENT '分片id',
+  `id` bigint NOT NULL COMMENT '主键',
   `platform` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储平台',
   `upload_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '上传ID，仅在手动分片上传时使用',
   `e_tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '分片 ETag',
@@ -412,7 +412,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_interface_config`;
 CREATE TABLE `mdc_interface_config` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '接口标识',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '接口名称',
   `msg_type` smallint NOT NULL DEFAULT '2' COMMENT '接口类型\n[1-站内信 2-短信 3-邮件]',
@@ -449,7 +449,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_interface_log`;
 CREATE TABLE `mdc_interface_log` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `msg_task_id` bigint DEFAULT NULL COMMENT '任务ID',
   `interface_stat_id` bigint NOT NULL COMMENT '接口ID',
   `exec_start_time` datetime(3) NOT NULL COMMENT '执行开始时间',
@@ -476,7 +476,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_interface_stat`;
 CREATE TABLE `mdc_interface_stat` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '接口名称',
   `success_count` int DEFAULT '0' COMMENT '成功次数',
   `fail_count` int DEFAULT '0' COMMENT '失败次数',
@@ -507,7 +507,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_msg_task`;
 CREATE TABLE `mdc_msg_task` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `template_id` bigint DEFAULT NULL COMMENT '消息模板',
   `type` smallint NOT NULL DEFAULT '1' COMMENT '消息类型\n[1-站内信 2-短信 3-邮件]',
   `status` smallint NOT NULL DEFAULT '0' COMMENT '执行状态\n[0-草稿 1-待执行 2-执行成功 3-执行失败]',
@@ -547,7 +547,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_msg_task_recipient`;
 CREATE TABLE `mdc_msg_task_recipient` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `msg_task_id` bigint NOT NULL COMMENT '消息ID',
   `recipient` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '接收人\n站内信-id 短信-手机号 邮件-邮箱',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
@@ -569,7 +569,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_msg_template`;
 CREATE TABLE `mdc_msg_template` (
-  `id` bigint NOT NULL COMMENT '模板ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `interface_config_id` bigint NOT NULL COMMENT '接口ID',
   `msg_type` smallint NOT NULL DEFAULT '1' COMMENT '消息类型\n[1-站内信 2-短信 3-邮件 ]',
   `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '模板标识',
@@ -610,7 +610,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_notice`;
 CREATE TABLE `mdc_notice` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `task_id` bigint NOT NULL COMMENT '消息任务',
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '标题',
   `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '发送内容',
@@ -636,7 +636,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_notice_recipient`;
 CREATE TABLE `mdc_notice_recipient` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `notice_id` bigint NOT NULL COMMENT '消息ID',
   `user_id` bigint NOT NULL COMMENT '接收人ID\n站内信专用',
   `read` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否已读',
@@ -660,7 +660,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_org`;
 CREATE TABLE `mdc_org` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `org_type` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '10' COMMENT '类型\n[10-单位 20-部门]',
   `nature` int DEFAULT '1' COMMENT '组织性质\n[1-总公司 90-开发者 99-运营]',
@@ -702,8 +702,8 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_position`;
 CREATE TABLE `mdc_position` (
-  `id` bigint NOT NULL COMMENT 'ID',
-  `org_id` bigint DEFAULT NULL COMMENT '所属组织\n#sys_org\n@Echo(api = EchoApi.ORG_ID_CLASS)',
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint DEFAULT NULL COMMENT '所属组织',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '名称',
   `state` bit(1) DEFAULT b'1' COMMENT '状态\n0-禁用 1-启用',
   `remarks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
@@ -797,7 +797,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_resource_api`;
 CREATE TABLE `mdc_resource_api` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `resource_id` bigint NOT NULL COMMENT '资源id（菜单id或按钮id）',
   `uri` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '接口路径（裸路径，Ant风格通配）',
   `request_method` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'ALL' COMMENT '请求方式[GET POST PUT DELETE ALL]',
@@ -805,10 +805,10 @@ CREATE TABLE `mdc_resource_api` (
   `controller` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '来源类名（手动录入为空）',
   `application_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '来源服务（手动录入为空）',
   `is_input` bit(1) DEFAULT b'0' COMMENT '是否手动录入',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人id',
-  `updated_at` datetime(3) DEFAULT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) DEFAULT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_uri_method_res` (`uri`,`request_method`,`resource_id`) USING BTREE,
   KEY `idx_resource_id` (`resource_id`) USING BTREE
@@ -1131,17 +1131,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_resource_field`;
 CREATE TABLE `mdc_resource_field` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `menu_id` bigint NOT NULL COMMENT '所属菜单',
   `property` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '实体类字段',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `rule_type` tinyint NOT NULL DEFAULT '10' COMMENT '处理动作\n[10-隐藏 20-脱敏]',
   `mask_rule` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '脱敏规则(rule_type=20时必填)，取 MaskManager 注册名',
   `state` bit(1) NOT NULL DEFAULT b'1' COMMENT '状态\n[0-禁用 1-启用]',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人id',
-  `updated_at` datetime(3) NOT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) NOT NULL COMMENT '最后修改时间',
   `deleted_by` bigint DEFAULT NULL COMMENT '删除人',
   `deleted_at` bigint NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`id`) USING BTREE,
@@ -1162,7 +1162,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_resource_menu`;
 CREATE TABLE `mdc_resource_menu` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `app_id` bigint NOT NULL COMMENT '所属应用',
   `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编码',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
@@ -1177,10 +1177,10 @@ CREATE TABLE `mdc_resource_menu` (
   `parent_id` bigint DEFAULT NULL COMMENT '父级ID',
   `weight` int DEFAULT '1' COMMENT '排序',
   `meta` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '{}' COMMENT '元数据\n',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人id',
-  `updated_at` datetime(3) NOT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) NOT NULL COMMENT '最后修改时间',
   `deleted_by` bigint DEFAULT NULL COMMENT '删除人',
   `deleted_at` bigint NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`id`) USING BTREE,
@@ -1395,7 +1395,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_role`;
 CREATE TABLE `mdc_role` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色编码',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '角色名称',
   `role_category` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '10' COMMENT '角色分类\n[10-普通角色 20-管理员角色 30-权限集合]',
@@ -1403,10 +1403,10 @@ CREATE TABLE `mdc_role` (
   `template_role` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否模板\n',
   `remarks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
   `state` bit(1) NOT NULL DEFAULT b'0' COMMENT '状态\n[0-禁用 1-启用]',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人id',
-  `updated_at` datetime(3) NOT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) NOT NULL COMMENT '最后修改时间',
   `deleted_by` bigint DEFAULT NULL COMMENT '删除人',
   `deleted_at` bigint NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`id`) USING BTREE,
@@ -1437,10 +1437,10 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_role_app_rel`;
 CREATE TABLE `mdc_role_app_rel` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `role_id` bigint NOT NULL COMMENT '所属角色',
   `app_id` bigint NOT NULL COMMENT '所属应用',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_role_app` (`role_id`,`app_id`) USING BTREE
@@ -1488,15 +1488,15 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_role_data_scope_rel`;
 CREATE TABLE `mdc_role_data_scope_rel` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `role_id` bigint NOT NULL COMMENT '所属角色',
   `menu_id` bigint NOT NULL COMMENT '所属菜单',
   `data_scope` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '数据范围\n[10-全部 20-本公司及以下 30-本部门及以下 40-本部门 50-仅本人 90-自定义]',
   `data_scope_impl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '自定义实现的Spring Bean名（仅data_scope=90时非空）',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人id',
-  `updated_at` datetime(3) DEFAULT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) DEFAULT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_role_menu` (`role_id`,`menu_id`) USING BTREE,
   KEY `idx_menu_id` (`menu_id`) USING BTREE
@@ -1533,10 +1533,10 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_role_field_rel`;
 CREATE TABLE `mdc_role_field_rel` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `role_id` bigint NOT NULL COMMENT '角色ID',
   `field_id` bigint NOT NULL COMMENT '字段规则ID(mdc_resource_field.id)',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_role_field` (`role_id`,`field_id`) USING BTREE,
@@ -1558,12 +1558,12 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_role_resource_rel`;
 CREATE TABLE `mdc_role_resource_rel` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `role_id` bigint NOT NULL COMMENT '所属角色',
   `app_id` bigint NOT NULL COMMENT '应用ID',
   `resource_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '资源类型',
   `resource_id` bigint NOT NULL COMMENT '所属资源',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_role_app_res` (`role_id`,`resource_id`,`app_id`) USING BTREE,
@@ -2420,11 +2420,11 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_user`;
 CREATE TABLE `mdc_user` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `username` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '密码',
   `sex` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '性别\n[0-男 1-女]',
-  `id_card` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '身份证',
+  `id_card` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '身份证号',
   `salt` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '盐值',
   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '手机号',
   `avatar` bigint DEFAULT NULL COMMENT '头像',
@@ -2535,10 +2535,10 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_user_org_rel`;
 CREATE TABLE `mdc_user_org_rel` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `user_id` bigint NOT NULL COMMENT '所属用户',
   `org_id` bigint NOT NULL COMMENT '所属组织',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_user_org` (`user_id`,`org_id`) USING BTREE
@@ -2628,10 +2628,10 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdc_user_role_rel`;
 CREATE TABLE `mdc_user_role_rel` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `role_id` bigint NOT NULL COMMENT '所属角色',
   `user_id` bigint NOT NULL COMMENT '所属用户',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人id',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人ID',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_role_user` (`role_id`,`user_id`) USING BTREE,
@@ -2660,7 +2660,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_api`;
 CREATE TABLE `mdo_api` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `app_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '应用名称',
   `api_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '接口名称',
   `api_version` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '1.0' COMMENT '版本号',
@@ -2675,10 +2675,10 @@ CREATE TABLE `mdo_api` (
   `reg_source` tinyint NOT NULL DEFAULT '1' COMMENT '注册来源\n[1-系统注册 2-手动注册]',
   `api_mode` tinyint NOT NULL DEFAULT '1' COMMENT '接口模式\n[1-open接口 2-Restful模式]',
   `state` tinyint NOT NULL DEFAULT '1' COMMENT '状态\r\n[1-启用 0-禁用]',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   `need_sign` tinyint NOT NULL DEFAULT '0' COMMENT '是否需要签名校验[0-否 1-是]',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_apiname_version` (`api_name`,`api_version`) USING BTREE
@@ -2709,7 +2709,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_api_call_log`;
 CREATE TABLE `mdo_api_call_log` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `trace_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '调用链id',
   `app_id` bigint NOT NULL COMMENT '所属应用',
   `app_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '应用Key',
@@ -2743,11 +2743,11 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_app`;
 CREATE TABLE `mdo_app` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `app_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '应用Key',
   `app_secret` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '应用密钥',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '应用名称',
-  `login_type` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '登录方式\n[10-ticket模式 20-oauth2认证]',
+  `login_type` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '登录方式\n[10-ticket模式 20-OAuth2认证]',
   `type` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '应用类型\n[10-自建应用 20-第三方应用]',
   `state` bit(1) NOT NULL DEFAULT b'1' COMMENT '状态',
   `weight` int DEFAULT '0' COMMENT '排序',
@@ -2801,7 +2801,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_app_apply`;
 CREATE TABLE `mdo_app_apply` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '应用名称',
   `intro` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '应用简介',
   `home_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '首页地址',
@@ -2812,10 +2812,10 @@ CREATE TABLE `mdo_app_apply` (
   `audit_at` datetime(3) DEFAULT NULL COMMENT '审核时间',
   `submission_at` datetime(3) DEFAULT NULL COMMENT '提交时间',
   `review_comments` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '审核意见',
-  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
+  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='应用申请';
 
@@ -2830,11 +2830,11 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_app_group_rel`;
 CREATE TABLE `mdo_app_group_rel` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `app_id` bigint NOT NULL COMMENT '所属应用',
   `group_id` bigint NOT NULL COMMENT '分组\nperm_group.id',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_isvid_groupid` (`app_id`,`group_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='应用拥有的权限分组';
@@ -2853,17 +2853,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_app_keys`;
 CREATE TABLE `mdo_app_keys` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `app_id` bigint NOT NULL DEFAULT '0' COMMENT '所属应用',
   `notify_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '通知地址',
   `notify_state` bit(1) DEFAULT b'0' COMMENT '通知状态',
   `notify_encryption_type` smallint DEFAULT NULL COMMENT '加密模式，[0-明文模式 1-兼容模式 2-安全模式]',
   `notify_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '签名校验令牌，平台和开发者共同持有，用于生成和验证 signature / msg_signature',
   `notify_encoding_aes_key` varchar(43) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'AES加解密密钥（43字符），平台和开发者共同持有。生成方式：Base64Decode(encodingAesKey + "=") 得到32字节AESKey',
-  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
+  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   `public_key_app` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '开发者应用公钥（RSA2签名校验用）',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_appid` (`app_id`) USING BTREE
@@ -2888,13 +2888,13 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_doc_content`;
 CREATE TABLE `mdo_doc_content` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `doc_info_id` bigint NOT NULL DEFAULT '0' COMMENT '文档ID\ndoc_info.id',
   `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '文档内容',
-  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
+  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_doc_info_id` (`doc_info_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文档内容';
@@ -2935,14 +2935,14 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_doc_group`;
 CREATE TABLE `mdo_doc_group` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '令牌',
   `publish` tinyint NOT NULL DEFAULT '0' COMMENT '是否发布',
-  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
+  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文档分组';
 
@@ -2958,7 +2958,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_doc_info`;
 CREATE TABLE `mdo_doc_info` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `doc_group_id` bigint NOT NULL COMMENT '所属分组',
   `doc_title` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文档标题',
   `doc_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '文档编码',
@@ -2971,10 +2971,10 @@ CREATE TABLE `mdo_doc_info` (
   `publish` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '发布状态\r\n[0-未发布 1-已发布]',
   `parent_id` bigint NOT NULL COMMENT '父文档',
   `weight` int DEFAULT '0' COMMENT '排序',
-  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
+  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_doc_app_id` (`doc_group_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文档信息';
@@ -3009,7 +3009,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_event_push`;
 CREATE TABLE `mdo_event_push` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `event_trigger_id` bigint NOT NULL COMMENT '事件触发ID',
   `event_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '事件编码',
   `app_id` bigint NOT NULL COMMENT '所属应用',
@@ -3027,8 +3027,8 @@ CREATE TABLE `mdo_event_push` (
   `remark` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
   `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_app_key` (`app_key`) USING BTREE,
   KEY `idx_event_trigger_id` (`event_trigger_id`,`app_id`,`exec_status`) USING BTREE,
@@ -3104,7 +3104,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_event_trigger`;
 CREATE TABLE `mdo_event_trigger` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `event_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '事件编码',
   `event_id` bigint NOT NULL COMMENT '事件ID',
   `trigger_at` datetime(3) DEFAULT NULL COMMENT '触发时间',
@@ -3317,8 +3317,8 @@ CREATE TABLE `mdo_event_type` (
   `state` bit(1) DEFAULT b'1' COMMENT '状态',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
   `created_at` datetime(3) DEFAULT NULL COMMENT '创建时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
-  `updated_at` datetime(3) DEFAULT NULL COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人ID',
+  `updated_at` datetime(3) DEFAULT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_code` (`code`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='事件类型';
@@ -3340,11 +3340,11 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_group_api_rel`;
 CREATE TABLE `mdo_group_api_rel` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `group_id` bigint NOT NULL COMMENT '所属分组\nperm_group.id',
   `api_id` bigint NOT NULL COMMENT '所属接口',
-  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
+  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_apiid_groupid` (`api_id`,`group_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='分组拥有的对外接口';
@@ -3364,11 +3364,11 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_group_scope_rel`;
 CREATE TABLE `mdo_group_scope_rel` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `group_id` bigint NOT NULL COMMENT '所属分组',
   `scope_id` bigint NOT NULL COMMENT '所属权限',
-  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
+  `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_apiid_groupid` (`scope_id`,`group_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='分组拥有的oauth2权限';
@@ -3388,17 +3388,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_help_doc`;
 CREATE TABLE `mdo_help_doc` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` bigint NOT NULL COMMENT '主键',
   `title` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '文档名称',
   `weight` int NOT NULL DEFAULT '0' COMMENT '排序',
   `state` bit(1) NOT NULL DEFAULT b'1' COMMENT '状态\n1：启用，0：禁用',
   `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '内容',
   `content_type` smallint NOT NULL DEFAULT '1' COMMENT '内容类型\n1-Markdown,2-富文本',
   `parent_id` bigint DEFAULT NULL COMMENT '上级文档',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '添加时间',
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   `tree_path` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '树路径',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='帮助文档';
@@ -3420,7 +3420,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_notify_info`;
 CREATE TABLE `mdo_notify_info` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `call_log_id` bigint DEFAULT NULL COMMENT '所属调用',
   `app_id` bigint NOT NULL COMMENT '所属应用',
   `app_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '应用Key',
@@ -3439,8 +3439,8 @@ CREATE TABLE `mdo_notify_info` (
   `remark` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
   `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `updated_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `created_by` bigint DEFAULT '0' COMMENT '创建人id',
-  `updated_by` bigint DEFAULT '0' COMMENT '修改人id',
+  `created_by` bigint DEFAULT '0' COMMENT '创建人ID',
+  `updated_by` bigint DEFAULT '0' COMMENT '最后修改人ID',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_app_id` (`app_key`) USING BTREE,
   KEY `idx_exec_status_next_request_time` (`exec_status`,`next_request_time`)
@@ -3481,7 +3481,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_oauth_log`;
 CREATE TABLE `mdo_oauth_log` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `app_id` bigint DEFAULT NULL COMMENT '所属应用',
   `user_id` bigint DEFAULT NULL COMMENT '所属用户',
   `openid` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '开放id',
@@ -3511,7 +3511,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_oauth_openid`;
 CREATE TABLE `mdo_oauth_openid` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `app_id` bigint DEFAULT NULL COMMENT '所属应用',
   `user_id` bigint DEFAULT '0' COMMENT '所属用户',
   `openid` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'openid',
@@ -3536,7 +3536,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_oauth_scope`;
 CREATE TABLE `mdo_oauth_scope` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编码',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '图标',
@@ -3567,7 +3567,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_oauth_unionid`;
 CREATE TABLE `mdo_oauth_unionid` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `subject_id` bigint DEFAULT NULL COMMENT '所属主体',
   `user_id` bigint DEFAULT '0' COMMENT '所属用户',
   `unionid` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Unionid',
@@ -3591,7 +3591,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `mdo_scope_group`;
 CREATE TABLE `mdo_scope_group` (
-  `id` bigint NOT NULL COMMENT 'ID',
+  `id` bigint NOT NULL COMMENT '主键',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `weight` bigint DEFAULT '0' COMMENT '排序',
   `state` bit(1) DEFAULT b'1' COMMENT '状态',
@@ -4083,6 +4083,34 @@ INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `mo
 INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1292, '172.26.3.99', '1791945351827-59033', 2, '2026-10-14', '2026-10-14 10:35:52', '2026-10-14 10:35:52');
 INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1293, '172.26.3.99', '1791948388641-23789', 2, '2026-10-14', '2026-10-14 11:26:29', '2026-10-14 11:26:29');
 INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1294, '172.26.3.99', '1791948885726-46897', 2, '2026-10-14', '2026-10-14 11:34:46', '2026-10-14 11:34:46');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1295, '2408:826a:a22:3b1c:a40c:75ec:4d2c:854b%en0', '1791972739469-50221', 2, '2026-10-14', '2026-10-14 18:12:19', '2026-10-14 18:12:19');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1296, '2408:826a:a22:3b1c:a40c:75ec:4d2c:854b%en0', '1791979945643-5742', 2, '2026-10-14', '2026-10-14 20:12:26', '2026-10-14 20:12:26');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1297, '2408:826a:a22:3b1c:a40c:75ec:4d2c:854b%en0', '1791986055468-88684', 2, '2026-10-14', '2026-10-14 21:54:15', '2026-10-14 21:54:15');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1298, '172.26.3.99', '1792027634876-66141', 2, '2026-10-15', '2026-10-15 09:27:15', '2026-10-15 09:27:15');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1299, '172.26.3.99', '1792038376902-87723', 2, '2026-10-15', '2026-10-15 12:26:17', '2026-10-15 12:26:17');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1300, '2408:846a:100:3d83:e1a2:b607:179c:49fb%en0', '1792061960177-72242', 2, '2026-10-15', '2026-10-15 18:59:20', '2026-10-15 18:59:20');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1301, '2408:846a:100:3d83:e1a2:b607:179c:49fb%en0', '1792065881938-10446', 2, '2026-10-15', '2026-10-15 20:04:42', '2026-10-15 20:04:42');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1302, '2408:846a:100:3d83:e1a2:b607:179c:49fb%en0', '1792066702166-16008', 2, '2026-10-15', '2026-10-15 20:18:22', '2026-10-15 20:18:22');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1303, '2408:846a:100:3d83:e1a2:b607:179c:49fb%en0', '1792066710547-78542', 2, '2026-10-15', '2026-10-15 20:18:31', '2026-10-15 20:18:31');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1304, '2408:846a:100:3d83:e1a2:b607:179c:49fb%en0', '1792066815155-27041', 2, '2026-10-15', '2026-10-15 20:20:15', '2026-10-15 20:20:15');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1305, '2408:826a:a20:c103:6ccb:a826:8e73:4c14%en0', '1792072495924-82504', 2, '2026-10-15', '2026-10-15 21:54:56', '2026-10-15 21:54:56');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1306, '2408:826a:a20:c103:6ccb:a826:8e73:4c14%en0', '1792072503825-19842', 2, '2026-10-15', '2026-10-15 21:55:04', '2026-10-15 21:55:04');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1307, '2408:826a:a20:c103:6ccb:a826:8e73:4c14%en0', '1792080383286-12686', 2, '2026-10-16', '2026-10-16 00:06:23', '2026-10-16 00:06:23');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1308, '2408:826a:a20:c103:6ccb:a826:8e73:4c14%en0', '1792080724373-60873', 2, '2026-10-16', '2026-10-16 00:12:04', '2026-10-16 00:12:04');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1309, '2408:826a:a20:c103:6ccb:a826:8e73:4c14%en0', '1792081836378-38495', 2, '2026-10-16', '2026-10-16 00:30:36', '2026-10-16 00:30:36');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1310, '172.26.3.99', '1792112524404-51087', 2, '2026-10-16', '2026-10-16 09:02:04', '2026-10-16 09:02:04');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1311, '172.26.3.99', '1792112531186-10761', 2, '2026-10-16', '2026-10-16 09:02:11', '2026-10-16 09:02:11');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1312, '172.26.3.99', '1792114714295-94908', 2, '2026-10-16', '2026-10-16 09:38:34', '2026-10-16 09:38:34');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1313, '172.26.3.99', '1792119059231-99768', 2, '2026-10-16', '2026-10-16 10:50:59', '2026-10-16 10:50:59');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1314, '172.26.3.99', '1792119721719-56014', 2, '2026-10-16', '2026-10-16 11:02:02', '2026-10-16 11:02:02');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1315, '172.26.3.99', '1792124690782-87292', 2, '2026-10-16', '2026-10-16 12:24:51', '2026-10-16 12:24:51');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1316, '172.26.3.99', '1792130662140-63724', 2, '2026-10-16', '2026-10-16 14:04:22', '2026-10-16 14:04:22');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1317, '172.26.3.99', '1792134067525-17555', 2, '2026-10-16', '2026-10-16 15:01:08', '2026-10-16 15:01:08');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1318, '2408:826a:a20:c103:2089:a695:f5da:7e11%en0', '1792147066208-22424', 2, '2026-10-16', '2026-10-16 18:37:46', '2026-10-16 18:37:46');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1319, '2408:826a:a20:c103:2089:a695:f5da:7e11%en0', '1792147075670-98959', 2, '2026-10-16', '2026-10-16 18:37:56', '2026-10-16 18:37:56');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1320, '2408:826a:a21:c6be:5c3d:1606:413f:3216%en0', '1792229846741-48044', 2, '2026-10-17', '2026-10-17 17:37:27', '2026-10-17 17:37:27');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1321, '2408:826a:a21:c6be:8560:4077:a510:e092%en0', '1792248620791-54888', 2, '2026-10-17', '2026-10-17 22:50:21', '2026-10-17 22:50:21');
+INSERT INTO `worker_node` (`id`, `host_name`, `port`, `type`, `launch_date`, `modified`, `created`) VALUES (1322, '2408:826a:a21:c6be:5cf4:3195:c167:7161%en0', '1792287384562-68771', 2, '2026-10-18', '2026-10-18 09:36:25', '2026-10-18 09:36:25');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
