@@ -3,6 +3,7 @@ package top.mddata.console.service.message;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.console.entity.message.MsgTaskRecipient;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -24,4 +25,10 @@ public interface MsgTaskRecipientService extends SuperService<MsgTaskRecipient> 
      * @param id 任务ID
      */
     void removeByMsgTaskId(Long id);
+
+    /**
+     * 根据任务ID批量删除
+     * @param msgTaskIds 任务ID集合，空集合视为无操作
+     */
+    void removeByMsgTaskIds(Collection<Long> msgTaskIds);
 }

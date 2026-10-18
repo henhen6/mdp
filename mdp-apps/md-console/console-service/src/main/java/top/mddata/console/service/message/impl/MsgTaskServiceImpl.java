@@ -37,9 +37,11 @@ import top.mddata.console.service.message.event.dto.MsgSendEventDto;
 import top.mddata.console.service.system.ConfigService;
 import top.mddata.console.service.system.FileService;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -129,6 +131,17 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
                 .objectId(entity.getId())
                 .objectType(FileObjectType.Console.MSG_TASK_CONTENT)
                 .build().addKeepFileIds(dto.getContentFileIds()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean removeByIds(Collection<? extends Serializable> idList) {
+        boolean flag = super.removeByIds(idList);
+        // 任务删除后清理收件人与内容附件，避免残留
+        List<Long> taskIds = idList.stream().map(id -> Long.valueOf(String.valueOf(id))).toList();
+        msgTaskRecipientService.removeByMsgTaskIds(taskIds);
+        fileService.releaseFilesByBiz(FileObjectType.Console.MSG_TASK_CONTENT, taskIds);
+        return flag;
     }
 
     @Override

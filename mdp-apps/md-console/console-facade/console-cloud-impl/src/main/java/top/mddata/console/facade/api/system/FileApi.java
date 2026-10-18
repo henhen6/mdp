@@ -25,6 +25,14 @@ public interface FileApi {
     R<Long> relateFilesToBiz(@RequestBody RelateFilesToBizDto relateFilesToBizDto);
 
     /**
+     * 释放业务关联的全部附件 （删除业务时调用）
+     *
+     * @param relateFilesToBizDto 参数，仅需 objectType 与 objectId
+     */
+    @PostMapping(value = "/releaseFilesByBiz")
+    R<Boolean> releaseFilesByBiz(@RequestBody RelateFilesToBizDto relateFilesToBizDto);
+
+    /**
      * 复制文件
      * @param copyFilesDto 复制参数
      */

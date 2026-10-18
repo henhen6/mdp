@@ -1,6 +1,7 @@
 package top.mddata.console.controller.system;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,12 +20,15 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.console.dto.system.CopyFilesDto;
 import top.mddata.console.dto.system.FileDto;
+import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.entity.system.File;
 import top.mddata.console.query.system.FileQuery;
 import top.mddata.console.service.system.FileService;
 import top.mddata.console.vo.system.FileVo;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -77,6 +81,41 @@ public class FileController extends SuperController<FileService, File> {
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody FileDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
     }
+
+    /**
+     * 释放业务关联的全部附件。
+     *
+     * @param dto 参数，仅需 objectType 与 objectId
+     * @return {@code true} 释放成功
+     */
+    @PostMapping("/releaseFilesByBiz")
+    @Operation(summary = "释放业务附件", description = "释放业务关联的全部附件，删除业务时调用")
+    @RequestLog(value = "释放业务附件", logType = RequestLog.LogType.DELETE)
+    public R<Boolean> releaseFilesByBiz(@RequestBody RelateFilesToBizDto dto) {
+        // 批量优先取 objectIds，其次单个 objectId；都未传为空集合，service 层按无操作处理
+        List<Long> objectIds = CollUtil.isNotEmpty(dto.getObjectIds())
+                ? dto.getObjectIds()
+                : (dto.getObjectId() != null ? Collections.singletonList(dto.getObjectId()) : Collections.emptyList());
+        superService.releaseFilesByBiz(dto.getObjectType(), objectIds);
+        return R.success();
+    }
+
+    @Operation(summary = "复制文件", description = "复制文件")
+    @PostMapping(value = "/copyFile")
+    @RequestLog(value = "复制文件", logType = RequestLog.LogType.ADD)
+    public R<Boolean> copyFile(@Validated @RequestBody CopyFilesDto copyFilesDto) {
+        return R.success(superService.copyFile(copyFilesDto));
+    }
+
+
+    @Operation(summary = "关联文件到业务", description = "关联文件到业务")
+    @PostMapping(value = "/relateFilesToBiz")
+    @RequestLog(value = "关联文件到业务", logType = RequestLog.LogType.UPDATE)
+    public R<Boolean> relateFilesToBiz(@Validated @RequestBody RelateFilesToBizDto relateFilesToBizDto) {
+        superService.relateFilesToBiz(relateFilesToBizDto);
+        return R.success();
+    }
+
 
     /**
      * 根据文件主键获取详细信息。

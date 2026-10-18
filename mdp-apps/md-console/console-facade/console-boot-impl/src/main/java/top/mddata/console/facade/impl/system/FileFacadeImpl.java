@@ -7,6 +7,8 @@ import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.facade.system.FileFacade;
 import top.mddata.console.service.system.FileService;
 
+import java.util.Collection;
+
 @Service
 @RequiredArgsConstructor
 public class FileFacadeImpl implements FileFacade {
@@ -15,6 +17,11 @@ public class FileFacadeImpl implements FileFacade {
     @Override
     public void relateFilesToBiz(RelateFilesToBizDto relateFilesToBizDto) {
         fileService.relateFilesToBiz(relateFilesToBizDto);
+    }
+
+    @Override
+    public void releaseFilesByBiz(String objectType, Collection<Long> objectIds) {
+        fileService.releaseFilesByBiz(objectType, objectIds);
     }
 
     @Override

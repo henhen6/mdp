@@ -22,9 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.utils.ArgumentAssert;
-import top.mddata.console.dto.system.CopyFilesDto;
 import top.mddata.console.dto.system.FileUploadDto;
-import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.service.system.FileService;
 import top.mddata.console.vo.system.FileVo;
 
@@ -58,23 +56,6 @@ public class FileUploadController {
     @RequestLog(value = "上传文件", logType = RequestLog.LogType.ADD, request = false)
     public R<FileVo> upload(@RequestParam(value = "file") MultipartFile file, @Validated FileUploadDto fileUploadDto) {
         return R.success(fileService.upload(file, fileUploadDto));
-    }
-
-
-    @Operation(summary = "复制文件", description = "复制文件")
-    @PostMapping(value = "/copyFile")
-    @RequestLog(value = "复制文件", logType = RequestLog.LogType.ADD)
-    public R<Boolean> copyFile(@Validated @RequestBody CopyFilesDto copyFilesDto) {
-        return R.success(fileService.copyFile(copyFilesDto));
-    }
-
-
-    @Operation(summary = "关联文件到业务", description = "关联文件到业务")
-    @PostMapping(value = "/relateFilesToBiz")
-    @RequestLog(value = "关联文件到业务", logType = RequestLog.LogType.UPDATE)
-    public R<Boolean> relateFilesToBiz(@Validated @RequestBody RelateFilesToBizDto relateFilesToBizDto) {
-        fileService.relateFilesToBiz(relateFilesToBizDto);
-        return R.success();
     }
 
     /**

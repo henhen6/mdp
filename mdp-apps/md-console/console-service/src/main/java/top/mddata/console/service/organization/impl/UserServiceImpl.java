@@ -70,6 +70,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 用户 服务层实现。
@@ -442,7 +443,10 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         List<Long> userIds = idList.stream().map(id -> Long.valueOf(String.valueOf(id))).toList();
 //        systemProtectService.checkUsersNotProtected(userIds, "删除用户");
         userIds.forEach(id -> accountOperationGuard.check(id, AccountOperation.DELETE));
+        // 删除前取出头像对象id，用于删除后释放头像附件（注册流程创建的用户 avatar 为 null，需过滤）
+        List<Long> avatarIds = listByIds(userIds).stream().map(User::getAvatar).filter(Objects::nonNull).toList();
         boolean flag = super.removeByIds(idList);
+        fileService.releaseFilesByBiz(FileObjectType.Console.USER_AVATAR, avatarIds);
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Console.USER_DELETE)
                 .setEventContent(IdsDto.builder().ids(idList).build().toString())

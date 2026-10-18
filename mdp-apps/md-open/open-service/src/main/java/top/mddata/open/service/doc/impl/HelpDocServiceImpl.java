@@ -20,7 +20,9 @@ import top.mddata.open.entity.admin.HelpDoc;
 import top.mddata.open.mapper.admin.HelpDocMapper;
 import top.mddata.open.service.doc.HelpDocService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -58,6 +60,16 @@ public class HelpDocServiceImpl extends SuperServiceImpl<HelpDocMapper, HelpDoc>
                 .objectId(entity.getId())
                 .objectType(FileObjectType.Open.HELP_DOC_CONTENT)
                 .build().addKeepFileIds(dto.getContentFileIds()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean removeByIds(Collection<? extends Serializable> idList) {
+        boolean flag = super.removeByIds(idList);
+        // 释放被删文档的内容附件（只处理被删 id，不级联子树，与删除行为保持一致）
+        fileFacade.releaseFilesByBiz(FileObjectType.Open.HELP_DOC_CONTENT,
+                idList.stream().map(id -> Long.valueOf(String.valueOf(id))).toList());
+        return flag;
     }
 
     @Override

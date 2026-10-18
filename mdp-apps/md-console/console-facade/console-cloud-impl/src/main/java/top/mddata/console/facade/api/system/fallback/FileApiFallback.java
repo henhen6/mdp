@@ -19,6 +19,11 @@ public class FileApiFallback implements FileApi {
     }
 
     @Override
+    public R<Boolean> releaseFilesByBiz(RelateFilesToBizDto relateFilesToBizDto) {
+        return R.timeout();
+    }
+
+    @Override
     public R<Boolean> copyFile(CopyFilesDto copyFilesDto) {
         return R.timeout();
     }
