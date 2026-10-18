@@ -22,6 +22,14 @@ public @interface Open {
     String value();
 
     /**
+     * 接口中文描述，注册时写入 mdo_api.description
+     * <p>
+     * javadoc 在运行时无法通过反射读取，因此接口描述需要显式声明在这里
+     * </p>
+     */
+    String description() default "";
+
+    /**
      * 版本号，默认版本号是"1.0"
      */
     String version() default "1.0";

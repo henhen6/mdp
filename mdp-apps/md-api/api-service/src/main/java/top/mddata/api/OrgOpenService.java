@@ -22,7 +22,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @param dto 组织机构信息
      * @return 保存成功后的组织机构信息
      */
-    @Open("org.save")
+    @Open(value = "org.save", description = "批量保存组织机构信息")
     OrgResp save(OrgSaveDto dto);
 
 
@@ -32,7 +32,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @param dto 组织机构信息
      * @return 修改成功后的组织机构信息
      */
-    @Open("org.updateById")
+    @Open(value = "org.updateById", description = "根据组织机构ID，修改组织机构信息")
     OrgResp updateById(OrgUpdateDto dto);
 
     /**
@@ -41,7 +41,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @param id 组织机构ID
      * @return 组织机构信息
      */
-    @Open("org.getById")
+    @Open(value = "org.getById", description = "根据ID查询组织机构信息")
     OrgResp getVoById(Long id);
 
     /**
@@ -50,6 +50,6 @@ public interface OrgOpenService extends SuperService<Org> {
      * @param params 分页查询参数
      * @return 分页数据
      */
-    @Open("org.page")
+    @Open(value = "org.page", description = "分页查询组织机构信息")
     Page<OrgResp> page(PageParams<OrgQuery> params);
 }

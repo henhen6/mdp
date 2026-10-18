@@ -16,7 +16,7 @@ public interface MsgOpenService {
      *
      * @param data 消息参数
      */
-    @Open("msg.sendSms")
+    @Open(value = "msg.sendSms", description = "根据消息模板发送 短信")
     void sendSmsByTemplateKey(SendSmsDto data);
 
     /**
@@ -24,7 +24,7 @@ public interface MsgOpenService {
      *
      * @param data 消息参数
      */
-    @Open("msg.sendEmail")
+    @Open(value = "msg.sendEmail", description = "根据消息模板发送 邮件")
     void sendEmailByTemplateKey(SendMailDto data);
 
     /**
@@ -32,6 +32,6 @@ public interface MsgOpenService {
      *
      * @param data 消息参数
      */
-    @Open("msg.sendNotice")
+    @Open(value = "msg.sendNotice", description = "根据消息模板发送 站内信")
     void sendNoticeByTemplateKey(SendNoticeDto data);
 }

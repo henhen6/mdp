@@ -19,6 +19,6 @@ public interface TokenOpenService {
      * @param dto 入参（appKey、appSecret、forceRefresh）
      * @return accessToken 响应（含 accessToken 和 expiresIn）
      */
-    @Open(value = "accessToken.get", needToken = false, needSign = true)
+    @Open(value = "accessToken.get", description = "获取访问令牌", needToken = false, needSign = true)
     AccessTokenResp get(AccessTokenDto dto);
 }
