@@ -36,15 +36,15 @@ public class UserQuery implements Serializable {
 
     /**
      * 性别
-     * [1-男 2-女]
+     * [0-男 1-女]
      */
     @Schema(description = "性别")
     private String sex;
 
     /**
-     * 电话号码
+     * 手机号
      */
-    @Schema(description = "电话号码")
+    @Schema(description = "手机号")
     private String phone;
 
     /**
@@ -54,9 +54,9 @@ public class UserQuery implements Serializable {
     private String name;
 
     /**
-     * 邮箱地址
+     * 邮箱
      */
-    @Schema(description = "邮箱地址")
+    @Schema(description = "邮箱")
     private String email;
 
 }

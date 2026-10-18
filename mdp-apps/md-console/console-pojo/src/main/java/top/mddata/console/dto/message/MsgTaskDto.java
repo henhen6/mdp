@@ -100,6 +100,7 @@ public class MsgTaskDto implements Serializable {
     /**
      * 接收范围
      * [0-所有人 1-指定用户 2-指定角色 3-指定部门]
+     * 站内信专属
      */
     @NotNull(message = "请填写接收范围")
     @Schema(description = "接收范围")

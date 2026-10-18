@@ -49,9 +49,9 @@ public class LoginLogVo implements Serializable {
     private String name;
 
     /**
-     * 登录人账号
+     * 登录账号
      */
-    @Schema(description = "登录人账号")
+    @Schema(description = "登录账号")
     private String account;
 
     /**

@@ -39,7 +39,7 @@ public class LoginLogDto implements Serializable {
      */
     private String account;
     /**
-     * 用户id
+     * 登录用户
      */
     private Long userId;
     /**
@@ -50,6 +50,7 @@ public class LoginLogDto implements Serializable {
 
     /**
      * 登录状态
+     * [01-成功 02-失败]
      */
     private LoginStatusEnum status;
     /**
@@ -67,7 +68,7 @@ public class LoginLogDto implements Serializable {
      */
     private LoginChannelEnum loginChannel;
     /**
-     * 登录状态原因
+     * 日志描述
      */
     private String statusReason;
     /**

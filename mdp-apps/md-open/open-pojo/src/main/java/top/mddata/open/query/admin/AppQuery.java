@@ -169,7 +169,7 @@ public class AppQuery extends ExtraParams implements Serializable {
     private String oauth2AllowGrantTypes;
 
     /**
-     * Refresh-Token刷新策略\r
+     * Refresh-Token刷新策略
      * [0-否 1-是 -1-全局配置]
      */
     @Schema(description = "Refresh-Token刷新策略")
