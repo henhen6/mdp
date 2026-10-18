@@ -14,7 +14,7 @@ import top.mddata.console.facade.api.system.FileApi;
 @Component
 public class FileApiFallback implements FileApi {
     @Override
-    public R<Long> relateFilesToBiz(RelateFilesToBizDto relateFilesToBizDto) {
+    public R<Boolean> relateFilesToBiz(RelateFilesToBizDto relateFilesToBizDto) {
         return R.timeout();
     }
 

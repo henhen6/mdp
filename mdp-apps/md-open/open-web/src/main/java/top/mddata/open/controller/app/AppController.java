@@ -121,45 +121,6 @@ public class AppController extends SuperController<AppService, App> {
     }
 
     /**
-     * 根据应用id获取详细信息。
-     *
-     * @param appKey 应用标识
-     * @return 应用详情
-     */
-    @GetMapping("/getAppByAppKey")
-    @Operation(summary = "单体查询-appKey", description = "根据应用id获取应用")
-    @RequestLog(value = "'单体查询-appKey:' + #appKey", logType = RequestLog.LogType.QUERY)
-    public R<AppVo> getAppByAppKey(@RequestParam String appKey) {
-        return R.success(superService.getAppByAppKey(appKey));
-    }
-
-    /**
-     * 查询需要 接收事件推送的应用
-     *
-     * @return 应用
-     */
-    @GetMapping("/listNeedPushApp")
-    @Operation(summary = "查询需要接收事件推送的应用", description = "查询需要接收事件推送的应用")
-    @RequestLog(value = "查询需要接收事件推送的应用", logType = RequestLog.LogType.QUERY)
-    public R<List<AppVo>> listNeedPushApp() {
-        return R.success(superService.listNeedPushApp());
-    }
-
-    /**
-     * 查询角色已分配的应用（服务间门面调用）
-     *
-     * @param roleId 角色ID
-     * @return 应用列表
-     */
-    @GetMapping("/listByRoleId")
-    @Operation(summary = "查询角色已分配的应用", description = "查询角色已分配的应用（按权重降序）")
-    @RequestLog(value = "查询角色已分配的应用", logType = RequestLog.LogType.QUERY)
-    public R<List<AppVo>> listByRoleId(@RequestParam Long roleId) {
-        return R.success(superService.listByRoleId(roleId));
-    }
-
-
-    /**
      * 查询用户能访问的应用
      *
      */
@@ -172,21 +133,6 @@ public class AppController extends SuperController<AppService, App> {
     }
 
     /**
-     * 校验用户是否拥有该应用
-     *
-     * @param userId 用户ID
-     * @param appId 应用ID
-     * @return 是否拥有该应用
-     */
-    @GetMapping("/checkAppByUserId")
-    @Operation(summary = "校验用户是否拥有该应用", description = "校验用户是否拥有该应用")
-    @RequestLog(value = "校验用户是否拥有该应用", logType = RequestLog.LogType.QUERY)
-    public R<Boolean> checkAppByUserId(@RequestParam Long userId, @RequestParam Long appId) {
-        return R.success(superService.checkAppByUserId(userId, appId));
-    }
-
-
-    /**
      * 获取秘钥信息
      *
      * @param appId 应用ID
@@ -197,20 +143,6 @@ public class AppController extends SuperController<AppService, App> {
     @RequestLog(value = "获取秘钥信息", logType = RequestLog.LogType.QUERY)
     public R<AppKeysVo> getKeys(@RequestParam Long appId) {
         return R.success(appKeysService.getKeys(appId));
-    }
-
-    /**
-     * 根据appKey查询应用秘钥（含通知加密配置）
-     * 供内部Feign调用（如 api-web 的回调控制器）
-     *
-     * @param appKey 应用标识
-     * @return 秘钥VO
-     */
-    @GetMapping("/getAppKeysByAppKey")
-    @Operation(summary = "根据appKey查询秘钥", description = "根据appKey查询应用秘钥（含通知加密配置）")
-    @RequestLog(value = "'根据appKey查询秘钥:' + #appKey", logType = RequestLog.LogType.QUERY)
-    public R<AppKeysVo> getAppKeysByAppKey(@RequestParam String appKey) {
-        return R.success(appKeysService.getByAppKey(appKey));
     }
 
     /**

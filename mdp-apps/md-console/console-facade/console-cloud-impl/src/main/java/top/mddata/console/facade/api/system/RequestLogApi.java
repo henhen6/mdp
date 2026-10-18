@@ -13,7 +13,7 @@ import top.mddata.console.facade.api.system.fallback.RequestLogApiFallback;
  * @author henhen
  * @since 2026/5/10 23:07
  */
-@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = RequestLogApiFallback.class, path = "/system/requestLog")
+@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = RequestLogApiFallback.class, path = "/inner/system/requestLog")
 public interface RequestLogApi {
     @PostMapping("/save")
     R<Long> saveRequestLog(@RequestBody RequestLogDto dto);

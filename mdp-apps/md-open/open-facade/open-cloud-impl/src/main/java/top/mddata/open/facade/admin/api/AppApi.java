@@ -15,7 +15,7 @@ import java.util.List;
  * @author henhen6
  * @since 2025/8/12 11:24
  */
-@FeignClient(name = AppConstants.OPEN_SERVER, path = "/admin/app")
+@FeignClient(name = AppConstants.OPEN_SERVER, path = "/inner/app")
 public interface AppApi {
     /**
      * 查询需要 接收事件推送的应用

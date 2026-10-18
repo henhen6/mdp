@@ -14,7 +14,7 @@ import top.mddata.console.facade.api.system.fallback.FileApiFallback;
  * @author henhen
  * @since 2026/5/10 23:07
  */
-@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = FileApiFallback.class, path = "/system/file")
+@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = FileApiFallback.class, path = "/inner/system/file")
 public interface FileApi {
     /**
      * 关联文件到业务 （新增、修改时调用）
@@ -22,7 +22,7 @@ public interface FileApi {
      * @param relateFilesToBizDto 参数
      */
     @PostMapping(value = "/relateFilesToBiz")
-    R<Long> relateFilesToBiz(@RequestBody RelateFilesToBizDto relateFilesToBizDto);
+    R<Boolean> relateFilesToBiz(@RequestBody RelateFilesToBizDto relateFilesToBizDto);
 
     /**
      * 释放业务关联的全部附件 （删除业务时调用）

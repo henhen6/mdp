@@ -111,27 +111,6 @@ public class OauthScopeController extends SuperController<OauthScopeService, Oau
     }
 
 
-    @Operation(summary = "根据权限编码查询应用权限", description = "根据权限编码查询应用权限")
-    @PostMapping("/getScopeListByCode")
-    @RequestLog(value = "根据权限编码查询应用权限", logType = RequestLog.LogType.QUERY)
-    public R<List<OauthScopeVo>> getScopeListByCode(@RequestBody List<String> scopes) {
-        return R.success(superService.getScopeListByCode(scopes));
-    }
-
-    /**
-     * 根据应用id查询应用拥有的权限
-     *
-     * @param appId 应用id
-     * @return 权限
-     */
-    @Operation(summary = "根据应用id查询应用拥有的权限", description = "根据应用id查询应用拥有的权限")
-    @GetMapping("/listByAppId")
-    @RequestLog(value = "根据应用id查询应用拥有的权限", logType = RequestLog.LogType.QUERY)
-    public R<List<OauthScopeVo>> listByAppId(@RequestParam Long appId) {
-        return R.success(superService.listByAppId(appId));
-    }
-
-
     /**
      * 根据权限分组ID分页查询权限
      *

@@ -27,10 +27,7 @@ import top.mddata.console.service.organization.OrgService;
 import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.vo.organization.OrgVo;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 组织 控制层。
@@ -170,8 +167,4 @@ public class OrgController extends SuperController<OrgService, Org> {
         return R.success(BuiltInOrgId.ALL);
     }
 
-    @PostMapping("/findByIds")
-    public Map<Serializable, Object> findByIds(@RequestParam("ids") Set<Serializable> ids) {
-        return superService.findByIds(ids);
-    }
 }

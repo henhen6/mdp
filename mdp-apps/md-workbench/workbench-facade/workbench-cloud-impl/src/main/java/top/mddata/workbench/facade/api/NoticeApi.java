@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import top.mddata.base.base.R;
 import top.mddata.common.constant.AppConstants;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author henhen6
  * @since 2025/12/26 10:21
  */
-@FeignClient(name = AppConstants.WORKBENCH_SERVER, path = "/notice")
+@FeignClient(name = AppConstants.WORKBENCH_SERVER, path = "/inner/notice")
 public interface NoticeApi {
 
     /**
@@ -26,14 +27,14 @@ public interface NoticeApi {
      * @param recipientList 站内通知接收人
      */
     @PostMapping("/saveBatchNoticeRecipient")
-    R<Boolean> saveBatchNoticeRecipient(List<NoticeRecipient> recipientList);
+    R<Boolean> saveBatchNoticeRecipient(@RequestBody List<NoticeRecipient> recipientList);
 
     /**
      * 保存 通知
      * @param notice 通知
      */
     @PostMapping("/save")
-    R<Boolean> save(Notice notice);
+    R<Boolean> save(@RequestBody Notice notice);
 
     /**
      * 统计指定时间之后、按分类的通知数量

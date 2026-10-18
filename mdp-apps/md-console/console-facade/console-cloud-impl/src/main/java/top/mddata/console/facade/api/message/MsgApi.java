@@ -13,7 +13,7 @@ import top.mddata.console.facade.api.message.fallback.MsgApiFallback;
  * @author henhen
  * @since 2026/5/10 23:07
  */
-@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = MsgApiFallback.class)
+@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = MsgApiFallback.class, path = "/inner/message/msgTask")
 public interface MsgApi {
     /**
      * 根据消息模板发送消息
@@ -23,6 +23,6 @@ public interface MsgApi {
      *
      * @param data 消息参数
      */
-    @PostMapping("/message/msgTask/sendByTemplateKey")
+    @PostMapping("/sendByTemplateKey")
     R<Long> sendByTemplateKey(@RequestBody MsgSendDto data);
 }

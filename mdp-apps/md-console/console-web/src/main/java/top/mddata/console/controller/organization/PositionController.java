@@ -29,10 +29,7 @@ import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.PositionService;
 import top.mddata.console.vo.organization.PositionVo;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 岗位 控制层。
@@ -130,11 +127,6 @@ public class PositionController extends SuperController<PositionService, Positio
     @RequestLog(value = "修改状态", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> updateState(@Parameter(description = "岗位主键") @RequestParam Long id, @Parameter(description = "状态") @RequestParam Boolean state) {
         return R.success(superService.updateState(id, state));
-    }
-
-    @PostMapping("/findByIds")
-    public Map<Serializable, Object> findByIds(@RequestParam("ids") Set<Serializable> ids) {
-        return superService.findByIds(ids);
     }
 
     /**

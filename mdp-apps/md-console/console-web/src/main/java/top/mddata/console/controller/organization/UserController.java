@@ -239,36 +239,6 @@ public class UserController extends SuperController<UserService, User> {
     }
 
     /**
-     * 根据邮箱注册账号
-     * @param ssoUser 用户
-     */
-    @PostMapping("/registerByEmail")
-    @RequestLog(value = "根据邮箱注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByEmail(@Validated @RequestBody User ssoUser) {
-        return R.success(superService.registerByEmail(ssoUser));
-    }
-
-    /**
-     * 根据手机注册账号
-     * @param ssoUser 用户
-     */
-    @PostMapping("/registerByPhone")
-    @RequestLog(value = "根据手机注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByPhone(@Validated @RequestBody User ssoUser) {
-        return R.success(superService.registerByPhone(ssoUser));
-    }
-
-    /**
-     * 注册账号
-     * @param defUser 用户信息
-     */
-    @PostMapping("/registerByUsername")
-    @RequestLog(value = "根据用户名注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByUsername(@Validated @RequestBody User defUser) {
-        return R.success(superService.registerByUsername(defUser));
-    }
-
-    /**
      * 角色性质到候选树根节点的映射：1→总公司、90→开发者平台、99→运营中心。
      * 不含默认部门，默认部门在总公司树内，like 总公司路径已覆盖。
      */

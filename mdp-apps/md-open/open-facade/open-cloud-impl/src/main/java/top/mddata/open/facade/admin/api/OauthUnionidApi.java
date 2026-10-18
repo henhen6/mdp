@@ -13,7 +13,7 @@ import top.mddata.open.vo.admin.OauthUnionidVo;
  * @author henhen6
  * @since 2025/8/21 23:33
  */
-@FeignClient(name = AppConstants.OPEN_SERVER)
+@FeignClient(name = AppConstants.OPEN_SERVER, path = "/inner/oauthUnionid")
 public interface OauthUnionidApi {
     /**
      * 根据主体id和用户id 查询union
@@ -22,6 +22,6 @@ public interface OauthUnionidApi {
      * @param userId    用户id
      * @return union
      */
-    @GetMapping("/admin/oauthUnionid/getBySubjectIdAndUserId")
+    @GetMapping("/getBySubjectIdAndUserId")
     R<OauthUnionidVo> getBySubjectIdAndUserId(@RequestParam Long subjectId, @RequestParam Long userId);
 }

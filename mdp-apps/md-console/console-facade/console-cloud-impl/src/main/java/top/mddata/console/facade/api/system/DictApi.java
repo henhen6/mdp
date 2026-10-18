@@ -15,7 +15,7 @@ import java.util.Set;
  * @author henhen
  * @since 2026/5/10 23:07
  */
-@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = DictApiFallback.class, path = "/system/dictItem")
+@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = DictApiFallback.class, path = "/inner/system/dictItem")
 public interface DictApi {
     /**
      * 查询字典项

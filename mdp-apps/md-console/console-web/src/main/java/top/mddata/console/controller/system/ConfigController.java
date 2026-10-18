@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -115,59 +114,4 @@ public class ConfigController extends SuperController<ConfigService, Config> {
         return R.success(superService.check(uniqKey, null, id));
     }
 
-
-    /**
-     * 根据参数标识，查询系统参数VO
-     * @param uniqKey 参数标识
-     * @return 系统参数
-     */
-    @GetMapping("/getConfig")
-    @RequestLog(value = "查询系统参数", logType = RequestLog.LogType.QUERY)
-    public R<ConfigVo> getConfig(@RequestParam String uniqKey) {
-        return R.success(superService.getConfig(uniqKey));
-    }
-
-    /**
-     * 根据参数标识，查询长整型系统参数
-     * @param uniqKey 参数标识
-     * @return 参数值
-     */
-    @GetMapping("/getLong")
-    @RequestLog(value = "查询长整型系统参数", logType = RequestLog.LogType.QUERY)
-    public R<Long> getLong(@RequestParam String uniqKey, @RequestParam(required = false) Long defaultValue) {
-        return R.success(superService.getLong(uniqKey, defaultValue));
-    }
-
-    /**
-     * 根据参数标识，查询整型系统参数
-     * @param uniqKey 参数标识
-     * @return 参数值
-     */
-    @GetMapping("/getInteger")
-    @RequestLog(value = "查询整型系统参数", logType = RequestLog.LogType.QUERY)
-    public R<Integer> getInteger(@RequestParam String uniqKey, @RequestParam(required = false) Integer defaultValue) {
-        return R.success(superService.getInteger(uniqKey, defaultValue));
-    }
-
-    /**
-     * 根据参数标识，查询字符型系统参数
-     * @param uniqKey 参数标识
-     * @return 参数值
-     */
-    @GetMapping("/getString")
-    @RequestLog(value = "查询字符型系统参数", logType = RequestLog.LogType.QUERY)
-    public R<String> getString(@RequestParam String uniqKey, @RequestParam(required = false) String defaultValue) {
-        return R.success(superService.getString(uniqKey, defaultValue));
-    }
-
-    /**
-     * 根据参数标识，查询布尔型系统参数
-     * @param uniqKey 参数标识
-     * @return 参数值
-     */
-    @GetMapping("/getBoolean")
-    @RequestLog(value = "查询布尔型系统参数", logType = RequestLog.LogType.QUERY)
-    public R<Boolean> getBoolean(@RequestParam String uniqKey, @RequestParam(required = false) Boolean defaultValue) {
-        return R.success(superService.getBoolean(uniqKey, defaultValue));
-    }
 }

@@ -18,7 +18,6 @@ import top.mddata.base.base.R;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.console.dto.system.RequestLogDto;
 import top.mddata.console.entity.system.RequestLogDetail;
 import top.mddata.console.query.system.RequestLogQuery;
 import top.mddata.console.service.system.RequestLogDetailService;
@@ -40,19 +39,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RequestLogController extends SuperController<RequestLogService, top.mddata.console.entity.system.RequestLog> {
     private final RequestLogDetailService requestLogDetailService;
-
-    /**
-     * 添加请求日志。
-     *
-     * @param dto 请求日志
-     * @return {@code true} 添加成功，{@code false} 添加失败
-     */
-    @PostMapping("/save")
-    @Operation(summary = "新增", description = "保存请求日志")
-    @RequestLog(value = "新增", logType = RequestLog.LogType.ADD)
-    public R<Long> save(@Validated @RequestBody RequestLogDto dto) {
-        return R.success(superService.saveDto(dto).getId());
-    }
 
     /**
      * 根据主键删除请求日志。

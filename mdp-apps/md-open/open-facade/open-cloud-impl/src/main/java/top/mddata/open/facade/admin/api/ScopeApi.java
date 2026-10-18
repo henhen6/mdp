@@ -16,7 +16,7 @@ import java.util.List;
  * @author henhen
  * @since 2026/5/10 23:07
  */
-@FeignClient(name = AppConstants.OPEN_SERVER)
+@FeignClient(name = AppConstants.OPEN_SERVER, path = "/inner/oauthScope")
 public interface ScopeApi {
     /**
      * 根据应用id查询应用拥有的权限
@@ -24,7 +24,7 @@ public interface ScopeApi {
      * @param appId 应用id
      * @return 权限
      */
-    @GetMapping("/admin/oauthScope/listByAppId")
+    @GetMapping("/listByAppId")
     R<List<OauthScopeVo>> listByAppId(@RequestParam Long appId);
 
     /**
@@ -33,6 +33,6 @@ public interface ScopeApi {
      * @param scopes 权限编码
      * @return 应用权限
      */
-    @PostMapping("/admin/oauthScope/getScopeListByCode")
+    @PostMapping("/getScopeListByCode")
     R<List<OauthScopeVo>> getScopeListByCode(@RequestBody List<String> scopes);
 }
