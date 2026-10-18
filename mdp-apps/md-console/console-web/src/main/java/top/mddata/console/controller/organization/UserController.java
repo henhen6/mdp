@@ -244,7 +244,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/registerByEmail")
     @RequestLog(value = "根据邮箱注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByEmail(User ssoUser) {
+    public R<Boolean> registerByEmail(@Validated @RequestBody User ssoUser) {
         return R.success(superService.registerByEmail(ssoUser));
     }
 
@@ -254,7 +254,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/registerByPhone")
     @RequestLog(value = "根据手机注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByPhone(User ssoUser) {
+    public R<Boolean> registerByPhone(@Validated @RequestBody User ssoUser) {
         return R.success(superService.registerByPhone(ssoUser));
     }
 
@@ -264,7 +264,7 @@ public class UserController extends SuperController<UserService, User> {
      */
     @PostMapping("/registerByUsername")
     @RequestLog(value = "根据用户名注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByUsername(User defUser) {
+    public R<Boolean> registerByUsername(@Validated @RequestBody User defUser) {
         return R.success(superService.registerByUsername(defUser));
     }
 

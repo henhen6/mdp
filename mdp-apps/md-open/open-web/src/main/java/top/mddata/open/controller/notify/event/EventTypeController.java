@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,20 +90,6 @@ public class EventTypeController extends SuperController<EventTypeService, Event
     @RequestLog(value = "检测编码是否存在", logType = RequestLog.LogType.QUERY, request = false)
     public R<Boolean> check(@RequestParam String code, @RequestParam(required = false) Long id) {
         return R.success(superService.check(code, id));
-    }
-
-    /**
-     * 根据事件类型主键获取详细信息。
-     *
-     * @param id 事件类型主键
-     * @return 事件类型详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取事件类型")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<EventTypeVo> get(@RequestParam Long id) {
-        EventType entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, EventTypeVo.class));
     }
 
     /**

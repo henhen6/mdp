@@ -32,7 +32,6 @@ import top.mddata.workbench.vo.NoticeVo;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 站内通知 控制层。
@@ -158,16 +157,6 @@ public class NoticeController extends SuperController<NoticeService, Notice> {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam Integer msgCategory) {
         return R.success(superService.countByCategory(startTime, msgCategory));
-    }
-
-    /**
-     * 按分类统计通知数量（用于大屏分类分布图）。
-     */
-    @GetMapping("/countByCategoryDistribution")
-    @Operation(hidden = true)
-    @RequestLog(value = "按分类统计通知数量", logType = RequestLog.LogType.QUERY)
-    public R<List<Map<String, Object>>> countByCategoryDistribution() {
-        return R.success(superService.countByCategoryDistribution());
     }
 
     /**

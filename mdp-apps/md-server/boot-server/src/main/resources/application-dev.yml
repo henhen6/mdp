@@ -3,7 +3,8 @@ mdp:
     allowed-hosts:
       - 127.0.0.1
       - localhost
-
+  ignore:
+    not-config-uri-allow: false
 spring:
   data:
     redis:

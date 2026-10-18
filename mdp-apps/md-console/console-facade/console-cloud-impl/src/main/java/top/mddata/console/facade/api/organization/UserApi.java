@@ -2,6 +2,7 @@ package top.mddata.console.facade.api.organization;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import top.mddata.base.base.R;
 import top.mddata.common.constant.AppConstants;
 import top.mddata.common.entity.User;
@@ -18,20 +19,20 @@ public interface UserApi {
      * 根据邮箱注册账号
      * @param ssoUser 用户
      */
-    @PostMapping("/registerByEmail")
-    R<Boolean> registerByEmail(User ssoUser);
+    @PostMapping("/organization/user/registerByEmail")
+    R<Boolean> registerByEmail(@RequestBody User ssoUser);
 
     /**
      * 根据手机注册账号
      * @param ssoUser 用户
      */
-    @PostMapping("/registerByPhone")
-    R<Boolean> registerByPhone(User ssoUser);
+    @PostMapping("/organization/user/registerByPhone")
+    R<Boolean> registerByPhone(@RequestBody User ssoUser);
 
     /**
      * 注册账号
      * @param defUser 用户信息
      */
-    @PostMapping("/registerByUsername")
-    R<Boolean> registerByUsername(User defUser);
+    @PostMapping("/organization/user/registerByUsername")
+    R<Boolean> registerByUsername(@RequestBody User defUser);
 }

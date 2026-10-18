@@ -62,13 +62,6 @@ public class DashboardLoginController {
         return R.success(dashboardLoginService.getIpRank(limit));
     }
 
-    @GetMapping("/nameRank")
-    @Operation(summary = "姓名登录排行")
-    @RequestLog(value = "查询姓名登录排行", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<DashboardRankVo>> getNameRank(@RequestParam(defaultValue = "10") int limit) {
-        return R.success(dashboardLoginService.getNameRank(limit));
-    }
-
     @GetMapping("/browserDistribution")
     @Operation(summary = "浏览器分布")
     @RequestLog(value = "查询浏览器分布", logType = RequestLog.LogType.QUERY, response = false)

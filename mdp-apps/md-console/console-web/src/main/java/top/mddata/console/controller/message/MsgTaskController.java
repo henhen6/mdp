@@ -47,12 +47,6 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
     private final MsgTaskRecipientService msgTaskRecipientService;
     private final MsgTaskMapper msgTaskMapper;
 
-    @PostMapping("/listByTitle")
-    @RequestLog(value = "根据标题查询消息任务", logType = RequestLog.LogType.QUERY)
-    public Object listByTitle(String title) {
-        return R.success(msgTaskMapper.listByTitle(title));
-    }
-
     /**
      * 添加消息任务。
      *

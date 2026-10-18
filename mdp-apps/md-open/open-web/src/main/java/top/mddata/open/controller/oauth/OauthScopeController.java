@@ -81,20 +81,6 @@ public class OauthScopeController extends SuperController<OauthScopeService, Oau
     }
 
     /**
-     * 根据oauth2权限主键获取详细信息。
-     *
-     * @param id oauth2权限主键
-     * @return oauth2权限详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取oauth2权限")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<OauthScopeVo> get(@RequestParam Long id) {
-        OauthScope entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, OauthScopeVo.class));
-    }
-
-    /**
      * 分页查询oauth2权限。
      *
      * @param params 分页对象
@@ -107,21 +93,6 @@ public class OauthScopeController extends SuperController<OauthScopeService, Oau
         Page<OauthScopeVo> page = Page.of(params.getCurrent(), params.getSize());
         superService.pageAs(page, PageWrapperHelper.build(params, OauthScope.class), OauthScopeVo.class);
         return R.success(page);
-    }
-
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<OauthScopeVo>> list(@RequestBody @Validated OauthScopeQuery params) {
-        OauthScope entity = BeanUtil.toBean(params, OauthScope.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<OauthScopeVo> listVo = superService.listAs(wrapper, OauthScopeVo.class);
-        return R.success(listVo);
     }
 
 

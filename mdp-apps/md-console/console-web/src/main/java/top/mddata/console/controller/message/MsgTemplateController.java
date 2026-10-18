@@ -1,21 +1,17 @@
 package top.mddata.console.controller.message;
 
+import java.util.List;
+
 import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
@@ -28,11 +24,6 @@ import top.mddata.console.entity.message.MsgTemplate;
 import top.mddata.console.query.message.MsgTemplateQuery;
 import top.mddata.console.service.message.MsgTemplateService;
 import top.mddata.console.vo.message.MsgTemplateVo;
-
-import java.util.List;
-
-import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
-import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
 /**
  * 消息模板 控制层。
@@ -86,20 +77,6 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
     }
 
     /**
-     * 根据消息模板主键获取详细信息。
-     *
-     * @param id 消息模板主键
-     * @return 消息模板详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取消息模板")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<MsgTemplateVo> get(@RequestParam Long id) {
-        MsgTemplate entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, MsgTemplateVo.class));
-    }
-
-    /**
      * 分页查询消息模板。
      *
      * @param params 分页对象
@@ -118,29 +95,4 @@ public class MsgTemplateController extends SuperController<MsgTemplateService, M
         return R.success(page);
     }
 
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<MsgTemplateVo>> list(@RequestBody @Validated MsgTemplateQuery params) {
-        MsgTemplate entity = BeanUtil.toBean(params, MsgTemplate.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<MsgTemplateVo> listVo = superService.listAs(wrapper, MsgTemplateVo.class);
-        return R.success(listVo);
-    }
-
-    @Parameters({
-            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
-            @Parameter(name = "key", description = "模板标识", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-    })
-    @Operation(summary = "检测模板标识是否可用", description = "检测模板标识是否可用")
-    @GetMapping("/check")
-    @RequestLog(value = "检测模板标识是否可用", logType = RequestLog.LogType.QUERY)
-    public R<Boolean> check(@RequestParam String key, @RequestParam(required = false) Long id) {
-        return R.success(superService.check(key, id));
-    }
 }

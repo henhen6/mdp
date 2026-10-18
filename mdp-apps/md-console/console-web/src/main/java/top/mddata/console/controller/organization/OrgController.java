@@ -1,7 +1,6 @@
 package top.mddata.console.controller.organization;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +17,6 @@ import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
-import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.constant.BuiltInOrgId;
@@ -100,26 +98,6 @@ public class OrgController extends SuperController<OrgService, Org> {
     public R<OrgVo> get(@RequestParam Long id) {
         Org entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, OrgVo.class));
-    }
-
-    /**
-     * 分页查询组织。
-     *
-     * @param params 分页对象
-     * @return 分页对象
-     */
-    @PostMapping("/page")
-    @Operation(summary = "分页列表查询", description = "分页查询组织")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
-    public R<Page<OrgVo>> page(@RequestBody @Validated PageParams<OrgQuery> params) {
-        Page<OrgVo> page = Page.of(params.getCurrent(), params.getSize());
-        Org entity = BeanUtil.toBean(params.getModel(), Org.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
-        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        appendVisibilityFilter(wrapper);
-        superService.pageAs(page, wrapper, OrgVo.class);
-        return R.success(page);
     }
 
     /**

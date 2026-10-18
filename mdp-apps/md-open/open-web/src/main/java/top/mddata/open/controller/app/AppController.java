@@ -91,20 +91,6 @@ public class AppController extends SuperController<AppService, App> {
     }
 
     /**
-     * 根据应用主键获取详细信息。
-     *
-     * @param id 应用主键
-     * @return 应用详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取应用")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<AppVo> get(@RequestParam Long id) {
-        App entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, AppVo.class));
-    }
-
-    /**
      * 分页查询应用。
      *
      * @param params 分页对象

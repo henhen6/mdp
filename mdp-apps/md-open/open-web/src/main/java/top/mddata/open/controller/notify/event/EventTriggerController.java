@@ -1,23 +1,18 @@
 package top.mddata.open.controller.notify.event;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
-import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
-import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.open.controller.support.PageWrapperHelper;
 import top.mddata.open.entity.admin.EventTrigger;
 import top.mddata.open.query.admin.EventTriggerQuery;
@@ -53,20 +48,6 @@ public class EventTriggerController extends SuperController<EventTriggerService,
     }
 
     /**
-     * 根据事件触发主键获取详细信息。
-     *
-     * @param id 事件触发主键
-     * @return 事件触发详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取事件触发")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<EventTriggerVo> get(@RequestParam Long id) {
-        EventTrigger entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, EventTriggerVo.class));
-    }
-
-    /**
      * 分页查询事件触发。
      *
      * @param params 分页对象
@@ -79,21 +60,6 @@ public class EventTriggerController extends SuperController<EventTriggerService,
         Page<EventTriggerVo> page = Page.of(params.getCurrent(), params.getSize());
         superService.pageAs(page, PageWrapperHelper.build(params, EventTrigger.class), EventTriggerVo.class);
         return R.success(page);
-    }
-
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<EventTriggerVo>> list(@RequestBody @Validated EventTriggerQuery params) {
-        EventTrigger entity = BeanUtil.toBean(params, EventTrigger.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<EventTriggerVo> listVo = superService.listAs(wrapper, EventTriggerVo.class);
-        return R.success(listVo);
     }
 
 }

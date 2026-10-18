@@ -1,16 +1,13 @@
 package top.mddata.open.controller.notify.event;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
@@ -53,20 +50,6 @@ public class EventPushLogController extends SuperController<EventPushLogService,
         return R.success(superService.removeByIds(ids));
     }
 
-
-    /**
-     * 根据事件推送日志主键获取详细信息。
-     *
-     * @param id 事件推送日志主键
-     * @return 事件推送日志详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取事件推送日志")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<EventPushLogVo> get(@RequestParam Long id) {
-        EventPushLog entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, EventPushLogVo.class));
-    }
 
     /**
      * 分页查询事件推送日志。

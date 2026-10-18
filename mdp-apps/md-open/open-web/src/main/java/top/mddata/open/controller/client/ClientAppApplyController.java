@@ -7,11 +7,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
@@ -96,20 +94,6 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
         return R.success(superService.removeByIds(ids));
     }
 
-
-    /**
-     * 根据应用申请主键获取详细信息。
-     *
-     * @param id 应用申请主键
-     * @return 应用申请详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取应用申请")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<AppApplyVo> get(@RequestParam Long id) {
-        AppApply entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, AppApplyVo.class));
-    }
 
     /**
      * 分页查询应用申请。

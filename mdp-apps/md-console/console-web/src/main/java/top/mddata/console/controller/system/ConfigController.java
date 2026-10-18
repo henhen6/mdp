@@ -42,15 +42,6 @@ import java.util.List;
 public class ConfigController extends SuperController<ConfigService, Config> {
     private final ConfigService configService;
 
-    @GetMapping("/listtest")
-    @RequestLog(value = "测试查询配置列表", logType = RequestLog.LogType.QUERY)
-    public R<List<Config>> listtest(String name) {
-        QueryWrapper queryWrapper = QueryWrapper.create();
-        queryWrapper.like(Config::getName, name);
-        return R.success(configService.listWithPermission(queryWrapper));
-    }
-
-
     /**
      * 添加系统配置。
      *

@@ -1,22 +1,18 @@
 package top.mddata.open.controller.client;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.mvcflex.request.PageParams;
-import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.open.controller.support.PageWrapperHelper;
 import top.mddata.open.entity.admin.EventPush;
 import top.mddata.open.query.admin.EventPushQuery;
@@ -65,13 +61,4 @@ public class ClientEventPushController {
         return R.success(page);
     }
 
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取事件推送记录（仅本人应用）")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<EventPushVo> get(@RequestParam Long id) {
-        EventPush entity = eventPushService.getById(id);
-        ArgumentAssert.notNull(entity, "记录不存在");
-        clientAppHelper.checkOwner(entity.getAppId());
-        return R.success(BeanUtil.toBean(entity, EventPushVo.class));
-    }
 }

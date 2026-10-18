@@ -12,7 +12,6 @@ import top.mddata.workbench.entity.NoticeRecipient;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 跨服务-通知实现类
@@ -47,14 +46,6 @@ public interface NoticeApi {
     R<Long> countByCategory(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam Integer msgCategory);
-
-    /**
-     * 按分类统计通知数量（用于大屏分类分布图）。
-     *
-     * @return key=msgCategory、value=count
-     */
-    @GetMapping("/countByCategoryDistribution")
-    R<List<Map<String, Object>>> countByCategoryDistribution();
 
     /**
      * 统计当前用户的站内通知未读数。

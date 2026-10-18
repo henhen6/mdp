@@ -5,7 +5,6 @@ import top.mddata.workbench.entity.Notice;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 站内通知 服务层。
@@ -32,11 +31,4 @@ public interface NoticeService extends SuperService<Notice> {
      * @return 数量
      */
     Long countByCategory(LocalDateTime startTime, Integer msgCategory);
-
-    /**
-     * 按分类统计通知数量（用于大屏分类分布图）。
-     *
-     * @return key=msgCategory、value=count
-     */
-    List<Map<String, Object>> countByCategoryDistribution();
 }

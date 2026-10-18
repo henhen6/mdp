@@ -1,24 +1,19 @@
 package top.mddata.open.controller.notify.callback;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.paginate.Page;
-import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
-import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.open.controller.support.PageWrapperHelper;
 import top.mddata.open.entity.admin.NotifyInfoLog;
 import top.mddata.open.query.admin.NotifyInfoLogQuery;
@@ -56,20 +51,6 @@ public class NotifyInfoLogController extends SuperController<NotifyInfoLogServic
     }
 
     /**
-     * 根据回调任务日志主键获取详细信息。
-     *
-     * @param id 回调任务日志主键
-     * @return 回调任务日志详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取回调任务日志")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<NotifyInfoLogVo> get(@RequestParam Long id) {
-        NotifyInfoLog entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, NotifyInfoLogVo.class));
-    }
-
-    /**
      * 分页查询回调任务日志。
      *
      * @param params 分页对象
@@ -83,20 +64,5 @@ public class NotifyInfoLogController extends SuperController<NotifyInfoLogServic
         superService.pageAs(page, PageWrapperHelper.build(params, NotifyInfoLog.class), NotifyInfoLogVo.class);
         echoService.action(page);
         return R.success(page);
-    }
-
-    /**
-     * 批量查询
-     * @param params 查询参数
-     * @return 集合
-     */
-    @PostMapping("/list")
-    @Operation(summary = "批量查询", description = "批量查询")
-    @RequestLog(value = "批量查询", logType = RequestLog.LogType.QUERY, response = false)
-    public R<List<NotifyInfoLogVo>> list(@RequestBody @Validated NotifyInfoLogQuery params) {
-        NotifyInfoLog entity = BeanUtil.toBean(params, NotifyInfoLog.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        List<NotifyInfoLogVo> listVo = superService.listAs(wrapper, NotifyInfoLogVo.class);
-        return R.success(listVo);
     }
 }

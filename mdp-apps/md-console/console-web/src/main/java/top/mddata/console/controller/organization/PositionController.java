@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,20 +86,6 @@ public class PositionController extends SuperController<PositionService, Positio
     @RequestLog(value = "修改", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> update(@Validated(BaseEntity.Update.class) @RequestBody PositionDto dto) {
         return R.success(superService.updateDtoById(dto).getId());
-    }
-
-    /**
-     * 根据岗位主键获取详细信息。
-     *
-     * @param id 岗位主键
-     * @return 岗位详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取岗位")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<PositionVo> get(@RequestParam Long id) {
-        Position entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, PositionVo.class));
     }
 
     /**
