@@ -17,6 +17,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.common.enumeration.BooleanEnum;
 import top.mddata.open.controller.support.PageWrapperHelper;
 import top.mddata.open.dto.admin.ApiDto;
 import top.mddata.open.entity.admin.Api;
@@ -103,7 +104,10 @@ public class ApiController extends SuperController<ApiService, Api> {
             wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
                     .leftJoin(GroupApiRel.class)
                     .on(wrap -> wrap.where(Api::getId).eq(GroupApiRel::getApiId).and(GroupApiRel::getGroupId).eq(query.getGroupId()))
-                    .isNull(GroupApiRel::getApiId);
+                    .isNull(GroupApiRel::getApiId)
+                    .eq(Api::getState, BooleanEnum.TRUE.getInteger())
+                    .eq(Api::getPermission, BooleanEnum.TRUE.getInteger())
+            ;
         } else {
             // 相当于 select op_api.* from op_api api where 1=1  and exists ( select 1 from op_group_api_rel ga where ga.api_id = api.id and ga.group_id = 695047019844641792) ;
             wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()))
