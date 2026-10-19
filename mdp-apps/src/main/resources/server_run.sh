@@ -44,7 +44,7 @@ fi
 JAVA_OPT="-server -Xms256M -Xmx256M -Xss512k -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -XX:+UseG1GC"
 # 禁止jvm吞掉重复抛出的异常， 发送OOM时记录日志到指定文件
 JAVA_OPT="${JAVA_OPT} -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${WORKSPACE_HOME}/logs/heap_dump_${JAR_NAME}.hprof"
-JAVA_OPT="${JAVA_OPT} -Dspring.profiles.active=$PROFILES"
+JAVA_OPT="${JAVA_OPT} -Dspring.profiles.active=$PROFILES -DWX_MINI_SECRET=308bbc7e3dfaa64f96fa5e7cb5ab0491"
 
 function start()
 {
