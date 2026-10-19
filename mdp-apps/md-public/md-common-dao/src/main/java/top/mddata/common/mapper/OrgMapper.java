@@ -45,8 +45,8 @@ public interface OrgMapper extends SuperMapper<Org> {
                     SELECT o.id AS orgId, o.name AS name, COUNT(our.user_id) AS value
                       FROM mdc_org o
                       LEFT JOIN mdc_user_org_rel our ON our.org_id = o.id
-                      LEFT JOIN mdc_user u ON u.id = our.user_id AND u.deleted_at = 0
-                     WHERE o.deleted_at = 0
+                      LEFT JOIN mdc_user u ON u.id = our.user_id 
+                     WHERE o.deleted_at = 0 AND u.deleted_at = 0
                        AND o.state = 1
                        <if test="treePathPrefix != null">
                        AND o.tree_path LIKE #{treePathPrefix, jdbcType=VARCHAR}
