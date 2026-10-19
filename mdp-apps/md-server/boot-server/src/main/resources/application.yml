@@ -445,7 +445,7 @@ dubbo:
 wx:
   miniapp:
     appid: wxbf637d8ff10dfa67
-    secret: 308bbc7e3dfaa64f96fa5e7cb5ab0491
+    secret: ${WX_MINI_SECRET:}
     config-storage:
       # access_token 存储方式：单机内存；集群部署时可改为 redistemplate
       type: memory

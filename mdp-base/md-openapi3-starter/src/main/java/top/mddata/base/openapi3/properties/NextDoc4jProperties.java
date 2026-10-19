@@ -27,7 +27,7 @@ public class NextDoc4jProperties {
     /**
      * 描述
      **/
-    private String description = "md-cloud 在线文档";
+    private String description = "MDP 在线文档";
     /**
      * 版本
      **/
