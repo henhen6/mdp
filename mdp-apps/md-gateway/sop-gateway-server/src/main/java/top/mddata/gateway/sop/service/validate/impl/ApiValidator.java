@@ -104,24 +104,7 @@ public class ApiValidator implements SopValidator {
 
     @Override
     public ValidateReturn validateRest(ApiRequestContext apiRequestContext) {
-        ApiRequest apiRequest = apiRequestContext.getApiRequest();
-        ApiDto apiInfo = apiManager.getByMethodAndVersion(apiRequest.getMethod(), apiRequest.getVersion());
-        // 检查接口信息
-        checkApiInfo(apiRequestContext, apiInfo);
-
-//        if (!Objects.equals(apiInfo.getApiMode(), ApiModeEnum.RESTFUL.getCode())) {
-//            log.error("Open模式接口不允许使用Restful进行访问, apiInfo={}", apiInfo);
-//            throw new ApiException(ErrorEnum.ISV_INVALID_METHOD, apiRequestContext.getLocale());
-//        }
-        // 检查应用信息
-        AppDto appDto = checkApp(apiRequestContext);
-        // IP能否访问
-        checkIP(apiRequestContext, appDto);
-        // 检查上传文件
-        checkUploadFile(apiRequestContext);
-        // 检查token
-        checkToken(apiRequestContext, apiInfo);
-        return new ValidateReturn(apiInfo, appDto);
+        return validate(apiRequestContext);
     }
 
     public void checkApiInfo(ApiRequestContext apiRequestContext, ApiDto apiDto) {

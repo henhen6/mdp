@@ -5,6 +5,8 @@ import top.mddata.open.dto.admin.AppScopeApplyDto;
 import top.mddata.open.dto.admin.AppScopeApplyReviewDto;
 import top.mddata.open.entity.admin.AppScopeApply;
 
+import java.util.List;
+
 /**
  * 权限组申请 服务层。
  *
@@ -28,4 +30,20 @@ public interface AppScopeApplyService extends SuperService<AppScopeApply> {
      * @return 是否成功
      */
     Boolean review(AppScopeApplyReviewDto dto);
+
+    /**
+     * 撤销申请单（仅待审批状态可撤销，限本人应用的申请单）。
+     *
+     * @param id 申请单ID
+     * @return 是否成功
+     */
+    Boolean withdraw(Long id);
+
+    /**
+     * 删除申请单（仅已撤销状态可删除，限本人应用的申请单）。
+     *
+     * @param ids 申请单ID列表
+     * @return 是否成功
+     */
+    Boolean deleteByIds(List<Long> ids);
 }

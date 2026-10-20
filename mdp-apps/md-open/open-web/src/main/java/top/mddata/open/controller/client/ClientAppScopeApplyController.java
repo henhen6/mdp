@@ -17,6 +17,7 @@ import top.mddata.base.base.R;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.util.ContextUtil;
+import top.mddata.common.dto.IdDto;
 import top.mddata.open.dto.admin.AppScopeApplyDto;
 import top.mddata.open.entity.admin.App;
 import top.mddata.open.entity.admin.AppScopeApply;
@@ -61,6 +62,32 @@ public class ClientAppScopeApplyController {
     @RequestLog(value = "申请权限组", logType = RequestLog.LogType.ADD)
     public R<Integer> apply(@Validated @RequestBody AppScopeApplyDto dto) {
         return R.success(appScopeApplyService.apply(dto));
+    }
+
+    /**
+     * 撤销申请单（仅待审批状态）
+     *
+     * @param dto 申请单ID
+     * @return 是否成功
+     */
+    @PostMapping("/withdraw")
+    @Operation(summary = "撤销申请", description = "仅待审批的申请可以撤销")
+    @RequestLog(value = "撤销权限组申请", logType = RequestLog.LogType.UPDATE)
+    public R<Boolean> withdraw(@Validated @RequestBody IdDto dto) {
+        return R.success(appScopeApplyService.withdraw(dto.getId()));
+    }
+
+    /**
+     * 删除申请单（仅已撤销状态）
+     *
+     * @param ids 申请单ID列表
+     * @return 是否成功
+     */
+    @PostMapping("/delete")
+    @Operation(summary = "删除申请", description = "仅已撤销的申请可以删除")
+    @RequestLog(value = "删除权限组申请", logType = RequestLog.LogType.DELETE)
+    public R<Boolean> delete(@RequestBody List<Long> ids) {
+        return R.success(appScopeApplyService.deleteByIds(ids));
     }
 
     /**

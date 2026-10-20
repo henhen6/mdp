@@ -436,6 +436,70 @@ class AppScopeApplyServiceImplTest {
         assertEquals(0, relCount);
     }
 
+    @Test
+    void withdraw_待审批单撤销成功() {
+        AppScopeApply apply = buildApply(testAppId, testGroupId,
+                AuditStatusEnum.PENDING, "测试撤销");
+        appScopeApplyService.save(apply);
+
+        Boolean result = appScopeApplyService.withdraw(apply.getId());
+        assertTrue(result);
+
+        AppScopeApply updated = appScopeApplyService.getById(apply.getId());
+        assertEquals(AuditStatusEnum.WITHDRAWN.getCode(), updated.getAuditStatus());
+    }
+
+    @Test
+    void withdraw_非待审批状态时报错() {
+        AppScopeApply apply = buildApply(testAppId, testGroupId,
+                AuditStatusEnum.APPROVED, "已通过不可撤销");
+        appScopeApplyService.save(apply);
+
+        ArgumentException e = assertThrows(ArgumentException.class,
+                () -> appScopeApplyService.withdraw(apply.getId()));
+        assertTrue(e.getMessage().contains("待审批"));
+    }
+
+    @Test
+    void withdraw_他人申请单时报错() {
+        // appId=-999 应用不存在，归属校验失败
+        AppScopeApply apply = buildApply(-999L, testGroupId,
+                AuditStatusEnum.PENDING, "他人申请单");
+        appScopeApplyService.save(apply);
+
+        ArgumentException e = assertThrows(ArgumentException.class,
+                () -> appScopeApplyService.withdraw(apply.getId()));
+        assertTrue(e.getMessage().contains("无权限"));
+    }
+
+    @Test
+    void deleteByIds_已撤销单删除成功() {
+        AppScopeApply apply = buildApply(testAppId, testGroupId,
+                AuditStatusEnum.WITHDRAWN, "测试删除");
+        appScopeApplyService.save(apply);
+
+        Boolean result = appScopeApplyService.deleteByIds(List.of(apply.getId()));
+        assertTrue(result);
+        assertNull(appScopeApplyService.getById(apply.getId()));
+    }
+
+    @Test
+    void deleteByIds_待审批或通过单禁止删除() {
+        AppScopeApply pending = buildApply(testAppId, testGroupId,
+                AuditStatusEnum.PENDING, "待审批不可删");
+        appScopeApplyService.save(pending);
+        AppScopeApply approved = buildApply(testAppId, ownedGroupId,
+                AuditStatusEnum.APPROVED, "通过不可删");
+        appScopeApplyService.save(approved);
+
+        ArgumentException e1 = assertThrows(ArgumentException.class,
+                () -> appScopeApplyService.deleteByIds(List.of(pending.getId())));
+        assertTrue(e1.getMessage().contains("已撤销"));
+        ArgumentException e2 = assertThrows(ArgumentException.class,
+                () -> appScopeApplyService.deleteByIds(List.of(approved.getId())));
+        assertTrue(e2.getMessage().contains("已撤销"));
+    }
+
     /**
      * 判断异常是否为"表/列已存在"类错误。
      * 沿异常链搜索，只要任意一层消息包含 "already exists" / "duplicate column" /

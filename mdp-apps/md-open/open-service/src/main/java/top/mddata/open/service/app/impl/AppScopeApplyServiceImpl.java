@@ -108,6 +108,41 @@ public class AppScopeApplyServiceImpl
         return true;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean withdraw(Long id) {
+        AppScopeApply apply = getOwnedApply(id);
+        ArgumentAssert.isTrue(AuditStatusEnum.PENDING.eq(apply.getAuditStatus()),
+                "仅待审批的申请可以撤销");
+        updateAudit(apply.getId(), AuditStatusEnum.WITHDRAWN, apply.getReviewComments());
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean deleteByIds(List<Long> ids) {
+        ArgumentAssert.notEmpty(ids, "请选择要删除的申请单");
+        for (Long id : ids) {
+            AppScopeApply apply = getOwnedApply(id);
+            ArgumentAssert.isTrue(AuditStatusEnum.WITHDRAWN.eq(apply.getAuditStatus()),
+                    "仅已撤销的申请可以删除");
+        }
+        return removeByIds(ids);
+    }
+
+    /**
+     * 查询申请单并校验归属：只能操作本人创建应用的申请单。
+     */
+    private AppScopeApply getOwnedApply(Long id) {
+        AppScopeApply apply = getById(id);
+        ArgumentAssert.notNull(apply, "申请单不存在");
+        long appCount = appService.count(QueryWrapper.create()
+                .eq(App::getId, apply.getAppId())
+                .eq(App::getCreatedBy, ContextUtil.getUserId()));
+        ArgumentAssert.isTrue(appCount > 0, "申请单不存在或无权限操作");
+        return apply;
+    }
+
     private void updateAudit(Long id, AuditStatusEnum status, String reviewComments) {
         AppScopeApply update = new AppScopeApply();
         update.setId(id);
