@@ -36,6 +36,11 @@ public class ScopeGroupBase extends SuperEntity<Long> implements Serializable {
     private String name;
 
     /**
+     * 简介
+     */
+    private String intro;
+
+    /**
      * 排序
      */
     private Long weight;
