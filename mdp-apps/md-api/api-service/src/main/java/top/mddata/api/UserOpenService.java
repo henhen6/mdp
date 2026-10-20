@@ -26,7 +26,7 @@ public interface UserOpenService extends SuperService<User> {
      * @apiNote 每次保存的用户数量不超过 500 条  <br/>
      * 用户保存成功之后，返回用户列表（含用户ID）
      */
-    @Open(value = "user.batchSave", description = "批量保存用户信息")
+    @Open(value = "user.batchSave", permission = true, description = "批量保存用户信息")
     UserBatchSaveResp batchSave(UserBatchSaveDto dto);
 
 
@@ -36,7 +36,7 @@ public interface UserOpenService extends SuperService<User> {
      * @param dto 用户信息
      * @return 修改成功后的用户信息
      */
-    @Open(value = "user.updateById", description = "根据用户ID，修改用户信息")
+    @Open(value = "user.updateById", permission = true, description = "根据用户ID，修改用户信息")
     UserResp updateById(UserUpdateDto dto);
 
     /**

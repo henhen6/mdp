@@ -22,7 +22,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @param dto 组织机构信息
      * @return 保存成功后的组织机构信息
      */
-    @Open(value = "org.save", description = "批量保存组织机构信息")
+    @Open(value = "org.save", permission = true, description = "批量保存组织机构信息")
     OrgResp save(OrgSaveDto dto);
 
 
@@ -32,7 +32,7 @@ public interface OrgOpenService extends SuperService<Org> {
      * @param dto 组织机构信息
      * @return 修改成功后的组织机构信息
      */
-    @Open(value = "org.updateById", description = "根据组织机构ID，修改组织机构信息")
+    @Open(value = "org.updateById", permission = true, description = "根据组织机构ID，修改组织机构信息")
     OrgResp updateById(OrgUpdateDto dto);
 
     /**
