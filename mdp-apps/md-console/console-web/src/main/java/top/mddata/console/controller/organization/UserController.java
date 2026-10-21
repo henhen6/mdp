@@ -106,7 +106,10 @@ public class UserController extends SuperController<UserService, User> {
     @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<UserVo> get(@RequestParam Long id) {
         User entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, UserVo.class));
+        UserVo vo = BeanUtil.toBean(entity, UserVo.class);
+        // 与 page/list 保持一致：回显岗位、组织等名称到 echoMap（个人中心等场景依赖）
+        echoService.action(vo);
+        return R.success(vo);
     }
 
     /**

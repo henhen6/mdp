@@ -33,7 +33,7 @@ public class ProfileUserDto {
 
     /**
      * 性别
-     * [1-男 2-女]
+     * [0-男 1-女]
      */
     @Size(max = 1, message = "性别长度不能超过{max}")
     @Schema(description = "性别")
@@ -54,12 +54,6 @@ public class ProfileUserDto {
     @Size(max = 255, message = "姓名长度不能超过{max}")
     @Schema(description = "姓名")
     private String name;
-
-    /**
-     * 所属岗位
-     */
-    @Schema(description = "所属岗位")
-    private Long positionId;
 
     /**
      * 手机号（手动填写，仅做格式与唯一性校验，不验证真实性）

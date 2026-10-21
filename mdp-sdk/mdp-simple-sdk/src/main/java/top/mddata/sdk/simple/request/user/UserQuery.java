@@ -15,7 +15,7 @@ public class UserQuery {
 
     /**
      * 性别
-     * [1-男 2-女]
+     * [0-男 1-女]
      */
     private String sex;
 

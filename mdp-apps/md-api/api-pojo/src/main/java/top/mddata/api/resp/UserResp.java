@@ -43,7 +43,7 @@ public class UserResp implements Serializable {
 
     /**
      * 性别
-     * [1-男 2-女]
+     * [0-男 1-女]
      */
     @Schema(description = "性别")
     private String sex;

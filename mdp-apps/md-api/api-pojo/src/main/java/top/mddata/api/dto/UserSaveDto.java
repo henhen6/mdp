@@ -40,7 +40,7 @@ public class UserSaveDto implements Serializable {
 
     /**
      * 性别
-     * [1-男 2-女]
+     * [0-男 1-女]
      */
     @Size(max = 1, message = "性别长度不能超过{max}")
     @Schema(description = "性别")
