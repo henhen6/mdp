@@ -105,7 +105,8 @@ public class UserController extends SuperController<UserService, User> {
     @Operation(summary = "单体查询", description = "根据主键获取用户")
     @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<UserVo> get(@RequestParam Long id) {
-        User entity = superService.getById(id);
+        // 走关系查询补查 orgIdList（@RelationOneToMany 仅在 *WithRelations* 方法中生效），与 page/list 对齐
+        User entity = superService.getMapper().selectOneWithRelationsById(id);
         UserVo vo = BeanUtil.toBean(entity, UserVo.class);
         // 与 page/list 保持一致：回显岗位、组织等名称到 echoMap（个人中心等场景依赖）
         echoService.action(vo);
