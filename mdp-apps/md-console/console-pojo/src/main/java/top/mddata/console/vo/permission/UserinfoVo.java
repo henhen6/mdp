@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户信息
@@ -80,6 +81,30 @@ public class UserinfoVo {
      */
     @Schema(description = "上次登录的顶级单位")
     private Long lastTopCompanyId;
+
+    /**
+     * 所属岗位ID
+     */
+    @Schema(description = "所属岗位ID")
+    private Long positionId;
+
+    /**
+     * 所属岗位名称（仅展示用，由管理端维护）
+     */
+    @Schema(description = "所属岗位名称")
+    private String positionName;
+
+    /**
+     * 所属组织ID列表
+     */
+    @Schema(description = "所属组织ID列表")
+    private List<Long> orgIdList;
+
+    /**
+     * 所属组织名称列表（仅展示用，由管理端维护）
+     */
+    @Schema(description = "所属组织名称列表")
+    private List<String> orgNameList;
 
     /**
      * 输错密码时间
