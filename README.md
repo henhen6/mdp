@@ -14,7 +14,13 @@
 
 - 官网： https://mddata.top/
 - 文档： https://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
-- 前端代码： https://gitee.com/henhen6/mdp-web-vben
+
+## 项目组成
+- 前端： https://gitee.com/henhen6/mdp-web-vben
+- 后端： https://gitee.com/henhen6/mddata
+- 小程序： https://gitee.com/henhen6/mdp-app
+  ![](docs/imgs/mdp小程序.jpg)
+
 
 ## 介绍
 主数据平台（master-data-platform），简称MDP。MDP基于Java17、SpringBoot、vue3、ant-design-vue等主流技术构建的中后台快速开发平台，立志打造为一个企业级的软件开发基础脚手架，帮助企业快速搭建一个基础开发框架。
@@ -22,6 +28,8 @@
 简单来说，可以理解为MDP是集 单点登录系统、主数据（基础数据）维护与管理、开发者平台（开放平台）等功能于一身的平台。
 
 该项目主要功能包含：基础数据管理、权限管理、用户身份认证、应用（子系统）集成。
+
+终端包含3个web端、1个移动端。
 
 - 基础数据管理
   - 组织机构管理、岗位管理、用户管理
@@ -49,7 +57,6 @@
   - 文件存储
   - 登录日志、操作日志
 
-
 ## 联系作者
 - 微信：hhenhen
 
@@ -60,6 +67,7 @@
 | [工作台](https://workbench.mddata.top) | md-workbench，简称mdw | web-workbench | 可以理解为用户中心、用户的统一门户。通常提供给所有用户使用。 |
 | [控制台](https://console.mddata.top) | md-console，简称mdc   | web-console   | 可以理解为后台管理项目，通常提供给管理员使用。        |
 | [开发者平台](https://open.mddata.top) | md-open，简称mdo      | web-open      | 可以理解为开发者中心，通常提供给第三方开发者接入应用使用。  |
+| 小程序 | mdp      | mdp-app      | 普通用户使用的小程序，用于登录、消息中心等基础功能。  |
 
 - 工作台：https://workbench.mddata.top
 - 控制台：https://console.mddata.top
@@ -125,7 +133,14 @@
 
   - 文档查看：开发者可以查看平台发布的接口文档。
 
-    
+- 小程序
+  
+  提供给普通用户使用的，目前内置了登录、自动注册、消息中心、工作台等基础功能。
+
+  - 首页  
+  - 工作台：我拥有的应用
+  - 消息中心： 消息查看
+  - 个人中心： 个人资料维护、退出
 
 ## 技术栈
 
@@ -139,14 +154,16 @@
   - 文档：knife4j、torna
   - 定时任务：power-job 
   - 代码生成器：自主开发 
-- 部署： 
-  - 服务器：CentOS、UOS
-  - Openresty、Nginx 
-  - Maven、Jenkins/阿里云效/Github Actions
-  - Docker 
-  - Kubernetes
+- 移动端
+  - 基于 [unibest](https://unibest.tech) 最新版本二次开发
+  - uniapp、vue3、vite5、pnpm
+  - setup语法糖、TypeScript
+  - UniCSS、 UniCSS Icons
+  - Alova.js
+  - 基于文件的路由 + 局系统
+  - pinia、API自动导入、请求拦截、路由拦截、字体图标、多语言、自定义tabbar、SVG、UI库.
 - 前端 
-  - 基于 vue-vben-admin 5.x 最新版框架二次开发，
+  - 基于 [vue-vben-admin](https://doc.vben.pro/) 5.x 最新版框架二次开发
   - Turbo Repo：规范且标准的大仓架构，使用pnpm+monorepo+turbo工程管理模式，提供企业级开发规范
   - vue3
   - ant-design-vue、Shadcn-UI
@@ -157,7 +174,13 @@
   - Pinia
   - Axios
   - Dayjs 
-
+- 部署：
+  - 服务器：CentOS、UOS
+  - Openresty、Nginx
+  - Maven、Jenkins/阿里云效/Github Actions
+  - Docker
+  - Kubernetes
+  
 ## 项目预览
 ### 工作台
 - 我的应用
@@ -238,3 +261,5 @@
   - ![](./docs/imgs/open/应用管理-开发配置.png)
 - 开发文档
   - ![](./docs/imgs/open/开发文档.png)
+
+### 小程序
