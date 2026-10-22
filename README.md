@@ -217,17 +217,53 @@ MDP 内置3个web端、1个移动端。重点解决的是 单点登录系统、�
 
 
 ### 开发者平台
-- 首页
-  - ![](./docs/imgs/open/首页.png)
-- 应用申请
-  - ![](./docs/imgs/open/应用申请.png)
-  - ![](./docs/imgs/open/应用申请管理.png)
-- 应用管理
-  - ![](./docs/imgs/open/应用管理-应用信息.png)
-  - ![](./docs/imgs/open/应用管理-应用秘钥.png)
-  - ![](./docs/imgs/open/应用管理-事件订阅.png)
-  - ![](./docs/imgs/open/应用管理-开发配置.png)
-- 开发文档
-  - ![](./docs/imgs/open/开发文档.png)
+<div style="overflow:hidden;width:100%">
+  <div id="slider" style="display:flex;width:max-content;animation:slide 30s infinite linear;">
+    <img src="./docs/imgs/open/首页.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用申请.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用申请管理.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-应用信息.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-应用秘钥.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-事件订阅.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-开发配置.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/开发文档.png" width="800" style="margin:0 4px">
+    <!-- 无缝滚动需要首尾重复一份 -->
+    <img src="./docs/imgs/open/首页.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用申请.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用申请管理.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-应用信息.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-应用秘钥.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-事件订阅.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/应用管理-开发配置.png" width="800" style="margin:0 4px">
+    <img src="./docs/imgs/open/开发文档.png" width="800" style="margin:0 4px">
+  </div>
+</div>
+<style>
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+#slider:hover {
+  animation-play-state: paused;
+}
+</style>
 
 ### 小程序
+<div style="overflow:hidden;width:100%">
+  <div id="slider" style="display:flex;width:max-content;animation:slide 30s infinite linear;">
+    <!-- 这里放你全部原图 -->
+    <img src="./docs/imgs/小程序/首页.png" width="150" style="margin:0 4px">
+    <img src="./docs/imgs/小程序/工作台.png" width="150" style="margin:0 4px">
+    <img src="./docs/imgs/小程序/消息中心.png" width="150" style="margin:0 4px">
+    <img src="./docs/imgs/小程序/我的.png" width="150" style="margin:0 4px">
+  </div>
+</div>
+<style>
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+#slider:hover {
+  animation-play-state: paused;
+}
+</style>
