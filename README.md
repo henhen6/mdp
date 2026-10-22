@@ -165,55 +165,55 @@ MDP 内置3个web端、1个移动端。重点解决的是 单点登录系统、�
 
 ### 控制台
 - 组织管理
-    ![](./docs/imgs/组织管理.png)
+    ![](./docs/imgs/console/组织管理.png)
 - 岗位管理
-  ![](./docs/imgs/岗位管理.png)
+  ![](./docs/imgs/console/岗位管理.png)
 - 用户管理
-  - ![](./docs/imgs/用户管理.png)
-  - ![](./docs/imgs/用户新增.png)
+  - ![](./docs/imgs/console/用户管理.png)
+  - ![](./docs/imgs/console/用户新增.png)
 - 菜单管理
-  - ![](./docs/imgs/菜单管理.png)
-  - ![](./docs/imgs/菜单新增.png)
+  - ![](./docs/imgs/console/菜单管理.png)
+  - ![](./docs/imgs/console/菜单新增.png)
 - 角色模板管理
-  - ![](./docs/imgs/角色模板管理-角色用户.png)
-  - ![](./docs/imgs/角色模板管理-应用权限.png)
-  - ![](./docs/imgs/角色模板管理-功能权限.png)
+  - ![](./docs/imgs/console/角色模板管理-角色用户.png)
+  - ![](./docs/imgs/console/角色模板管理-应用权限.png)
+  - ![](./docs/imgs/console/角色模板管理-功能权限.png)
 - 角色管理
-  - ![](./docs/imgs/角色管理.png)
+  - ![](./docs/imgs/console/角色管理.png)
 - 字典管理
-  - ![](./docs/imgs/字典管理.png)
-  - ![](./docs/imgs/字典新增.png)
-  - ![](./docs/imgs/字典项新增.png)
+  - ![](./docs/imgs/console/字典管理.png)
+  - ![](./docs/imgs/console/字典新增.png)
+  - ![](./docs/imgs/console/字典项新增.png)
 - 系统配置
-  - ![](./docs/imgs/系统配置.png)
+  - ![](./docs/imgs/console/系统配置.png)
 - 消息管理
-    - ![](./docs/imgs/消息管理.png)
-    - ![](./docs/imgs/消息发布.png)
+    - ![](./docs/imgs/console/消息管理.png)
+    - ![](./docs/imgs/console/消息发布.png)
 - 消息模板
-    - ![](./docs/imgs/消息模板.png)
-    - ![](./docs/imgs/消息模板编辑.png)
+    - ![](./docs/imgs/console/消息模板.png)
+    - ![](./docs/imgs/console/消息模板编辑.png)
 - 接口配置
-    - ![](./docs/imgs/接口配置.png)
-    - ![](./docs/imgs/接口配置-编辑.png)
+    - ![](./docs/imgs/console/接口配置.png)
+    - ![](./docs/imgs/console/接口配置-编辑.png)
 - 接口统计
-    - ![](./docs/imgs/接口统计.png)
-    - ![](./docs/imgs/接口统计-日志.png)
+    - ![](./docs/imgs/console/接口统计.png)
+    - ![](./docs/imgs/console/接口统计-日志.png)
 - 应用管理
-  - ![](./docs/imgs/应用管理.png)
-  - ![](./docs/imgs/应用秘钥.png)
-  - ![](./docs/imgs/应用新增.png)
+  - ![](./docs/imgs/console/应用管理.png)
+  - ![](./docs/imgs/console/应用秘钥.png)
+  - ![](./docs/imgs/console/应用新增.png)
 - 应用审核
-  ![](./docs/imgs/应用审核.png)
+  ![](./docs/imgs/console/应用审核.png)
 - 开放接口
-  ![](./docs/imgs/开放接口.png)
+  ![](./docs/imgs/console/开放接口.png)
 - 文档管理
-  ![](./docs/imgs/开放文档.png)
+  ![](./docs/imgs/console/开放文档.png)
 - 权限组
-  ![](./docs/imgs/权限组.png)
+  ![](./docs/imgs/console/权限组.png)
 - Oauth2权限
-  ![](./docs/imgs/Oauth2权限.png)
+  ![](./docs/imgs/console/Oauth2权限.png)
 - 事件管理
-  ![](./docs/imgs/事件管理.png)
+  ![](./docs/imgs/console/事件管理.png)
 
 
 ### 开发者平台
