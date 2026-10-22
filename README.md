@@ -21,8 +21,8 @@ MDP 内置3个web端、1个移动端。重点解决的是 单点登录系统、�
 - 前端代码： https://gitee.com/henhen6/mdp-web-vben
 - 后端代码： https://gitee.com/henhen6/mddata
 - 小程序代码： https://gitee.com/henhen6/mdp-app
-  ![](docs/imgs/mdp小程序.jpg)
 
+  ![](docs/imgs/mdp小程序.jpg)
 
 ## 联系作者
 - 微信：hhenhen
@@ -50,9 +50,7 @@ MDP 内置3个web端、1个移动端。重点解决的是 单点登录系统、�
     | admin | admin |  总公司管理，使用MDP平台开展业务的最高管理员 |
     | user | admin |  总公司普通人，使用MDP平台的普通用户 |
 
-
-
-## 第三应用
+## 第三方应用
 
 使用主流开源项目作为单点登录的客户端，对接到MDP平台，二次开发时可以用于学习如何集成。 需要本地部署后查看效果，演示环境服务器资源有限无法部署。
 
