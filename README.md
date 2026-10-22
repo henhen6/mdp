@@ -151,119 +151,46 @@ MDP 内置3个web端、1个移动端。重点解决的是 单点登录系统、�
   
 ## 项目预览
 ### 工作台
-- 我的应用
-  ![](./docs/imgs/workbench/我的应用.png)
-- 个人中心
-  ![个人中心.png](docs/imgs/workbench/个人中心.png)  
-- 消息中心
-  ![消息中心.png](docs/imgs/workbench/消息中心.png)
-  ![消息查看.png](docs/imgs/workbench/消息查看.png)
-- 登录日志
-  ![登录日志.png](docs/imgs/workbench/登录日志.png)  
-- 安全设置
-  ![安全设置.png](docs/imgs/workbench/安全设置.png)  
+
+|  |  |
+| :---: | :---: |
+| ![我的应用](./docs/imgs/workbench/我的应用.png)<br>我的应用 | ![个人中心](./docs/imgs/workbench/个人中心.png)<br>个人中心 |
+| ![消息中心](./docs/imgs/workbench/消息中心.png)<br>消息中心 | ![消息查看](./docs/imgs/workbench/消息查看.png)<br>消息查看 |
+| ![登录日志](./docs/imgs/workbench/登录日志.png)<br>登录日志 | ![安全设置](./docs/imgs/workbench/安全设置.png)<br>安全设置 |
 
 ### 控制台
-- 组织管理
-    ![](./docs/imgs/console/组织管理.png)
-- 岗位管理
-  ![](./docs/imgs/console/岗位管理.png)
-- 用户管理
-  - ![](./docs/imgs/console/用户管理.png)
-  - ![](./docs/imgs/console/用户新增.png)
-- 菜单管理
-  - ![](./docs/imgs/console/菜单管理.png)
-  - ![](./docs/imgs/console/菜单新增.png)
-- 角色模板管理
-  - ![](./docs/imgs/console/角色模板管理-角色用户.png)
-  - ![](./docs/imgs/console/角色模板管理-应用权限.png)
-  - ![](./docs/imgs/console/角色模板管理-功能权限.png)
-- 角色管理
-  - ![](./docs/imgs/console/角色管理.png)
-- 字典管理
-  - ![](./docs/imgs/console/字典管理.png)
-  - ![](./docs/imgs/console/字典新增.png)
-  - ![](./docs/imgs/console/字典项新增.png)
-- 系统配置
-  - ![](./docs/imgs/console/系统配置.png)
-- 消息管理
-    - ![](./docs/imgs/console/消息管理.png)
-    - ![](./docs/imgs/console/消息发布.png)
-- 消息模板
-    - ![](./docs/imgs/console/消息模板.png)
-    - ![](./docs/imgs/console/消息模板编辑.png)
-- 接口配置
-    - ![](./docs/imgs/console/接口配置.png)
-    - ![](./docs/imgs/console/接口配置-编辑.png)
-- 接口统计
-    - ![](./docs/imgs/console/接口统计.png)
-    - ![](./docs/imgs/console/接口统计-日志.png)
-- 应用管理
-  - ![](./docs/imgs/console/应用管理.png)
-  - ![](./docs/imgs/console/应用秘钥.png)
-  - ![](./docs/imgs/console/应用新增.png)
-- 应用审核
-  ![](./docs/imgs/console/应用审核.png)
-- 开放接口
-  ![](./docs/imgs/console/开放接口.png)
-- 文档管理
-  ![](./docs/imgs/console/开放文档.png)
-- 权限组
-  ![](./docs/imgs/console/权限组.png)
-- Oauth2权限
-  ![](./docs/imgs/console/Oauth2权限.png)
-- 事件管理
-  ![](./docs/imgs/console/事件管理.png)
 
+|  |  |
+| :---: | :---: |
+| ![组织管理](./docs/imgs/console/组织管理.png)<br>组织管理 | ![岗位管理](./docs/imgs/console/岗位管理.png)<br>岗位管理 |
+| ![用户管理](./docs/imgs/console/用户管理.png)<br>用户管理 | ![用户新增](./docs/imgs/console/用户新增.png)<br>用户新增 |
+| ![菜单管理](./docs/imgs/console/菜单管理.png)<br>菜单管理 | ![菜单新增](./docs/imgs/console/菜单新增.png)<br>菜单新增 |
+| ![角色模板管理-角色用户](./docs/imgs/console/角色模板管理-角色用户.png)<br>角色模板管理-角色用户 | ![角色模板管理-应用权限](./docs/imgs/console/角色模板管理-应用权限.png)<br>角色模板管理-应用权限 |
+| ![角色模板管理-功能权限](./docs/imgs/console/角色模板管理-功能权限.png)<br>角色模板管理-功能权限 | ![角色管理](./docs/imgs/console/角色管理.png)<br>角色管理 |
+| ![字典管理](./docs/imgs/console/字典管理.png)<br>字典管理 | ![字典新增](./docs/imgs/console/字典新增.png)<br>字典新增 |
+| ![字典项新增](./docs/imgs/console/字典项新增.png)<br>字典项新增 | ![系统配置](./docs/imgs/console/系统配置.png)<br>系统配置 |
+| ![消息管理](./docs/imgs/console/消息管理.png)<br>消息管理 | ![消息发布](./docs/imgs/console/消息发布.png)<br>消息发布 |
+| ![消息模板](./docs/imgs/console/消息模板.png)<br>消息模板 | ![消息模板编辑](./docs/imgs/console/消息模板编辑.png)<br>消息模板编辑 |
+| ![接口配置](./docs/imgs/console/接口配置.png)<br>接口配置 | ![接口配置-编辑](./docs/imgs/console/接口配置-编辑.png)<br>接口配置-编辑 |
+| ![接口统计](./docs/imgs/console/接口统计.png)<br>接口统计 | ![接口统计-日志](./docs/imgs/console/接口统计-日志.png)<br>接口统计-日志 |
+| ![应用管理](./docs/imgs/console/应用管理.png)<br>应用管理 | ![应用秘钥](./docs/imgs/console/应用秘钥.png)<br>应用秘钥 |
+| ![应用新增](./docs/imgs/console/应用新增.png)<br>应用新增 | ![应用审核](./docs/imgs/console/应用审核.png)<br>应用审核 |
+| ![开放接口](./docs/imgs/console/开放接口.png)<br>开放接口 | ![开放文档](./docs/imgs/console/开放文档.png)<br>文档管理 |
+| ![权限组](./docs/imgs/console/权限组.png)<br>权限组 | ![Oauth2权限](./docs/imgs/console/Oauth2权限.png)<br>Oauth2权限 |
+| ![事件管理](./docs/imgs/console/事件管理.png)<br>事件管理 |  |
 
 ### 开发者平台
-<div style="overflow:hidden;width:100%">
-  <div id="slider" style="display:flex;width:max-content;animation:slide 30s infinite linear;">
-    <img src="./docs/imgs/open/首页.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用申请.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用申请管理.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-应用信息.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-应用秘钥.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-事件订阅.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-开发配置.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/开发文档.png" width="800" style="margin:0 4px">
-    <!-- 无缝滚动需要首尾重复一份 -->
-    <img src="./docs/imgs/open/首页.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用申请.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用申请管理.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-应用信息.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-应用秘钥.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-事件订阅.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/应用管理-开发配置.png" width="800" style="margin:0 4px">
-    <img src="./docs/imgs/open/开发文档.png" width="800" style="margin:0 4px">
-  </div>
-</div>
-<style>
-@keyframes slide {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-#slider:hover {
-  animation-play-state: paused;
-}
-</style>
+
+|  |  |
+| :---: | :---: |
+| ![首页](./docs/imgs/open/首页.png)<br>首页 | ![应用申请](./docs/imgs/open/应用申请.png)<br>应用申请 |
+| ![应用申请管理](./docs/imgs/open/应用申请管理.png)<br>应用申请管理 | ![应用管理-应用信息](./docs/imgs/open/应用管理-应用信息.png)<br>应用管理-应用信息 |
+| ![应用管理-应用秘钥](./docs/imgs/open/应用管理-应用秘钥.png)<br>应用管理-应用秘钥 | ![应用管理-事件订阅](./docs/imgs/open/应用管理-事件订阅.png)<br>应用管理-事件订阅 |
+| ![应用管理-开发配置](./docs/imgs/open/应用管理-开发配置.png)<br>应用管理-开发配置 | ![开发文档](./docs/imgs/open/开发文档.png)<br>开发文档 |
 
 ### 小程序
-<div style="overflow:hidden;width:100%">
-  <div id="slider" style="display:flex;width:max-content;animation:slide 30s infinite linear;">
-    <!-- 这里放你全部原图 -->
-    <img src="./docs/imgs/小程序/首页.png" width="150" style="margin:0 4px">
-    <img src="./docs/imgs/小程序/工作台.png" width="150" style="margin:0 4px">
-    <img src="./docs/imgs/小程序/消息中心.png" width="150" style="margin:0 4px">
-    <img src="./docs/imgs/小程序/我的.png" width="150" style="margin:0 4px">
-  </div>
-</div>
-<style>
-@keyframes slide {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-#slider:hover {
-  animation-play-state: paused;
-}
-</style>
+
+|  |  |
+| :---: | :---: |
+| ![首页](./docs/imgs/小程序/首页.png)<br>首页 | ![工作台](./docs/imgs/小程序/工作台.png)<br>工作台 |
+| ![消息中心](./docs/imgs/小程序/消息中心.png)<br>消息中心 | ![我的](./docs/imgs/小程序/我的.png)<br>我的 |
