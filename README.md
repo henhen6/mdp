@@ -10,52 +10,19 @@
 ![star](https://gitcode.com/henhen6/mdp/star/badge.svg)
 [![star](https://gitcode.com/henhen6/mdp/star/2025top.svg)](https://gitcode.com/henhen6/mdp)
 
-## 常用链接
+主数据平台（master-data-platform），简称MDP。MDP基于Java17、SpringBoot、vue3、antdv-next、uniapp 等主流技术构建的 **全场景极速开发平台**。
+
+MDP 内置3个web端、1个移动端。重点解决的是 单点登录系统、主数据维护与管理、开发者平台等功能。
+
+## 项目组成
 
 - 官网： https://mddata.top/
 - 文档： https://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
-
-## 项目组成
-- 前端： https://gitee.com/henhen6/mdp-web-vben
-- 后端： https://gitee.com/henhen6/mddata
-- 小程序： https://gitee.com/henhen6/mdp-app
+- 前端代码： https://gitee.com/henhen6/mdp-web-vben
+- 后端代码： https://gitee.com/henhen6/mddata
+- 小程序代码： https://gitee.com/henhen6/mdp-app
   ![](docs/imgs/mdp小程序.jpg)
 
-
-## 介绍
-主数据平台（master-data-platform），简称MDP。MDP基于Java17、SpringBoot、vue3、ant-design-vue等主流技术构建的中后台快速开发平台，立志打造为一个企业级的软件开发基础脚手架，帮助企业快速搭建一个基础开发框架。
-
-简单来说，可以理解为MDP是集 单点登录系统、主数据（基础数据）维护与管理、开发者平台（开放平台）等功能于一身的平台。
-
-该项目主要功能包含：基础数据管理、权限管理、用户身份认证、应用（子系统）集成。
-
-终端包含3个web端、1个移动端。
-
-- 基础数据管理
-  - 组织机构管理、岗位管理、用户管理
-  - 钉钉等三方数据同步
-  - 菜单管理、角色模板管理、角色管理
-  - 字典管理、配置管理
-- 权限管理
-  - 应用权限管控
-  - 菜单、按钮、数据、字段权限的配置、授权和鉴权
-  - 接口权限的配置、授权和鉴权
-- 用户身份认证
-  - SSO、Oauth2等多种主流的单点登录协议。 
-- 应用（子系统）集成
-  - 接入与审批
-  - 免密登录与一键跳转
-  - 数据订阅与拉取
-  - 接口调用与管控
-  - SDK下载
-  - 文档生成与查看
-- 其他功能
-  - 消息中心
-  - 用户个人中心
-  - 可视化代码生成
-  - 短信、邮件、站内信功能
-  - 文件存储
-  - 登录日志、操作日志
 
 ## 联系作者
 - 微信：hhenhen
@@ -98,6 +65,34 @@
 ## 广告位
 - [lamp-cloud](https://gitee.com/dromara/lamp-cloud) : 专注于多租户解决方案。
 
+## 主要功能
+主要功能包含：基础数据管理、权限管理、用户身份认证、应用（子系统）集成。
+
+- 基础数据管理
+  - 组织机构管理、岗位管理、用户管理
+  - 钉钉等三方数据同步
+  - 菜单管理、角色模板管理、角色管理
+  - 字典管理、配置管理
+- 权限管理
+  - 应用权限管控
+  - 菜单、按钮、数据、字段权限的配置、授权和鉴权
+  - 接口权限的配置、授权和鉴权
+- 用户身份认证
+  - SSO、Oauth2等多种主流的单点登录协议。
+- 应用（子系统）集成
+  - 接入与审批
+  - 免密登录与一键跳转
+  - 数据订阅与拉取
+  - 接口调用与管控
+  - SDK下载
+  - 文档生成与查看
+- 其他功能
+  - 消息中心
+  - 用户个人中心
+  - 可视化代码生成
+  - 短信、邮件、站内信功能
+  - 文件存储
+  - 登录日志、操作日志
 ## 主要功能
 
 - 工作台
@@ -166,7 +161,7 @@
   - 基于 [vue-vben-admin](https://doc.vben.pro/) 5.x 最新版框架二次开发
   - Turbo Repo：规范且标准的大仓架构，使用pnpm+monorepo+turbo工程管理模式，提供企业级开发规范
   - vue3
-  - ant-design-vue、Shadcn-UI
+  - antdv-next、Shadcn-UI
   - vxe-table
   - vite
   - typescript
