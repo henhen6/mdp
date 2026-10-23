@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
+import top.mddata.base.fieldperm.model.FieldRule;
+import top.mddata.base.fieldperm.spi.FieldPermProvider;
+import top.mddata.base.util.ContextUtil;
 import top.mddata.common.entity.User;
 import top.mddata.common.properties.IgnoreProperties;
 import top.mddata.console.service.organization.UserService;
@@ -22,6 +25,7 @@ import top.mddata.console.vo.permission.UserAccessInfoVo;
 import top.mddata.console.vo.permission.UserinfoVo;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -33,6 +37,7 @@ public class ResourceController {
     private final RoleService roleService;
     private final UserService userService;
     private final IgnoreProperties ignoreProperties;
+    private final FieldPermProvider fieldPermProvider;
 
     /**
      * 查询指定应用所有的菜单
@@ -85,5 +90,22 @@ public class ResourceController {
         long userId = StpUtil.getLoginIdAsLong();
         User user = userService.getByIdCache(userId);
         return R.success(BeanUtil.toBean(user, UserinfoVo.class));
+    }
+
+    /**
+     * 查询当前登录用户在指定菜单下的受限字段规则（前端列隐藏/脱敏渲染用）。
+     *
+     * @param menuId 菜单ID
+     * @return property → 受限规则；无限制返回空Map
+     */
+    @GetMapping("/anyone/current")
+    @Operation(summary = "查询当前用户受限字段", description = "查询当前用户在指定菜单下的受限字段规则")
+    public R<Map<String, FieldRule>> current(@RequestParam Long menuId) {
+        Long userId = ContextUtil.getUserId();
+        if (userId == null) {
+            return R.success(Map.of());
+        }
+        Map<String, FieldRule> rules = fieldPermProvider.findUserPerm(userId).rulesOf(menuId);
+        return R.success(rules == null ? Map.of() : rules);
     }
 }
