@@ -42,6 +42,12 @@ public class NotifyInfoLogQuery extends ExtraParams implements Serializable {
     private Long notifyInfoId;
 
     /**
+     * 所属调用（非实体列，仅作查询入参：经 mdo_notify_info.call_log_id 两级过滤回调日志）
+     */
+    @Schema(description = "所属调用")
+    private Long callLogId;
+
+    /**
      * 请求时间
      */
     @Schema(description = "请求时间")

@@ -63,6 +63,13 @@ public class MsgTaskDto implements Serializable {
     private String content;
 
     /**
+     * 内容引用的文件id列表。
+     * null 表示客户端未携带（跳过附件关联）；空列表表示内容已无附件（清理全部历史关联）
+     */
+    @Schema(description = "内容引用的文件id列表")
+    private List<Long> contentFileIds;
+
+    /**
      * 是否定时发送
      */
     @Schema(description = "是否定时发送")
@@ -93,6 +100,7 @@ public class MsgTaskDto implements Serializable {
     /**
      * 接收范围
      * [0-所有人 1-指定用户 2-指定角色 3-指定部门]
+     * 站内信专属
      */
     @NotNull(message = "请填写接收范围")
     @Schema(description = "接收范围")

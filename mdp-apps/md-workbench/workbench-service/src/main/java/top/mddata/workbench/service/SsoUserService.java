@@ -40,6 +40,13 @@ public interface SsoUserService extends SuperService<User> {
     User getByEmail(String email);
 
     /**
+     * 根据微信小程序openid查询用户
+     * @param wxOpenid 微信小程序openid
+     * @return 用户
+     */
+    User getByWxOpenid(String wxOpenid);
+
+    /**
      * 重置密码错误次数
      *
      * @param id 用户id
@@ -170,6 +177,14 @@ public interface SsoUserService extends SuperService<User> {
      * @return 用户id
      */
     Long updateEmail(ProfileEmailDto dto);
+
+    /**
+     * 通过微信授权手机号换绑手机号
+     *
+     * @param phone 微信授权换取的新手机号
+     * @return 用户id
+     */
+    Long updatePhoneByWxMa(String phone);
 
     /**
      * 修改个人密码

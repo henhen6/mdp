@@ -73,6 +73,7 @@ public class MsgTaskQuery extends ExtraParams implements Serializable {
     /**
      * 接收范围
      * [0-所有人 1-指定用户 2-指定角色 3-指定部门]
+     * 站内信专属
      */
     @Schema(description = "接收范围")
     private Integer recipientScope;
@@ -98,6 +99,7 @@ public class MsgTaskQuery extends ExtraParams implements Serializable {
 
     /**
      * 跳转地址
+     * 站内信专属
      */
     @Schema(description = "跳转地址")
     private String url;

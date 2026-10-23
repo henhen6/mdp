@@ -1,6 +1,6 @@
 # 主数据平台
 
-[![Language](https://img.shields.io/badge/语言-Java17%20%7C%20SpringCloud%20%7C%20Vue3%20-red?style=flat-square&color=42b883)](https://github.com/henhen6/mdp)
+[![Language](https://img.shields.io/badge/语言-Java17%20%20%7C%20Vue3%20-red?style=flat-square&color=42b883)](https://github.com/henhen6/mdp)
 [![License](https://img.shields.io/github/license/henhen6/mdp?color=42b883&style=flat-square)](https://github.com/henhen6/mdp/blob/master/LICENSE)
 [![Author](https://img.shields.io/badge/作者-很很-orange.svg)](https://github.com/henhen6)
 [![Star](https://img.shields.io/github/stars/henhen6/mdp?color=42b883&logo=github&style=flat-square)](https://github.com/henhen6/mdp/stargazers)
@@ -10,45 +10,19 @@
 ![star](https://gitcode.com/henhen6/mdp/star/badge.svg)
 [![star](https://gitcode.com/henhen6/mdp/star/2025top.svg)](https://gitcode.com/henhen6/mdp)
 
-## 常用链接
+主数据平台（master-data-platform），简称MDP。MDP基于Java17、SpringBoot、vue3、antdv-next、uniapp 等主流技术构建的 **全场景极速开发平台**。
 
-- 官网： http://mddata.top/
-- 文档： http://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
+MDP 内置3个web端、1个移动端。重点解决的是 单点登录系统、主数据维护与管理、开发者平台等功能。
+
+## 项目组成
+
+- 官网： https://mddata.top/
+- 文档： https://mddata.top/doc/%E7%AE%80%E4%BB%8B.html
 - 前端代码： https://gitee.com/henhen6/mdp-web-vben
+- 后端代码： https://gitee.com/henhen6/mddata
+- 小程序代码： https://gitee.com/henhen6/mdp-app
 
-## 介绍
-主数据平台（master-data-platform），简称MDP。MDP基于Java17、SpringBoot、vue3、ant-design-vue等主流技术构建的中后台快速开发平台，立志打造为一个企业级的软件开发基础脚手架，帮助企业快速搭建一个基础开发框架。
-
-简单来说，可以理解为MDP是集 单点登录系统、主数据（基础数据）维护与管理、开发者平台（开放平台）等功能于一身的平台。
-
-该项目主要功能包含：基础数据管理、权限管理、用户身份认证、应用（子系统）集成。
-
-- 基础数据管理
-  - 组织机构管理、岗位管理、用户管理
-  - 钉钉等三方数据同步
-  - 菜单管理、角色模板管理、角色管理
-  - 字典管理、配置管理
-- 权限管理
-  - 应用权限管控
-  - 菜单、按钮、数据、字段权限的配置、授权和鉴权
-  - 接口权限的配置、授权和鉴权
-- 用户身份认证
-  - SSO、Oauth2等多种主流的单点登录协议。 
-- 应用（子系统）集成
-  - 接入与审批
-  - 免密登录与一键跳转
-  - 数据订阅与拉取
-  - 接口调用与管控
-  - SDK下载
-  - 文档生成与查看
-- 其他功能
-  - 消息中心
-  - 用户个人中心
-  - 可视化代码生成
-  - 短信、邮件、站内信功能
-  - 文件存储
-  - 登录日志、操作日志
-
+  ![](docs/imgs/mdp小程序.jpg)
 
 ## 联系作者
 - 微信：hhenhen
@@ -57,13 +31,14 @@
 
 | 应用<br/>（子系统）                   | 后端项目名            | 前端项目名    | 备注                             |
 |--------------------------------| --------------------- | ------------- |--------------------------------|
-| [工作台](http://workbench.mddata.top) | md-workbench，简称mdw | web-workbench | 可以理解为用户中心、用户的统一门户。通常提供给所有用户使用。 |
-| [控制台](http://console.mddata.top) | md-console，简称mdc   | web-console   | 可以理解为后台管理项目，通常提供给管理员使用。        |
-| [开发者平台](http://open.mddata.top) | md-open，简称mdo      | web-open      | 可以理解为开发者中心，通常提供给第三方开发者接入应用使用。  |
+| [工作台](https://workbench.mddata.top) | md-workbench，简称mdw | web-workbench | 可以理解为用户中心、用户的统一门户。通常提供给所有用户使用。 |
+| [控制台](https://console.mddata.top) | md-console，简称mdc   | web-console   | 可以理解为后台管理项目，通常提供给管理员使用。        |
+| [开发者平台](https://open.mddata.top) | md-open，简称mdo      | web-open      | 可以理解为开发者中心，通常提供给第三方开发者接入应用使用。  |
+| 小程序 | mdp      | mdp-app      | 普通用户使用的小程序，用于登录、消息中心等基础功能。  |
 
-- 工作台：http://workbench.mddata.top
-- 控制台：http://console.mddata.top
-- 开发者平台：http://open.mddata.top
+- 工作台：https://workbench.mddata.top
+- 控制台：https://console.mddata.top
+- 开发者平台：https://open.mddata.top
 - 演示账号：
 
     | 账号                                      | 密码                                           | 备注                                           |
@@ -75,9 +50,7 @@
     | admin | admin |  总公司管理，使用MDP平台开展业务的最高管理员 |
     | user | admin |  总公司普通人，使用MDP平台的普通用户 |
 
-
-
-## 第三应用
+## 第三方应用
 
 使用主流开源项目作为单点登录的客户端，对接到MDP平台，二次开发时可以用于学习如何集成。 需要本地部署后查看效果，演示环境服务器资源有限无法部署。
 
@@ -96,7 +69,7 @@
 
   提供给普通用户使用，作为普通用户的门户中心，方便用户管理个人信息、查看消息通知、免密登录其他应用。
 
-  - 统一注册与登录：登录、注册、找回密码、第三方账号关联、第三方账号登录。
+  - 统一注册与登录：登录、注册、找回密码、第三方账号关联、第三方账号登录，支持 SSO、Oauth2 等多种主流单点登录协议。
   - 个人中心：个人信息修改、头像修改。
   - 安全设置：账号密码修改、手机号修改、多因素登录、邮箱修改。
   - 登录日志：个人登录日志查询。
@@ -107,11 +80,12 @@
 
   提供给管理员使用，管理员可以维护数据、分配权限、配置系统参数、应用后台创建和审核、应用接口管理、接口文档管理。
 
-  - **主数据**维护：组织架构、岗位、人员、字典、应用菜单
-  - 权限管理：用户访问系统权限、应用获取数据的接口权限、应用数据接口监控与限流。
+  - **主数据**维护：组织架构、岗位、人员、字典、应用菜单，支持钉钉等三方数据同步。
+  - 权限管理：角色模板管理、角色管理；用户访问系统权限（菜单、按钮、数据、字段权限的配置、授权和鉴权）、应用获取数据的接口权限（配置、授权和鉴权）、应用数据接口监控与限流。
   - 应用管理：应用查询、应用创建、应用审核、应用发布、接口管理、文档管理。
   - 系统配置：全局参数配置、短信模版、邮件模版、OSS存储配置。
   - 代码生成：可以生成基于本平台开发的子应用代码。
+  - 日志管理：登录日志、操作日志。
 
 - 开发者平台
 
@@ -121,11 +95,18 @@
 
   - 数据订阅（推数据）：应用订阅主数据后，**主数据**新增或变更可以推送事件给应用。
 
-  - 接口调用（拉数据）：通过SDK或HTTP接口等方式调用平台提供的接口。
+  - 接口调用（拉数据）：通过SDK或HTTP接口等方式调用平台提供的接口，支持 SDK 下载。
 
   - 文档查看：开发者可以查看平台发布的接口文档。
 
-    
+- 小程序
+  
+  提供给普通用户使用的，目前内置了登录、自动注册、消息中心、工作台等基础功能。
+
+  - 首页  
+  - 工作台：我拥有的应用
+  - 消息中心： 消息查看
+  - 个人中心： 个人资料维护、退出
 
 ## 技术栈
 
@@ -139,17 +120,19 @@
   - 文档：knife4j、torna
   - 定时任务：power-job 
   - 代码生成器：自主开发 
-- 部署： 
-  - 服务器：CentOS、UOS
-  - Openresty、Nginx 
-  - Maven、Jenkins/阿里云效/Github Actions
-  - Docker 
-  - Kubernetes
+- 移动端
+  - 基于 [unibest](https://unibest.tech) 最新版本二次开发
+  - uniapp、vue3、vite5、pnpm
+  - setup语法糖、TypeScript
+  - UniCSS、 UniCSS Icons
+  - Alova.js
+  - 基于文件的路由 + 局系统
+  - pinia、API自动导入、请求拦截、路由拦截、字体图标、多语言、自定义tabbar、SVG、UI库.
 - 前端 
-  - 基于 vue-vben-admin 5.x 最新版框架二次开发，
+  - 基于 [vue-vben-admin](https://doc.vben.pro/) 5.x 最新版框架二次开发
   - Turbo Repo：规范且标准的大仓架构，使用pnpm+monorepo+turbo工程管理模式，提供企业级开发规范
   - vue3
-  - ant-design-vue、Shadcn-UI
+  - antdv-next、Shadcn-UI
   - vxe-table
   - vite
   - typescript
@@ -157,84 +140,55 @@
   - Pinia
   - Axios
   - Dayjs 
-
+- 部署：
+  - 服务器：CentOS、UOS
+  - Openresty、Nginx
+  - Maven、Jenkins/阿里云效/Github Actions
+  - Docker
+  - Kubernetes
+  
 ## 项目预览
 ### 工作台
-- 我的应用
-  ![](./docs/imgs/workbench/我的应用.png)
-- 个人中心
-  ![个人中心.png](docs/imgs/workbench/个人中心.png)  
-- 消息中心
-  ![消息中心.png](docs/imgs/workbench/消息中心.png)
-  ![消息查看.png](docs/imgs/workbench/消息查看.png)
-- 登录日志
-  ![登录日志.png](docs/imgs/workbench/登录日志.png)  
-- 安全设置
-  ![安全设置.png](docs/imgs/workbench/安全设置.png)  
+
+|  |  |
+| :---: | :---: |
+| ![我的应用](./docs/imgs/workbench/我的应用.png)<br>我的应用 | ![个人中心](./docs/imgs/workbench/个人中心.png)<br>个人中心 |
+| ![消息中心](./docs/imgs/workbench/消息中心.png)<br>消息中心 | ![消息查看](./docs/imgs/workbench/消息查看.png)<br>消息查看 |
+| ![登录日志](./docs/imgs/workbench/登录日志.png)<br>登录日志 | ![安全设置](./docs/imgs/workbench/安全设置.png)<br>安全设置 |
 
 ### 控制台
-- 组织管理
-    ![](./docs/imgs/组织管理.png)
-- 岗位管理
-  ![](./docs/imgs/岗位管理.png)
-- 用户管理
-  - ![](./docs/imgs/用户管理.png)
-  - ![](./docs/imgs/用户新增.png)
-- 菜单管理
-  - ![](./docs/imgs/菜单管理.png)
-  - ![](./docs/imgs/菜单新增.png)
-- 角色模板管理
-  - ![](./docs/imgs/角色模板管理-角色用户.png)
-  - ![](./docs/imgs/角色模板管理-应用权限.png)
-  - ![](./docs/imgs/角色模板管理-功能权限.png)
-- 角色管理
-  - ![](./docs/imgs/角色管理.png)
-- 字典管理
-  - ![](./docs/imgs/字典管理.png)
-  - ![](./docs/imgs/字典新增.png)
-  - ![](./docs/imgs/字典项新增.png)
-- 系统配置
-  - ![](./docs/imgs/系统配置.png)
-- 消息管理
-    - ![](./docs/imgs/消息管理.png)
-    - ![](./docs/imgs/消息发布.png)
-- 消息模板
-    - ![](./docs/imgs/消息模板.png)
-    - ![](./docs/imgs/消息模板编辑.png)
-- 接口配置
-    - ![](./docs/imgs/接口配置.png)
-    - ![](./docs/imgs/接口配置-编辑.png)
-- 接口统计
-    - ![](./docs/imgs/接口统计.png)
-    - ![](./docs/imgs/接口统计-日志.png)
-- 应用管理
-  - ![](./docs/imgs/应用管理.png)
-  - ![](./docs/imgs/应用秘钥.png)
-  - ![](./docs/imgs/应用新增.png)
-- 应用审核
-  ![](./docs/imgs/应用审核.png)
-- 开放接口
-  ![](./docs/imgs/开放接口.png)
-- 文档管理
-  ![](./docs/imgs/开放文档.png)
-- 权限组
-  ![](./docs/imgs/权限组.png)
-- Oauth2权限
-  ![](./docs/imgs/Oauth2权限.png)
-- 事件管理
-  ![](./docs/imgs/事件管理.png)
 
+|  |  |
+| :---: | :---: |
+| ![组织管理](./docs/imgs/console/组织管理.png)<br>组织管理 | ![岗位管理](./docs/imgs/console/岗位管理.png)<br>岗位管理 |
+| ![用户管理](./docs/imgs/console/用户管理.png)<br>用户管理 | ![用户新增](./docs/imgs/console/用户新增.png)<br>用户新增 |
+| ![菜单管理](./docs/imgs/console/菜单管理.png)<br>菜单管理 | ![菜单新增](./docs/imgs/console/菜单新增.png)<br>菜单新增 |
+| ![角色模板管理-角色用户](./docs/imgs/console/角色模板管理-角色用户.png)<br>角色模板管理-角色用户 | ![角色模板管理-应用权限](./docs/imgs/console/角色模板管理-应用权限.png)<br>角色模板管理-应用权限 |
+| ![角色模板管理-功能权限](./docs/imgs/console/角色模板管理-功能权限.png)<br>角色模板管理-功能权限 | ![角色管理](./docs/imgs/console/角色管理.png)<br>角色管理 |
+| ![字典管理](./docs/imgs/console/字典管理.png)<br>字典管理 | ![字典新增](./docs/imgs/console/字典新增.png)<br>字典新增 |
+| ![字典项新增](./docs/imgs/console/字典项新增.png)<br>字典项新增 | ![系统配置](./docs/imgs/console/系统配置.png)<br>系统配置 |
+| ![消息管理](./docs/imgs/console/消息管理.png)<br>消息管理 | ![消息发布](./docs/imgs/console/消息发布.png)<br>消息发布 |
+| ![消息模板](./docs/imgs/console/消息模板.png)<br>消息模板 | ![消息模板编辑](./docs/imgs/console/消息模板编辑.png)<br>消息模板编辑 |
+| ![接口配置](./docs/imgs/console/接口配置.png)<br>接口配置 | ![接口配置-编辑](./docs/imgs/console/接口配置-编辑.png)<br>接口配置-编辑 |
+| ![接口统计](./docs/imgs/console/接口统计.png)<br>接口统计 | ![接口统计-日志](./docs/imgs/console/接口统计-日志.png)<br>接口统计-日志 |
+| ![应用管理](./docs/imgs/console/应用管理.png)<br>应用管理 | ![应用秘钥](./docs/imgs/console/应用秘钥.png)<br>应用秘钥 |
+| ![应用新增](./docs/imgs/console/应用新增.png)<br>应用新增 | ![应用审核](./docs/imgs/console/应用审核.png)<br>应用审核 |
+| ![开放接口](./docs/imgs/console/开放接口.png)<br>开放接口 | ![开放文档](./docs/imgs/console/开放文档.png)<br>文档管理 |
+| ![权限组](./docs/imgs/console/权限组.png)<br>权限组 | ![Oauth2权限](./docs/imgs/console/Oauth2权限.png)<br>Oauth2权限 |
+| ![事件管理](./docs/imgs/console/事件管理.png)<br>事件管理 |  |
 
 ### 开发者平台
-- 首页
-  - ![](./docs/imgs/open/首页.png)
-- 应用申请
-  - ![](./docs/imgs/open/应用申请.png)
-  - ![](./docs/imgs/open/应用申请管理.png)
-- 应用管理
-  - ![](./docs/imgs/open/应用管理-应用信息.png)
-  - ![](./docs/imgs/open/应用管理-应用秘钥.png)
-  - ![](./docs/imgs/open/应用管理-事件订阅.png)
-  - ![](./docs/imgs/open/应用管理-开发配置.png)
-- 开发文档
-  - ![](./docs/imgs/open/开发文档.png)
+
+|  |  |
+| :---: | :---: |
+| ![首页](./docs/imgs/open/首页.png)<br>首页 | ![应用申请](./docs/imgs/open/应用申请.png)<br>应用申请 |
+| ![应用申请管理](./docs/imgs/open/应用申请管理.png)<br>应用申请管理 | ![应用管理-应用信息](./docs/imgs/open/应用管理-应用信息.png)<br>应用管理-应用信息 |
+| ![应用管理-应用秘钥](./docs/imgs/open/应用管理-应用秘钥.png)<br>应用管理-应用秘钥 | ![应用管理-事件订阅](./docs/imgs/open/应用管理-事件订阅.png)<br>应用管理-事件订阅 |
+| ![应用管理-开发配置](./docs/imgs/open/应用管理-开发配置.png)<br>应用管理-开发配置 | ![开发文档](./docs/imgs/open/开发文档.png)<br>开发文档 |
+
+### 小程序
+
+|  |  |
+| :---: | :---: |
+| ![首页](./docs/imgs/小程序/首页.png)<br>首页 | ![工作台](./docs/imgs/小程序/工作台.png)<br>工作台 |
+| ![消息中心](./docs/imgs/小程序/消息中心.png)<br>消息中心 | ![我的](./docs/imgs/小程序/我的.png)<br>我的 |

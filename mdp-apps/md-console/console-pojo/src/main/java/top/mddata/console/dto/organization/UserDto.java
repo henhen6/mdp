@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import static top.mddata.base.utils.ValidatorUtil.REGEX_EMAIL;
+import static top.mddata.base.utils.ValidatorUtil.REGEX_ID_CARD;
 import static top.mddata.base.utils.ValidatorUtil.REGEX_MOBILE;
 import static top.mddata.base.utils.ValidatorUtil.REGEX_PASSWORD;
 
@@ -104,6 +105,14 @@ public class UserDto implements Serializable {
     @Schema(description = "邮箱")
     @NotEmptyPattern(regexp = REGEX_EMAIL, message = "邮箱格式不合法")
     private String email;
+
+    /**
+     * 身份证号
+     */
+    @Size(max = 18, message = "身份证号长度不能超过{max}")
+    @Schema(description = "身份证号")
+    @NotEmptyPattern(regexp = REGEX_ID_CARD, message = "身份证号格式不合法")
+    private String idCard;
 
     /**
      * 状态

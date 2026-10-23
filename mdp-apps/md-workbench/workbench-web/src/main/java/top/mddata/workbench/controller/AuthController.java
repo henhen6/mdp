@@ -20,6 +20,7 @@ import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.dto.RegisterByUsernameDto;
+import top.mddata.workbench.dto.WxMaLoginDto;
 import top.mddata.workbench.service.AuthService;
 import top.mddata.workbench.service.SsoUserService;
 import top.mddata.workbench.vo.LoginVo;
@@ -44,6 +45,13 @@ public class AuthController {
     @PostMapping(value = "/login")
     public R<LoginVo> login(@Validated @RequestBody LoginDto login) throws BizException {
         return authService.login(login);
+    }
+
+    @Operation(summary = "微信小程序一键登录", description = "loginCode 换 openid，phoneCode 换手机号，匹配不到用户时自动注册")
+    @PostMapping(value = "/wxMa/login")
+    @RequestLog(value = "微信小程序一键登录", logType = RequestLog.LogType.OTHER, request = false)
+    public R<LoginVo> loginByWxMa(@Validated @RequestBody WxMaLoginDto login) {
+        return authService.loginByWxMa(login);
     }
 
     @Operation(summary = "根据手机号注册", description = "根据手机号注册")

@@ -45,7 +45,11 @@ public enum AuthTypeEnum implements BaseEnum<String> {
     /**
      * OAuth2 授权登录（签发 code / 隐藏式签发 token）
      */
-    OAUTH2("06", "OAuth2授权登录");
+    OAUTH2("06", "OAuth2授权登录"),
+    /**
+     * 微信小程序一键登录
+     */
+    WX_MA("07", "微信小程序登录");
 
     @Schema(description = "code")
     @EnumValue

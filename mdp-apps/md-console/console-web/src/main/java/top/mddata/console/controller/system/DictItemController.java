@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
@@ -28,10 +27,7 @@ import top.mddata.console.service.system.DictItemService;
 import top.mddata.console.service.system.DictService;
 import top.mddata.console.vo.system.DictItemVo;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 字典项 控制层。
@@ -138,9 +134,4 @@ public class DictItemController extends SuperController<DictItemService, DictIte
         return R.success(menuTreeList);
     }
 
-    @Operation(summary = "查询字典项", description = "根据字典编码查询字典项")
-    @PostMapping("/findByIds")
-    public Map<Serializable, Object> findDictByIds(@RequestParam("ids") Set<Serializable> ids) {
-        return this.superService.findByIds(ids);
-    }
 }

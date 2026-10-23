@@ -7,20 +7,15 @@ import com.gitee.sop.support.context.WebContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.fileupload2.core.DiskFileItem;
-import org.apache.commons.fileupload2.core.DiskFileItemFactory;
-import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import top.mddata.gateway.sop.request.ApiUploadContext;
 import top.mddata.gateway.sop.request.UploadContext;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -33,7 +28,6 @@ public class RequestUtil {
     private static final String UTF8 = "UTF-8";
 
     /**
-     /**
      * 将get类型的参数转换成JSONObject
      *
      * @param query charset=utf-8&biz_content=xxx
@@ -87,40 +81,16 @@ public class RequestUtil {
      * @return 返回文件内容和表单内容
      */
     public static UploadInfo getUploadInfo(HttpServletRequest request) {
-        if (request instanceof StandardMultipartHttpServletRequest) {
-            return getUploadInfo((StandardMultipartHttpServletRequest) request);
+        if (request instanceof StandardMultipartHttpServletRequest standardRequest) {
+            return getUploadInfo(standardRequest);
         }
+        // 非 multipart 请求（无文件上传）：仅透传表单参数。
+        // 历史上此处还有 commons-fileupload2 解析分支，经基线测试验证上传链路始终走
+        // StandardMultipartHttpServletRequest 分支，该分支及其依赖的 CommonsMultipartFile
+        // 拷贝类（Spring 6 已移除 commons 包）已于 2026-10-14 删除。
         UploadInfo uploadInfo = new UploadInfo();
-        // 创建一个文件上传解析器
-        DiskFileItemFactory.Builder builder = DiskFileItemFactory.builder();
-        JakartaServletFileUpload<DiskFileItem, DiskFileItemFactory> upload = new JakartaServletFileUpload(builder.get());
-
-        UploadContext uploadContext = null;
-        JSONObject uploadParams = new JSONObject();
-        try {
-            List<MultipartFile> multipartFileList = new ArrayList<>(8);
-            List<DiskFileItem> fileItems = upload.parseRequest(request);
-            for (DiskFileItem fileItem : fileItems) {
-                if (fileItem.isFormField()) {
-                    uploadParams.put(fileItem.getFieldName(), fileItem.getString(StandardCharsets.UTF_8));
-                } else {
-                    multipartFileList.add(new CommonsMultipartFile(fileItem));
-                }
-            }
-            if (!multipartFileList.isEmpty()) {
-                Map<String, List<MultipartFile>> multipartFileMap = multipartFileList
-                        .stream()
-                        .collect(Collectors.groupingBy(MultipartFile::getName));
-                uploadContext = new ApiUploadContext(multipartFileMap);
-            }
-
-            JSONObject apiParam = parseParameterMap(request.getParameterMap());
-            uploadParams.putAll(apiParam);
-            uploadInfo.setApiParam(uploadParams);
-            uploadInfo.setUploadContext(uploadContext);
-        } catch (Exception e) {
-            log.error("参数解析错误", e);
-        }
+        uploadInfo.setApiParam(parseParameterMap(request.getParameterMap()));
+        uploadInfo.setUploadContext(null);
         return uploadInfo;
     }
 

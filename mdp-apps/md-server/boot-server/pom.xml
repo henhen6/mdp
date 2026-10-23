@@ -48,6 +48,10 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>top.nextdoc4j</groupId>
+            <artifactId>nextdoc4j-plugin-security-schemes</artifactId>
+        </dependency>
         <!-- 启动配置 -->
         <dependency>
             <groupId>top.mddata.apps</groupId>

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.base.R;
 import top.mddata.base.util.StrPool;
+import top.mddata.common.constant.EventTypeCode;
 import top.mddata.open.enumeration.admin.EventTypeEnum;
 import top.mddata.open.enumeration.admin.NotifyEncryptionTypeEnum;
 import top.mddata.open.facade.admin.AppKeysFacade;
@@ -198,10 +199,11 @@ public class NotifyCallbackController {
         log.info("[事件推送] method={}, eventTriggerId={}, bizContent={}", method, eventTriggerId, bizContent);
 
         switch (method) {
-            case "org.edit":
+            // 事件编码与发布侧 EventTypeCode 保持一致（冒号格式）
+            case EventTypeCode.Console.ORG_EDIT:
                 log.info("处理组织编辑事件: {}", bizContent);
                 break;
-            case "user.add":
+            case EventTypeCode.Console.USER_ADD:
                 log.info("处理用户新增事件: {}", bizContent);
                 break;
             default:

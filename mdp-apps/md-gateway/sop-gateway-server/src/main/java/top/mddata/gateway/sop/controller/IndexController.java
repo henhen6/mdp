@@ -11,7 +11,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import top.mddata.gateway.sop.request.ApiRequest;
 import top.mddata.gateway.sop.request.ApiRequestContext;
 import top.mddata.gateway.sop.service.ParamExecutor;
@@ -81,24 +80,32 @@ public class IndexController {
      * </p>
      * @param request 请求
      * @param response 响应
-     * @param v  版本号
      * @throws IOException
      */
     @RequestMapping(value = "${mdp.gateway.rest}/**")
     public void rest0(
             HttpServletRequest request,
-            HttpServletResponse response,
-            @RequestParam(value = "v", required = false, defaultValue = "1.0") String v
+            HttpServletResponse response
     ) throws IOException {
         ApiRequestContext apiRequestContext = paramExecutor.build(request);
         ApiRequest apiRequest = apiRequestContext.getApiRequest();
         String apiName = getApiName(request);
         apiRequest.setMethod(apiName);
-        apiRequest.setVersion(v);
+        apiRequest.setVersion(resolveVersion(request.getQueryString()));
         apiRequestContext.setIsRest(true);
         apiRequestContext.setWebContext(RequestUtil.buildWebContext(request));
         Response apiResponse = restRouteService.route(apiRequestContext);
         paramExecutor.write(apiRequestContext, apiResponse, response);
+    }
+
+    /**
+     * 从 queryString 解析版本号，默认 1.0。
+     * 不能用 @RequestParam/getParameter 读取：容器解析 form 参数时会消费整个
+     * form body（servlet 规范），导致 paramExecutor 读不到请求体、业务参数全部丢失
+     */
+    static String resolveVersion(String queryString) {
+        String v = RequestUtil.parseQuerystring(queryString).getString("v");
+        return StringUtils.hasText(v) ? v : "1.0";
     }
 
     private String getApiName(HttpServletRequest request) {

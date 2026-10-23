@@ -24,6 +24,10 @@ public interface FileObjectType {
          * 用户头像
          */
         String USER_AVATAR = "USER_AVATAR";
+        /**
+         * 消息任务内容附件
+         */
+        String MSG_TASK_CONTENT = "MSG_TASK_CONTENT";
 
     }
 
@@ -44,5 +48,9 @@ public interface FileObjectType {
          * 应用申请资质文件
          */
         String APP_APPLY_CREDENTIAL_FILE = "APP_APPLY_CREDENTIAL_FILE";
+        /**
+         * 帮助文档内容附件
+         */
+        String HELP_DOC_CONTENT = "HELP_DOC_CONTENT";
     }
 }

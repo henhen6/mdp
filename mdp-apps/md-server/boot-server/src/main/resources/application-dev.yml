@@ -1,3 +1,10 @@
+mdp:
+  notify:
+    allowed-hosts:
+      - 127.0.0.1
+      - localhost
+  ignore:
+    not-config-uri-allow: false
 spring:
   data:
     redis:
@@ -9,5 +16,5 @@ spring:
     druid:
       username: 'root'
       driverClassName: com.mysql.cj.jdbc.Driver
-      password: 'root'
+      password: 'HHadmin123.'
       url: jdbc:mysql://127.0.0.1:3306/mdp?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true

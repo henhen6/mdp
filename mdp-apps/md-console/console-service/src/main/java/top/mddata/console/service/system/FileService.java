@@ -11,6 +11,7 @@ import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.entity.system.File;
 import top.mddata.console.vo.system.FileVo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,14 @@ public interface FileService extends SuperService<File> {
      * @param relateFilesToBizDto 参数
      */
     void relateFilesToBiz(RelateFilesToBizDto relateFilesToBizDto);
+
+    /**
+     * 释放业务关联的全部附件 （删除业务时调用）
+     *
+     * @param objectType 业务类型
+     * @param objectIds  业务id集合，空集合视为无操作
+     */
+    void releaseFilesByBiz(String objectType, Collection<Long> objectIds);
 
     /**
      * 根据文件id查询文件的临时访问路径

@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +29,7 @@ import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.PositionService;
 import top.mddata.console.vo.organization.PositionVo;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 岗位 控制层。
@@ -90,20 +86,6 @@ public class PositionController extends SuperController<PositionService, Positio
     }
 
     /**
-     * 根据岗位主键获取详细信息。
-     *
-     * @param id 岗位主键
-     * @return 岗位详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取岗位")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<PositionVo> get(@RequestParam Long id) {
-        Position entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, PositionVo.class));
-    }
-
-    /**
      * 分页查询岗位。
      *
      * @param params 分页对象
@@ -145,11 +127,6 @@ public class PositionController extends SuperController<PositionService, Positio
     @RequestLog(value = "修改状态", logType = RequestLog.LogType.UPDATE)
     public R<Boolean> updateState(@Parameter(description = "岗位主键") @RequestParam Long id, @Parameter(description = "状态") @RequestParam Boolean state) {
         return R.success(superService.updateState(id, state));
-    }
-
-    @PostMapping("/findByIds")
-    public Map<Serializable, Object> findByIds(@RequestParam("ids") Set<Serializable> ids) {
-        return superService.findByIds(ids);
     }
 
     /**

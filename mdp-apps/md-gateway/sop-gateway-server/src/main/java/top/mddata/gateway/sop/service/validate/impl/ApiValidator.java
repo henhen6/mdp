@@ -1,7 +1,6 @@
 package top.mddata.gateway.sop.service.validate.impl;
 
 import cn.hutool.core.convert.Convert;
-import com.gitee.sop.support.enums.ApiModeEnum;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * 负责校验,校验工作都在这里
@@ -106,24 +104,7 @@ public class ApiValidator implements SopValidator {
 
     @Override
     public ValidateReturn validateRest(ApiRequestContext apiRequestContext) {
-        ApiRequest apiRequest = apiRequestContext.getApiRequest();
-        ApiDto apiInfo = apiManager.getByMethodAndVersion(apiRequest.getMethod(), apiRequest.getVersion());
-        // 检查接口信息
-        checkApiInfo(apiRequestContext, apiInfo);
-
-        if (!Objects.equals(apiInfo.getApiMode(), ApiModeEnum.RESTFUL.getCode())) {
-            log.error("Open模式接口不允许使用Restful进行访问, apiInfo={}", apiInfo);
-            throw new ApiException(ErrorEnum.ISV_INVALID_METHOD, apiRequestContext.getLocale());
-        }
-        // 检查应用信息
-        AppDto appDto = checkApp(apiRequestContext);
-        // IP能否访问
-        checkIP(apiRequestContext, appDto);
-        // 检查上传文件
-        checkUploadFile(apiRequestContext);
-        // 检查token
-        checkToken(apiRequestContext, apiInfo);
-        return new ValidateReturn(apiInfo, null);
+        return validate(apiRequestContext);
     }
 
     public void checkApiInfo(ApiRequestContext apiRequestContext, ApiDto apiDto) {

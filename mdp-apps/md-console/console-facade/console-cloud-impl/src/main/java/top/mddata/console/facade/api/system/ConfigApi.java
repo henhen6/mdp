@@ -13,7 +13,7 @@ import top.mddata.console.vo.system.ConfigVo;
  * @author henhen
  * @since 2026/5/10 23:07
  */
-@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = ConfigApiFallback.class, path = "/system/config")
+@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = ConfigApiFallback.class, path = "/inner/system/config")
 public interface ConfigApi {
     /**
      * 根据参数标识，查询系统参数VO

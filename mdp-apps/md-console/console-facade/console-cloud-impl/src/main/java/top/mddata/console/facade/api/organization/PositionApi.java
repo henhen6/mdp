@@ -15,7 +15,7 @@ import java.util.Set;
  * @author henhen
  * @since 2026/5/10 23:07
  */
-@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = PositionApiFallback.class)
+@FeignClient(name = AppConstants.CONSOLE_SERVER, fallback = PositionApiFallback.class, path = "/inner/organization/position")
 public interface PositionApi {
     /**
      * 根据id查询待回显参数
@@ -23,6 +23,6 @@ public interface PositionApi {
      * @param ids 唯一键（可能不是主键ID)
      * @return
      */
-    @PostMapping("/organization/position/findByIds")
+    @PostMapping("/findByIds")
     Map<Serializable, Object> findByIds(@RequestParam(value = "ids") Set<Serializable> ids);
 }

@@ -1,5 +1,5 @@
 mdp:
-  swagger:
+  nextdoc4j:
     version: '@project.version@'
   nacos:
     ip: ${NACOS_IP:@config.nacos.ip@}

@@ -16,6 +16,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -210,17 +211,19 @@ public class SignUtil {
             return null;
         }
 
-        params.remove("sign");
-        params.remove("sign_type");
+        // 复制入参再剔除签名字段：不污染调用方的 Map（旧版直接 remove，调用方数据被篡改）
+        Map<String, String> signParams = new HashMap<>(params);
+        signParams.remove("sign");
+        signParams.remove("sign_type");
 
         StringBuilder content = new StringBuilder();
-        List<String> keys = new ArrayList<String>(params.keySet());
+        List<String> keys = new ArrayList<String>(signParams.keySet());
         Collections.sort(keys);
 
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
-            if (params.get(key) != null) {
-                String value = params.get(key);
+            if (signParams.get(key) != null) {
+                String value = signParams.get(key);
                 content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
             }
         }
@@ -238,16 +241,17 @@ public class SignUtil {
             return null;
         }
 
-        params.remove("sign");
+        Map<String, Object> signParams = new HashMap<>(params);
+        signParams.remove("sign");
 
         StringBuilder content = new StringBuilder();
-        List<String> keys = new ArrayList<String>(params.keySet());
+        List<String> keys = new ArrayList<String>(signParams.keySet());
         Collections.sort(keys);
 
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
-            if (params.get(key) != null) {
-                String value = String.valueOf(params.get(key));
+            if (signParams.get(key) != null) {
+                String value = String.valueOf(signParams.get(key));
                 content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
             }
         }
@@ -258,6 +262,10 @@ public class SignUtil {
     public static boolean rsaCheckV1(Map<String, String> params, String publicKey,
                                      String charset) throws SopSignException {
         String sign = params.get("sign");
+        if (sign == null) {
+            // sign 缺失直接判失败（与 rsaCheckV2 四参版语义对齐，不再深入解码 null）
+            return false;
+        }
         String content = getSignCheckContentV1(params);
 
         return rsaCheckContent(content, sign, publicKey, charset);
@@ -266,6 +274,9 @@ public class SignUtil {
     public static boolean rsaCheckV1(Map<String, String> params, String publicKey,
                                      String charset, String signType) throws SopSignException {
         String sign = params.get("sign");
+        if (sign == null) {
+            return false;
+        }
         String content = getSignCheckContentV1(params);
 
         return rsaCheck(content, sign, publicKey, charset, signType);
@@ -282,6 +293,9 @@ public class SignUtil {
     public static boolean rsaCheckV2(Map<String, String> params, String publicKey,
                                      String charset) throws SopSignException {
         String sign = params.get("sign");
+        if (sign == null) {
+            return false;
+        }
         String content = getSignCheckContentV2(params);
 
         return rsaCheckContent(content, sign, publicKey, charset);
@@ -297,7 +311,12 @@ public class SignUtil {
      */
     public static boolean rsaCheckV2(Map<String, ?> params, String publicKey,
                                      String charset, String signType) throws SopSignException {
-        String sign = String.valueOf(params.get("sign"));
+        Object signObj = params.get("sign");
+        if (signObj == null) {
+            // sign 缺失直接判失败（旧版 String.valueOf(null) 产生 "null" 字符串进入验签）
+            return false;
+        }
+        String sign = String.valueOf(signObj);
         String content = getSignCheckContentV2(params);
 
         return rsaCheck(content, sign, publicKey, charset, signType);

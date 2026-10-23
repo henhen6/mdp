@@ -3,6 +3,8 @@ package top.mddata.console.dto.system;
 
 import cn.hutool.core.util.ObjUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -21,10 +23,14 @@ import java.util.List;
 @Builder
 public class RelateFilesToBizDto implements Serializable {
 
+    @NotEmpty(message = "业务类型不能为空")
     @Schema(description = "业务类型")
     private String objectType;
+    @NotNull(message = "业务id不能为空")
     @Schema(description = "业务id")
     private Long objectId;
+    @Schema(description = "业务id集合（批量释放附件时使用，优先级高于 objectId）")
+    private List<Long> objectIds;
     @Schema(description = "当前关联文件")
     private List<Long> keepFileIds;
 

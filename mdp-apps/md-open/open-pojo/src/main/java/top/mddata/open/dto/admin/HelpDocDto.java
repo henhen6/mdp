@@ -11,6 +11,7 @@ import top.mddata.base.base.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 帮助文档 DTO（写入方法入参）。
@@ -71,6 +72,13 @@ public class HelpDocDto implements Serializable {
     @NotNull(message = "请填写内容类型")
     @Schema(description = "内容类型")
     private Integer contentType;
+
+    /**
+     * 内容引用的文件id列表。
+     * null 表示客户端未携带（跳过附件关联）；空列表表示内容已无附件（清理全部历史关联）
+     */
+    @Schema(description = "内容引用的文件id列表")
+    private List<Long> contentFileIds;
 
     /**
      * 上级文档

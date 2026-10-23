@@ -1,3 +1,4 @@
 top.mddata.base.cloud.config.OpenFeignAutoConfiguration
 top.mddata.base.cloud.config.RestTemplateConfiguration
 top.mddata.base.cloud.config.GrayscaleConfig
+top.mddata.base.cloud.inner.InnerFeignAutoConfiguration

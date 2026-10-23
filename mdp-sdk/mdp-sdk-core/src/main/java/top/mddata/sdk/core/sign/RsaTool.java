@@ -1,9 +1,6 @@
 package top.mddata.sdk.core.sign;
 
-import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import top.mddata.sdk.core.util.Base64Util;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -37,11 +34,73 @@ public class RsaTool {
      * @throws Exception 异常
      */
     public static String convertPkcs8ToPkcs1(byte[] privateKeyData) throws Exception {
-        PrivateKeyInfo pkInfo = PrivateKeyInfo.getInstance(privateKeyData);
-        ASN1Encodable encodable = pkInfo.parsePrivateKey();
-        ASN1Primitive primitive = encodable.toASN1Primitive();
-        byte[] privateKeyPKCS1 = primitive.getEncoded();
-        return Base64.encodeBase64String(privateKeyPKCS1);
+        return Base64Util.encodeBase64String(extractPrivateKeyFromPkcs8(privateKeyData));
+    }
+
+    /**
+     * 从 PKCS8 DER 结构中取出内嵌的 PKCS1 私钥。
+     * PKCS8 结构：SEQUENCE { INTEGER(版本), SEQUENCE(算法标识), OCTET STRING(PKCS1私钥) }，
+     * 最内层 OCTET STRING 的内容即 PKCS1 编码，无需完整 ASN.1 库即可提取。
+     */
+    private static byte[] extractPrivateKeyFromPkcs8(byte[] pkcs8) {
+        int[] offset = {0};
+        // 外层 SEQUENCE，只消费头部，offset 停在内容开始处
+        readHeader(pkcs8, offset, 0x30);
+        // 版本 INTEGER，跳过
+        readElement(pkcs8, offset, 0x02);
+        // 算法标识 SEQUENCE，跳过
+        readElement(pkcs8, offset, 0x30);
+        // OCTET STRING，其内容为 PKCS1 私钥
+        return readElement(pkcs8, offset, 0x04);
+    }
+
+    /**
+     * 读取 DER 元素的 tag 与长度（头部），offset 推进到内容开始处，返回内容长度。
+     */
+    private static int readHeader(byte[] der, int[] offset, int expectedTag) {
+        if (offset[0] >= der.length || (der[offset[0]] & 0xFF) != expectedTag) {
+            throw new IllegalArgumentException(
+                    "私钥不是合法的 PKCS8 DER 结构：偏移 " + offset[0] + " 处期望 tag 0x"
+                            + Integer.toHexString(expectedTag));
+        }
+        offset[0]++;
+        return readLength(der, offset);
+    }
+
+    /**
+     * 读取一个 DER 元素，校验 tag 后返回其内容，offset 推进到下一元素。
+     */
+    private static byte[] readElement(byte[] der, int[] offset, int expectedTag) {
+        int length = readHeader(der, offset, expectedTag);
+        if (offset[0] + length > der.length) {
+            throw new IllegalArgumentException("私钥不是合法的 PKCS8 DER 结构：元素长度超出数据范围");
+        }
+        byte[] content = new byte[length];
+        System.arraycopy(der, offset[0], content, 0, length);
+        offset[0] += length;
+        return content;
+    }
+
+    /**
+     * 读取 DER 长度字段，支持短形式（<0x80）与长形式。
+     */
+    private static int readLength(byte[] der, int[] offset) {
+        if (offset[0] >= der.length) {
+            throw new IllegalArgumentException("私钥不是合法的 PKCS8 DER 结构：长度字段缺失");
+        }
+        int first = der[offset[0]++] & 0xFF;
+        if (first < 0x80) {
+            return first;
+        }
+        int numBytes = first & 0x7F;
+        if (numBytes == 0 || numBytes > 4 || offset[0] + numBytes > der.length) {
+            throw new IllegalArgumentException("私钥不是合法的 PKCS8 DER 结构：长度字段非法");
+        }
+        int length = 0;
+        for (int i = 0; i < numBytes; i++) {
+            length = (length << 8) | (der[offset[0]++] & 0xFF);
+        }
+        return length;
     }
 
     /**
@@ -92,11 +151,11 @@ public class RsaTool {
 
         KeyStore keyStore = new KeyStore();
         if (this.keyFormat == KeyFormat.PKCS1) {
-            keyStore.setPublicKey(Base64.encodeBase64String(publicKey.getEncoded()));
+            keyStore.setPublicKey(Base64Util.encodeBase64String(publicKey.getEncoded()));
             keyStore.setPrivateKey(convertPkcs8ToPkcs1(privateKey.getEncoded()));
         } else {
-            keyStore.setPublicKey(Base64.encodeBase64String(publicKey.getEncoded()));
-            keyStore.setPrivateKey(Base64.encodeBase64String(privateKey.getEncoded()));
+            keyStore.setPublicKey(Base64Util.encodeBase64String(publicKey.getEncoded()));
+            keyStore.setPrivateKey(Base64Util.encodeBase64String(privateKey.getEncoded()));
         }
         return keyStore;
     }
@@ -122,7 +181,7 @@ public class RsaTool {
      * @throws Exception 异常
      */
     public RSAPublicKey getPublicKey(String pubKey) throws Exception {
-        return getPublicKey(Base64.decodeBase64(pubKey));
+        return getPublicKey(Base64Util.decodeBase64(pubKey));
 
     }
 
@@ -134,7 +193,7 @@ public class RsaTool {
      * @throws Exception 异常
      */
     public RSAPrivateKey getPrivateKey(String priKey) throws Exception {
-        return getPrivateKey(Base64.decodeBase64(priKey));
+        return getPrivateKey(Base64Util.decodeBase64(priKey));
     }
 
     /**

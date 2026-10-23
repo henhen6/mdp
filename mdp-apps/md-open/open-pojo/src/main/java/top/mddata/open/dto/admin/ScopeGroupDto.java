@@ -47,6 +47,12 @@ public class ScopeGroupDto implements Serializable {
     private String name;
 
     /**
+     * 简介
+     */
+    @Schema(description = "简介")
+    private String intro;
+
+    /**
      * 排序
      */
     @Schema(description = "排序")

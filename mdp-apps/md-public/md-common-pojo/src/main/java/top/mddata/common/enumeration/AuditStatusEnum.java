@@ -7,7 +7,7 @@ import top.mddata.base.interfaces.BaseEnum;
 
 /**
  * 审核状态
- * [0-待提交 1-待审批 2-通过 99-退回]
+ * [0-待提交 1-待审批 2-通过 3-已撤销 99-退回]
  * @author henhen6
  * @since 2021/4/16 11:26 上午
  */
@@ -24,6 +24,7 @@ public enum AuditStatusEnum implements BaseEnum<Integer> {
      */
     PENDING(1, "待审批"),
     APPROVED(2, "通过"),
+    WITHDRAWN(3, "已撤销"),
     REJECTED(99, "退回");
     private final Integer code;
     private final String desc;

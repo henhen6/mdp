@@ -5,7 +5,6 @@ import top.mddata.workbench.entity.NoticeRecipient;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 通知 接口
@@ -34,13 +33,6 @@ public interface NoticeFacade {
      * @return 通知数量
      */
     Long countByCategory(LocalDateTime startTime, Integer msgCategory);
-
-    /**
-     * 按分类统计通知数量（用于大屏分类分布图）。
-     *
-     * @return key=msgCategory、value=count
-     */
-    List<Map<String, Object>> countByCategoryDistribution();
 
     /**
      * 统计当前用户的站内通知未读数。

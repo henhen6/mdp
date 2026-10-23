@@ -46,10 +46,13 @@ import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.dto.RegisterByUsernameDto;
+import top.mddata.workbench.dto.WxMaLoginDto;
+import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.event.LoginEvent;
 import top.mddata.workbench.handler.LoginStrategy;
 import top.mddata.workbench.service.AuthService;
 import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.WxMaAuthService;
 import top.mddata.workbench.vo.LoginVo;
 
 import java.util.List;
@@ -79,6 +82,7 @@ public class AuthServiceImpl implements AuthService {
     private final SsoUserService ssoUserService;
     private final UserFacade userFacade;
     private final MsgFacade msgFacade;
+    private final WxMaAuthService wxMaAuthService;
     private final Map<String, LoginStrategy> loginStrategy;
 
     @Override
@@ -118,6 +122,37 @@ public class AuthServiceImpl implements AuthService {
 
         // 发送登录成功事件
         LoginLogDto dto = LoginLogDto.success(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), "登录成功", JSON.toJSONString(tokenInfo))
+                // 登录时，默认是默认应用 工作台
+                .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
+        SpringUtil.publishEvent(new LoginEvent(dto));
+
+        return R.success(loginVO);
+    }
+
+    @Override
+    public R<LoginVo> loginByWxMa(WxMaLoginDto login) {
+        User user = wxMaAuthService.findOrRegisterUser(login.getLoginCode(), login.getPhoneCode());
+        ArgumentAssert.isTrue(user.getState() == null || user.getState(), "账号已被禁用，请联系管理员");
+
+        // 创建Account-Session
+        StpUtil.login(user.getId(), new SaLoginParameter()
+                .setDeviceType("MINIAPP")
+                .setDeviceId(StrUtil.isEmpty(login.getDeviceId()) ? SaFoxUtil.getRandomString(32) : login.getDeviceId()));
+
+        // 写入用户常用信息到 TokenSession
+        fillTokenSession(user);
+
+        // 封装返回值
+        JSONObject obj = new JSONObject();
+        obj.put(USER_ID, user.getId());
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        LoginVo loginVO = BeanUtil.toBean(tokenInfo, LoginVo.class);
+        loginVO.setExpire(tokenInfo.getTokenTimeout());
+        loginVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
+        loginVO.setId(user.getId());
+
+        // 发送登录成功事件
+        LoginLogDto dto = LoginLogDto.success(AuthTypeEnum.WX_MA, login.getDeviceInfo(), user.getPhone(), "微信登录成功", JSON.toJSONString(tokenInfo))
                 // 登录时，默认是默认应用 工作台
                 .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
         SpringUtil.publishEvent(new LoginEvent(dto));

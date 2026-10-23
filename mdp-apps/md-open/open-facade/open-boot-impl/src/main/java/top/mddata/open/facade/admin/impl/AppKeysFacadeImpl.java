@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.mddata.base.base.R;
 import top.mddata.open.facade.admin.AppKeysFacade;
-import top.mddata.open.service.admin.AppKeysService;
+import top.mddata.open.service.app.AppKeysService;
 import top.mddata.open.vo.admin.AppKeysVo;
 
 /**

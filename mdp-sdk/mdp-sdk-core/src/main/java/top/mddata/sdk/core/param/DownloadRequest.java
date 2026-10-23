@@ -3,6 +3,8 @@ package top.mddata.sdk.core.param;
 
 import top.mddata.sdk.core.common.FileResult;
 
+import java.lang.reflect.Type;
+
 /**
  * 文件下载参数
  * @author 六如
@@ -11,6 +13,11 @@ public abstract class DownloadRequest<Req> extends BaseParam<Req, FileResult> im
 
     @Override
     public Class<FileResult> getResponseClass() {
+        return FileResult.class;
+    }
+
+    @Override
+    public Type getResponseType() {
         return FileResult.class;
     }
 }

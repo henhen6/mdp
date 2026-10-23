@@ -63,6 +63,14 @@ public interface UserService extends SuperService<User> {
     Boolean checkEmail(String email, Long id);
 
     /**
+     * 检查身份证号
+     * @param idCard 身份证号
+     * @param id 用户id
+     * @return true=存在，false=不存在
+     */
+    Boolean checkIdCard(String idCard, Long id);
+
+    /**
      * 根据角色id列表查询用户
      * @param roleIds 角色id列表
      * @return 用户列表

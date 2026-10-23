@@ -61,12 +61,15 @@ public class AppKeysDto implements Serializable {
 
     /**
      * AES加解密密钥（43字符），平台和开发者共同持有。生成方式：Base64Decode(encodingAesKey + "=") 得到32字节AESKey
+     * 平台和开发者共同持有，用于消息体的加密和解密
      */
     @Schema(description = "AES加解密密钥（43字符），平台和开发者共同持有。生成方式：Base64Decode(encodingAesKey + \"=\") 得到32字节AESKey")
     private String notifyEncodingAesKey;
 
     /**
      * 开发者应用公钥（RSA2签名校验用）
+     * 开发者生成密钥对后将公钥上传至平台，用于验证开发者请求签名
+     * 对应地，开发者使用私钥对请求参数进行签名
      */
     @Schema(description = "开发者应用公钥（RSA2签名校验用）")
     private String publicKeyApp;

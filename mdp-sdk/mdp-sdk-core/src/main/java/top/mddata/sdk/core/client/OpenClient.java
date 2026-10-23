@@ -4,10 +4,9 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONReader;
-import okhttp3.Headers;
 import okhttp3.Response;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.mddata.sdk.core.common.DataNameBuilder;
 import top.mddata.sdk.core.common.FileResult;
 import top.mddata.sdk.core.common.OpenConfig;
@@ -22,6 +21,7 @@ import top.mddata.sdk.core.sign.SignUtil;
 import top.mddata.sdk.core.sign.StringUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import java.util.Map;
  * @author 六如
  */
 public class OpenClient {
-    private static final Log log = LogFactory.getLog(OpenClient.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenClient.class);
 
     /**
      * 默认配置
@@ -191,8 +191,12 @@ public class OpenClient {
     }
 
     protected FileResult buildFileResult(Response response) {
+        if (!response.isSuccessful()) {
+            // 非 2xx 直接失败（旧版会把错误页字节当文件内容返回）
+            throw new SdkException("文件下载失败, HTTP状态码=" + response.code());
+        }
         FileResult fileResult = new FileResult();
-        Headers headers = response.headers();
+        fileResult.setHeaders(response.headers());
         try {
             byte[] bytes = null;
             if (response.body() != null) {
@@ -200,9 +204,9 @@ public class OpenClient {
             }
             fileResult.setFileData(bytes);
         } catch (IOException e) {
-            log.error("文件不存在", e);
+            // fail fast：不再只记日志后返回半空结果
+            throw new SdkException("读取下载文件内容失败", e);
         }
-        fileResult.setHeaders(headers);
         return fileResult;
     }
 
@@ -233,10 +237,16 @@ public class OpenClient {
             result.setData(null);
             return result;
         }
+        // 优先用完整泛型 Type 反序列化：裸 Class（如 Page.class）会丢失元素类型，集合元素退化为 JSONObject
+        Type responseType = param.getResponseType() != null ? param.getResponseType() : param.getResponseClass();
         if (data instanceof JSONArray arr) {
-            dataObj = (Resp) arr.toJavaList(param.getResponseClass());
+            dataObj = (Resp) arr.to(responseType);
+        } else if (data instanceof JSONObject obj) {
+            dataObj = (Resp) obj.to(responseType);
         } else {
-            dataObj = ((JSONObject) data).toJavaObject(param.getResponseClass());
+            // data 为标量（字符串/数字等）时直接报具体错误，不再延迟到调用方 CCE
+            throw new SdkException("响应" + rootNodeName + "节点类型与预期不符, method=" + param.getMethod()
+                    + ", 实际类型=" + data.getClass().getSimpleName() + ", 值=" + data);
         }
         result.setData(dataObj);
         return result;

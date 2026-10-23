@@ -20,7 +20,7 @@ public interface NotifyInfoApi {
      * @param request 回调内容
      * @return 返回回调id
      */
-    @PostMapping("/admin/notifyInfo/notify")
+    @PostMapping("/inner/notifyInfo/notify")
     R<Long> notify(@RequestBody NotifyInfoDto request);
 
 }

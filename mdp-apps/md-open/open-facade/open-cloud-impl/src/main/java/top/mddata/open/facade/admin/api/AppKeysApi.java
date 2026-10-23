@@ -13,7 +13,7 @@ import top.mddata.open.vo.admin.AppKeysVo;
  * @author henhen6
  * @since 2026/06/29
  */
-@FeignClient(name = AppConstants.OPEN_SERVER, path = "/admin/app")
+@FeignClient(name = AppConstants.OPEN_SERVER, path = "/inner/app")
 public interface AppKeysApi {
 
     /**

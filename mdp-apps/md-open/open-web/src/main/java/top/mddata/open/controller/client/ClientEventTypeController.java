@@ -16,7 +16,7 @@ import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.open.entity.admin.EventType;
 import top.mddata.open.query.admin.EventTypeQuery;
-import top.mddata.open.service.admin.EventTypeService;
+import top.mddata.open.service.notify.event.EventTypeService;
 import top.mddata.open.vo.admin.EventTypeVo;
 
 import java.util.List;

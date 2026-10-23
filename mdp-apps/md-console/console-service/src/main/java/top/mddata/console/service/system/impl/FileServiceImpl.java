@@ -48,6 +48,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -94,8 +95,15 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         // 相对路径
         String path = getDateFolder();
 
+        // x-file-storage 中桶绑定在存储平台上，约定：公开桶名与存储平台名一致。
+        // 传入公开桶即切换到同名公开平台上传；不传 bucket 则进默认平台（私有桶）
+        String bucket = fileUploadDto.getBucket();
+        ArgumentAssert.isTrue(StrUtil.isEmpty(bucket) || fileProperties.getPublicBucket().contains(bucket),
+                "不支持的桶: {}", bucket);
+        String platform = fileProperties.getPublicBucket().contains(bucket) ? bucket : fileUploadDto.getPlatform();
+
         UploadPretreatment uploadPretreatment = fileStorageService.of(file)
-                .setPlatform(StrUtil.isNotEmpty(fileUploadDto.getPlatform()), fileUploadDto.getPlatform())
+                .setPlatform(StrUtil.isNotEmpty(platform), platform)
                 .setHashCalculatorSha256(true)
                 .setHashCalculatorMd5()
                 .setPath(path)
@@ -129,6 +137,15 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         FileVo fileVo = toFileVo(fileInfo);
 
         Long fileId = Long.valueOf(fileInfo.getId());
+        if (StrUtil.isNotEmpty(bucket)) {
+            // FileRecorder 保存的记录不含桶信息，单独补齐，供生成访问地址时区分公开/私有桶
+            File bucketEntity = new File();
+            bucketEntity.setId(fileId);
+            bucketEntity.setBucket(bucket);
+            updateById(bucketEntity);
+            fileVo.setBucket(bucket);
+        }
+
         Map<Long, FileVo> map = findUrlByIds(List.of(fileId));
         if (map.containsKey(fileId)) {
             fileVo.setUrl(map.get(fileId).getUrl());
@@ -204,8 +221,12 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void relateFilesToBiz(RelateFilesToBizDto relateFilesToBizDto) {
+        // objectType/objectId 为 null 时 MyBatis-Flex 会静默忽略 eq 条件，退化为全表或跨业务查询，必须 fail fast
+        ArgumentAssert.notNull(relateFilesToBizDto, "参数不能为空");
         String objectType = relateFilesToBizDto.getObjectType();
         Long objectId = relateFilesToBizDto.getObjectId();
+        ArgumentAssert.notEmpty(objectType, "业务类型不能为空");
+        ArgumentAssert.notNull(objectId, "业务id不能为空");
         List<Long> keepFileIds = relateFilesToBizDto.getKeepFileIds() == null ? Collections.emptyList() : relateFilesToBizDto.getKeepFileIds();
         // 1. 查询该业务原有的所有文件
         List<File> oldFiles = list(QueryWrapper.create().eq(File::getObjectType, objectType).eq(File::getObjectId, objectId));
@@ -220,12 +241,40 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         // 3. 处理需要新增的文件（保留列表中不在原文件列表的文件）
         List<Long> addIds = keepFileIds.stream().filter(id -> !oldFileIds.contains(id)).toList();
         if (!addIds.isEmpty()) {
-            List<File> addFiles = listByIds(addIds);
-            addFiles.forEach(file -> {
-                file.setObjectType(objectType);
-                file.setObjectId(objectId);
-            });
-            updateBatch(addFiles);
+            // 只允许绑定临时文件或与当前业务同类型的文件，防止把其他业务的附件抢绑过来
+            List<File> addFiles = list(QueryWrapper.create()
+                    .in(File::getObjectType, TEMP_OBJECT_TYPE, objectType)
+                    .in(File::getId, addIds));
+            if (addFiles.size() != addIds.size()) {
+                log.warn("关联附件到业务[{}:{}]时，部分文件不存在或不在可绑定范围：请求{}个，实际绑定{}个",
+                        objectType, objectId, addIds.size(), addFiles.size());
+            }
+            if (!addFiles.isEmpty()) {
+                addFiles.forEach(file -> {
+                    file.setObjectType(objectType);
+                    file.setObjectId(objectId);
+                });
+                updateBatch(addFiles);
+            }
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void releaseFilesByBiz(String objectType, Collection<Long> objectIds) {
+        ArgumentAssert.notEmpty(objectType, "业务类型不能为空");
+        ArgumentAssert.notNull(objectIds, "业务id集合不能为null");
+        if (objectIds.isEmpty()) {
+            // 空集合视为无操作：批量删除业务时，部分对象无附件是正常情况
+            return;
+        }
+        // 一次 IN 查询、一次批量删除，避免按 objectId 循环查库
+        List<Long> fileIds = list(QueryWrapper.create()
+                .eq(File::getObjectType, objectType)
+                .in(File::getObjectId, objectIds))
+                .stream().map(File::getId).toList();
+        if (!fileIds.isEmpty()) {
+            removeByIds(fileIds);
         }
     }
 
@@ -238,13 +287,23 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             if (file == null) {
                 return;
             }
-            FileInfo fileInfo = new FileInfo();
-            fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
-            // 有效期1小时
-            Date expiration = DateUtil.offsetHour(new Date(), 1);
-            file.setUrl(fileStorageService.generatePresignedUrl(fileInfo, expiration));
+            file.setUrl(buildUrl(file));
         });
         return map;
+    }
+
+    /**
+     * 生成文件访问地址：公开桶返回上传时生成的永久地址，私有桶返回1小时有效期的签名地址
+     */
+    private String buildUrl(FileVo file) {
+        if (fileProperties.getPublicBucket().contains(file.getBucket())) {
+            return file.getUrl();
+        }
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
+        // 有效期1小时
+        Date expiration = DateUtil.offsetHour(new Date(), 1);
+        return fileStorageService.generatePresignedUrl(fileInfo, expiration);
     }
 
     @Override
@@ -257,11 +316,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
             if (file == null) {
                 return;
             }
-            FileInfo fileInfo = new FileInfo();
-            fileInfo.setPlatform(file.getPlatform()).setPath(file.getPath()).setFilename(file.getFilename());
-            // 有效期1小时
-            Date expiration = DateUtil.offsetHour(new Date(), 1);
-            file.setUrl(fileStorageService.generatePresignedUrl(fileInfo, expiration));
+            file.setUrl(buildUrl(file));
         });
         return map;
     }

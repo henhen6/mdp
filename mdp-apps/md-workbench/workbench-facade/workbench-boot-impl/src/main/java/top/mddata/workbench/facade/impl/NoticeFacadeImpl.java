@@ -11,7 +11,6 @@ import top.mddata.workbench.service.NoticeService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 跨服务-通知实现类
@@ -37,11 +36,6 @@ public class NoticeFacadeImpl implements NoticeFacade {
     @Override
     public Long countByCategory(LocalDateTime startTime, Integer msgCategory) {
         return noticeService.countByCategory(startTime, msgCategory);
-    }
-
-    @Override
-    public List<Map<String, Object>> countByCategoryDistribution() {
-        return noticeService.countByCategoryDistribution();
     }
 
     @Override

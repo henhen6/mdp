@@ -13,7 +13,7 @@ import java.util.Map;
  * @author henhen6
  * @since 2026-07-19
  */
-@FeignClient(name = AppConstants.OPEN_SERVER)
+@FeignClient(name = AppConstants.OPEN_SERVER, path = "/inner/dashboard/open/stat")
 public interface DashboardOpenApi {
 
     /**
@@ -22,6 +22,6 @@ public interface DashboardOpenApi {
      * @return key=successCount、totalCount
      *         分别包含 interface、callback、apiCall、eventPush 四个业务类型
      */
-    @GetMapping("/dashboard/open/stat/success-rates")
+    @GetMapping("/successRates")
     R<Map<String, Map<String, Long>>> getSuccessRates();
 }

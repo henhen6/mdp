@@ -1,16 +1,21 @@
 package top.mddata.open.vo.admin;
 
+import cn.hutool.core.map.MapUtil;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+import top.mddata.base.annotation.echo.Echo;
+import top.mddata.base.interfaces.echo.EchoVO;
+import top.mddata.common.constant.EchoApi;
 import top.mddata.open.entity.admin.base.NotifyInfoBase;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 回调任务 VO类（通常用作Controller出参）。
@@ -23,10 +28,12 @@ import java.time.LocalDateTime;
 @FieldNameConstants
 @Schema(description = "回调任务")
 @Table(NotifyInfoBase.TABLE_NAME)
-public class NotifyInfoVo implements Serializable {
+public class NotifyInfoVo implements Serializable, EchoVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
 
     /**
@@ -39,6 +46,7 @@ public class NotifyInfoVo implements Serializable {
     /**
      * 所属调用
      */
+    @Echo(api = EchoApi.API_CALL_LOG_CLASS)
     @Schema(description = "所属调用")
     private Long callLogId;
 

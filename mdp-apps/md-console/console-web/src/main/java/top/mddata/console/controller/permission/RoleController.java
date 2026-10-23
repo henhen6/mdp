@@ -3,10 +3,6 @@ package top.mddata.console.controller.permission;
 import cn.hutool.core.bean.BeanUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -41,9 +37,6 @@ import top.mddata.console.vo.permission.RoleVo;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_LONG;
-import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
 /**
  * 角色 控制层。
@@ -135,18 +128,6 @@ public class RoleController extends SuperController<RoleService, Role> {
     }
 
 
-    @Parameters({
-            @Parameter(name = "id", description = "ID", schema = @Schema(type = DATA_TYPE_LONG), in = ParameterIn.QUERY),
-            @Parameter(name = "roleCategory", description = "角色类别", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-            @Parameter(name = "code", description = "编码", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
-    })
-    @Operation(summary = "检测编码是否存在", description = "检测编码是否存在")
-    @GetMapping("/checkCode")
-    @RequestLog(value = "检测编码是否存在", logType = RequestLog.LogType.QUERY)
-    public R<Boolean> checkCode(@RequestParam String roleCategory, @RequestParam String code, @RequestParam(required = false) Long id) {
-        return R.success(superService.checkCode(roleCategory, code, id));
-    }
-
     /**
      * 查询角色拥有的资源集合
      *
@@ -197,30 +178,6 @@ public class RoleController extends SuperController<RoleService, Role> {
     @RequestLog(value = "查询字段权限授权聚合数据", logType = RequestLog.LogType.QUERY)
     public R<RoleFieldAuthVo> fieldAuthTree(@RequestParam Long roleId) {
         return R.success(roleFieldRelService.fieldAuthTree(roleId, false));
-    }
-
-    @GetMapping("/assignableAppIds")
-    @Operation(summary = "可分配的应用id集合",
-            description = "取当前操作人权限集合角色已分配的应用")
-    @RequestLog(value = "查询可分配的应用id集合", logType = RequestLog.LogType.QUERY)
-    public R<List<Long>> assignableAppIds() {
-        Role permSet = superService.getPermSetRoleOfCurrentOperator();
-        if (permSet == null) {
-            return R.success(List.of());
-        }
-        return R.success(superService.listAppIdsByRoleId(permSet.getId()));
-    }
-
-    @GetMapping("/assignableResourceIds")
-    @Operation(summary = "可分配的资源id集合",
-            description = "取当前操作人权限集合角色已分配的资源")
-    @RequestLog(value = "查询可分配的资源id集合", logType = RequestLog.LogType.QUERY)
-    public R<Map<Long, Collection<Long>>> assignableResourceIds() {
-        Role permSet = superService.getPermSetRoleOfCurrentOperator();
-        if (permSet == null) {
-            return R.success(Map.of());
-        }
-        return R.success(roleResourceRelService.findResourceIdByRoleId(permSet.getId()));
     }
 
     /**

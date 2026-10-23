@@ -85,6 +85,15 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     @Transactional(rollbackFor = Exception.class)
     public Long updateProfile(ProfileUserDto dto) {
         ArgumentAssert.isTrue(dto.getId().equals(ContextUtil.getUserId()), "只能修改个人信息");
+
+        // 手机号允许手动修改（不验证真实性），但需保证唯一
+        String oldPhone = null;
+        if (StrUtil.isNotEmpty(dto.getPhone())) {
+            ArgumentAssert.isFalse(checkPhone(dto.getPhone(), dto.getId()), "该手机号已经被他人使用");
+            User current = getById(dto.getId());
+            oldPhone = current != null ? current.getPhone() : null;
+        }
+
         User entity = UpdateEntity.of(User.class, dto.getId());
         BeanUtil.copyProperties(dto, entity);
         entity.setAvatar(entity.getId());
@@ -92,14 +101,28 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         updateById(entity);
         delCache(entity.getId());
 
+        // 手机号变更时同步清理 手机号->用户id 的查询缓存
+        if (StrUtil.isNotEmpty(dto.getPhone())) {
+            List<CacheKey> cacheKeyList = new ArrayList<>();
+            if (StrUtil.isNotEmpty(oldPhone)) {
+                cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(oldPhone));
+            }
+            cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(dto.getPhone()));
+            cacheOps.del(cacheKeyList);
+        }
+
         // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
-        fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
-                .objectId(entity.getAvatar())
-                .objectType(FileObjectType.Console.USER_AVATAR)
-                .build().setKeepFileIds(dto.getAvatarFileId()));
+        // 仅在显式传了头像文件id时才更新文件关联：keepFileIds 为空会删除原头像，
+        // 不传头像字段（编辑资料不改头像）必须跳过，避免误删已有头像
+        if (dto.getAvatarFileId() != null) {
+            fileFacade.relateFilesToBiz(RelateFilesToBizDto.builder()
+                    .objectId(entity.getAvatar())
+                    .objectType(FileObjectType.Console.USER_AVATAR)
+                    .build().setKeepFileIds(dto.getAvatarFileId()));
+        }
 
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(dto.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -125,6 +148,15 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     public User getByEmail(String email) {
         CacheKey key = SsoUserEmailCacheKeyBuilder.builder(email);
         return getDefUser(key, email, User::getEmail);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getByWxOpenid(String wxOpenid) {
+        // openid 查询频率低（仅微信登录时），不走缓存，直接查库
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(User::getWxOpenid, wxOpenid);
+        return getOne(queryWrapper);
     }
 
     private User getDefUser(CacheKey key, String value, LambdaGetter<User> fun) {
@@ -348,7 +380,36 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         cacheOps.del(cacheKeyList);
 
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
+                .setEventContent(IdDto.builder().id(user.getId()).build().toString())
+                .setTriggerAt(LocalDateTime.now());
+        notifyAndEventPushFacade.eventPush(request);
+        return userId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long updatePhoneByWxMa(String phone) {
+        Long userId = ContextUtil.getUserId();
+        ArgumentAssert.notNull(userId, "用户不存在");
+        User current = getById(userId);
+        ArgumentAssert.notNull(current, "用户不存在");
+        ArgumentAssert.isFalse(checkPhone(phone, userId), "该手机号已经被他人使用");
+
+        User user = UpdateEntity.of(User.class, userId);
+        user.setPhone(phone);
+        updateById(user);
+
+        // 换绑可能发生在用户尚未设置手机号的场景（如微信自动注册），旧手机号为空时跳过
+        List<CacheKey> cacheKeyList = new ArrayList<>();
+        if (StrUtil.isNotEmpty(current.getPhone())) {
+            cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(current.getPhone()));
+        }
+        cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(phone));
+        cacheOps.del(cacheKeyList);
+
+        EventTriggerDto request = new EventTriggerDto();
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -381,7 +442,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
 
         // 广播
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -411,7 +472,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         updateById(user);
         // 广播
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
@@ -435,7 +496,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         updateById(user);
         // 广播
         EventTriggerDto request = new EventTriggerDto();
-        request.setEventCode(EventTypeCode.Console.USER_EDIT)
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);

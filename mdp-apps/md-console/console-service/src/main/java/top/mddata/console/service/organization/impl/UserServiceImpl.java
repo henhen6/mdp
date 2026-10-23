@@ -70,6 +70,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 用户 服务层实现。
@@ -92,8 +93,8 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     private final AccountOperationGuard accountOperationGuard;
 
     /**
-     * 联系方式归一化：phone/email 允许为空，空白串与 null 等价，统一归一为 null。
-     * phone/email 列有唯一索引（uk_phone/uk_email），空串是真实值，
+     * 联系方式归一化：phone/email/idCard 允许为空，空白串与 null 等价，统一归一为 null。
+     * phone/email/idCard 列有唯一索引（uk_phone/uk_email/uk_id_card），空串是真实值，
      * 多用户空串会撞索引；MySQL 唯一索引允许多个 NULL。
      */
     static void normalizeContact(User user) {
@@ -102,6 +103,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         if (StrUtil.isBlankIfStr(user.getEmail())) {
             user.setEmail(null);
+        }
+        if (StrUtil.isBlankIfStr(user.getIdCard())) {
+            user.setIdCard(null);
         }
     }
 
@@ -118,6 +122,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         Map<String, Object> updates = wrapper.getUpdates();
         blankToNull(updates, "phone");
         blankToNull(updates, "email");
+        blankToNull(updates, "idCard");
     }
 
     private static void blankToNull(Map<String, Object> updates, String property) {
@@ -156,6 +161,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         if (StrUtil.isNotEmpty(dto.getPhone())) {
             ArgumentAssert.isFalse(checkPhone(dto.getPhone(), null), "手机号[{}]， 重复", dto.getPhone());
+        }
+        if (StrUtil.isNotEmpty(dto.getIdCard())) {
+            ArgumentAssert.isFalse(checkIdCard(dto.getIdCard(), null), "身份证号[{}]， 重复", dto.getIdCard());
         }
         User entity = BeanUtil.toBean(save, getEntityClass());
         entity.setId(uidGenerator.getUid());
@@ -232,6 +240,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         }
         if (StrUtil.isNotEmpty(dto.getPhone())) {
             ArgumentAssert.isFalse(checkPhone(dto.getPhone(), dto.getId()), "手机号[{}]， 重复", dto.getPhone());
+        }
+        if (StrUtil.isNotEmpty(dto.getIdCard())) {
+            ArgumentAssert.isFalse(checkIdCard(dto.getIdCard(), dto.getId()), "身份证号[{}]， 重复", dto.getIdCard());
         }
 
         // state 变更校验与部门变更的 last* 校正都依赖库中现值，合并为一次查询（均不涉及时零查询）
@@ -403,6 +414,14 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     }
 
     @Override
+    public Boolean checkIdCard(String idCard, Long id) {
+        if (StrUtil.isBlank(idCard)) {
+            return false;
+        }
+        return mapper.selectCountByQuery(QueryWrapper.create().eq(User::getIdCard, idCard).ne(User::getId, id)) > 0;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<User> listByRoleIds(List<Long> roleIds) {
         QueryWrapper wrapper = QueryWrapper.create().select().from(User.class).innerJoin(UserRoleRel.class).on(UserRoleRel::getUserId, User::getId)
@@ -424,7 +443,10 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         List<Long> userIds = idList.stream().map(id -> Long.valueOf(String.valueOf(id))).toList();
 //        systemProtectService.checkUsersNotProtected(userIds, "删除用户");
         userIds.forEach(id -> accountOperationGuard.check(id, AccountOperation.DELETE));
+        // 删除前取出头像对象id，用于删除后释放头像附件（注册流程创建的用户 avatar 为 null，需过滤）
+        List<Long> avatarIds = listByIds(userIds).stream().map(User::getAvatar).filter(Objects::nonNull).toList();
         boolean flag = super.removeByIds(idList);
+        fileService.releaseFilesByBiz(FileObjectType.Console.USER_AVATAR, avatarIds);
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Console.USER_DELETE)
                 .setEventContent(IdsDto.builder().ids(idList).build().toString())

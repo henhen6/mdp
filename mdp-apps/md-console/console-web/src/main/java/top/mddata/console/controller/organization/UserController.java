@@ -105,8 +105,12 @@ public class UserController extends SuperController<UserService, User> {
     @Operation(summary = "单体查询", description = "根据主键获取用户")
     @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
     public R<UserVo> get(@RequestParam Long id) {
-        User entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, UserVo.class));
+        // 走关系查询补查 orgIdList（@RelationOneToMany 仅在 *WithRelations* 方法中生效），与 page/list 对齐
+        User entity = superService.getMapper().selectOneWithRelationsById(id);
+        UserVo vo = BeanUtil.toBean(entity, UserVo.class);
+        // 与 page/list 保持一致：回显岗位、组织等名称到 echoMap（个人中心等场景依赖）
+        echoService.action(vo);
+        return R.success(vo);
     }
 
     /**
@@ -192,6 +196,13 @@ public class UserController extends SuperController<UserService, User> {
         return R.success(superService.checkPhone(phone, id));
     }
 
+    @GetMapping("/checkIdCard")
+    @Operation(summary = "检测身份证号是否存在", description = "检测身份证号是否存在")
+    @RequestLog(value = "检测身份证号是否存在", logType = RequestLog.LogType.QUERY)
+    public R<Boolean> checkIdCard(@RequestParam String idCard, @RequestParam(required = false) Long id) {
+        return R.success(superService.checkIdCard(idCard, id));
+    }
+
     /**
      * 根据权限角色ID 分页查询角色拥有的用户 或者 没有的用户
      *
@@ -229,36 +240,6 @@ public class UserController extends SuperController<UserService, User> {
         WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
         superService.pageAs(page, wrapper, UserVo.class);
         return R.success(page);
-    }
-
-    /**
-     * 根据邮箱注册账号
-     * @param ssoUser 用户
-     */
-    @PostMapping("/registerByEmail")
-    @RequestLog(value = "根据邮箱注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByEmail(User ssoUser) {
-        return R.success(superService.registerByEmail(ssoUser));
-    }
-
-    /**
-     * 根据手机注册账号
-     * @param ssoUser 用户
-     */
-    @PostMapping("/registerByPhone")
-    @RequestLog(value = "根据手机注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByPhone(User ssoUser) {
-        return R.success(superService.registerByPhone(ssoUser));
-    }
-
-    /**
-     * 注册账号
-     * @param defUser 用户信息
-     */
-    @PostMapping("/registerByUsername")
-    @RequestLog(value = "根据用户名注册账号", logType = RequestLog.LogType.ADD)
-    public R<Boolean> registerByUsername(User defUser) {
-        return R.success(superService.registerByUsername(defUser));
     }
 
     /**

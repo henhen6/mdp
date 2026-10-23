@@ -10,6 +10,11 @@
     <artifactId>mdp-sdk-core</artifactId>
     <version>${revision}</version>
 
+    <properties>
+        <!-- 默认打包时跳过测试；执行 mvn test -DskipTests=false 可运行测试 -->
+        <skipTests>true</skipTests>
+    </properties>
+
 
     <dependencies>
         <!-- http请求 -->
@@ -25,21 +30,18 @@
             <version>2.0.62</version>
         </dependency>
 
+        <!-- 日志门面，第三方项目按自身日志体系绑定实现即可 -->
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.3.5</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.20.0</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.17</version>
         </dependency>
 
         <dependency>
-            <groupId>io.github.shalousun</groupId>
-            <artifactId>common-util</artifactId>
-            <version>2.2.9</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.4</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -52,7 +54,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <skipTests>${skipTests}</skipTests>
                 </configuration>
             </plugin>
             <plugin>

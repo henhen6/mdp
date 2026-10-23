@@ -73,6 +73,12 @@ public class EventPushVo implements Serializable {
     private String requestData;
 
     /**
+     * 加密模式
+     * （冗余自 AppKeys，避免推送时再查库），[0-明文模式 1-兼容模式 2-安全模式]
+     */
+    private Integer notifyEncryptionType;
+
+    /**
      * 最近请求时间
      */
     @Schema(description = "最近请求时间")

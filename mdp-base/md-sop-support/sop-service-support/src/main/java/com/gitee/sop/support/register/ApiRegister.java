@@ -143,6 +143,7 @@ public class ApiRegister {
         registerDTO.setAppName(appName);
         registerDTO.setApiName(getApiName(interfaceClass, open));
         registerDTO.setApiVersion(open.version());
+        registerDTO.setDescription(open.description());
         registerDTO.setInterfaceClassName(interfaceClass.getName());
         registerDTO.setMethodName(method.getName());
         registerDTO.setParamInfo(JSON.toJSONString(paramInfos));
@@ -154,29 +155,6 @@ public class ApiRegister {
         ApiModeEnum apiMode = openGroup == null ? ApiModeEnum.OPEN : ApiModeEnum.RESTFUL;
         registerDTO.setApiMode(apiMode.getCode());
         return registerDTO;
-    }
-
-    private void regApi(String appName, Class<?> interfaceClass, Method method, Open open) {
-        List<ParamInfo> paramInfos = buildParamInfo(method);
-        RegisterDTO registerDTO = new RegisterDTO();
-        registerDTO.setAppName(appName);
-        registerDTO.setApiName(getApiName(interfaceClass, open));
-        registerDTO.setApiVersion(open.version());
-        registerDTO.setInterfaceClassName(interfaceClass.getName());
-        registerDTO.setMethodName(method.getName());
-        registerDTO.setParamInfo(JSON.toJSONString(paramInfos));
-        registerDTO.setPermission(parseBoolean(open.permission()));
-        registerDTO.setNeedToken(parseBoolean(open.needToken()));
-        registerDTO.setNeedSign(parseBoolean(open.needSign()));
-        registerDTO.setCommonResponse(parseBoolean(open.hasCommonResponse()));
-        OpenGroup openGroup = interfaceClass.getAnnotation(OpenGroup.class);
-        ApiModeEnum apiMode = openGroup == null ? ApiModeEnum.OPEN : ApiModeEnum.RESTFUL;
-        registerDTO.setApiMode(apiMode.getCode());
-        LOG.info("注册开放接口, apiInfo=" + registerDTO);
-        RegisterResult result = apiRegisterService.register(registerDTO);
-        if (!result.getSuccess()) {
-            throw new RuntimeException(result.getMsg());
-        }
     }
 
     protected String getApiName(Class<?> interfaceClass, Open open) {

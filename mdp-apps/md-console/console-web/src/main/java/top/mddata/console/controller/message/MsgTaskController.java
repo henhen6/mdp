@@ -20,7 +20,6 @@ import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.mybatisflex.datascope.annotation.DataScope;
-import top.mddata.console.dto.message.MsgSendDto;
 import top.mddata.console.dto.message.MsgTaskDto;
 import top.mddata.console.entity.message.MsgTask;
 import top.mddata.console.entity.message.MsgTaskRecipient;
@@ -46,12 +45,6 @@ import java.util.List;
 public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> {
     private final MsgTaskRecipientService msgTaskRecipientService;
     private final MsgTaskMapper msgTaskMapper;
-
-    @PostMapping("/listByTitle")
-    @RequestLog(value = "根据标题查询消息任务", logType = RequestLog.LogType.QUERY)
-    public Object listByTitle(String title) {
-        return R.success(msgTaskMapper.listByTitle(title));
-    }
 
     /**
      * 添加消息任务。
@@ -142,14 +135,4 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
         return R.success(superService.publish(data));
     }
 
-    /**
-     * 根据消息模板发送消息
-     *
-     * @param data 消息参数
-     */
-    @PostMapping("/sendByTemplateKey")
-    @RequestLog(value = "根据模板发送消息", logType = RequestLog.LogType.ADD)
-    public R<Long> sendByTemplateKey(@RequestBody @Validated MsgSendDto data) {
-        return R.success(superService.sendByTemplateKey(data));
-    }
 }

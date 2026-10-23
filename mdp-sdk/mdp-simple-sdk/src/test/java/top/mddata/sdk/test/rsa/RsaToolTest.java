@@ -1,7 +1,8 @@
 package top.mddata.sdk.test.rsa;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.mddata.sdk.core.sign.RsaTool;
 import top.mddata.sdk.test.BaseTest;
 
@@ -12,8 +13,9 @@ import top.mddata.sdk.test.BaseTest;
  */
 
 public class RsaToolTest extends BaseTest {
-    private static final Log LOG = LogFactory.getLog(RsaToolTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RsaToolTest.class);
 
+    @Test
     public void testGeneratePublicKeyPrivateKey1() throws Exception {
         RsaTool.KeyFormat keyFormat = RsaTool.KeyFormat.PKCS1;
         RsaTool rsaTool = new RsaTool(keyFormat, RsaTool.KeyLength.LENGTH_2048);
@@ -24,6 +26,7 @@ public class RsaToolTest extends BaseTest {
         LOG.info("私钥: " + keys.getPrivateKey());
     }
 
+    @Test
     public void testGeneratePublicKeyPrivateKey2() throws Exception {
         RsaTool.KeyFormat keyFormat = RsaTool.KeyFormat.PKCS1;
         RsaTool rsaTool = new RsaTool(keyFormat, RsaTool.KeyLength.LENGTH_1024);
@@ -34,6 +37,7 @@ public class RsaToolTest extends BaseTest {
         LOG.info("私钥: " + keys.getPrivateKey());
     }
 
+    @Test
     public void testGeneratePublicKeyPrivateKey3() throws Exception {
         RsaTool.KeyFormat keyFormat = RsaTool.KeyFormat.PKCS8;
         RsaTool rsaTool = new RsaTool(keyFormat, RsaTool.KeyLength.LENGTH_2048);
@@ -45,6 +49,7 @@ public class RsaToolTest extends BaseTest {
     }
 
 
+    @Test
     public void testGeneratePublicKeyPrivateKey4() throws Exception {
         RsaTool.KeyFormat keyFormat = RsaTool.KeyFormat.PKCS8;
         RsaTool rsaTool = new RsaTool(keyFormat, RsaTool.KeyLength.LENGTH_1024);

@@ -25,6 +25,18 @@ public interface EchoApi {
      * 岗位 回显
      */
     String POSITION_CLASS = "positionFacadeImpl";
+    /**
+     * 接口调用日志 回显
+     */
+    String API_CALL_LOG_CLASS = "apiCallLogEchoImpl";
+    /**
+     * 回调任务 回显
+     */
+    String NOTIFY_INFO_CLASS = "notifyInfoEchoImpl";
+    /**
+     * 事件推送 回显
+     */
+    String EVENT_PUSH_CLASS = "eventPushEchoImpl";
 
 
 }

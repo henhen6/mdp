@@ -1,5 +1,7 @@
 package top.mddata.sdk.test.org;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import top.mddata.sdk.core.common.Result;
 import top.mddata.sdk.core.param.IdRequest;
 import top.mddata.sdk.core.request.PageParams;
@@ -23,13 +25,13 @@ import java.util.Random;
  */
 public class OrgTest extends BaseTest {
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
         // 获取 accessToken，用于需要认证的接口
         getAccessToken();
     }
 
+    @Test
     public void testGetById() {
         OrgGetByIdApi api = new OrgGetByIdApi();
         api.setBizModel(new IdRequest().setId(100565911912586431L));
@@ -37,6 +39,7 @@ public class OrgTest extends BaseTest {
         logResult(result);
     }
 
+    @Test
     public void testSave() {
         OrgSaveDto org1 = new OrgSaveDto();
         org1.setName("test" + new Random().nextInt(5000));
@@ -53,6 +56,7 @@ public class OrgTest extends BaseTest {
         logResult(result);
     }
 
+    @Test
     public void testUpdate() {
         OrgUpdateByIdApi api = new OrgUpdateByIdApi();
         OrgUpdateDto dto = new OrgUpdateDto();
@@ -64,6 +68,7 @@ public class OrgTest extends BaseTest {
         logResult(result);
     }
 
+    @Test
     public void testPage() {
         OrgPageApi api = new OrgPageApi();
         PageParams<OrgQuery> dto = new PageParams<>(1, 5);

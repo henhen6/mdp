@@ -2,12 +2,15 @@ package top.mddata.workbench.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
+import static top.mddata.base.utils.ValidatorUtil.REGEX_MOBILE;
 
 /**
  * 个人中心-用户信息
@@ -30,7 +33,7 @@ public class ProfileUserDto {
 
     /**
      * 性别
-     * [1-男 2-女]
+     * [0-男 1-女]
      */
     @Size(max = 1, message = "性别长度不能超过{max}")
     @Schema(description = "性别")
@@ -53,9 +56,10 @@ public class ProfileUserDto {
     private String name;
 
     /**
-     * 所属岗位
+     * 手机号（手动填写，仅做格式与唯一性校验，不验证真实性）
      */
-    @Schema(description = "所属岗位")
-    private Long positionId;
+    @Pattern(regexp = REGEX_MOBILE, message = "请输入11位合法的手机号")
+    @Schema(description = "手机号")
+    private String phone;
 
 }

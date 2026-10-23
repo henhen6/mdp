@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,15 +17,18 @@ import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.enumeration.BooleanEnum;
+import top.mddata.open.dto.client.DocDebugBuildParamDto;
 import top.mddata.open.entity.admin.DocGroup;
 import top.mddata.open.entity.admin.HelpDoc;
-import top.mddata.open.service.admin.DocGroupService;
-import top.mddata.open.service.admin.DocInfoService;
-import top.mddata.open.service.admin.HelpDocService;
+import top.mddata.open.service.doc.DocDebugService;
+import top.mddata.open.service.doc.DocGroupService;
+import top.mddata.open.service.doc.DocInfoService;
+import top.mddata.open.service.doc.HelpDocService;
 import top.mddata.open.vo.admin.DocGroupVo;
 import top.mddata.open.vo.admin.DocInfoViewVo;
 import top.mddata.open.vo.admin.DocInfoVo;
 import top.mddata.open.vo.admin.HelpDocVo;
+import top.mddata.open.vo.client.DocDebugBuildParamVo;
 
 import java.util.List;
 
@@ -43,6 +48,7 @@ public class OpenDocController {
     private final DocGroupService docGroupService;
     private final DocInfoService docInfoService;
     private final HelpDocService helpDocService;
+    private final DocDebugService docDebugService;
 
     /**
      * 获取文档分组列表
@@ -91,5 +97,17 @@ public class OpenDocController {
     @GetMapping("/docInfo/detail")
     public R<DocInfoViewVo> getDocDetail(@RequestParam Long id) {
         return R.success(docInfoService.getDocView(id));
+    }
+
+    /**
+     * 组装在线调试请求参数
+     *
+     * @param dto 调试参数
+     */
+    @RequestLog(value = "'组装在线调试请求参数:' + #dto.docId + ':' + #dto.env", logType = RequestLog.LogType.QUERY, request = false, response = false)
+    @Operation(summary = "组装在线调试请求参数", description = "按 mdp-sdk 规则组装并签名参数，最终请求由浏览器直连网关")
+    @PostMapping("/debug/buildParam")
+    public R<DocDebugBuildParamVo> buildDebugParam(@Validated @RequestBody DocDebugBuildParamDto dto) {
+        return R.success(docDebugService.buildParam(dto));
     }
 }

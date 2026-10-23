@@ -21,7 +21,9 @@ import top.mddata.workbench.dto.ProfileEmailDto;
 import top.mddata.workbench.dto.ProfilePasswordDto;
 import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
+import top.mddata.workbench.dto.WxMaPhoneBindDto;
 import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.WxMaAuthService;
 
 import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 
@@ -38,6 +40,7 @@ import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
 @Tag(name = "个人中心", description = "个人中心")
 public class ProfileController {
     private final SsoUserService ssoUserService;
+    private final WxMaAuthService wxMaAuthService;
 
     /**
      * 修改个人信息
@@ -64,6 +67,20 @@ public class ProfileController {
     @RequestLog(value = "修改个人手机号", logType = RequestLog.LogType.UPDATE)
     public R<Long> updatePhone(@Validated @RequestBody ProfilePhoneDto dto) {
         return R.success(ssoUserService.updatePhone(dto));
+    }
+
+    /**
+     * 微信授权换绑个人手机号
+     *
+     * @param dto 手机号授权凭证
+     * @return 用户id
+     */
+    @PostMapping("/updatePhoneByWxMa")
+    @Operation(summary = "微信授权换绑个人手机号", description = "通过 getPhoneNumber 授权码换取手机号并换绑")
+    @RequestLog(value = "微信授权换绑个人手机号", logType = RequestLog.LogType.UPDATE)
+    public R<Long> updatePhoneByWxMa(@Validated @RequestBody WxMaPhoneBindDto dto) {
+        String phone = wxMaAuthService.getPhoneNumber(dto.getPhoneCode());
+        return R.success(ssoUserService.updatePhoneByWxMa(phone));
     }
 
     /**

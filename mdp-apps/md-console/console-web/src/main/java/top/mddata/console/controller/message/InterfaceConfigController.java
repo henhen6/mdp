@@ -8,11 +8,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
@@ -95,20 +93,6 @@ public class InterfaceConfigController extends SuperController<InterfaceConfigSe
     @RequestLog(value = "修改配置", logType = RequestLog.LogType.UPDATE, request = false)
     public R<Long> updateConfig(@RequestBody InterfaceConfigSettingDto dto) {
         return R.success(superService.updateConfigById(dto));
-    }
-
-    /**
-     * 根据接口主键获取详细信息。
-     *
-     * @param id 接口主键
-     * @return 接口详情
-     */
-    @GetMapping("/getById")
-    @Operation(summary = "单体查询", description = "根据主键获取接口")
-    @RequestLog(value = "'单体查询:' + #id", logType = RequestLog.LogType.QUERY)
-    public R<InterfaceConfigVo> get(@RequestParam Long id) {
-        InterfaceConfig entity = superService.getById(id);
-        return R.success(BeanUtil.toBean(entity, InterfaceConfigVo.class));
     }
 
     /**

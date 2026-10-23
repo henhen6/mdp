@@ -9,7 +9,7 @@
 | format      | String | 否  | 40   | 返回结果格式,JSON/XML                                       | JSON                         |    |
 | charset     | String | 是  | 10   | 请求使用的编码格式，固定填utf8                                     | utf8                         |    |
 | sign_type   | String | 是  | 10   | 生成签名字符串所使用的签名算法类型,固定填:RSA2                            | RSA2                         |    |
-| sign        | String | 是  | 344  | 请求参数的签名，详见 [签名算法](http://open.mddata.top/#/doc/sign)  |                              |    |
+| sign        | String | 是  | 344  | 请求参数的签名，详见 [签名算法](https://open.mddata.top/#/doc/sign)  |                              |    |
 | timestamp   | String | 是  | 19   | 发送请求的时间，格式"yyyy-MM-dd HH:mm:ss"                       | 2014-07-24 03:07:50          |    |
 | method      | String | 是  | 128  | 接口名称 / 事件类型                                           | shop.order.create / user:add |    |
 | version     | String | 否  | 3    | 接口版本                                                  | 1.0                          |    |
@@ -37,8 +37,8 @@
 
 ## 响应参数
 
-开发者在接收到接口回调或事件推送时，需要在5s内返回响应参数，若5s内没有返回，开放平台会视为调用失败，会发起重试。最多重试3次，分别是：
-5m,30m,6h。
+开发者在接收到接口回调或事件推送时，需要在5s内返回响应参数，若5s内没有返回，开放平台会视为调用失败，会发起重试。最多重试 5 次，分别是：
+2m, 5m, 30m, 6h, 12h。
 
 响应参数固定不变，如下表所示，其中data部分是业务返回结果。
 

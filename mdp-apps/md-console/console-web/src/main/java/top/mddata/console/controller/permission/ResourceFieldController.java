@@ -1,7 +1,6 @@
 package top.mddata.console.controller.permission;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,12 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
-import top.mddata.base.fieldperm.model.FieldRule;
-import top.mddata.base.fieldperm.spi.FieldPermProvider;
 import top.mddata.base.mvcflex.controller.SuperController;
-import top.mddata.base.mvcflex.request.PageParams;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
-import top.mddata.base.util.ContextUtil;
 import top.mddata.console.dto.permission.ResourceFieldDto;
 import top.mddata.console.entity.permission.ResourceField;
 import top.mddata.console.query.permission.ResourceFieldQuery;
@@ -29,7 +24,6 @@ import top.mddata.console.service.permission.ResourceFieldService;
 import top.mddata.console.vo.permission.ResourceFieldVo;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 字段权限 控制层。
@@ -43,7 +37,7 @@ import java.util.Map;
 @RequestMapping("/permission/resourceField")
 @RequiredArgsConstructor
 public class ResourceFieldController extends SuperController<ResourceFieldService, ResourceField> {
-    private final FieldPermProvider fieldPermProvider;
+
     /**
      * 添加字段权限。
      *
@@ -95,43 +89,6 @@ public class ResourceFieldController extends SuperController<ResourceFieldServic
     public R<ResourceFieldVo> get(@RequestParam Long id) {
         ResourceField entity = superService.getById(id);
         return R.success(BeanUtil.toBean(entity, ResourceFieldVo.class));
-    }
-
-    /**
-     * 分页查询字段权限。
-     *
-     * @param params 分页对象
-     * @return 分页对象
-     */
-    @PostMapping("/page")
-    @Operation(summary = "分页列表查询", description = "分页查询字段权限")
-    @RequestLog(value = "'分页列表查询:第' + #params?.current + '页, 显示' + #params?.size + '行'", logType = RequestLog.LogType.QUERY, response = false)
-    public R<Page<ResourceFieldVo>> page(@RequestBody @Validated PageParams<ResourceFieldQuery> params) {
-        Page<ResourceFieldVo> page = Page.of(params.getCurrent(), params.getSize());
-        ResourceField entity = BeanUtil.toBean(params.getModel(), ResourceField.class);
-        QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
-        WrapperUtil.buildWrapperByExtra(wrapper, params.getModel(), entity.getClass());
-        WrapperUtil.buildWrapperByOrder(wrapper, params, entity.getClass());
-        superService.pageAs(page, wrapper, ResourceFieldVo.class);
-        return R.success(page);
-    }
-
-    /**
-     * 查询当前登录用户在指定菜单下的受限字段规则（前端列隐藏/脱敏渲染用）。
-     *
-     * @param menuId 菜单ID
-     * @return property → 受限规则；无限制返回空Map
-     */
-    @GetMapping("/current")
-    @Operation(summary = "查询当前用户受限字段", description = "查询当前用户在指定菜单下的受限字段规则")
-    @RequestLog(value = "查询当前用户受限字段", logType = RequestLog.LogType.QUERY)
-    public R<Map<String, FieldRule>> current(@RequestParam Long menuId) {
-        Long userId = ContextUtil.getUserId();
-        if (userId == null) {
-            return R.success(Map.of());
-        }
-        Map<String, FieldRule> rules = fieldPermProvider.findUserPerm(userId).rulesOf(menuId);
-        return R.success(rules == null ? Map.of() : rules);
     }
 
     /**
