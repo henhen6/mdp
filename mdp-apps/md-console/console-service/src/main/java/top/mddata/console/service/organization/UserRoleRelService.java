@@ -3,9 +3,11 @@ package top.mddata.console.service.organization;
 import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.console.dto.organization.UserRoleRelDto;
+import top.mddata.console.dto.organization.UserRoleSaveDto;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 用户角色关联 服务层。
@@ -42,4 +44,22 @@ public interface UserRoleRelService extends SuperService<UserRoleRel> {
      * @param userIds 待绑定用户id
      */
     void checkRoleUserNatureMatch(Long roleId, Collection<Long> userIds);
+
+    /**
+     * 查询用户在可分配范围内已拥有的角色ID（分配角色弹窗回显）。
+     * 可分配范围：非模板角色 + 普通角色。
+     *
+     * @param userId 用户id
+     * @return 角色ID集合
+     */
+    List<Long> findRoleIdByUserId(Long userId);
+
+    /**
+     * 全量覆盖保存用户的角色（用户侧分配角色）。
+     * 只覆盖可分配范围内的关联，模板角色等其他类别绑定不受影响。
+     *
+     * @param dto 用户-角色关系
+     * @return 保存结果
+     */
+    Boolean saveUserRole(UserRoleSaveDto dto);
 }
