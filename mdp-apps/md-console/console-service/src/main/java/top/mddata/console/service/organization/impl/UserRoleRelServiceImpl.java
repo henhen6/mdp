@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.util.ContextUtil;
@@ -15,6 +16,7 @@ import top.mddata.common.cache.console.permission.UserResourceApiCacheKeyBuilder
 import top.mddata.common.entity.Org;
 import top.mddata.common.entity.UserOrgRel;
 import top.mddata.common.entity.UserRoleRel;
+import top.mddata.common.enumeration.organization.UserIdentityEnum;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.common.mapper.UserRoleRelMapper;
 import top.mddata.console.dto.organization.UserRoleRelDto;
@@ -23,8 +25,11 @@ import top.mddata.console.entity.permission.Role;
 import top.mddata.console.mapper.permission.RoleMapper;
 import top.mddata.console.service.organization.OrgService;
 import top.mddata.console.service.organization.SystemProtectService;
+import top.mddata.console.service.organization.UserIdentityService;
 import top.mddata.console.service.organization.UserOrgRelService;
 import top.mddata.console.service.organization.UserRoleRelService;
+import top.mddata.console.vo.organization.AssignableRoleVo;
+import top.mddata.console.vo.permission.RoleVo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,6 +52,8 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
     private final RoleMapper roleMapper;
     private final UserOrgRelService userOrgRelService;
     private final OrgService orgService;
+    private final UserIdentityService userIdentityService;
+    private final EchoService echoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -150,7 +157,21 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
         if (CollUtil.isEmpty(roleIds)) {
             return List.of();
         }
-        return listAssignableRoles(roleIds).stream().map(Role::getId).toList();
+        return filterAssignableRoles(roleIds).stream().map(Role::getId).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AssignableRoleVo listAssignableRoles() {
+        List<RoleVo> roleList = roleMapper.selectListByQueryAs(
+                assignableScopeWrapper(QueryWrapper.create()).orderBy(Role::getCreatedAt, false),
+                RoleVo.class);
+        // 回显角色分类/组织性质字典显示名，前端分组标题与徽章依赖 echoMap
+        echoService.action(roleList);
+        return AssignableRoleVo.builder()
+                .operationsAdmin(isOperationsAdmin())
+                .roleList(roleList)
+                .build();
     }
 
     @Override
@@ -167,7 +188,7 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
         }
 
         // 只删除可分配范围内的旧关联，保留模板角色等其他类别绑定
-        List<Long> oldRoleIds = listAssignableRoles(listUserRoleIds(dto.getUserId()))
+        List<Long> oldRoleIds = filterAssignableRoles(listUserRoleIds(dto.getUserId()))
                 .stream().map(Role::getId).toList();
         if (CollUtil.isNotEmpty(oldRoleIds)) {
             super.remove(QueryWrapper.create()
@@ -197,18 +218,42 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
     }
 
     /**
-     * 在指定角色中过滤出可分配角色：非模板角色 + 普通角色 + 当前公司组织性质。
-     * 条件与 RoleController.list 完全对齐，避免回显/保存读到其他组织性质的角色。
+     * 构造可分配角色范围条件（按当前操作者身份分流）：
+     * 运营人员：非模板 + 普通/管理员角色，不限组织性质；
+     * 其他身份：非模板 + 普通角色 + 当前公司组织性质（与 RoleController.list 对齐）。
+     * 回显、保存删除范围、提交校验、列表端点四处共用，保证口径一致。
      */
-    private List<Role> listAssignableRoles(Collection<Long> roleIds) {
+    private QueryWrapper assignableScopeWrapper(QueryWrapper wrapper) {
+        if (isOperationsAdmin()) {
+            wrapper.in(Role::getRoleCategory, RoleCategoryEnum.NORMAL_ROLE.getCode(),
+                    RoleCategoryEnum.ADMIN_ROLE.getCode());
+        } else {
+            wrapper.eq(Role::getTemplateRole, false);
+            // 公司性质缺失时 mybatis-flex 会静默忽略 eq 条件导致范围失控，必须 fail fast
+            Integer currentNature = ContextUtil.getCurrentCompanyNature();
+            ArgumentAssert.notNull(currentNature, "当前公司性质缺失，无法确定可分配角色范围");
+            wrapper.eq(Role::getRoleCategory, RoleCategoryEnum.NORMAL_ROLE.getCode())
+                    .eq(Role::getOrgNature, currentNature);
+        }
+        return wrapper;
+    }
+
+    /**
+     * 运营人员判定：绑定了性质99管理员角色（与平台身份体系一致）。
+     */
+    private boolean isOperationsAdmin() {
+        return UserIdentityEnum.OPERATIONS_ADMIN == userIdentityService.getIdentity(ContextUtil.getUserId());
+    }
+
+    /**
+     * 在指定角色中过滤出当前操作者可分配的角色（范围见 {@link #assignableScopeWrapper}）。
+     */
+    private List<Role> filterAssignableRoles(Collection<Long> roleIds) {
         if (CollUtil.isEmpty(roleIds)) {
             return List.of();
         }
-        return roleMapper.selectListByQuery(QueryWrapper.create()
-                .in(Role::getId, roleIds)
-                .eq(Role::getTemplateRole, false)
-                .eq(Role::getRoleCategory, RoleCategoryEnum.NORMAL_ROLE.getCode())
-                .eq(Role::getOrgNature, ContextUtil.getCurrentCompanyNature()));
+        return roleMapper.selectListByQuery(
+                assignableScopeWrapper(QueryWrapper.create().in(Role::getId, roleIds)));
     }
 
     /**
@@ -216,9 +261,9 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
      * 规则同 {@link #checkRoleUserNatureMatch}：用户挂在不同性质组织下时，任何角色都无法绑定。
      */
     private void checkAssignableAndNatureMatch(Long userId, Collection<Long> roleIds) {
-        List<Role> assignableRoles = listAssignableRoles(roleIds);
+        List<Role> assignableRoles = filterAssignableRoles(roleIds);
         ArgumentAssert.isTrue(assignableRoles.size() == roleIds.size(),
-                "分配失败：存在不可分配的角色（模板角色、非普通角色或角色不存在）");
+                "分配失败：存在不可分配的角色（模板角色、权限集合、超出当前身份可授范围或角色不存在）");
 
         List<UserOrgRel> relList = userOrgRelService.list(
                 QueryWrapper.create().eq(UserOrgRel::getUserId, userId));

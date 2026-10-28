@@ -4,6 +4,7 @@ import top.mddata.base.mvcflex.service.SuperService;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.console.dto.organization.UserRoleRelDto;
 import top.mddata.console.dto.organization.UserRoleSaveDto;
+import top.mddata.console.vo.organization.AssignableRoleVo;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -62,4 +63,12 @@ public interface UserRoleRelService extends SuperService<UserRoleRel> {
      * @return 保存结果
      */
     Boolean saveUserRole(UserRoleSaveDto dto);
+
+    /**
+     * 查询当前操作者可分配的角色列表（分配角色弹窗数据源）。
+     * 运营人员：所有性质的管理员与普通角色；其他身份：本公司性质的普通角色。
+     *
+     * @return 可分配角色与操作者身份标识
+     */
+    AssignableRoleVo listAssignableRoles();
 }

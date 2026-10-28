@@ -17,6 +17,7 @@ import top.mddata.common.entity.UserRoleRel;
 import top.mddata.console.dto.organization.UserRoleRelDto;
 import top.mddata.console.dto.organization.UserRoleSaveDto;
 import top.mddata.console.service.organization.UserRoleRelService;
+import top.mddata.console.vo.organization.AssignableRoleVo;
 
 import java.util.List;
 
@@ -69,6 +70,18 @@ public class UserRoleRelController extends SuperController<UserRoleRelService, U
     @RequestLog(value = "'查询用户角色:' + #userId", logType = RequestLog.LogType.QUERY, response = false)
     public R<List<Long>> findRoleByUserId(@RequestParam Long userId) {
         return R.success(superService.findRoleIdByUserId(userId));
+    }
+
+    /**
+     * 查询当前操作者可分配的角色列表（分配角色弹窗数据源）。
+     *
+     * @return 可分配角色与操作者身份标识
+     */
+    @GetMapping("/listAssignableRoles")
+    @Operation(summary = "查询可分配角色", description = "按当前操作者身份返回可分配角色（运营人员含所有性质的管理员与普通角色）")
+    @RequestLog(value = "查询可分配角色", logType = RequestLog.LogType.QUERY, response = false)
+    public R<AssignableRoleVo> listAssignableRoles() {
+        return R.success(superService.listAssignableRoles());
     }
 
     /**

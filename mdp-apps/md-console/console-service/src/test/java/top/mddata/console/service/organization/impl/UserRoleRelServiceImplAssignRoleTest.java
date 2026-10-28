@@ -17,9 +17,14 @@ import top.mddata.common.mapper.UserRoleRelMapper;
 import top.mddata.console.dto.organization.UserRoleSaveDto;
 import top.mddata.console.entity.permission.Role;
 import top.mddata.console.mapper.permission.RoleMapper;
+import top.mddata.base.interfaces.echo.EchoService;
+import top.mddata.common.enumeration.organization.UserIdentityEnum;
 import top.mddata.console.service.organization.OrgService;
 import top.mddata.console.service.organization.SystemProtectService;
+import top.mddata.console.service.organization.UserIdentityService;
 import top.mddata.console.service.organization.UserOrgRelService;
+import top.mddata.console.vo.organization.AssignableRoleVo;
+import top.mddata.console.vo.permission.RoleVo;
 
 import java.util.List;
 
@@ -29,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -50,6 +56,8 @@ class UserRoleRelServiceImplAssignRoleTest {
     private RoleMapper roleMapper;
     private UserOrgRelService userOrgRelService;
     private OrgService orgService;
+    private UserIdentityService userIdentityService;
+    private EchoService echoService;
     private UserRoleRelMapper mapper;
     private CacheOps cacheOps;
     private UserRoleRelServiceImpl service;
@@ -60,9 +68,12 @@ class UserRoleRelServiceImplAssignRoleTest {
         roleMapper = mock(RoleMapper.class);
         userOrgRelService = mock(UserOrgRelService.class);
         orgService = mock(OrgService.class);
+        userIdentityService = mock(UserIdentityService.class);
+        echoService = mock(EchoService.class);
         mapper = mock(UserRoleRelMapper.class);
         cacheOps = mock(CacheOps.class);
-        service = new UserRoleRelServiceImpl(systemProtectService, roleMapper, userOrgRelService, orgService);
+        service = new UserRoleRelServiceImpl(systemProtectService, roleMapper, userOrgRelService, orgService,
+                userIdentityService, echoService);
         // mapper 由 mybatis-flex ServiceImpl 以 @Autowired 字段注入，测试中反射替换
         ReflectionTestUtils.setField(service, "mapper", mapper);
         ReflectionTestUtils.setField(service, "cacheOps", cacheOps);
@@ -113,109 +124,149 @@ class UserRoleRelServiceImplAssignRoleTest {
 
     @Test
     void 保存_角色性质与用户组织性质不匹配_failFast() {
-        mockUserOrg();
-        when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(role(1L, false, OrgNatureEnum.OPERATIONS.getCode())));
+        // 非运营分支需公司性质上下文，否则 fail fast 会提前于业务校验抛出
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            mockUserOrg();
+            when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(role(1L, false, OrgNatureEnum.OPERATIONS.getCode())));
 
-        assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(1L))));
-        verify(mapper, never()).insert(any(UserRoleRel.class));
-        verify(mapper, never()).deleteByQuery(any(QueryWrapper.class));
+            assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(1L))));
+            verify(mapper, never()).insert(any(UserRoleRel.class));
+            verify(mapper, never()).deleteByQuery(any(QueryWrapper.class));
+        } finally {
+            ContextUtil.remove();
+        }
     }
 
     @Test
     void 保存_提交可分配范围外角色_拒绝() {
         // 模板角色被可分配范围过滤，查询结果为空，与提交数量不一致即拒绝
-        when(roleMapper.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of());
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            when(roleMapper.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of());
 
-        assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(2L))));
-        verifyNoInteractions(userOrgRelService);
+            assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(2L))));
+            verifyNoInteractions(userOrgRelService);
+        } finally {
+            ContextUtil.remove();
+        }
     }
 
     @Test
     void 保存_用户不属于任何组织_failFast() {
-        when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
-        when(userOrgRelService.list(any(QueryWrapper.class))).thenReturn(List.of());
+        // 非运营分支需公司性质上下文，否则 fail fast 会提前于业务校验抛出
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
+            when(userOrgRelService.list(any(QueryWrapper.class))).thenReturn(List.of());
 
-        assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(1L))));
-        verify(mapper, never()).insert(any(UserRoleRel.class));
+            assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(1L))));
+            verify(mapper, never()).insert(any(UserRoleRel.class));
+        } finally {
+            ContextUtil.remove();
+        }
     }
 
     @Test
     void 保存_用户挂在两个不同性质组织_任何角色都拒绝() {
         // ALL 语义：角色性质须等于用户每个组织的性质，混合性质组织下无可分配角色
-        UserOrgRel rel1 = new UserOrgRel();
-        rel1.setUserId(USER_ID);
-        rel1.setOrgId(ORG_ID);
-        UserOrgRel rel2 = new UserOrgRel();
-        rel2.setUserId(USER_ID);
-        rel2.setOrgId(10L);
-        when(userOrgRelService.list(any(QueryWrapper.class))).thenReturn(List.of(rel1, rel2));
-        Org org1 = new Org();
-        org1.setNature(OrgNatureEnum.HEAD_COMPANY.getCode());
-        Org org2 = new Org();
-        org2.setNature(OrgNatureEnum.OPERATIONS.getCode());
-        when(orgService.getByIdCache(ORG_ID)).thenReturn(org1);
-        when(orgService.getByIdCache(10L)).thenReturn(org2);
-        when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            UserOrgRel rel1 = new UserOrgRel();
+            rel1.setUserId(USER_ID);
+            rel1.setOrgId(ORG_ID);
+            UserOrgRel rel2 = new UserOrgRel();
+            rel2.setUserId(USER_ID);
+            rel2.setOrgId(10L);
+            when(userOrgRelService.list(any(QueryWrapper.class))).thenReturn(List.of(rel1, rel2));
+            Org org1 = new Org();
+            org1.setNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+            Org org2 = new Org();
+            org2.setNature(OrgNatureEnum.OPERATIONS.getCode());
+            when(orgService.getByIdCache(ORG_ID)).thenReturn(org1);
+            when(orgService.getByIdCache(10L)).thenReturn(org2);
+            when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
 
-        assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(1L))));
-        verify(mapper, never()).insert(any(UserRoleRel.class));
+            assertThrows(ArgumentException.class, () -> service.saveUserRole(dto(List.of(1L))));
+            verify(mapper, never()).insert(any(UserRoleRel.class));
+        } finally {
+            ContextUtil.remove();
+        }
     }
 
     @Test
     void 保存_空集合_只删除可分配范围内旧关联() {
-        when(mapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(rel(1L), rel(2L)));
-        // role 2 是模板角色，被可分配范围过滤，不在删除范围内
-        when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
+        // 非运营分支需公司性质上下文，否则 fail fast 会提前抛出
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            when(mapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(rel(1L), rel(2L)));
+            // role 2 是模板角色，被可分配范围过滤，不在删除范围内
+            when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
 
-        assertTrue(service.saveUserRole(dto(List.of())));
+            assertTrue(service.saveUserRole(dto(List.of())));
 
-        verify(systemProtectService).checkUsersNotProtected(List.of(USER_ID), "分配角色");
-        ArgumentCaptor<QueryWrapper> deleteCaptor = ArgumentCaptor.forClass(QueryWrapper.class);
-        verify(mapper).deleteByQuery(deleteCaptor.capture());
-        // 模板角色2必须排除在删除范围外
-        assertDeleteSqlOnlyRole1(deleteCaptor.getValue());
-        verify(mapper, never()).insert(any(UserRoleRel.class));
-        verify(cacheOps).del(anyCollection());
-        // 空集合不触发组织性质校验
-        verifyNoInteractions(userOrgRelService);
+            verify(systemProtectService).checkUsersNotProtected(List.of(USER_ID), "分配角色");
+            ArgumentCaptor<QueryWrapper> deleteCaptor = ArgumentCaptor.forClass(QueryWrapper.class);
+            verify(mapper).deleteByQuery(deleteCaptor.capture());
+            // 模板角色2必须排除在删除范围外
+            assertDeleteSqlOnlyRole1(deleteCaptor.getValue());
+            verify(mapper, never()).insert(any(UserRoleRel.class));
+            verify(cacheOps).del(anyCollection());
+            // 空集合不触发组织性质校验
+            verifyNoInteractions(userOrgRelService);
+        } finally {
+            ContextUtil.remove();
+        }
     }
 
     @Test
     void 保存_正常_删旧插新并失效缓存() {
-        mockUserOrg();
-        when(mapper.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of(rel(1L)));
-        // 第一次查询：校验提交的角色；第二次查询：过滤待删除的旧角色
-        when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(role(3L, false, OrgNatureEnum.HEAD_COMPANY.getCode())))
-                .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
+        // 非运营分支需公司性质上下文，否则 fail fast 会提前抛出
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            mockUserOrg();
+            when(mapper.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of(rel(1L)));
+            // 第一次查询：校验提交的角色；第二次查询：过滤待删除的旧角色
+            when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(role(3L, false, OrgNatureEnum.HEAD_COMPANY.getCode())))
+                    .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
 
-        assertTrue(service.saveUserRole(dto(List.of(3L))));
+            assertTrue(service.saveUserRole(dto(List.of(3L))));
 
-        ArgumentCaptor<QueryWrapper> deleteCaptor = ArgumentCaptor.forClass(QueryWrapper.class);
-        verify(mapper).deleteByQuery(deleteCaptor.capture());
-        // 旧关联只含角色1，删除范围不得扩大
-        assertDeleteSqlOnlyRole1(deleteCaptor.getValue());
-        ArgumentCaptor<UserRoleRel> captor = ArgumentCaptor.forClass(UserRoleRel.class);
-        verify(mapper).insert(captor.capture());
-        assertEquals(3L, captor.getValue().getRoleId());
-        assertEquals(USER_ID, captor.getValue().getUserId());
-        verify(cacheOps).del(anyCollection());
+            ArgumentCaptor<QueryWrapper> deleteCaptor = ArgumentCaptor.forClass(QueryWrapper.class);
+            verify(mapper).deleteByQuery(deleteCaptor.capture());
+            // 旧关联只含角色1，删除范围不得扩大
+            assertDeleteSqlOnlyRole1(deleteCaptor.getValue());
+            ArgumentCaptor<UserRoleRel> captor = ArgumentCaptor.forClass(UserRoleRel.class);
+            verify(mapper).insert(captor.capture());
+            assertEquals(3L, captor.getValue().getRoleId());
+            assertEquals(USER_ID, captor.getValue().getUserId());
+            verify(cacheOps).del(anyCollection());
+        } finally {
+            ContextUtil.remove();
+        }
     }
 
     @Test
     void 回显_只返回可分配范围内的角色ID() {
-        when(mapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(rel(1L), rel(2L)));
-        // role 2 是模板角色，被过滤
-        when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
-                .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
+        // 非运营分支需公司性质上下文，否则 fail fast 会提前抛出
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            when(mapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(rel(1L), rel(2L)));
+            // role 2 是模板角色，被过滤
+            when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
+                    .thenReturn(List.of(role(1L, false, OrgNatureEnum.HEAD_COMPANY.getCode())));
 
-        assertEquals(List.of(1L), service.findRoleIdByUserId(USER_ID));
+            assertEquals(List.of(1L), service.findRoleIdByUserId(USER_ID));
+        } finally {
+            ContextUtil.remove();
+        }
     }
 
     @Test
@@ -224,6 +275,15 @@ class UserRoleRelServiceImplAssignRoleTest {
 
         assertEquals(List.of(), service.findRoleIdByUserId(USER_ID));
         verifyNoInteractions(roleMapper);
+    }
+
+    @Test
+    void 范围_非运营且公司性质缺失_failFast() {
+        // 公司性质为 null 时 eq 条件会被 mybatis-flex 静默忽略，必须 fail fast 而非放宽范围
+        when(mapper.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of(rel(1L)));
+
+        assertThrows(ArgumentException.class, () -> service.findRoleIdByUserId(USER_ID));
+        verify(roleMapper, never()).selectListByQuery(any(QueryWrapper.class));
     }
 
     @Test
@@ -250,6 +310,65 @@ class UserRoleRelServiceImplAssignRoleTest {
             // 组织性质取值必须来自当前公司上下文
             assertTrue(sql.contains("`org_nature` = " + OrgNatureEnum.HEAD_COMPANY.getCode()),
                     "组织性质应取当前公司性质，实际SQL：" + sql);
+        } finally {
+            ContextUtil.remove();
+        }
+    }
+
+    @Test
+    void 回显_运营身份_范围含管理员角色且不限组织性质() {
+        when(userIdentityService.getIdentity(any())).thenReturn(UserIdentityEnum.OPERATIONS_ADMIN);
+        when(mapper.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of(rel(1L)));
+        when(roleMapper.selectListByQuery(any(QueryWrapper.class)))
+                .thenReturn(List.of(role(1L, false, OrgNatureEnum.OPERATIONS.getCode())));
+
+        assertEquals(List.of(1L), service.findRoleIdByUserId(USER_ID));
+
+        ArgumentCaptor<QueryWrapper> captor = ArgumentCaptor.forClass(QueryWrapper.class);
+        verify(roleMapper).selectListByQuery(captor.capture());
+        String sql = captor.getValue().toSQL();
+        // 运营人员：非模板 + 普通/管理员角色，且无 org_nature 限制
+        assertTrue(sql.contains("template_role"));
+        assertTrue(sql.contains("role_category"));
+        assertTrue(sql.contains("'20'"));
+        assertFalse(sql.contains("org_nature"));
+    }
+
+    @Test
+    void 可分配角色列表_运营身份_返回标识与角色并回显字典() {
+        when(userIdentityService.getIdentity(any())).thenReturn(UserIdentityEnum.OPERATIONS_ADMIN);
+        RoleVo roleVo = RoleVo.builder().id(1L).code("OPS_ADMIN").name("运营管理员").build();
+        when(roleMapper.selectListByQueryAs(any(QueryWrapper.class), eq(RoleVo.class)))
+                .thenReturn(List.of(roleVo));
+
+        AssignableRoleVo result = service.listAssignableRoles();
+
+        assertTrue(result.isOperationsAdmin());
+        assertEquals(1, result.getRoleList().size());
+        assertEquals("OPS_ADMIN", result.getRoleList().get(0).getCode());
+        // 字典回显（角色分类/组织性质显示名）必须触发，前端分组标题与徽章依赖 echoMap
+        verify(echoService).action(anyCollection());
+    }
+
+    @Test
+    void 可分配角色列表_非运营身份_标识为false且限定本公司性质() {
+        // 默认 mock 返回 null 即非运营
+        when(roleMapper.selectListByQueryAs(any(QueryWrapper.class), eq(RoleVo.class)))
+                .thenReturn(List.of());
+
+        // 构造真实公司上下文（非 mock 静态方法）；eq 取值为 null 时条件会被 mybatis-flex 整体忽略
+        ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());
+        try {
+            AssignableRoleVo result = service.listAssignableRoles();
+
+            assertFalse(result.isOperationsAdmin());
+            ArgumentCaptor<QueryWrapper> captor = ArgumentCaptor.forClass(QueryWrapper.class);
+            verify(roleMapper).selectListByQueryAs(captor.capture(), eq(RoleVo.class));
+            String sql = captor.getValue().toSQL();
+            // 非运营：普通角色 + 当前公司组织性质
+            assertTrue(sql.contains("`role_category` = '10'"));
+            assertTrue(sql.contains("org_nature"));
+            assertFalse(sql.contains("'20'"));
         } finally {
             ContextUtil.remove();
         }

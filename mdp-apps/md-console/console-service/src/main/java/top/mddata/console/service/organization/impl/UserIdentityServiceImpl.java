@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.organization.UserIdentityEnum;
+import top.mddata.common.mapper.UserRoleRelMapper;
 import top.mddata.console.entity.permission.Role;
+import top.mddata.console.mapper.permission.RoleMapper;
 import top.mddata.console.service.organization.UserIdentityService;
-import top.mddata.console.service.organization.UserRoleRelService;
-import top.mddata.console.service.permission.RoleService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +26,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserIdentityServiceImpl implements UserIdentityService {
-    private final RoleService roleService;
-    private final UserRoleRelService userRoleRelService;
+    // 用 Mapper 直查而非 Service：此处均为纯单表查询，且 UserRoleRelService 反向依赖本组件，Service 互注会构成循环依赖
+    private final RoleMapper roleMapper;
+    private final UserRoleRelMapper userRoleRelMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -60,14 +61,14 @@ public class UserIdentityServiceImpl implements UserIdentityService {
         // 1. 查关系：userId -> roleId
         QueryWrapper relQuery = QueryWrapper.create().select().from(UserRoleRel.class)
                 .where(UserRoleRel::getUserId).in(userIds);
-        List<UserRoleRel> relList = userRoleRelService.list(relQuery);
+        List<UserRoleRel> relList = userRoleRelMapper.selectListByQuery(relQuery);
         if (relList.isEmpty()) {
             return Collections.emptyMap();
         }
 
         // 2. 查启用状态的角色
         List<Long> roleIds = relList.stream().map(UserRoleRel::getRoleId).distinct().toList();
-        List<Role> roles = roleService.list(QueryWrapper.create()
+        List<Role> roles = roleMapper.selectListByQuery(QueryWrapper.create()
                 .where(Role::getId).in(roleIds).and(Role::getState).eq(true));
         Map<Long, Role> roleById = roles.stream()
                 .collect(Collectors.toMap(Role::getId, Function.identity()));
