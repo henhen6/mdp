@@ -1,6 +1,7 @@
 package top.mddata.console.dto.organization;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -61,6 +62,14 @@ public class OrgDto implements Serializable {
     @Size(max = 255, message = "简称长度不能超过{max}")
     @Schema(description = "简称")
     private String shortName;
+
+    /**
+     * 组织编码
+     */
+    @NotBlank(message = "组织编码不能为空")
+    @Size(max = 64, message = "组织编码长度不能超过{max}")
+    @Schema(description = "组织编码")
+    private String code;
 
     /**
      * 父组织

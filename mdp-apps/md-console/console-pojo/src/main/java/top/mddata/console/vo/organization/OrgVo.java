@@ -81,6 +81,12 @@ public class OrgVo extends TreeEntity<Long, OrgVo> implements Serializable, Echo
     private String shortName;
 
     /**
+     * 组织编码
+     */
+    @Schema(description = "组织编码")
+    private String code;
+
+    /**
      * 父组织
      */
     @Schema(description = "父组织")

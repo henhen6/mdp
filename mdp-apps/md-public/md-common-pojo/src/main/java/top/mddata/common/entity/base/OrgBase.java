@@ -55,6 +55,11 @@ public class OrgBase<E extends TreeEntity<Long, E>> extends TreeEntity<Long, E> 
     private String shortName;
 
     /**
+     * 组织编码
+     */
+    private String code;
+
+    /**
      * 树路径
      */
     private String treePath;

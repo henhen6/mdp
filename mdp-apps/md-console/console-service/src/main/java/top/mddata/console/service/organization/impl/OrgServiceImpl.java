@@ -174,6 +174,10 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
         OrgDto data = (OrgDto) save;
         Org org = super.saveBefore(data);
 
+        // 组织编码用于编码规则的单号生成，强制必填
+        ArgumentAssert.notBlank(data.getCode(), "组织编码不能为空");
+        ArgumentAssert.isFalse(existsByCode(data.getCode(), null), "组织编码[{}]已存在", data.getCode());
+
         Org parent = null;
         if (data.getParentId() != null) {
             parent = getById(data.getParentId());
@@ -206,6 +210,10 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
 
         OrgDto data = (OrgDto) updateDto;
         Org org = super.updateBefore(data);
+
+        // 组织编码用于编码规则的单号生成，强制必填
+        ArgumentAssert.notBlank(data.getCode(), "组织编码不能为空");
+        ArgumentAssert.isFalse(existsByCode(data.getCode(), org.getId()), "组织编码[{}]已存在", data.getCode());
 
         // 内置组织的层级结构固定：3 个根公司必须保持根节点，默认部门必须挂在总公司下
         if (SystemProtectService.isBuiltInOrg(org.getId())) {
@@ -278,5 +286,20 @@ public class OrgServiceImpl extends SuperServiceImpl<OrgMapper, Org> implements 
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
         return flag;
+    }
+
+    /**
+     * 组织编码唯一性校验
+     *
+     * @param code 组织编码
+     * @param excludeId 排除的组织ID（修改时传自身ID，新增时传null）
+     * @return true=已存在
+     */
+    private boolean existsByCode(String code, Long excludeId) {
+        QueryWrapper wrapper = QueryWrapper.create().eq(Org::getCode, code);
+        if (excludeId != null) {
+            wrapper.ne(Org::getId, excludeId);
+        }
+        return count(wrapper) > 0;
     }
 }
