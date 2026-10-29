@@ -29,6 +29,11 @@ public interface CacheKeyTable {
         String PARAM = "param";
 
         /**
+         * 编码规则（规则编码 → 规则+启用明细）
+         */
+        String CODE_RULE = "code_rule";
+
+        /**
          * 用户拥有那些组织
          */
         String USER_ORG = "user_org";
