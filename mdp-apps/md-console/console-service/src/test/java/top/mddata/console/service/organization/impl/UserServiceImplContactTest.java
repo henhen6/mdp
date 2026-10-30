@@ -52,7 +52,8 @@ class UserServiceImplContactTest {
         when(systemProperties.getDefPwd()).thenReturn("123456");
         userService = new UserServiceImpl(mock(UserOrgRelService.class), mock(FileService.class),
                 configService, systemProperties, uidGenerator, mock(NotifyAndEventPushFacade.class),
-                mock(RoleService.class), mock(OrgVisibilityService.class), mock(AccountOperationGuard.class));
+                mock(RoleService.class), mock(OrgVisibilityService.class), mock(AccountOperationGuard.class),
+                mock(top.mddata.console.service.coderule.CodeRuleService.class));
         // mapper 由 mybatis-flex ServiceImpl 以 @Autowired 字段注入，测试中反射替换
         ReflectionTestUtils.setField(userService, "mapper", userMapper);
     }

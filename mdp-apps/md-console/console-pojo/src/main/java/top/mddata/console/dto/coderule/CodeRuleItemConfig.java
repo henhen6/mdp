@@ -67,6 +67,9 @@ public class CodeRuleItemConfig implements Serializable {
     /** 偏移单位 [HOUR DAY] */
     @Schema(description = "偏移单位")
     private String offsetUnit;
+    /** 冷恢复跳跃量（Redis 数据丢失重建时在水位基础上跳跃前进；0=精确恢复不跳号但可能重号；默认 1000） */
+    @Schema(description = "冷恢复跳跃量")
+    private Integer recoverySkip;
 
     // ===== 50-随机码 =====
     /** 字符集 [DIGIT UPPER LOWER DIGIT_UPPER DIGIT_LOWER UPPER_LOWER ALL] */

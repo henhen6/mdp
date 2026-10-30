@@ -221,8 +221,11 @@ public class CodeRuleServiceImpl extends SuperServiceImpl<CodeRuleMapper, CodeRu
                 serialBlocks.put(item.getId(), peekSerialValues(item.getId(), periodKey, initValue, step, count));
             } else {
                 long ttlMillis = resolveTtlMillis(resetRule);
-                serialBlocks.put(item.getId(),
-                        snAllocator.allocate(item.getId(), periodKey, initValue, step, count, ttlMillis));
+                // 冷恢复跳跃量：未配置时按默认 1000（防 Redis 数据丢失重号）；0=精确恢复（Redis 丢失可能重号，用户自担）
+                long recoverySkip = config.getRecoverySkip() == null
+                        ? SnAllocator.DEFAULT_RECOVERY_SKIP : config.getRecoverySkip();
+                serialBlocks.put(item.getId(), snAllocator.allocate(item.getId(), periodKey,
+                        initValue, step, count, ttlMillis, recoverySkip));
             }
         }
         return serialBlocks;

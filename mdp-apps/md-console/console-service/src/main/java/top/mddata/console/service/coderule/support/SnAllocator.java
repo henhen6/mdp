@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * 流水号分配器：Redis 原子递增（Lua 一次性完成 初始化+递增+TTL），DB 水位表冷备恢复。
- * 无锁、集群安全；恢复时水位跳跃前进（允许跳号，绝不重复）。
+ * 无锁、集群安全；恢复时按配置的跳跃量前进（recoverySkip=0 精确恢复，>0 跳号防重）。
  */
 @Slf4j
 @Component
@@ -25,9 +25,12 @@ public class SnAllocator {
     /** 水位回写间隔：Redis 值每跨 1000 回写一次 DB */
     private static final long WATER_STEP = 1000L;
 
+    /** 冷恢复跳跃量默认值（水位回写是跨段滞后的，Redis 数据丢失时实际值可能领先水位最多 999，默认跳 1000 保证绝不重复） */
+    public static final int DEFAULT_RECOVERY_SKIP = 1000;
+
     /**
      * Lua：key 不存在时用 ARGV[1] 初始化（并设置 TTL，ARGV[3]<=0 不过期），然后 INCRBY ARGV[2]。
-     * 初始化值由调用方算好：新周期=initValue-step；冷恢复=DB水位+1000。
+     * 初始化值由调用方算好：新周期=initValue-step；冷恢复=DB水位+recoverySkip。
      */
     private static final RedisScript<Long> INIT_AND_INCR = RedisScript.of("""
             if redis.call('exists', KEYS[1]) == 0 then
@@ -50,11 +53,13 @@ public class SnAllocator {
      * @param step 递增值
      * @param count 分配数量
      * @param ttlMillis Redis key 的 TTL（<=0 不过期）
+     * @param recoverySkip 冷恢复跳跃量（Redis key 丢失重建时在水位基础上跳跃前进；0=精确恢复不跳号，可能重号）
      * @return 连续递增值列表（首个为本次分配的起始值）
      */
-    public List<Long> allocate(Long ruleItemId, String periodKey, long initValue, long step, int count, long ttlMillis) {
+    public List<Long> allocate(Long ruleItemId, String periodKey, long initValue, long step, int count, long ttlMillis,
+            long recoverySkip) {
         String key = "mdc:sn:" + ruleItemId + ":" + periodKey;
-        long initBase = resolveInitBase(ruleItemId, periodKey, initValue, step);
+        long initBase = resolveInitBase(ruleItemId, periodKey, initValue, step, recoverySkip);
         Long last = stringRedisTemplate.execute(INIT_AND_INCR, List.of(key),
                 String.valueOf(initBase), String.valueOf(step * (long) count), String.valueOf(ttlMillis));
         if (last == null) {
@@ -89,26 +94,31 @@ public class SnAllocator {
 
     /**
      * 计算 Redis 初始化基数（仅在 key 不存在时生效）：
-     * DB 有水位 → 水位+1000（冷恢复跳跃，绝不重复）；无水位 → initValue-step（首个值正好为 initValue）
+     * DB 有水位 → 水位+recoverySkip（跳跃防重，0=精确恢复）；无水位 → initValue-step（首个值正好为 initValue）
      */
-    private long resolveInitBase(Long ruleItemId, String periodKey, long initValue, long step) {
+    private long resolveInitBase(Long ruleItemId, String periodKey, long initValue, long step, long recoverySkip) {
         CodeSn sn = codeSnMapper.selectOneByQuery(QueryWrapper.create()
                 .eq(CodeSn::getRuleItemId, ruleItemId).eq(CodeSn::getPeriodKey, periodKey));
-        return sn != null ? sn.getCurrentValue() + WATER_STEP : initValue - step;
+        return sn != null ? sn.getCurrentValue() + recoverySkip : initValue - step;
     }
 
     /**
-     * 水位回写：本次分配跨越 1000 的整数倍边界（before/1000 与 after/1000 不同段）即回写。
-     * 不能只判断 after 是否恰好为 1000 倍数：大批量 INCRBY 可能越过倍数却不落在倍数上，
+     * 水位维护：
+     * 1. 水位记录不存在（首次分配或记录被删）→ 立即落库，保证冷恢复基数始终存在；
+     * 2. 记录存在 → 仅在跨越 1000 的整数倍边界时更新（滞后快照，减少 DB 写压力）。
+     * 跨段判断不能只看 after 是否恰好为 1000 倍数：大批量 INCRBY 可能越过倍数却不落在倍数上，
      * 若宕机时 DB 无水位，冷恢复会重新起号，破坏“绝不重复”不变量。
      *
      * @param before 本次分配前的 Redis 值
      * @param after  本次分配后的 Redis 值（最新已分配值，作为水位写入）
      */
     private void writeBackWaterMark(Long ruleItemId, String periodKey, long before, long after) {
-        if (after / WATER_STEP <= before / WATER_STEP) {
+        CodeSn sn = selectWaterMark(ruleItemId, periodKey);
+        if (sn != null && after / WATER_STEP <= before / WATER_STEP) {
+            // 已有水位记录且未跨段：滞后快照，不写
             return;
         }
+        // 无记录 → 立即落库重建；跨段 → 更新为最新已分配值
         upsertWaterMark(ruleItemId, periodKey, after);
     }
 
