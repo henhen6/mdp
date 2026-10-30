@@ -34,6 +34,11 @@ public interface CacheKeyTable {
         String CODE_RULE = "code_rule";
 
         /**
+         * 编码规则流水号（明细ID+周期 → 计数器）
+         */
+        String CODE_SN = "code_sn";
+
+        /**
          * 用户拥有那些组织
          */
         String USER_ORG = "user_org";

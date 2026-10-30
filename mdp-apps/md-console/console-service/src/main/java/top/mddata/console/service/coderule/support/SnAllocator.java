@@ -1,14 +1,15 @@
 package top.mddata.console.service.coderule.support;
 
+import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
+import top.mddata.base.cache.repository.CachePlusOps;
+import top.mddata.base.model.cache.CacheKey;
+import top.mddata.common.cache.console.SnCkBuilder;
 import top.mddata.console.entity.coderule.CodeSn;
 import top.mddata.console.mapper.coderule.CodeSnMapper;
-import com.mybatisflex.core.query.QueryWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +33,16 @@ public class SnAllocator {
      * Lua：key 不存在时用 ARGV[1] 初始化（并设置 TTL，ARGV[3]<=0 不过期），然后 INCRBY ARGV[2]。
      * 初始化值由调用方算好：新周期=initValue-step；冷恢复=DB水位+recoverySkip。
      */
-    private static final RedisScript<Long> INIT_AND_INCR = RedisScript.of("""
+    private static final String INIT_AND_INCR = """
             if redis.call('exists', KEYS[1]) == 0 then
                 redis.call('set', KEYS[1], ARGV[1])
                 local ttl = tonumber(ARGV[3])
                 if ttl > 0 then redis.call('pexpire', KEYS[1], ttl) end
             end
             return redis.call('incrby', KEYS[1], ARGV[2])
-            """, Long.class);
+            """;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CachePlusOps cachePlusOps;
     private final CodeSnMapper codeSnMapper;
 
     /**
@@ -57,13 +58,14 @@ public class SnAllocator {
      * @return 连续递增值列表（首个为本次分配的起始值）
      */
     public List<Long> allocate(Long ruleItemId, String periodKey, long initValue, long step, int count, long ttlMillis,
-            long recoverySkip) {
-        String key = "mdc:sn:" + ruleItemId + ":" + periodKey;
+                               long recoverySkip) {
+        CacheKey snKey = SnCkBuilder.builder(ruleItemId, periodKey);
         long initBase = resolveInitBase(ruleItemId, periodKey, initValue, step, recoverySkip);
-        Long last = stringRedisTemplate.execute(INIT_AND_INCR, List.of(key),
-                String.valueOf(initBase), String.valueOf(step * (long) count), String.valueOf(ttlMillis));
+        Long last = cachePlusOps.eval(INIT_AND_INCR, List.of(snKey.getKey()),
+                List.of(String.valueOf(initBase), String.valueOf(step * (long) count), String.valueOf(ttlMillis)),
+                Long.class);
         if (last == null) {
-            throw new IllegalStateException("流水号分配失败: " + key);
+            throw new IllegalStateException("流水号分配失败: " + snKey.getKey());
         }
         long before = last - step * (long) count;
         if (recoverySkip == 0) {
@@ -92,8 +94,8 @@ public class SnAllocator {
      * @return flush 后的水位值；Redis 无对应 key 时返回 null
      */
     public Long flushWaterMark(Long ruleItemId, String periodKey) {
-        String key = "mdc:sn:" + ruleItemId + ":" + periodKey;
-        String current = stringRedisTemplate.opsForValue().get(key);
+        String key = SnCkBuilder.builder(ruleItemId, periodKey).getKey();
+        String current = cachePlusOps.getRaw(key);
         if (current == null) {
             return null;
         }

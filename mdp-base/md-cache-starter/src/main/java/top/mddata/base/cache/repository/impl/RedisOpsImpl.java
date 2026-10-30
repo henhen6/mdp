@@ -3,6 +3,8 @@ package top.mddata.base.cache.repository.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.lang.NonNull;
 import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.redis.RedisOps;
@@ -32,8 +34,14 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
      */
     private final RedisOps redisOps;
 
-    public RedisOpsImpl(RedisOps redisOps) {
+    /**
+     * 字符串模板：Lua 脚本与原始字符串读写的专用序列化通道（KEYS/ARGV 原样传递，无 JSON 包装）
+     */
+    private final StringRedisTemplate stringRedisTemplate;
+
+    public RedisOpsImpl(RedisOps redisOps, StringRedisTemplate stringRedisTemplate) {
         this.redisOps = redisOps;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     /**
@@ -41,6 +49,17 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
      */
     public RedisTemplate<String, Object> getRedisTemplate() {
         return redisOps.getRedisTemplate();
+    }
+
+    @Override
+    public <T> T eval(@NonNull String script, @NonNull List<String> keys, List<String> args, @NonNull Class<T> returnType) {
+        return stringRedisTemplate.execute(RedisScript.of(script, returnType), keys,
+                args == null ? new String[0] : args.toArray());
+    }
+
+    @Override
+    public String getRaw(@NonNull String key) {
+        return stringRedisTemplate.opsForValue().get(key);
     }
 
     @Override

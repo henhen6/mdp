@@ -268,6 +268,26 @@ public interface CachePlusOps extends CacheOps {
      */
     Long sCard(@NonNull CacheKey key);
 
+    /**
+     * 执行 Lua 脚本（字符串序列化，KEYS/ARGV 原样传递，适用于计数器等纯文本场景）。
+     *
+     * @param script     Lua 脚本文本
+     * @param keys       脚本的 KEYS
+     * @param args       脚本的 ARGV（字符串列表，可为 null）
+     * @param returnType 脚本返回值类型（如 Long.class）
+     * @param <T>        返回值类型
+     * @return 脚本执行结果
+     */
+    <T> T eval(@NonNull String script, @NonNull List<String> keys, List<String> args, @NonNull Class<T> returnType);
+
+    /**
+     * 读取原始字符串值（不经 JSON 序列化，适用于 Lua 脚本或 INCR/INCRBY 写入的纯文本计数器）。
+     *
+     * @param key 一定不能为 {@literal null}.
+     * @return 值，key 不存在时返回 null
+     */
+    String getRaw(@NonNull String key);
+
 }
 
 

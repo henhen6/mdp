@@ -107,9 +107,9 @@ public class RedisAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    public CacheOps cacheOps(RedisOps redisOps) {
+    public CacheOps cacheOps(RedisOps redisOps, StringRedisTemplate stringRedisTemplate) {
         log.warn("检查到缓存采用了 Redis模式");
-        return new RedisOpsImpl(redisOps);
+        return new RedisOpsImpl(redisOps, stringRedisTemplate);
     }
 
     /**
@@ -120,8 +120,8 @@ public class RedisAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    public CachePlusOps cachePlusOps(RedisOps redisOps) {
-        return new RedisOpsImpl(redisOps);
+    public CachePlusOps cachePlusOps(RedisOps redisOps, StringRedisTemplate stringRedisTemplate) {
+        return new RedisOpsImpl(redisOps, stringRedisTemplate);
     }
 
     /**

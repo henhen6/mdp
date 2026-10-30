@@ -19,6 +19,7 @@ import top.mddata.console.entity.coderule.CodeRuleItem;
 import top.mddata.console.entity.coderule.CodeSn;
 import top.mddata.console.enumeration.coderule.CodeRuleTypeEnum;
 import top.mddata.console.mapper.coderule.CodeRuleItemMapper;
+import top.mddata.common.cache.console.SnCkBuilder;
 import top.mddata.console.mapper.coderule.CodeSnMapper;
 import top.mddata.console.service.coderule.CodeRuleService;
 import top.mddata.common.cache.console.CodeRuleCkBuilder;
@@ -123,7 +124,7 @@ class CodeRuleServiceTest {
         // 流水号 key 无残留
         List<String> leftSnKeys = new ArrayList<>();
         items.stream().map(CodeRuleItem::getId).distinct()
-                .forEach(itemId -> leftSnKeys.addAll(scanKeys("mdc:sn:" + itemId + ":*")));
+                .forEach(itemId -> leftSnKeys.addAll(scanKeys(SnCkBuilder.pattern(itemId))));
         assertEquals(List.of(), leftSnKeys, "测试结束后流水号 key 仍有残留");
         // 水位记录无残留
         if (!items.isEmpty()) {
@@ -259,7 +260,7 @@ class CodeRuleServiceTest {
         // 流水号 key 不存在：预览没有写入 Redis
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         assertFalse(Boolean.TRUE.equals(stringRedisTemplate.hasKey(
-                "mdc:sn:" + item.getId() + ":" + today)), "预览不应创建流水号 key");
+                SnCkBuilder.builder(item.getId(), today).getKey())), "预览不应创建流水号 key");
 
         // 真实生成仍从 0001 开始
         assertEquals("0001", codeRuleService.generate("TEST_PREVIEW_RULE", Map.of()));
@@ -351,7 +352,7 @@ class CodeRuleServiceTest {
         codeRuleService.generate("TEST_DEL_RULE", Map.of());
         String cacheKey = CodeRuleCkBuilder.builder("TEST_DEL_RULE").getKey();
         assertTrue(Boolean.TRUE.equals(stringRedisTemplate.hasKey(cacheKey)), "前置：缓存应已写入");
-        assertFalse(scanKeys("mdc:sn:" + serialItem.getId() + ":*").isEmpty(), "前置：流水号 key 应存在");
+        assertFalse(scanKeys(SnCkBuilder.pattern(serialItem.getId())).isEmpty(), "前置：流水号 key 应存在");
 
         boolean removed = codeRuleService.removeByIds(List.of(rule.getId()));
         assertTrue(removed);
@@ -549,7 +550,7 @@ class CodeRuleServiceTest {
         List<Long> itemIds = items.stream().map(CodeRuleItem::getId).distinct().toList();
         codeSnMapper.deleteByQuery(QueryWrapper.create().in(CodeSn::getRuleItemId, itemIds));
         List<String> keys = new ArrayList<>();
-        itemIds.forEach(itemId -> keys.addAll(scanKeys("mdc:sn:" + itemId + ":*")));
+        itemIds.forEach(itemId -> keys.addAll(scanKeys(SnCkBuilder.pattern(itemId))));
         if (!keys.isEmpty()) {
             stringRedisTemplate.delete(keys);
         }

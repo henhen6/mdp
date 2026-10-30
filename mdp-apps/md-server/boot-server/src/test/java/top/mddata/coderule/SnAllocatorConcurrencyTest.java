@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import top.mddata.console.entity.coderule.CodeSn;
+import top.mddata.common.cache.console.SnCkBuilder;
 import top.mddata.console.mapper.coderule.CodeSnMapper;
 import top.mddata.console.service.coderule.support.SnAllocator;
 import top.mddata.TestBootServerApplication;
@@ -53,7 +54,7 @@ class SnAllocatorConcurrencyTest {
     /** 水位记录重建测试用明细ID */
     private static final long REBUILD_ITEM_ID = -9907L;
     /** 测试 Redis key 前缀匹配串 */
-    private static final String TEST_KEY_PATTERN = "mdc:sn:-99*";
+    private static final String TEST_KEY_PATTERN = "*code_sn:sn:-99*";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -155,7 +156,7 @@ class SnAllocatorConcurrencyTest {
         assertEquals(1000L, readWaterMark(RECOVERY_ITEM_ID, periodKey), "DB 水位未按 1000 步长回写");
 
         // 模拟 Redis 宕机丢 key
-        stringRedisTemplate.delete("mdc:sn:" + RECOVERY_ITEM_ID + ":" + periodKey);
+        stringRedisTemplate.delete(SnCkBuilder.builder(RECOVERY_ITEM_ID, periodKey).getKey());
 
         // 冷恢复：基数 = 水位1000 + 跳跃1000 = 2000，首个新值 2001（跳号但绝不重复）
         List<Long> recovered = snAllocator.allocate(RECOVERY_ITEM_ID, periodKey, 1L, 1L, 3, -1L, 1000L);
@@ -175,7 +176,7 @@ class SnAllocatorConcurrencyTest {
         assertEquals(500L, readWaterMark(SKIP0_ITEM_ID, periodKey));
 
         // 模拟 Redis 丢失，跳跃量 0：精确恢复 500+1 起，不跳号
-        stringRedisTemplate.delete("mdc:sn:" + SKIP0_ITEM_ID + ":" + periodKey);
+        stringRedisTemplate.delete(SnCkBuilder.builder(SKIP0_ITEM_ID, periodKey).getKey());
         List<Long> recovered = snAllocator.allocate(SKIP0_ITEM_ID, periodKey, 1L, 1L, 3, -1L, 0L);
         assertEquals(List.of(501L, 502L, 503L), recovered);
     }
@@ -188,7 +189,7 @@ class SnAllocatorConcurrencyTest {
         assertEquals(500L, readWaterMark(SKIP50_ITEM_ID, periodKey));
 
         // 跳跃量 50：恢复基数 = 水位500 + 50 = 550，首个新值 551
-        stringRedisTemplate.delete("mdc:sn:" + SKIP50_ITEM_ID + ":" + periodKey);
+        stringRedisTemplate.delete(SnCkBuilder.builder(SKIP50_ITEM_ID, periodKey).getKey());
         List<Long> recovered = snAllocator.allocate(SKIP50_ITEM_ID, periodKey, 1L, 1L, 3, -1L, 50L);
         assertEquals(List.of(551L, 552L, 553L), recovered);
     }

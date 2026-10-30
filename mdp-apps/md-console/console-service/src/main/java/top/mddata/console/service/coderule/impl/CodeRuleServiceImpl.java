@@ -6,10 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.cache.redis.CacheResult;
@@ -42,6 +38,9 @@ import top.mddata.console.service.coderule.generator.RuleItemGenerator;
 import top.mddata.console.service.coderule.generator.RuleItemGeneratorRegistry;
 import top.mddata.console.service.coderule.support.CodeRuleCache;
 import top.mddata.console.service.coderule.support.PeriodKeyResolver;
+import top.mddata.common.cache.console.SnCkBuilder;
+import top.mddata.base.cache.repository.CacheOps;
+import top.mddata.base.cache.repository.CachePlusOps;
 import top.mddata.console.service.coderule.support.SnAllocator;
 
 import java.io.Serializable;
@@ -70,7 +69,8 @@ public class CodeRuleServiceImpl extends SuperServiceImpl<CodeRuleMapper, CodeRu
     private final CodeSnMapper codeSnMapper;
     private final SnAllocator snAllocator;
     private final RuleItemGeneratorRegistry generatorRegistry;
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheOps cacheOps;
+    private final CachePlusOps cachePlusOps;
 
     /**
      * 更新链路内暂存旧规则编码。服务为单例，普通成员字段无法承载线程私有状态，
@@ -236,8 +236,8 @@ public class CodeRuleServiceImpl extends SuperServiceImpl<CodeRuleMapper, CodeRu
      */
     private List<Long> peekSerialValues(Long ruleItemId, String periodKey,
                                         long initValue, long step, int count) {
-        String key = "mdc:sn:" + ruleItemId + ":" + periodKey;
-        String current = stringRedisTemplate.opsForValue().get(key);
+        String key = SnCkBuilder.builder(ruleItemId, periodKey).getKey();
+        String current = cachePlusOps.getRaw(key);
         long first = current == null ? initValue : Long.parseLong(current) + step;
         List<Long> values = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -576,23 +576,24 @@ public class CodeRuleServiceImpl extends SuperServiceImpl<CodeRuleMapper, CodeRu
         }
         List<Long> itemIds = items.stream().map(CodeRuleItem::getId).distinct().toList();
         List<String> keys = new ArrayList<>();
-        itemIds.forEach(itemId -> keys.addAll(scanKeys("mdc:sn:" + itemId + ":*")));
+        itemIds.forEach(itemId -> keys.addAll(cachePlusOps.scan(SnCkBuilder.pattern(itemId))));
         keys.forEach(this::flushKeyWaterMark);
         if (!keys.isEmpty()) {
-            stringRedisTemplate.delete(keys);
+            cacheOps.del(keys.toArray(new String[0]));
         }
         codeSnMapper.deleteByQuery(QueryWrapper.create().in(CodeSn::getRuleItemId, itemIds));
     }
 
     /**
      * 将单个流水号 key 的当前值 flush 到水位表。
-     * key 格式：mdc:sn:{ruleItemId}:{periodKey}，periodKey 由 PeriodKeyResolver 生成，不含冒号。
+     * key 格式：[prefix:]code_sn:sn:{ruleItemId}:{periodKey}，periodKey 由 PeriodKeyResolver 生成，不含冒号，
+     * 故从后往前取两段即可反解（兼容任意深度的全局前缀）。
      */
     private void flushKeyWaterMark(String key) {
-        int prefixEnd = "mdc:sn:".length();
-        int separator = key.indexOf(':', prefixEnd);
-        Long ruleItemId = Long.parseLong(key.substring(prefixEnd, separator));
-        String periodKey = key.substring(separator + 1);
+        int periodEnd = key.lastIndexOf(':');
+        int itemEnd = key.lastIndexOf(':', periodEnd - 1);
+        Long ruleItemId = Long.parseLong(key.substring(itemEnd + 1, periodEnd));
+        String periodKey = key.substring(periodEnd + 1);
         snAllocator.flushWaterMark(ruleItemId, periodKey);
     }
 
@@ -610,21 +611,5 @@ public class CodeRuleServiceImpl extends SuperServiceImpl<CodeRuleMapper, CodeRu
         } catch (IllegalArgumentException e) {
             throw new ArgumentException(errorMsg);
         }
-    }
-
-    /**
-     * SCAN 查询 key（避免 KEYS 阻塞）。
-     */
-    private List<String> scanKeys(String pattern) {
-        return stringRedisTemplate.execute((RedisCallback<List<String>>) connection -> {
-            List<String> keys = new ArrayList<>();
-            Cursor<byte[]> cursor = connection.scan(
-                    ScanOptions.scanOptions().match(pattern).count(500).build());
-            while (cursor.hasNext()) {
-                keys.add(new String(cursor.next()));
-            }
-            cursor.close();
-            return keys;
-        });
     }
 }
