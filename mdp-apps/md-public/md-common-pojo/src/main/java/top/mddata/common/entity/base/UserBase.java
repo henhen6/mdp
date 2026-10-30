@@ -68,6 +68,11 @@ public class UserBase extends SuperEntity<Long> implements Serializable {
     private String name;
 
     /**
+     * 人员编号（编码规则自动生成，终生绑定不可修改）
+     */
+    private String userNo;
+
+    /**
      * 邮箱
      */
     private String email;

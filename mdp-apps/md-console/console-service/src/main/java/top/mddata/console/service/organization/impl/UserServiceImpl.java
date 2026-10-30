@@ -38,6 +38,7 @@ import top.mddata.common.constant.RoleCode;
 import top.mddata.common.dto.IdDto;
 import top.mddata.common.dto.IdsDto;
 import top.mddata.common.entity.User;
+import top.mddata.common.constant.CodeRuleCode;
 import top.mddata.common.entity.UserOrgRel;
 import top.mddata.common.entity.UserRoleRel;
 import top.mddata.common.enumeration.BooleanEnum;
@@ -50,6 +51,7 @@ import top.mddata.console.dto.organization.UserResetPasswordDto;
 import top.mddata.console.dto.organization.UserUpdateDto;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.query.organization.UserQuery;
+import top.mddata.console.service.coderule.CodeRuleService;
 import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.UserIdentityService;
 import top.mddata.console.service.organization.UserOrgRelService;
@@ -91,6 +93,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     private final RoleService roleService;
     private final OrgVisibilityService orgVisibilityService;
     private final AccountOperationGuard accountOperationGuard;
+    private final CodeRuleService codeRuleService;
 
     /**
      * 联系方式归一化：phone/email/idCard 允许为空，空白串与 null 等价，统一归一为 null。
@@ -183,6 +186,8 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         entity.setUserSource(UserSourceEnum.PLATFORM.getCode());
         // 头像的对象id，可以重新生成一个唯一ID，也可以直接用当前用户ID
         entity.setAvatar(entity.getId());
+        // 人员编号：新增时由编码规则自动生成，终生绑定
+        entity.setUserNo(codeRuleService.generate(CodeRuleCode.USER_NO, null));
 
         return entity;
     }
@@ -250,6 +255,10 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         checkStateChange(dto, dbUser);
 
         User sysUser = super.updateBefore(updateDto);
+        // 人员编号终生绑定：无论入参如何，更新时强制回填库中现值，防止被篡改
+        if (dbUser != null) {
+            sysUser.setUserNo(dbUser.getUserNo());
+        }
         normalizeContactUpdates(sysUser);
         // dto.getAvatarFileId() 是file表的id， sysUser.setAvatar 是对象id
         // 注意：前端传递的avatar是文件id，存入数据库时，需要设置为唯一的对象id（通常为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
@@ -466,6 +475,8 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         user.setUsername(UUID.randomUUID().toString(true));
         initSsoUser(user);
         user.setName(user.getEmail());
+        // 人员编号：注册时由编码规则自动生成，终生绑定
+        user.setUserNo(codeRuleService.generate(CodeRuleCode.USER_NO, null));
         save(user);
         saveDefOrg(user);
         saveDefRole(user);
@@ -505,6 +516,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         user.setUsername(UUID.randomUUID().toString(true));
         initSsoUser(user);
         user.setName(user.getPhone());
+        user.setUserNo(codeRuleService.generate(CodeRuleCode.USER_NO, null));
         save(user);
         saveDefOrg(user);
         saveDefRole(user);
@@ -525,6 +537,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         ArgumentAssert.isFalse(checkUsername(user.getUsername(), null), "用户名：{}已经存在", user.getUsername());
         initSsoUser(user);
         user.setName(user.getUsername());
+        user.setUserNo(codeRuleService.generate(CodeRuleCode.USER_NO, null));
         save(user);
         saveDefOrg(user);
         saveDefRole(user);

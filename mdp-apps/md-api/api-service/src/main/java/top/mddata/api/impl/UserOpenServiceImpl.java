@@ -33,10 +33,13 @@ import top.mddata.common.cache.workbench.SsoUserPhoneCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserUserNameCacheKeyBuilder;
 import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.StoryMessageEnum;
+import top.mddata.common.constant.CodeRuleCode;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.common.properties.SystemProperties;
+import top.mddata.console.facade.coderule.CodeRuleFacade;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +54,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> implements UserOpenService {
     private final SystemProperties systemProperties;
+    private final CodeRuleFacade codeRuleFacade;
 
     @Override
     protected CacheKeyBuilder cacheKeyBuilder() {
@@ -128,6 +132,15 @@ public class UserOpenServiceImpl extends SuperServiceImpl<UserMapper, User> impl
                     user.setPassword(password);
                     user.setState(true);
                     saveList.add(user);
+                }
+            }
+
+            // 人员编号：新增时由编码规则批量生成（一次原子分配连续流水），终生绑定
+            if (!saveList.isEmpty()) {
+                List<String> userNos = codeRuleFacade.generateMulti(CodeRuleCode.USER_NO,
+                        Collections.nCopies(saveList.size(), null));
+                for (int i = 0; i < saveList.size(); i++) {
+                    saveList.get(i).setUserNo(userNos.get(i));
                 }
             }
 

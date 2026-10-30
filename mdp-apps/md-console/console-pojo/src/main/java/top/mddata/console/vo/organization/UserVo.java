@@ -80,6 +80,12 @@ public class UserVo implements Serializable, EchoVO {
     private String name;
 
     /**
+     * 人员编号（新增时自动生成，终生绑定不可修改）
+     */
+    @Schema(description = "人员编号")
+    private String userNo;
+
+    /**
      * 邮箱
      */
     @Schema(description = "邮箱")
