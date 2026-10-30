@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.annotation.log.RequestLog;
@@ -27,6 +28,7 @@ import top.mddata.console.service.coderule.CodeRuleService;
 import top.mddata.console.vo.coderule.CodeRuleVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 编码规则 控制层。
@@ -121,6 +123,16 @@ public class CodeRuleController extends SuperController<CodeRuleService, CodeRul
     @RequestLog(value = "试生成编码规则", logType = RequestLog.LogType.QUERY)
     public R<List<String>> testGenerate(@Validated @RequestBody CodeRuleTestDto dto) {
         return R.success(superService.testGenerate(dto.getRuleCode(), dto.getParams(), dto.getCount()));
+    }
+
+    /**
+     * 水位校准：将流水号 Redis 当前值落库到水位表（用于水位记录被误删后的恢复，无需手工 INSERT）
+     */
+    @PostMapping("/flushSn")
+    @Operation(summary = "水位校准", description = "将流水号 Redis 当前值落库到水位表")
+    @RequestLog(value = "'编码规则水位校准:' + #ruleCode", logType = RequestLog.LogType.UPDATE)
+    public R<Map<Long, Long>> flushSn(@NotBlank @RequestParam String ruleCode) {
+        return R.success(superService.flushSn(ruleCode));
     }
 
 }

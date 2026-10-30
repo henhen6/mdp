@@ -85,4 +85,13 @@ public interface CodeRuleService extends SuperService<CodeRule> {
      * @return 明细列表
      */
     List<CodeRuleItem> listItemsByRuleId(Long ruleId);
+
+    /**
+     * 水位校准：将流水号 Redis 当前值落库到水位表（mdc_code_sn）。
+     * 用于水位记录被误删后的恢复，无需手工 INSERT。
+     *
+     * @param ruleCode 编码标识
+     * @return 校准结果（流水号明细ID -> 校准后的水位值；Redis 无对应 key 的明细不出现在结果中）
+     */
+    Map<Long, Long> flushSn(String ruleCode);
 }

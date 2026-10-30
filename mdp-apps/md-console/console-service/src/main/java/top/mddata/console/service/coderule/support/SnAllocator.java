@@ -66,7 +66,14 @@ public class SnAllocator {
             throw new IllegalStateException("流水号分配失败: " + key);
         }
         long before = last - step * (long) count;
-        writeBackWaterMark(ruleItemId, periodKey, before, last);
+        if (recoverySkip == 0) {
+            // 精确模式：每次分配同步回写，水位永远等于 Redis 实际值，冷恢复精确衔接不跳号；
+            // 代价是每次分配一次 DB 单行 upsert（内部单号生成频率下可接受）
+            upsertWaterMark(ruleItemId, periodKey, last);
+        } else {
+            // 跳号模式：跨段回写（滞后快照），Redis 丢失后跳跃 recoverySkip 前进
+            writeBackWaterMark(ruleItemId, periodKey, before, last);
+        }
         List<Long> result = new ArrayList<>(count);
         long first = last - step * (long) count + step;
         for (int i = 0; i < count; i++) {
@@ -77,19 +84,22 @@ public class SnAllocator {
 
     /**
      * 将 Redis 当前值强制 flush 到 DB 水位表（key 不存在则跳过）。
-     * 用于删 key 前的兜底：Redis 删除不随事务回滚，flush 后即使事务回滚，
-     * 冷恢复也会从水位+{@value #WATER_STEP} 起步，保证绝不重号。
+     * 用于删 key 前的兜底与水位校准：Redis 删除不随事务回滚，flush 后即使事务回滚，
+     * 冷恢复也会从水位+跳跃量起步，保证绝不重号。
      *
      * @param ruleItemId 明细ID
      * @param periodKey 周期标签
+     * @return flush 后的水位值；Redis 无对应 key 时返回 null
      */
-    public void flushWaterMark(Long ruleItemId, String periodKey) {
+    public Long flushWaterMark(Long ruleItemId, String periodKey) {
         String key = "mdc:sn:" + ruleItemId + ":" + periodKey;
         String current = stringRedisTemplate.opsForValue().get(key);
         if (current == null) {
-            return;
+            return null;
         }
-        upsertWaterMark(ruleItemId, periodKey, Long.parseLong(current));
+        long value = Long.parseLong(current);
+        upsertWaterMark(ruleItemId, periodKey, value);
+        return value;
     }
 
     /**

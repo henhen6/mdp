@@ -355,6 +355,38 @@ public class CodeRuleServiceImpl extends SuperServiceImpl<CodeRuleMapper, CodeRu
                 .orderBy(CodeRuleItem::getSort, true));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Long, Long> flushSn(String ruleCode) {
+        // 规则可能已被禁用（禁用规则的水位同样需要校准），因此不走 loadRule 的启用校验
+        CodeRuleCache cache = cacheOps.get(CodeRuleCkBuilder.builder(ruleCode),
+                k -> buildCache(ruleCode)).getValue();
+        ArgumentAssert.notNull(cache, "编码规则[{}]不存在", ruleCode);
+
+        Map<Long, Long> result = new HashMap<>();
+        LocalDateTime now = LocalDateTime.now();
+        for (CodeRuleItem item : cache.getItems()) {
+            if (!CodeRuleTypeEnum.SERIAL.getCode().equals(item.getRuleType())) {
+                continue;
+            }
+            CodeRuleItemConfig config = item.getConfigJson();
+            ArgumentAssert.notNull(config, "流水号明细[{}]缺少配置", item.getId());
+            ResetRuleEnum resetRule = parseEnum(ResetRuleEnum.class, config.getResetRule(),
+                    StrUtil.format("流水号明细[{}]必须配置支持的归零规则", item.getId()));
+            OffsetUnitEnum offsetUnit = StrUtil.isBlank(config.getOffsetUnit()) ? null
+                    : parseEnum(OffsetUnitEnum.class, config.getOffsetUnit(),
+                            StrUtil.format("流水号明细[{}]配置的偏移单位[{}]不受支持",
+                                    item.getId(), config.getOffsetUnit()));
+            String periodKey = PeriodKeyResolver.resolve(resetRule, config.getCycleOffset(),
+                    offsetUnit, now);
+            Long flushed = snAllocator.flushWaterMark(item.getId(), periodKey);
+            if (flushed != null) {
+                result.put(item.getId(), flushed);
+            }
+        }
+        return result;
+    }
+
     // ===== 明细全量替换 =====
 
     @Override

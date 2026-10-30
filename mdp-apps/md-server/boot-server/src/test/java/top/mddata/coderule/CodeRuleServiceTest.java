@@ -478,6 +478,43 @@ class CodeRuleServiceTest {
         return rule;
     }
 
+    @Test
+    void 水位校准_重建被删的水位记录() {
+        CodeRule rule = createRule("TEST_FLUSH_SN_RULE");
+        addItem(rule, CodeRuleTypeEnum.CONSTANT,
+                new CodeRuleItemConfig().setValue("EMP"), 10);
+        addItem(rule, CodeRuleTypeEnum.DATE,
+                new CodeRuleItemConfig().setPattern("yyyy"), 20);
+        addItem(rule, CodeRuleTypeEnum.SERIAL,
+                new CodeRuleItemConfig().setInitValue(1L).setStep(1L).setLength(4)
+                        .setPadChar("0").setResetRule("NEVER").setOverflowStrategy("ERROR")
+                        .setRecoverySkip(0), 30);
+
+        // 生成两次：Redis 计数到 2
+        codeRuleService.generate("TEST_FLUSH_SN_RULE", Map.of());
+        codeRuleService.generate("TEST_FLUSH_SN_RULE", Map.of());
+        CodeRuleItem serialItem = codeRuleService.listItemsByRuleId(rule.getId()).stream()
+                .filter(i -> i.getRuleType().equals(CodeRuleTypeEnum.SERIAL.getCode()))
+                .findFirst().orElseThrow();
+        // 水位读取助手（CodeRuleServiceTest 无 readWaterMark，内联查询）
+        java.util.function.Supplier<Long> waterMark = () -> {
+            CodeSn sn = codeSnMapper.selectOneByQuery(QueryWrapper.create()
+                    .eq(CodeSn::getRuleItemId, serialItem.getId()).eq(CodeSn::getPeriodKey, "FOREVER"));
+            return sn == null ? null : sn.getCurrentValue();
+        };
+        assertTrue(waterMark.get() != null && waterMark.get() >= 2, "前置：水位已落库");
+
+        // 模拟水位记录被删除
+        codeSnMapper.deleteByQuery(QueryWrapper.create()
+                .eq(CodeSn::getRuleItemId, serialItem.getId()).eq(CodeSn::getPeriodKey, "FOREVER"));
+
+        // 水位校准：从 Redis 当前值重建
+        Map<Long, Long> result = codeRuleService.flushSn("TEST_FLUSH_SN_RULE");
+        assertTrue(result.containsKey(serialItem.getId()), "校准结果应包含流水号明细");
+        assertEquals(2L, result.get(serialItem.getId()), "校准值应为 Redis 当前值");
+        assertEquals(2L, waterMark.get(), "水位记录未重建");
+    }
+
     private CodeRuleItem addItem(CodeRule rule, CodeRuleTypeEnum type, CodeRuleItemConfig config, int sort) {
         CodeRuleItem item = new CodeRuleItem();
         item.setRuleId(rule.getId());
