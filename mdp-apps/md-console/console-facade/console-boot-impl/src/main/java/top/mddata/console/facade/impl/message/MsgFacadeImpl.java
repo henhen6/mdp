@@ -17,7 +17,7 @@ public class MsgFacadeImpl implements MsgFacade {
     private final MsgTaskService msgTaskService;
 
     @Override
-    public void sendByTemplateKey(MsgSendDto data) {
-        msgTaskService.sendByTemplateKey(data);
+    public Long sendByTemplateKey(MsgSendDto data) {
+        return msgTaskService.sendByTemplateKey(data);
     }
 }

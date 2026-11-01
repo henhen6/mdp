@@ -15,6 +15,7 @@ public interface MsgFacade {
      *         sgSendSmsDto 短信发送参数
      *
      * @param data 消息参数
+     * @return 消息任务ID
      */
-    void sendByTemplateKey(MsgSendDto data);
+    Long sendByTemplateKey(MsgSendDto data);
 }
