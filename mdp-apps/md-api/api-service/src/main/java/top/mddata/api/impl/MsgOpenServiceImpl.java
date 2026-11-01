@@ -11,6 +11,7 @@ import top.mddata.api.dto.SendSmsDto;
 import top.mddata.console.dto.message.MsgSendMailDto;
 import top.mddata.console.dto.message.MsgSendNoticeDto;
 import top.mddata.console.dto.message.MsgSendSmsDto;
+import top.mddata.console.enumeration.message.MsgCategoryEnum;
 import top.mddata.console.enumeration.message.MsgChannelEnum;
 import top.mddata.console.enumeration.message.MsgRecipientScopeEnum;
 import top.mddata.console.facade.message.MsgFacade;
@@ -59,7 +60,7 @@ public class MsgOpenServiceImpl implements MsgOpenService {
     public void sendNoticeByTemplateKey(SendNoticeDto data) {
         MsgSendNoticeDto dto = new MsgSendNoticeDto();
         dto.setAuthor(data.getAuthor())
-                .setMsgCategory(MsgChannelEnum.of(data.getMsgCategory()))
+                .setMsgCategory(MsgCategoryEnum.of(data.getMsgCategory()))
                 .setRecipientIdList(data.getRecipientIdList())
                 .setUrl(data.getUrl())
                 .setRecipientScope(MsgRecipientScopeEnum.of(data.getRecipientScope()))

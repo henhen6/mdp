@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import top.mddata.console.enumeration.message.MsgChannelEnum;
+import top.mddata.console.enumeration.message.MsgCategoryEnum;
 import top.mddata.console.enumeration.message.MsgRecipientScopeEnum;
 
 import java.io.Serial;
@@ -35,7 +35,7 @@ public class MsgSendNoticeDto extends MsgSendDto implements Serializable {
      * [1-待办 2-公告 3-预警]
      */
     @Schema(description = "消息分类")
-    private MsgChannelEnum msgCategory;
+    private MsgCategoryEnum msgCategory;
 
     /**
      * 发布人

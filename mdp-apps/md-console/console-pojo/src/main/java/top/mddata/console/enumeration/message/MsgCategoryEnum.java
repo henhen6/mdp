@@ -44,13 +44,12 @@ public enum MsgCategoryEnum implements BaseEnum<Integer> {
     /**
      * 根据当前枚举的name匹配
      */
-    public static MsgCategoryEnum match(String val, MsgCategoryEnum def) {
-        return Stream.of(values()).parallel().filter(item -> item.name().equalsIgnoreCase(val)).findAny().orElse(def);
+    public static MsgCategoryEnum match(Integer val, MsgCategoryEnum def) {
+        return Stream.of(values()).parallel().filter(item -> item.getCode().equals(val)).findAny().orElse(def);
     }
 
-    public static MsgCategoryEnum get(String val) {
+    public static MsgCategoryEnum of(Integer val) {
         return match(val, null);
     }
-
 
 }
