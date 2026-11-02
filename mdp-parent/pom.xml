@@ -41,6 +41,7 @@
 
         <!-- 定时任务 -->
         <powerjob.worker.version>5.1.2</powerjob.worker.version>
+        <powerjob.client.version>5.1.2</powerjob.client.version>
 
         <!-- 文档相关 -->
         <springdoc.version>2.8.17</springdoc.version>
@@ -266,6 +267,11 @@
                 <groupId>tech.powerjob</groupId>
                 <artifactId>powerjob-worker</artifactId>
                 <version>${powerjob.worker.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tech.powerjob</groupId>
+                <artifactId>powerjob-client</artifactId>
+                <version>${powerjob.client.version}</version>
             </dependency>
             <dependency>
                 <groupId>tech.powerjob</groupId>

@@ -8,22 +8,26 @@ import com.alibaba.fastjson2.JSON;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tech.powerjob.client.PowerJobClient;
+import tech.powerjob.common.response.ResultDTO;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.constant.FileObjectType;
+import top.mddata.console.config.PowerJobServerProperties;
 import top.mddata.console.dto.message.MsgSendDto;
 import top.mddata.console.dto.message.MsgSendMailDto;
 import top.mddata.console.dto.message.MsgSendNoticeDto;
 import top.mddata.console.dto.message.MsgSendSmsDto;
 import top.mddata.console.dto.message.MsgTaskDto;
+import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.entity.message.MsgTask;
 import top.mddata.console.entity.message.MsgTaskRecipient;
 import top.mddata.console.entity.message.MsgTemplate;
-import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.enumeration.message.MsgChannelEnum;
 import top.mddata.console.enumeration.message.MsgRecipientScopeEnum;
 import top.mddata.console.enumeration.message.MsgTaskStatusEnum;
@@ -39,6 +43,7 @@ import top.mddata.console.service.system.FileService;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,6 +63,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
     private final MsgTemplateService msgTemplateService;
     private final ConfigService configService; // 同一个服务，直接调用 service。跨服务需要调用 facade
     private final FileService fileService;
+    private final ObjectProvider<PowerJobClient> powerJobClientProvider;
+    private final PowerJobServerProperties powerJobServerProperties;
 
     @Override
     protected MsgTask saveBefore(Object save) {
@@ -187,8 +194,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         relateContentFiles(data, entity);
 
         if (data.getIsTiming() != null && data.getIsTiming() && data.getScheduledSendTime() != null) {
-            log.info("定时发送消息任务：{}", entity);
-            // 定时发送
+            // 定时发送：提交 PowerJob 延迟实例，到点由 worker-server 的 MsgTaskSendProcessor 执行
+            submitTimingJob(entity.getId(), data.getScheduledSendTime());
         } else {
             // 执行发送
             MsgSendEventDto dto = new MsgSendEventDto();
@@ -198,6 +205,22 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         }
 
         return true;
+    }
+
+    /**
+     * 提交 PowerJob 延迟实例：到点由 worker-server 的 MsgTaskSendProcessor 执行发送。
+     * 提交失败（PowerJob 不可用/未配置）抛出异常，随事务回滚，消息任务不会以 WAITING 状态滞留。
+     */
+    private void submitTimingJob(Long msgTaskId, LocalDateTime scheduledSendTime) {
+        PowerJobClient powerJobClient = powerJobClientProvider.getIfAvailable();
+        ArgumentAssert.notNull(powerJobClient, "请联系管理员配置 powerjob.server.server-address 等参数，否则无法使用定时发送");
+        Long msgJobId = powerJobServerProperties.getMsgJobId();
+        ArgumentAssert.notNull(msgJobId, "请联系管理员配置 powerjob.server.msg-job-id（消息定时发送的常驻 job），否则无法使用定时发送");
+
+        long delayMs = Math.max(scheduledSendTime.toInstant(ZoneOffset.ofHours(8)).toEpochMilli() - System.currentTimeMillis(), 0);
+        ResultDTO<Long> result = powerJobClient.runJob(msgJobId, String.valueOf(msgTaskId), delayMs);
+        ArgumentAssert.isTrue(result.isSuccess(), "提交定时发送任务失败：{}", result.getMessage());
+        log.info("定时发送消息任务已提交 PowerJob, msgTaskId={}, jobId={}, delayMs={}", msgTaskId, msgJobId, delayMs);
     }
 
 
@@ -267,8 +290,8 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         }
 
         if (data.getIsTiming() != null && data.getIsTiming() && data.getScheduledSendTime() != null) {
-            // 定时发送
-            log.info("定时发送消息任务：{}", entity);
+            // 定时发送：提交 PowerJob 延迟实例，到点由 worker-server 的 MsgTaskSendProcessor 执行
+            submitTimingJob(entity.getId(), data.getScheduledSendTime());
         } else {
             // 执行发送
             MsgSendEventDto dto = new MsgSendEventDto();

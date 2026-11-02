@@ -441,6 +441,7 @@ logging:
 
 dubbo:
   enabled: false
+
 # 微信小程序（mdp-app 移动端一键登录）
 wx:
   miniapp:
@@ -449,3 +450,11 @@ wx:
     config-storage:
       # access_token 存储方式：单机内存；集群部署时可改为 redistemplate
       type: memory
+
+powerjob:
+  server:
+    # PowderJob 的IP和端口号
+    server-address: 127.0.0.1:17700
+    app-name: MDP
+    password: 123456
+    msg-job-id: 4

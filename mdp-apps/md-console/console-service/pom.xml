@@ -42,6 +42,11 @@
             <artifactId>md-cache-key</artifactId>
             <version>${revision}</version>
         </dependency>
+        <!-- PowerJob OpenAPI 客户端：定时消息提交延迟实例 -->
+        <dependency>
+            <groupId>tech.powerjob</groupId>
+            <artifactId>powerjob-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>top.mddata.base</groupId>
             <artifactId>md-echo-starter</artifactId>

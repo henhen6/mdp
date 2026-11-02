@@ -4,7 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.ObjectProvider;
+import tech.powerjob.client.PowerJobClient;
 import top.mddata.common.constant.FileObjectType;
+import top.mddata.console.config.PowerJobServerProperties;
 import top.mddata.console.dto.message.MsgTaskDto;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.entity.message.MsgTask;
@@ -26,11 +29,15 @@ class MsgTaskServiceImplTest {
     @BeforeEach
     void setUp() {
         fileService = Mockito.mock(FileService.class);
+        // ObjectProvider.getIfAvailable() 默认返回 null（定时发送分支不在此测试范围）
+        ObjectProvider<PowerJobClient> powerJobClientProvider = Mockito.mock(ObjectProvider.class);
         service = new MsgTaskServiceImpl(
                 Mockito.mock(MsgTaskRecipientService.class),
                 Mockito.mock(MsgTemplateService.class),
                 Mockito.mock(ConfigService.class),
-                fileService);
+                fileService,
+                powerJobClientProvider,
+                new PowerJobServerProperties());
     }
 
     private MsgTask entityOf(Long id) {
