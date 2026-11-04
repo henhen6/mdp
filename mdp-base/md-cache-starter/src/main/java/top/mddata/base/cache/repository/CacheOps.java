@@ -42,6 +42,15 @@ public interface CacheOps {
     Long del(@NonNull String... keys);
 
     /**
+     * 设置带过期时间的缓存，仅当 key 不存在时生效（SETNX 语义，用于抢占与分布式锁）。
+     *
+     * @param key   缓存键（TTL 由 key.getExpire() 携带；null 时不过期）
+     * @param value 值
+     * @return true=设置成功（原 key 不存在）；false=key 已存在
+     */
+    Boolean setIfAbsent(@NonNull CacheKey key, Object value);
+
+    /**
      * 判断指定的key 是否存在
      *
      * @param key key

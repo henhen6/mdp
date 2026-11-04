@@ -13,6 +13,7 @@ import top.mddata.base.cache.repository.CachePlusOps;
 import top.mddata.base.model.cache.CacheHashKey;
 import top.mddata.base.model.cache.CacheKey;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +76,15 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
     @Override
     public Long del(String... keys) {
         return redisOps.del(keys);
+    }
+
+    @Override
+    public Boolean setIfAbsent(@NonNull CacheKey key, Object value) {
+        Duration expire = key.getExpire();
+        if (expire == null) {
+            return redisOps.getValueOps().setIfAbsent(key.getKey(), value);
+        }
+        return redisOps.getValueOps().setIfAbsent(key.getKey(), value, expire);
     }
 
     @Override
