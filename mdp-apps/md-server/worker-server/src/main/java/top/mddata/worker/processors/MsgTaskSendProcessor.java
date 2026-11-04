@@ -3,12 +3,13 @@ package top.mddata.worker.processors;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
 import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
+import top.mddata.base.cache.repository.CacheOps;
+import top.mddata.base.model.cache.CacheKey;
 import top.mddata.console.service.message.strategy.MsgTaskContext;
 
 import java.time.Duration;
@@ -22,8 +23,8 @@ import java.time.Duration;
  * <p>配套常驻 job 在 PowerJob 控制台创建一次：
  * timeExpressionType=API、processor=本类全限定名，jobId 配置于 powerjob.server.msg-job-id。
  *
- * <p>幂等：InstanceStatusChecker 超时重投可能造成双触发，执行前用 Redis SETNX 占位
- * （发送失败时释放占位以支持 PowerJob 手动重试 instance）。
+ * <p>幂等：InstanceStatusChecker 超时重投可能造成双触发，执行前用 CacheOps.setIfAbsent
+ * 占位（发送失败时释放占位以支持 PowerJob 手动重试 instance）。
  *
  * @author henhen6
  * @since 2026-10-31
@@ -37,7 +38,7 @@ public class MsgTaskSendProcessor implements BasicProcessor {
     private static final String GRAB_KEY_PREFIX = "mdp:msg:send:grab:";
 
     private final MsgTaskContext msgTaskContext;
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheOps cacheOps;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -54,8 +55,7 @@ public class MsgTaskSendProcessor implements BasicProcessor {
         }
 
         // SETNX 占位：重投的双触发只有一个能进入发送流程
-        Boolean grabbed = stringRedisTemplate.opsForValue().setIfAbsent(
-                GRAB_KEY_PREFIX + msgTaskId, "1", Duration.ofHours(1));
+        Boolean grabbed = cacheOps.setIfAbsent(new CacheKey(GRAB_KEY_PREFIX + msgTaskId, Duration.ofHours(1)), "1");
         if (!Boolean.TRUE.equals(grabbed)) {
             log.warn("[MsgTaskSend] 消息任务[{}]已在发送流程中，本次触发跳过", msgTaskId);
             return new ProcessResult(true, "消息任务已在发送流程中，跳过重复触发");
@@ -66,7 +66,7 @@ public class MsgTaskSendProcessor implements BasicProcessor {
             return new ProcessResult(true, "定时消息发送完成: " + msgTaskId);
         } catch (Exception e) {
             // 释放占位，允许通过 PowerJob 重试 instance 重新发送
-            stringRedisTemplate.delete(GRAB_KEY_PREFIX + msgTaskId);
+            cacheOps.del(GRAB_KEY_PREFIX + msgTaskId);
             log.error("[MsgTaskSend] 定时消息发送失败, msgTaskId={}", msgTaskId, e);
             throw e;
         }
