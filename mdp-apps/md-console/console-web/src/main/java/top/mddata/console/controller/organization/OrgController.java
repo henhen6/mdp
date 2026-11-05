@@ -18,6 +18,7 @@ import top.mddata.base.base.entity.BaseEntity;
 import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
+import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.constant.BuiltInOrgId;
 import top.mddata.common.entity.Org;
@@ -41,6 +42,12 @@ import java.util.List;
 @RequestMapping("/organization/org")
 @RequiredArgsConstructor
 public class OrgController extends SuperController<OrgService, Org> {
+
+    /**
+     * 批量回显单次最大ID数量，避免无界 IN 查询
+     */
+    private static final int MAX_BATCH_IDS = 1000;
+
     private final EchoService echoService;
     private final OrgVisibilityService orgVisibilityService;
 
@@ -110,6 +117,25 @@ public class OrgController extends SuperController<OrgService, Org> {
         QueryWrapper wrapper = QueryWrapper.create(entity, WrapperUtil.buildOperators(entity.getClass()));
         appendVisibilityFilter(wrapper);
         List<OrgVo> listVo = superService.listAs(wrapper, OrgVo.class);
+        return R.success(listVo);
+    }
+
+    /**
+     * 按ID批量回显组织：去重后单次查询，复用现有可见性过滤并执行 Echo。
+     *
+     * @param ids 组织ID列表
+     * @return 组织列表
+     */
+    @PostMapping("/listByIds")
+    @Operation(summary = "按ID批量回显", description = "按ID批量查询组织")
+    @RequestLog(value = "按ID批量回显组织", logType = RequestLog.LogType.QUERY, response = false)
+    public R<List<OrgVo>> listByIds(@RequestBody List<Long> ids) {
+        ArgumentAssert.notEmpty(ids, "组织ID列表不能为空");
+        ArgumentAssert.isTrue(ids.size() <= MAX_BATCH_IDS, "单次最多回显1000个组织");
+        QueryWrapper wrapper = QueryWrapper.create().in(Org::getId, ids.stream().distinct().toList());
+        appendVisibilityFilter(wrapper);
+        List<OrgVo> listVo = superService.listAs(wrapper, OrgVo.class);
+        echoService.action(listVo);
         return R.success(listVo);
     }
 

@@ -19,6 +19,7 @@ import top.mddata.base.interfaces.echo.EchoService;
 import top.mddata.base.mvcflex.controller.SuperController;
 import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.util.ContextUtil;
+import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.enumeration.permission.RoleCategoryEnum;
 import top.mddata.console.dto.permission.RoleDataScopeRelDto;
 import top.mddata.console.dto.permission.RoleDto;
@@ -50,6 +51,12 @@ import java.util.Map;
 @RequestMapping("/permission/role")
 @RequiredArgsConstructor
 public class RoleController extends SuperController<RoleService, Role> {
+
+    /**
+     * 批量回显单次最大ID数量，避免无界 IN 查询
+     */
+    private static final int MAX_BATCH_IDS = 1000;
+
     private final RoleResourceRelService roleResourceRelService;
     private final RoleFieldRelService roleFieldRelService;
     private final RoleDataScopeRelService roleDataScopeRelService;
@@ -122,6 +129,24 @@ public class RoleController extends SuperController<RoleService, Role> {
         wrapper.eq(Role::getTemplateRole, false)
                 .eq(Role::getOrgNature, ContextUtil.getCurrentCompanyNature())
                 .eq(Role::getRoleCategory, RoleCategoryEnum.NORMAL_ROLE.getCode()).orderBy(Role::getCreatedAt, false);
+        List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
+        echoService.action(listVo);
+        return R.success(listVo);
+    }
+
+    /**
+     * 按ID批量回显角色：去重后单次查询并执行 Echo，不附加当前组织性质等额外过滤。
+     *
+     * @param ids 角色ID列表
+     * @return 角色列表
+     */
+    @PostMapping("/listByIds")
+    @Operation(summary = "按ID批量回显", description = "按ID批量查询角色")
+    @RequestLog(value = "按ID批量回显角色", logType = RequestLog.LogType.QUERY, response = false)
+    public R<List<RoleVo>> listByIds(@RequestBody List<Long> ids) {
+        ArgumentAssert.notEmpty(ids, "角色ID列表不能为空");
+        ArgumentAssert.isTrue(ids.size() <= MAX_BATCH_IDS, "单次最多回显1000个角色");
+        QueryWrapper wrapper = QueryWrapper.create().in(Role::getId, ids.stream().distinct().toList());
         List<RoleVo> listVo = superService.listAs(wrapper, RoleVo.class);
         echoService.action(listVo);
         return R.success(listVo);

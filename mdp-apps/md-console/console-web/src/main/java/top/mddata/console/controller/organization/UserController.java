@@ -52,6 +52,12 @@ import java.util.List;
 @RequestMapping("/organization/user")
 @RequiredArgsConstructor
 public class UserController extends SuperController<UserService, User> {
+
+    /**
+     * 批量回显单次最大ID数量，避免无界 IN 查询
+     */
+    private static final int MAX_BATCH_IDS = 1000;
+
     private final EchoService echoService;
     private final OrgVisibilityService orgVisibilityService;
     private final RoleService roleService;
@@ -142,6 +148,29 @@ public class UserController extends SuperController<UserService, User> {
         OrgVisibilityService.appendUserVisibilityFilter(wrapper,
                 orgVisibilityService.currentVisibleRootOrgIds(), ContextUtil.getUserId());
         // 与 page 对齐走关系查询：补查 orgIdList，echo 才能回显用户所属公司/部门
+        List<User> userList = superService.getMapper().selectListWithRelationsByQuery(wrapper);
+        List<UserVo> listVo = BeanUtil.copyToList(userList, UserVo.class);
+        echoService.action(listVo);
+        return R.success(listVo);
+    }
+
+    /**
+     * 按ID批量回显用户：去重后单次关系查询，保留可见性过滤并执行 Echo。
+     *
+     * @param ids 用户ID列表
+     * @return 用户列表
+     */
+    @PostMapping("/listByIds")
+    @Operation(summary = "按ID批量回显", description = "按ID批量查询用户")
+    @RequestLog(value = "按ID批量回显用户", logType = RequestLog.LogType.QUERY, response = false)
+    public R<List<UserVo>> listByIds(@RequestBody List<Long> ids) {
+        ArgumentAssert.notEmpty(ids, "用户ID列表不能为空");
+        ArgumentAssert.isTrue(ids.size() <= MAX_BATCH_IDS, "单次最多回显1000个用户");
+        List<Long> distinctIds = ids.stream().distinct().toList();
+        QueryWrapper wrapper = QueryWrapper.create().in(User::getId, distinctIds);
+        OrgVisibilityService.appendUserVisibilityFilter(wrapper,
+                orgVisibilityService.currentVisibleRootOrgIds(), ContextUtil.getUserId());
+        // 与 list/page 对齐走关系查询补查 orgIdList，不允许退化成循环 getById
         List<User> userList = superService.getMapper().selectListWithRelationsByQuery(wrapper);
         List<UserVo> listVo = BeanUtil.copyToList(userList, UserVo.class);
         echoService.action(listVo);
