@@ -77,6 +77,7 @@ public class MethodLogAspect {
             (within(top.mddata..service..*) \
             && !within(top.mddata..service..pipeline..*) \
             && !within(top.mddata..service..*TaskExecutor) \
+            && !within(top.mddata.base.idempotent.service.IdempotencyTokenService) \
             && execution(public * *(..)))""")
     public void serviceLayer() {
     }

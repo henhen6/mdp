@@ -2,17 +2,21 @@ package top.mddata.base.mvcflex.advice;
 
 import com.mybatisflex.core.mask.MaskManager;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import top.mddata.base.apiperm.engine.ApiPermChecker;
 import top.mddata.base.apiperm.spi.ApiPermProvider;
+import top.mddata.base.constant.ContextConstants;
 import top.mddata.base.fieldperm.engine.BuiltinMasker;
 import top.mddata.base.fieldperm.engine.FieldPermEngine;
 import top.mddata.base.fieldperm.model.FieldRule;
@@ -34,6 +38,7 @@ import java.util.Map;
  * @since 2026-10-02
  */
 @ControllerAdvice
+@Order(Ordered.LOWEST_PRECEDENCE - 1)
 public class FieldPermAdvice implements ResponseBodyAdvice<Object> {
 
     private final FieldPermProvider fieldPermProvider;
@@ -63,12 +68,21 @@ public class FieldPermAdvice implements ResponseBodyAdvice<Object> {
         if (body == null || body instanceof byte[] || body instanceof Resource) {
             return body;
         }
-        Map<String, FieldRule> rules = resolveRules(fieldPermProvider, apiPermProvider,
-                request.getURI().getPath(), request.getMethod().name(), currentUserIdOrNull());
-        if (rules != null) {
-            engine.apply(body, rules);
+        try {
+            Map<String, FieldRule> rules = resolveRules(fieldPermProvider, apiPermProvider,
+                    request.getURI().getPath(), request.getMethod().name(), currentUserIdOrNull());
+            if (rules != null) {
+                engine.apply(body, rules);
+            }
+            return body;
+        } catch (RuntimeException e) {
+            // 脱敏结果不确定时终结幂等执行，防止后续全局错误响应将其误判为业务失败并释放令牌
+            if (request instanceof ServletServerHttpRequest servletRequest) {
+                servletRequest.getServletRequest().removeAttribute(
+                        ContextConstants.IDEMPOTENCY_EXECUTION_ATTRIBUTE);
+            }
+            throw e;
         }
-        return body;
     }
 
     /**

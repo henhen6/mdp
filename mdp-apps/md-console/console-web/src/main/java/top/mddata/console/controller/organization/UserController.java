@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.idempotent.Idempotent;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
@@ -69,6 +70,7 @@ public class UserController extends SuperController<UserService, User> {
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("/save")
+    @Idempotent
     @Operation(summary = "新增", description = "保存用户")
     @RequestLog(value = "新增", logType = RequestLog.LogType.ADD)
     public R<Long> save(@Validated @RequestBody UserDto dto) {

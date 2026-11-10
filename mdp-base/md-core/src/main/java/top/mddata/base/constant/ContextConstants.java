@@ -64,6 +64,11 @@ public final class ContextConstants {
      */
     public static final String PROCEED = "proceed";
     /**
+     * 请求属性中的幂等执行绑定，供响应预处理组件在异常时终结本次执行
+     */
+    public static final String IDEMPOTENCY_EXECUTION_ATTRIBUTE =
+            "top.mddata.base.idempotent.support.IdempotencyConstants.execution";
+    /**
      * 是否 内部调用项目
      */
     public static final String FEIGN = "x-feign";

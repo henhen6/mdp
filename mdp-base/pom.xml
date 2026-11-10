@@ -36,6 +36,7 @@
         <module>md-validator-starter</module>
         <module>md-xss-starter</module>
         <module>md-cache-starter</module>
+        <module>md-idempotent-starter</module>
         <module>md-echo-starter</module>
         <module>md-scan-starter</module>
         <module>md-db-uid</module>

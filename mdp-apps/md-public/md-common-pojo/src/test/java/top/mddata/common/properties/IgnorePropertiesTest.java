@@ -36,4 +36,13 @@ class IgnorePropertiesTest {
         assertFalse(props.isIgnoreUser("GET", "/api/console/organization/user/page"));
         assertFalse(props.isIgnoreUser("POST", "/api/workbench/organization/user/page"));
     }
+
+    @Test
+    void 幂等令牌接口_登录后免URI权限但不免登录() {
+        assertTrue(props.isIgnoreUriAuth("GET", "/anyone/idempotent/token"));
+        assertTrue(props.isIgnoreUriAuth("GET", "/console/anyone/idempotent/token"));
+        assertTrue(props.isIgnoreUriAuth("GET", "/api/console/anyone/idempotent/token"));
+        assertFalse(props.isIgnoreUser("GET", "/api/console/anyone/idempotent/token"));
+        assertFalse(props.isIgnoreUriAuth("POST", "/api/console/anyone/idempotent/token"));
+    }
 }

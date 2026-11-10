@@ -101,6 +101,10 @@ public enum ExceptionCode implements BaseExceptionCode {
      */
     JSON_PARSE_ERROR(-13, "JSON解析异常"),
 
+    IDEMPOTENT_PROCESSING(-14, "相同请求正在处理中，请稍后重试"),
+    IDEMPOTENT_CONFLICT(-15, "幂等令牌不能用于不同的请求内容"),
+    IDEMPOTENT_TOKEN_INVALID(-16, "幂等令牌缺失、失效或身份不匹配"),
+
 
     // ==================== HTTP 标准状态码 ====================
     

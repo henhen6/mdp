@@ -37,6 +37,10 @@
         </dependency>
         <dependency>
             <groupId>top.mddata.base</groupId>
+            <artifactId>md-idempotent-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.mddata.base</groupId>
             <artifactId>md-db-uid</artifactId>
         </dependency>
         <dependency>
