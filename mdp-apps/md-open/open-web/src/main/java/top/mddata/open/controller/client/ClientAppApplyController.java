@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.idempotent.Idempotent;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
@@ -54,6 +55,7 @@ public class ClientAppApplyController extends SuperController<AppApplyService, A
 
     @PostMapping("/submit")
     @Operation(summary = "提交", description = "提交申请")
+    @Idempotent
     @RequestLog(value = "提交", logType = RequestLog.LogType.ADD)
     public R<Long> submit(@Validated @RequestBody AppApplyDto dto) {
         return R.success(superService.submit(dto));

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.idempotent.Idempotent;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.mvcflex.request.PageParams;
@@ -59,6 +60,7 @@ public class ClientAppScopeApplyController {
      */
     @PostMapping("/apply")
     @Operation(summary = "申请权限组", description = "一单一组，批量提交")
+    @Idempotent
     @RequestLog(value = "申请权限组", logType = RequestLog.LogType.ADD)
     public R<Integer> apply(@Validated @RequestBody AppScopeApplyDto dto) {
         return R.success(appScopeApplyService.apply(dto));

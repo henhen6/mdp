@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.idempotent.Idempotent;
 import top.mddata.base.annotation.log.RequestLog;
 import top.mddata.base.base.R;
 import top.mddata.base.base.entity.BaseEntity;
@@ -54,6 +55,7 @@ public class MsgTaskController extends SuperController<MsgTaskService, MsgTask> 
      */
     @PostMapping("/save")
     @Operation(summary = "新增", description = "保存消息任务")
+    @Idempotent
     @RequestLog(value = "新增", logType = RequestLog.LogType.ADD, request = false)
     public R<Long> save(@Validated @RequestBody MsgTaskDto dto) {
         return R.success(superService.saveDto(dto).getId());

@@ -3,6 +3,8 @@ package top.mddata.console.controller;
 import org.junit.jupiter.api.Test;
 import top.mddata.base.annotation.idempotent.Idempotent;
 import top.mddata.base.exception.code.ExceptionCode;
+import top.mddata.console.controller.message.MsgTaskController;
+import top.mddata.console.dto.message.MsgTaskDto;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,6 +27,14 @@ class IdempotencyContractTest {
         assertEquals(-14, ExceptionCode.IDEMPOTENT_PROCESSING.getCode());
         assertEquals(-15, ExceptionCode.IDEMPOTENT_CONFLICT.getCode());
         assertEquals(-16, ExceptionCode.IDEMPOTENT_TOKEN_INVALID.getCode());
+    }
+
+    @Test
+    void msgTaskSaveUsesIdempotent() throws NoSuchMethodException {
+        Method method = MsgTaskController.class
+                .getDeclaredMethod("save", MsgTaskDto.class);
+
+        assertNotNull(method.getAnnotation(Idempotent.class));
     }
 
     private static class Fixture {
