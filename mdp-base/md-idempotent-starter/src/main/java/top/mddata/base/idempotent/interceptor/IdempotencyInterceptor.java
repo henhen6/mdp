@@ -6,6 +6,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.WebUtils;
+import top.mddata.base.annotation.idempotent.DuplicateStrategy;
 import top.mddata.base.annotation.idempotent.Idempotent;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.idempotent.filter.CachedBodyRequestWrapper;
@@ -21,7 +22,8 @@ import java.io.IOException;
 
 /**
  * 幂等 MVC 拦截器：对标注 {@link Idempotent} 的接口按令牌状态分发——
- * 抢占成功放行进入 Controller，处理中/冲突/令牌失效写统一失败响应，成功结果直接重放首次响应。
+ * 抢占成功放行进入 Controller，处理中/冲突/令牌失效写统一失败响应，成功结果默认重放首次响应，
+ * 可通过 {@link Idempotent#onDuplicate()} 配置为返回重复请求错误。
  * <p>
  * 释放与结果写入由业务侧通过 {@link Execution}（请求属性）完成；
  * Controller 抛出未知异常时保留 PROCESSING 状态，由运维处理，禁止自动释放。
@@ -30,8 +32,8 @@ import java.io.IOException;
  */
 public class IdempotencyInterceptor implements HandlerInterceptor {
 
-    /** 相同请求正在处理中的业务错误码。 */
-    private static final int PROCESSING_CODE = -14;
+    /** 重复请求的业务错误码。 */
+    private static final int DUPLICATE_CODE = -14;
 
     /** 请求内容指纹与首次请求冲突的业务错误码。 */
     private static final int CONFLICT_CODE = -15;
@@ -95,7 +97,7 @@ public class IdempotencyInterceptor implements HandlerInterceptor {
                 yield true;
             }
             case PROCESSING -> {
-                responseWriter.writeError(response, PROCESSING_CODE, "相同请求正在处理中，请勿重复提交");
+                responseWriter.writeError(response, DUPLICATE_CODE, "相同请求正在处理中，请勿重复提交");
                 yield false;
             }
             case CONFLICT -> {
@@ -107,7 +109,11 @@ public class IdempotencyInterceptor implements HandlerInterceptor {
                 yield false;
             }
             case REPLAY -> {
-                responseWriter.replay(response, acquisition.response());
+                if (idempotent.onDuplicate() == DuplicateStrategy.REJECT) {
+                    responseWriter.writeError(response, DUPLICATE_CODE, "请求已处理，请勿重复提交");
+                } else {
+                    responseWriter.replay(response, acquisition.response());
+                }
                 yield false;
             }
         };

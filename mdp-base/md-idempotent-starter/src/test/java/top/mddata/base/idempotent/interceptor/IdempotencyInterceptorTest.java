@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
+import top.mddata.base.annotation.idempotent.DuplicateStrategy;
 import top.mddata.base.annotation.idempotent.Idempotent;
 import top.mddata.base.idempotent.filter.CachedBodyRequestWrapper;
 import top.mddata.base.idempotent.repository.IdempotencyRepository;
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class IdempotencyInterceptorTest {
 
-    private static final int PROCESSING_CODE = -14;
+    private static final int DUPLICATE_CODE = -14;
     private static final int CONFLICT_CODE = -15;
     private static final int INVALID_CODE = -16;
     private static final int BODY_UNSUPPORTED_CODE = -6;
@@ -65,12 +66,15 @@ class IdempotencyInterceptorTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private IdempotencyInterceptor interceptor;
     private HandlerMethod idempotentHandler;
+    private HandlerMethod rejectDuplicateHandler;
     private HandlerMethod plainHandler;
 
     @BeforeEach
     void setUp() throws NoSuchMethodException {
         interceptor = new IdempotencyInterceptor(repository, new IdempotencyResponseWriter(objectMapper));
         idempotentHandler = new HandlerMethod(new Fixture(), Fixture.class.getDeclaredMethod("idempotent"));
+        rejectDuplicateHandler = new HandlerMethod(
+                new Fixture(), Fixture.class.getDeclaredMethod("rejectDuplicate"));
         plainHandler = new HandlerMethod(new Fixture(), Fixture.class.getDeclaredMethod("plain"));
     }
 
@@ -134,7 +138,7 @@ class IdempotencyInterceptorTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         assertFalse(interceptor.preHandle(wrappedRequest("token-1", "{}"), response, idempotentHandler));
-        assertEquals(PROCESSING_CODE, responseCodeOf(response).get("code").asInt());
+        assertEquals(DUPLICATE_CODE, responseCodeOf(response).get("code").asInt());
     }
 
     @Test
@@ -149,6 +153,34 @@ class IdempotencyInterceptorTest {
         assertFalse(interceptor.preHandle(wrappedRequest("token-1", "{}"), response, idempotentHandler));
         assertEquals(200, response.getStatus());
         assertEquals(1001, responseCodeOf(response).get("data").asLong());
+    }
+
+    @Test
+    void successReplayRejectsWhenConfigured() throws Exception {
+        ContextUtil.setUserId(7L);
+        when(repository.acquire(anyString(), anyString(), anyString()))
+                .thenReturn(new Acquisition(Outcome.REPLAY, null,
+                        new IdempotencyRepository.CachedResponse(
+                                200, MediaType.APPLICATION_JSON_VALUE, "{\"code\":0,\"data\":1001}")));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        assertFalse(interceptor.preHandle(
+                wrappedRequest("token-1", "{}"), response, rejectDuplicateHandler));
+        assertEquals(DUPLICATE_CODE, responseCodeOf(response).get("code").asInt());
+        assertEquals("请求已处理，请勿重复提交", responseCodeOf(response).get("msg").asText());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Outcome.class, names = {"PROCESSING", "CONFLICT", "INVALID"})
+    void nonReplayOutcomesIgnoreDuplicateStrategy(Outcome outcome) throws Exception {
+        ContextUtil.setUserId(7L);
+        when(repository.acquire(anyString(), anyString(), anyString()))
+                .thenReturn(new Acquisition(outcome, null, null));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        assertFalse(interceptor.preHandle(
+                wrappedRequest("token-1", "{}"), response, rejectDuplicateHandler));
+        assertEquals(expectedCode(outcome), responseCodeOf(response).get("code").asInt());
     }
 
     @ParameterizedTest
@@ -221,7 +253,7 @@ class IdempotencyInterceptorTest {
                     boolean entered = interceptor.preHandle(
                             wrappedRequest("token-1", "{}"), response, idempotentHandler);
                     if (!entered) {
-                        assertEquals(PROCESSING_CODE, responseCodeOf(response).get("code").asInt());
+                        assertEquals(DUPLICATE_CODE, responseCodeOf(response).get("code").asInt());
                     }
                     return entered;
                 } finally {
@@ -244,6 +276,7 @@ class IdempotencyInterceptorTest {
 
     private static int expectedCode(Outcome outcome) {
         return switch (outcome) {
+            case PROCESSING -> DUPLICATE_CODE;
             case CONFLICT -> CONFLICT_CODE;
             case INVALID -> INVALID_CODE;
             default -> throw new IllegalArgumentException("非预期的拒绝结果: " + outcome);
@@ -270,6 +303,10 @@ class IdempotencyInterceptorTest {
     private static class Fixture {
         @Idempotent
         public void idempotent() {
+        }
+
+        @Idempotent(onDuplicate = DuplicateStrategy.REJECT)
+        public void rejectDuplicate() {
         }
 
         public void plain() {

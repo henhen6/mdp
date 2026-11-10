@@ -11,4 +11,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Idempotent {
+
+    /**
+     * 首次请求成功后的重复请求处理策略。
+     *
+     * @return 重复请求处理策略
+     */
+    DuplicateStrategy onDuplicate() default DuplicateStrategy.REPLAY;
 }
