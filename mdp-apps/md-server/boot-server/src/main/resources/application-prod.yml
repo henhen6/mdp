@@ -14,6 +14,28 @@ mdp:
       xdbPath: file:/data_mdp/target/ip2region_v6.xdb
   file:
     tempStoragePath: /data_mdp/temp/
+  social:
+    wechat-open:
+      enabled: ${WECHAT_OPEN_ENABLED:true}
+      client-id: ${WECHAT_OPEN_CLIENT_ID:}
+      client-secret: ${WECHAT_OPEN_CLIENT_SECRET:}
+      redirect-uri: ${WECHAT_OPEN_REDIRECT_URI:https://workbench.mddata.top/#/auth/social/callback/wechat-open}
+      union-id: ${WECHAT_OPEN_UNION_ID:true}
+      http-timeout-millis: 10000
+    qq:
+      enabled: ${QQ_ENABLED:true}
+      client-id: ${QQ_CLIENT_ID:}
+      client-secret: ${QQ_CLIENT_SECRET:}
+      redirect-uri: ${QQ_REDIRECT_URI:https://workbench.mddata.top/#/auth/social/callback/qq}
+      http-timeout-millis: 10000
+    ding-talk:
+      enabled: ${DINGTALK_ENABLED:true}
+      client-id: ${DINGTALK_CLIENT_ID:}
+      client-secret: ${DINGTALK_CLIENT_SECRET:}
+      redirect-uri: ${DINGTALK_REDIRECT_URI:https://workbench.mddata.top/#/auth/social/callback/dingtalk}
+      corp-id: ${DINGTALK_CORP_ID:}
+      http-timeout-millis: 10000
+
 spring:
   data:
     redis:
@@ -27,6 +49,8 @@ spring:
       driverClassName: com.mysql.cj.jdbc.Driver
       password: 'ZHadmin123.'
       url: jdbc:mysql://127.0.0.1:3218/mdp?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
+
+
 
 # Sa-Token配置
 sa-token:

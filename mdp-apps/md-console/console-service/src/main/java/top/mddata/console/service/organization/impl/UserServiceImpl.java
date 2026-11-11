@@ -15,6 +15,7 @@ import com.mybatisflex.core.update.UpdateWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.model.cache.CacheKey;
@@ -25,6 +26,7 @@ import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.mybatisflex.utils.BeanPageUtil;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.base.exception.BizException;
 import top.mddata.base.utils.DateUtils;
 import top.mddata.common.cache.console.organization.UserCacheKeyBuilder;
 import top.mddata.common.cache.workbench.SsoUserEmailCacheKeyBuilder;
@@ -41,10 +43,12 @@ import top.mddata.common.entity.User;
 import top.mddata.common.constant.CodeRuleCode;
 import top.mddata.common.entity.UserOrgRel;
 import top.mddata.common.entity.UserRoleRel;
+import top.mddata.common.entity.UserSocialAuth;
 import top.mddata.common.enumeration.BooleanEnum;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.UserSourceEnum;
 import top.mddata.common.mapper.UserMapper;
+import top.mddata.common.mapper.UserSocialAuthMapper;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.dto.organization.UserDto;
 import top.mddata.console.dto.organization.UserResetPasswordDto;
@@ -94,6 +98,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     private final OrgVisibilityService orgVisibilityService;
     private final AccountOperationGuard accountOperationGuard;
     private final CodeRuleService codeRuleService;
+    private final UserSocialAuthMapper userSocialAuthMapper;
 
     /**
      * 联系方式归一化：phone/email/idCard 允许为空，空白串与 null 等价，统一归一为 null。
@@ -535,19 +540,56 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         ArgumentAssert.isTrue(UserIdentityService.checkRegisterNature(user.getNature()),
                 "不支持的注册身份：{}", user.getNature());
         ArgumentAssert.isFalse(checkUsername(user.getUsername(), null), "用户名：{}已经存在", user.getUsername());
+        registerUser(user, user.getUsername());
+        publishUserAdded(user);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean registerBySocial(User user, UserSocialAuth socialAuth) {
+        ArgumentAssert.notNull(user, "用户信息不能为空");
+        ArgumentAssert.notNull(socialAuth, "第三方绑定信息不能为空");
+        ArgumentAssert.isTrue(UserIdentityService.checkRegisterNature(user.getNature()),
+                "不支持的注册身份：{}", user.getNature());
+        ArgumentAssert.isFalse(checkUsername(user.getUsername(), null),
+                "用户名：{}已经存在", user.getUsername());
+        registerUser(user, user.getName());
+        socialAuth.setUserId(user.getId());
+        socialAuth.setBoundAt(LocalDateTime.now());
+        try {
+            userSocialAuthMapper.insert(socialAuth);
+        } catch (DuplicateKeyException ex) {
+            // 并发注册或第三方身份已被占用：唯一索引兜底，回滚新用户并转译可理解提示
+            throw new BizException("第三方账号已被其他用户绑定，或当前平台已绑定", ex);
+        }
+        // 绑定写入成功后才允许发布用户新增事件
+        publishUserAdded(user);
+        return true;
+    }
+
+    /**
+     * 注册用户公共初始化：平台密码算法、人员编号、默认组织与默认角色，不发布事件。
+     *
+     * @param user        待保存用户
+     * @param displayName 显示姓名
+     */
+    private void registerUser(User user, String displayName) {
         initSsoUser(user);
-        user.setName(user.getUsername());
+        user.setName(displayName);
+        // 人员编号：注册时由编码规则自动生成，终生绑定
         user.setUserNo(codeRuleService.generate(CodeRuleCode.USER_NO, null));
         save(user);
         saveDefOrg(user);
         saveDefRole(user);
+    }
 
+    private void publishUserAdded(User user) {
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Console.USER_ADD)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
                 .setTriggerAt(LocalDateTime.now());
         notifyAndEventPushFacade.eventPush(request);
-        return true;
     }
 
     private void initSsoUser(User defUser) {

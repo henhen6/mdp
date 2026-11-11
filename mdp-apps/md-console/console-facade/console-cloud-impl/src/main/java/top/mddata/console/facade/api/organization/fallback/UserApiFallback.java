@@ -2,6 +2,7 @@ package top.mddata.console.facade.api.organization.fallback;
 
 import org.springframework.stereotype.Component;
 import top.mddata.base.base.R;
+import top.mddata.common.dto.UserSocialRegisterDto;
 import top.mddata.common.entity.User;
 import top.mddata.console.facade.api.organization.UserApi;
 
@@ -24,6 +25,11 @@ public class UserApiFallback implements UserApi {
 
     @Override
     public R<Boolean> registerByUsername(User defUser) {
+        return R.timeout();
+    }
+
+    @Override
+    public R<Long> registerBySocial(UserSocialRegisterDto register) {
         return R.timeout();
     }
 }

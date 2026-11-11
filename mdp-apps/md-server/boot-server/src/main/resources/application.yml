@@ -139,6 +139,29 @@ mdp:
     # 公开桶（至少配置一个）：桶内文件 URL 永久有效，用于富文本/markdown 插图等场景
     publicBucket: PUBLIC_FILE
 
+  # 第三方网页登录默认关闭；启用前需通过环境变量提供完整应用配置
+  social:
+    wechat-open:
+      enabled: ${WECHAT_OPEN_ENABLED:true}
+      client-id: ${WECHAT_OPEN_CLIENT_ID:1}
+      client-secret: ${WECHAT_OPEN_CLIENT_SECRET:2}
+      redirect-uri: ${WECHAT_OPEN_REDIRECT_URI:http://localhost:7700/#/auth/social/callback/wechat-open}
+      union-id: ${WECHAT_OPEN_UNION_ID:true}
+      http-timeout-millis: 10000
+    qq:
+      enabled: ${QQ_ENABLED:true}
+      client-id: ${QQ_CLIENT_ID:3}
+      client-secret: ${QQ_CLIENT_SECRET:4}
+      redirect-uri: ${QQ_REDIRECT_URI:http://localhost:7700/#/auth/social/callback/qq}
+      http-timeout-millis: 10000
+    ding-talk:
+      enabled: ${DINGTALK_ENABLED:true}
+      client-id: ${DINGTALK_CLIENT_ID:5}
+      client-secret: ${DINGTALK_CLIENT_SECRET:6}
+      redirect-uri: ${DINGTALK_REDIRECT_URI:http://localhost:7700/#/auth/social/callback/dingtalk}
+      corp-id: ${DINGTALK_CORP_ID:7}
+      http-timeout-millis: 10000
+
 spring:
   main:
     allow-bean-definition-overriding: true

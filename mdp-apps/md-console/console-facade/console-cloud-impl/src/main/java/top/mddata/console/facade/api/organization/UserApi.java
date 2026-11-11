@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import top.mddata.base.base.R;
 import top.mddata.common.constant.AppConstants;
+import top.mddata.common.dto.UserSocialRegisterDto;
 import top.mddata.common.entity.User;
 import top.mddata.console.facade.api.organization.fallback.UserApiFallback;
 
@@ -35,4 +36,12 @@ public interface UserApi {
      */
     @PostMapping("/registerByUsername")
     R<Boolean> registerByUsername(@RequestBody User defUser);
+
+    /**
+     * 社交注册：同一本地事务内创建用户与初始绑定
+     * @param register 注册入参
+     * @return 新用户ID
+     */
+    @PostMapping("/registerBySocial")
+    R<Long> registerBySocial(@RequestBody UserSocialRegisterDto register);
 }

@@ -49,14 +49,14 @@ import top.mddata.workbench.dto.RegisterByUsernameDto;
 import top.mddata.workbench.dto.WxMaLoginDto;
 import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.handler.LoginStrategy;
+import top.mddata.workbench.service.AccountAuthenticator;
 import top.mddata.workbench.service.AuthService;
+import top.mddata.workbench.service.LoginSessionService;
 import top.mddata.workbench.service.SsoUserService;
 import top.mddata.workbench.service.WxMaAuthService;
 import top.mddata.workbench.vo.LoginVo;
 
 import java.util.List;
-import java.util.Map;
 
 import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
@@ -75,7 +75,7 @@ import static top.mddata.base.constant.ContextConstants.USER_ID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl implements AuthService, LoginSessionService {
     private final SystemProperties systemProperties;
     private final SaTokenConfig saTokenConfig;
     private final CacheOps cacheOps;
@@ -83,50 +83,42 @@ public class AuthServiceImpl implements AuthService {
     private final UserFacade userFacade;
     private final MsgFacade msgFacade;
     private final WxMaAuthService wxMaAuthService;
-    private final Map<String, LoginStrategy> loginStrategy;
+    private final AccountAuthenticator accountAuthenticator;
 
     @Override
     public R<LoginVo> login(LoginDto login) {
-        // 校验参数
-        LoginStrategy strategy = loginStrategy.get(login.getAuthType().name());
-        strategy.checkParam(login);
+        User user = accountAuthenticator.authenticate(login);
+        return R.success(loginAuthenticated(user, login.getAuthType(), login.getUsername(),
+                login.getDeviceId(), login.getDeviceInfo(), "PC"));
+    }
 
-        // 查找用户
-        User ssoUser = strategy.getUser(login.getUsername());
-
-//        判断密码
-        strategy.checkUserPassword(login, ssoUser);
-
-        // 5. 检查用户状态
-        strategy.checkUserState(login, ssoUser);
-
-        Long userId = ssoUser.getId();
-
+    @Override
+    public LoginVo loginAuthenticated(User user, AuthTypeEnum authType, String account,
+                                      String deviceId, String deviceInfo, String deviceType) {
         // 创建Account-Session
-        StpUtil.login(userId, new SaLoginParameter()
-                .setDeviceType("PC")
-                .setDeviceId(StrUtil.isEmpty(login.getDeviceId()) ? SaFoxUtil.getRandomString(32) : login.getDeviceId()));
+        StpUtil.login(user.getId(), new SaLoginParameter()
+                .setDeviceType(deviceType)
+                .setDeviceId(StrUtil.isEmpty(deviceId) ? SaFoxUtil.getRandomString(32) : deviceId));
 
         // 写入用户常用信息到 TokenSession
-        fillTokenSession(ssoUser);
-
+        fillTokenSession(user);
 
         // 封装返回值
         JSONObject obj = new JSONObject();
-        obj.put(USER_ID, ssoUser.getId());
+        obj.put(USER_ID, user.getId());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        LoginVo loginVO = BeanUtil.toBean(tokenInfo, LoginVo.class);
-        loginVO.setExpire(tokenInfo.getTokenTimeout());
-        loginVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
-        loginVO.setId(userId);
+        LoginVo loginVo = BeanUtil.toBean(tokenInfo, LoginVo.class);
+        loginVo.setExpire(tokenInfo.getTokenTimeout());
+        loginVo.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
+        loginVo.setId(user.getId());
 
         // 发送登录成功事件
-        LoginLogDto dto = LoginLogDto.success(login.getAuthType(), login.getDeviceInfo(), login.getUsername(), "登录成功", JSON.toJSONString(tokenInfo))
+        LoginLogDto dto = LoginLogDto.success(authType, deviceInfo, account, "登录成功", JSON.toJSONString(tokenInfo))
                 // 登录时，默认是默认应用 工作台
                 .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
         SpringUtil.publishEvent(new LoginEvent(dto));
 
-        return R.success(loginVO);
+        return loginVo;
     }
 
     @Override

@@ -2,6 +2,7 @@ package top.mddata.console.facade.impl.organization;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.mddata.common.dto.UserSocialRegisterDto;
 import top.mddata.common.entity.User;
 import top.mddata.console.facade.organization.UserFacade;
 import top.mddata.console.service.organization.UserService;
@@ -29,5 +30,11 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public void registerByUsername(User defUser) {
         userService.registerByUsername(defUser);
+    }
+
+    @Override
+    public Long registerBySocial(UserSocialRegisterDto register) {
+        userService.registerBySocial(register.getUser(), register.getSocialAuth());
+        return register.getUser().getId();
     }
 }

@@ -1,0 +1,65 @@
+package top.mddata.workbench.service.social.impl;
+
+import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
+import me.zhyd.oauth.request.AuthRequest;
+import top.mddata.base.exception.BizException;
+import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.workbench.config.SocialLoginProperties;
+import top.mddata.workbench.enumeration.SocialProviderEnum;
+import top.mddata.workbench.service.social.SocialProvider;
+import top.mddata.workbench.service.social.model.SocialIdentity;
+
+/**
+ * 基于 JustAuth 的第三方登录平台适配器。
+ *
+ * @author tangyh
+ */
+@Slf4j
+public class JustAuthSocialProvider implements SocialProvider {
+
+    private final SocialProviderEnum provider;
+    private final SocialLoginProperties.ProviderConfig config;
+    private final AuthRequest authRequest;
+
+    public JustAuthSocialProvider(SocialProviderEnum provider,
+                                  SocialLoginProperties.ProviderConfig config,
+                                  AuthRequest authRequest) {
+        this.provider = provider;
+        this.config = config;
+        this.authRequest = authRequest;
+    }
+
+    @Override
+    public String authorize(String state) {
+        return authRequest.authorize(state);
+    }
+
+    @Override
+    public SocialIdentity exchange(String code, String state) {
+        AuthResponse<AuthUser> response = authRequest.login(AuthCallback.builder()
+                .code(code)
+                .state(state)
+                .build());
+        if (!response.ok() || response.getData() == null) {
+            log.error("第三方授权失败，provider={}，responseCode={}", provider, response.getCode());
+            throw new BizException("第三方授权失败，请重新授权");
+        }
+        AuthUser user = response.getData();
+        AuthToken token = user.getToken();
+        String openId = token == null ? null : token.getOpenId();
+        String unionId = token == null ? null : token.getUnionId();
+        ArgumentAssert.isTrue(StrUtil.isNotBlank(openId), "第三方未返回有效用户标识");
+        return SocialIdentity.builder()
+                .provider(provider)
+                .clientId(config.getClientId())
+                .openId(openId)
+                .unionId(unionId)
+                .nickname(StrUtil.blankToDefault(user.getNickname(), provider.getLabel()))
+                .build();
+    }
+}

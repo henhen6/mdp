@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import top.mddata.common.entity.User;
 import top.mddata.common.mapper.UserMapper;
+import top.mddata.common.mapper.UserSocialAuthMapper;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.dto.organization.UserDto;
 import top.mddata.console.service.organization.OrgVisibilityService;
@@ -53,7 +54,8 @@ class UserServiceImplContactTest {
         userService = new UserServiceImpl(mock(UserOrgRelService.class), mock(FileService.class),
                 configService, systemProperties, uidGenerator, mock(NotifyAndEventPushFacade.class),
                 mock(RoleService.class), mock(OrgVisibilityService.class), mock(AccountOperationGuard.class),
-                mock(top.mddata.console.service.coderule.CodeRuleService.class));
+                mock(top.mddata.console.service.coderule.CodeRuleService.class),
+                mock(UserSocialAuthMapper.class));
         // mapper 由 mybatis-flex ServiceImpl 以 @Autowired 字段注入，测试中反射替换
         ReflectionTestUtils.setField(userService, "mapper", userMapper);
     }

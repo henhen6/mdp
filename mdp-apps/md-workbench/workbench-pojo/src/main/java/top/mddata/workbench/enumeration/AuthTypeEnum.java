@@ -35,9 +35,9 @@ public enum AuthTypeEnum implements BaseEnum<String> {
      */
     PHONE("03", "手机短信验证码登录"),
     /**
-     * 邮箱 + 密码登录
+     * 邮箱 + 验证码登录
      */
-    EMAIL("04", "邮箱密码登录"),
+    EMAIL("04", "邮箱验证码登录"),
     /**
      * SSO 单点登录 ticket 模式登录
      */
@@ -49,7 +49,19 @@ public enum AuthTypeEnum implements BaseEnum<String> {
     /**
      * 微信小程序一键登录
      */
-    WX_MA("07", "微信小程序登录");
+    WX_MA("07", "微信小程序登录"),
+    /**
+     * 微信网站扫码登录。仅用于登录日志，不注册账号密码策略
+     */
+    WECHAT_OPEN("08", "微信网站扫码登录"),
+    /**
+     * QQ 登录。仅用于登录日志，不注册账号密码策略
+     */
+    QQ("09", "QQ登录"),
+    /**
+     * 钉钉扫码登录。仅用于登录日志，不注册账号密码策略
+     */
+    DINGTALK("10", "钉钉扫码登录");
 
     @Schema(description = "code")
     @EnumValue

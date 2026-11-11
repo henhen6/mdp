@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.base.R;
+import top.mddata.common.dto.UserSocialRegisterDto;
 import top.mddata.common.entity.User;
 import top.mddata.console.service.organization.UserService;
 
@@ -52,5 +53,16 @@ public class InnerUserController {
     @PostMapping("/registerByUsername")
     public R<Boolean> registerByUsername(@Validated @RequestBody User defUser) {
         return R.success(userService.registerByUsername(defUser));
+    }
+
+    /**
+     * 社交注册：成功后返回新用户ID供调用方自动登录
+     * @param register 注册入参
+     */
+    @Operation(hidden = true)
+    @PostMapping("/registerBySocial")
+    public R<Long> registerBySocial(@Validated @RequestBody UserSocialRegisterDto register) {
+        userService.registerBySocial(register.getUser(), register.getSocialAuth());
+        return R.success(register.getUser().getId());
     }
 }

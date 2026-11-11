@@ -1,5 +1,6 @@
 package top.mddata.console.facade.organization;
 
+import top.mddata.common.dto.UserSocialRegisterDto;
 import top.mddata.common.entity.User;
 
 /**
@@ -25,4 +26,11 @@ public interface UserFacade {
      * @param defUser 用户信息
      */
     void registerByUsername(User defUser);
+
+    /**
+     * 社交注册：同一本地事务内创建用户与初始绑定
+     * @param register 注册入参
+     * @return 新用户ID
+     */
+    Long registerBySocial(UserSocialRegisterDto register);
 }

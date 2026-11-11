@@ -101,4 +101,12 @@ public interface UserService extends SuperService<User> {
      * @param defUser 用户信息
      */
     boolean registerByUsername(User defUser);
+
+    /**
+     * 社交注册：同一本地事务内创建用户与初始第三方绑定，绑定成功后发布用户新增事件
+     * @param user       用户信息
+     * @param socialAuth 初始第三方绑定
+     * @return true=成功
+     */
+    boolean registerBySocial(User user, top.mddata.common.entity.UserSocialAuth socialAuth);
 }

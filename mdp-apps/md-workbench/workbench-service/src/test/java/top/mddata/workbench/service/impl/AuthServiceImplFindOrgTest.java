@@ -8,11 +8,11 @@ import top.mddata.common.entity.User;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.facade.message.MsgFacade;
 import top.mddata.console.facade.organization.UserFacade;
+import top.mddata.workbench.service.AccountAuthenticator;
 import top.mddata.workbench.service.SsoUserService;
 import top.mddata.workbench.service.WxMaAuthService;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -46,7 +46,8 @@ class AuthServiceImplFindOrgTest {
     void setUp() {
         ssoUserService = mock(SsoUserService.class);
         authService = new AuthServiceImpl(mock(SystemProperties.class), mock(cn.dev33.satoken.config.SaTokenConfig.class),
-                mock(CacheOps.class), ssoUserService, mock(UserFacade.class), mock(MsgFacade.class), mock(WxMaAuthService.class), Map.of());
+                mock(CacheOps.class), ssoUserService, mock(UserFacade.class), mock(MsgFacade.class),
+                mock(WxMaAuthService.class), mock(AccountAuthenticator.class));
     }
 
     private Org company(Long id, String treePath) {

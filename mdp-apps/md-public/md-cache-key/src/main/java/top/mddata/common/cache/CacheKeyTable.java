@@ -69,6 +69,24 @@ public interface CacheKeyTable {
          * 用户
          */
         String USER = "user";
+
+        /**
+         * 第三方 OAuth state
+         * 完整key: social.state:id:{state}
+         */
+        String SOCIAL_STATE = "social.state";
+
+        /**
+         * 第三方未绑定待选择票据
+         * 完整key: social.pending:id:{ticket}
+         */
+        String SOCIAL_PENDING = "social.pending";
+
+        /**
+         * 敏感操作二次验证票据
+         * 完整key: social.reauth:id:{ticket}
+         */
+        String SOCIAL_REAUTH = "social.reauth";
     }
 
     interface Open {
