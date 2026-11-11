@@ -72,6 +72,21 @@ class JustAuthSocialProviderTest {
     }
 
     @Test
+    void hash回调地址编码后保留后续授权参数() {
+        config.setRedirectUri("http://localhost:7700/#/auth/social/callback/gitee");
+        when(authRequest.authorize("state-1")).thenReturn(
+                "https://gitee.com/oauth/authorize?response_type=code"
+                        + "&redirect_uri=http://localhost:7700/#/auth/social/callback/gitee"
+                        + "&state=state-1&scope=user_info");
+
+        String url = provider.authorize("state-1");
+
+        assertEquals("https://gitee.com/oauth/authorize?response_type=code"
+                + "&redirect_uri=http%3A%2F%2Flocalhost%3A7700%2F%23%2Fauth%2Fsocial%2Fcallback%2Fgitee"
+                + "&state=state-1&scope=user_info", url);
+    }
+
+    @Test
     void exchange成功时从token提取openId和unionId() {
         AuthUser user = AuthUser.builder()
                 .uuid("ignored-uuid")

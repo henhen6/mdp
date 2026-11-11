@@ -14,6 +14,9 @@ import top.mddata.workbench.enumeration.SocialProviderEnum;
 import top.mddata.workbench.service.social.SocialProvider;
 import top.mddata.workbench.service.social.model.SocialIdentity;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 /**
  * 基于 JustAuth 的第三方登录平台适配器。
  *
@@ -36,7 +39,14 @@ public class JustAuthSocialProvider implements SocialProvider {
 
     @Override
     public String authorize(String state) {
-        return authRequest.authorize(state);
+        String authorizeUrl = authRequest.authorize(state);
+        String redirectUri = config.getRedirectUri();
+        if (StrUtil.isBlank(redirectUri) || !redirectUri.contains("#")) {
+            return authorizeUrl;
+        }
+        // JustAuth 默认不编码 redirect_uri，hash 会导致后续 state 等参数被当成 fragment
+        String encodedRedirectUri = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
+        return authorizeUrl.replace(redirectUri, encodedRedirectUri);
     }
 
     @Override
