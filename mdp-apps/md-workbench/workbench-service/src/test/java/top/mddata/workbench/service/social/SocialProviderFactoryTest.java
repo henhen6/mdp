@@ -3,6 +3,7 @@ package top.mddata.workbench.service.social;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthDefaultRequest;
 import me.zhyd.oauth.request.AuthDingTalkV2Request;
+import me.zhyd.oauth.request.AuthGiteeRequest;
 import me.zhyd.oauth.request.AuthQqRequest;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatOpenRequest;
@@ -48,7 +49,8 @@ class SocialProviderFactoryTest {
         Map<SocialProviderEnum, Class<? extends AuthDefaultRequest>> expects = Map.of(
                 SocialProviderEnum.WECHAT_OPEN, AuthWeChatOpenRequest.class,
                 SocialProviderEnum.QQ, AuthQqRequest.class,
-                SocialProviderEnum.DINGTALK, AuthDingTalkV2Request.class);
+                SocialProviderEnum.DINGTALK, AuthDingTalkV2Request.class,
+                SocialProviderEnum.GITEE, AuthGiteeRequest.class);
 
         expects.forEach((provider, expectedType) -> {
             AuthRequest authRequest = authRequest(factory.get(provider));
@@ -108,9 +110,10 @@ class SocialProviderFactoryTest {
         properties.getWechatOpen().setEnabled(false);
         SocialProviderFactory factory = new SocialProviderFactory(properties, new JustAuthRequestFactory());
 
-        assertEquals(2, factory.enabledProviders().size());
+        assertEquals(3, factory.enabledProviders().size());
         assertTrue(factory.enabledProviders().contains(SocialProviderEnum.QQ));
         assertTrue(factory.enabledProviders().contains(SocialProviderEnum.DINGTALK));
+        assertTrue(factory.enabledProviders().contains(SocialProviderEnum.GITEE));
     }
 
     private SocialLoginProperties completeProperties() {
@@ -121,6 +124,8 @@ class SocialProviderFactoryTest {
         fill(properties.getQq());
         properties.getDingTalk().setEnabled(true);
         fill(properties.getDingTalk());
+        properties.getGitee().setEnabled(true);
+        fill(properties.getGitee());
         return properties;
     }
 

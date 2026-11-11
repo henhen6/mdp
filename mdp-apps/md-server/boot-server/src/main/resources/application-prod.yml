@@ -35,6 +35,12 @@ mdp:
       redirect-uri: ${DINGTALK_REDIRECT_URI:https://workbench.mddata.top/#/auth/social/callback/dingtalk}
       corp-id: ${DINGTALK_CORP_ID:}
       http-timeout-millis: 10000
+    gitee:
+      enabled: ${GITEE_ENABLED:true}
+      client-id: ${GITEE_CLIENT_ID:}
+      client-secret: ${GITEE_CLIENT_SECRET:}
+      redirect-uri: ${GITEE_REDIRECT_URI:https://workbench.mddata.top/#/auth/social/callback/gitee}
+      http-timeout-millis: 10000
 
 spring:
   data:

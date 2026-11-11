@@ -76,6 +76,7 @@ public class SocialProviderFactory {
             case WECHAT_OPEN -> properties.getWechatOpen();
             case QQ -> properties.getQq();
             case DINGTALK -> properties.getDingTalk();
+            case GITEE -> properties.getGitee();
         };
     }
 }

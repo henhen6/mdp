@@ -174,9 +174,11 @@ class SocialAccountServiceImplTest {
         assertTrue(qqVo.isBound());
         assertEquals("QQ用户", qqVo.getNickname());
         assertEquals("qq", qqVo.getProvider());
+        assertEquals("QQ", qqVo.getLabel());
         SocialBindingVo wechat = result.get(1);
         assertFalse(wechat.isBound());
         assertEquals("wechat-open", wechat.getProvider());
+        assertEquals("微信", wechat.getLabel());
         assertNotNull(result);
     }
 

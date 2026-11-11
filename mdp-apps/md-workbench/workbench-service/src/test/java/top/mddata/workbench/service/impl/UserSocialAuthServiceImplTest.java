@@ -10,6 +10,7 @@ import org.springframework.dao.DuplicateKeyException;
 import top.mddata.base.exception.BizException;
 import top.mddata.common.entity.UserSocialAuth;
 import top.mddata.common.mapper.UserSocialAuthMapper;
+import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.enumeration.SocialProviderEnum;
 import top.mddata.workbench.service.social.model.SocialIdentity;
 
@@ -198,7 +199,12 @@ class UserSocialAuthServiceImplTest {
         assertEquals("wechat-open", SocialProviderEnum.WECHAT_OPEN.getCode());
         assertEquals("qq", SocialProviderEnum.QQ.getCode());
         assertEquals("dingtalk", SocialProviderEnum.DINGTALK.getCode());
+        assertEquals("gitee", SocialProviderEnum.GITEE.getCode());
+        assertEquals("Gitee", SocialProviderEnum.GITEE.getLabel());
+        assertEquals(AuthTypeEnum.GITEE, SocialProviderEnum.GITEE.getAuthType());
+        assertEquals("11", AuthTypeEnum.GITEE.getCode());
         assertSame(SocialProviderEnum.QQ, SocialProviderEnum.fromCode("QQ"));
+        assertSame(SocialProviderEnum.GITEE, SocialProviderEnum.fromCode("gitee"));
         assertThrows(BizException.class, () -> SocialProviderEnum.fromCode("unknown"));
     }
 

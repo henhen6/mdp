@@ -3,6 +3,7 @@ package top.mddata.workbench.service.social;
 import com.xkcoding.http.config.HttpConfig;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthDingTalkV2Request;
+import me.zhyd.oauth.request.AuthGiteeRequest;
 import me.zhyd.oauth.request.AuthQqRequest;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatOpenRequest;
@@ -43,6 +44,7 @@ public class JustAuthRequestFactory {
             case WECHAT_OPEN -> new AuthWeChatOpenRequest(authConfig);
             case QQ -> new AuthQqRequest(authConfig);
             case DINGTALK -> new AuthDingTalkV2Request(authConfig);
+            case GITEE -> new AuthGiteeRequest(authConfig);
         };
     }
 }

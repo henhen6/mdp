@@ -61,10 +61,10 @@ public class SocialAccountServiceImpl implements SocialAccountService {
                 .map(provider -> bindings.stream()
                         .filter(binding -> provider.name().equals(binding.getProvider()))
                         .findFirst()
-                        .map(binding -> new SocialBindingVo(provider.getCode(), true,
-                                binding.getNickname(), binding.getBoundAt()))
-                        .orElseGet(() -> new SocialBindingVo(provider.getCode(), false,
-                                null, null)))
+                        .map(binding -> new SocialBindingVo(provider.getCode(), provider.getLabel(),
+                                true, binding.getNickname(), binding.getBoundAt()))
+                        .orElseGet(() -> new SocialBindingVo(provider.getCode(), provider.getLabel(),
+                                false, null, null)))
                 .toList();
     }
 
@@ -212,11 +212,7 @@ public class SocialAccountServiceImpl implements SocialAccountService {
 
     private AuthTypeEnum authType(SocialProviderEnum provider) {
         ArgumentAssert.notNull(provider, () -> new BizException("第三方平台不能为空"));
-        return switch (provider) {
-            case WECHAT_OPEN -> AuthTypeEnum.WECHAT_OPEN;
-            case QQ -> AuthTypeEnum.QQ;
-            case DINGTALK -> AuthTypeEnum.DINGTALK;
-        };
+        return provider.getAuthType();
     }
 
     private SocialReauthMethodEnum reauthMethod(AuthTypeEnum authType) {

@@ -161,6 +161,12 @@ mdp:
       redirect-uri: ${DINGTALK_REDIRECT_URI:http://localhost:7700/#/auth/social/callback/dingtalk}
       corp-id: ${DINGTALK_CORP_ID:7}
       http-timeout-millis: 10000
+    gitee:
+      enabled: ${GITEE_ENABLED:true}
+      client-id: ${GITEE_CLIENT_ID:7}
+      client-secret: ${GITEE_CLIENT_SECRET:7}
+      redirect-uri: ${GITEE_REDIRECT_URI:http://localhost:7700/#/auth/social/callback/gitee}
+      http-timeout-millis: 10000
 
 spring:
   main:

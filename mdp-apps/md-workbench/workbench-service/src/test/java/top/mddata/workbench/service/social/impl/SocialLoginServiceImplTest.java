@@ -203,7 +203,7 @@ class SocialLoginServiceImplTest {
     }
 
     @Test
-    void 三个平台显式映射到对应认证类型() {
+    void 所有平台通过枚举元数据映射到对应认证类型() {
         for (SocialProviderEnum providerEnum : SocialProviderEnum.values()) {
             SocialProvider adapter = mock(SocialProvider.class);
             when(providerFactory.get(providerEnum)).thenReturn(adapter);
@@ -219,11 +219,7 @@ class SocialLoginServiceImplTest {
 
             service.login(callback(providerEnum));
 
-            AuthTypeEnum expected = switch (providerEnum) {
-                case WECHAT_OPEN -> AuthTypeEnum.WECHAT_OPEN;
-                case QQ -> AuthTypeEnum.QQ;
-                case DINGTALK -> AuthTypeEnum.DINGTALK;
-            };
+            AuthTypeEnum expected = providerEnum.getAuthType();
             verify(loginSessionService).loginAuthenticated(eq(user), eq(expected), eq("existing"),
                     eq("device-id"), isNull(), eq("PC"));
         }

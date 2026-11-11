@@ -29,8 +29,8 @@ import static org.mockito.Mockito.when;
 /**
  * {@link JustAuthSocialProvider} 适配器单测。
  *
- * <p>核心约束：openId 与 unionId 一律从 {@link AuthToken} 提取，
- * 不得使用 {@link AuthUser#getUuid()} 充当应用身份；密钥不得进入异常与日志。</p>
+ * <p>核心约束：微信、QQ、钉钉从 {@link AuthToken} 提取 openId，Gitee 使用
+ * {@link AuthUser#getUuid()}；密钥不得进入异常与日志。</p>
  *
  * @author tangyh
  */
@@ -108,6 +108,24 @@ class JustAuthSocialProviderTest {
     }
 
     @Test
+    void Gitee从AuthUserUuid提取用户标识() {
+        provider = new JustAuthSocialProvider(SocialProviderEnum.GITEE, config, authRequest);
+        AuthUser user = AuthUser.builder()
+                .uuid("gitee-user-id")
+                .nickname("Gitee用户")
+                .token(AuthToken.builder().accessToken("test-token").build())
+                .build();
+        when(authRequest.login(any(AuthCallback.class)))
+                .thenReturn(success(user));
+
+        SocialIdentity identity = provider.exchange("code", "state");
+
+        assertEquals(SocialProviderEnum.GITEE, identity.getProvider());
+        assertEquals("gitee-user-id", identity.getOpenId());
+        assertEquals("Gitee用户", identity.getNickname());
+    }
+
+    @Test
     void 昵称为空时回退为平台名称() {
         AuthUser user = AuthUser.builder()
                 .token(AuthToken.builder().openId("open-id").build())
@@ -147,7 +165,7 @@ class JustAuthSocialProviderTest {
     }
 
     @Test
-    void 第三方未返回openId时快速失败() {
+    void QQ未返回tokenOpenId时不得回退uuid() {
         AuthUser user = AuthUser.builder()
                 .uuid("uuid-only")
                 .token(AuthToken.builder().unionId("union-id").build())

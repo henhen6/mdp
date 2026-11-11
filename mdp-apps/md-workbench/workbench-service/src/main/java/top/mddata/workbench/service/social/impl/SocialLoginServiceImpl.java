@@ -92,11 +92,6 @@ public class SocialLoginServiceImpl implements SocialLoginService {
 
     private AuthTypeEnum authType(SocialProviderEnum provider) {
         ArgumentAssert.notNull(provider, () -> new BizException("第三方登录平台不能为空"));
-        return switch (provider) {
-            case WECHAT_OPEN -> AuthTypeEnum.WECHAT_OPEN;
-            case QQ -> AuthTypeEnum.QQ;
-            case DINGTALK -> AuthTypeEnum.DINGTALK;
-            default -> throw new BizException("不支持的第三方登录平台: " + provider);
-        };
+        return provider.getAuthType();
     }
 }

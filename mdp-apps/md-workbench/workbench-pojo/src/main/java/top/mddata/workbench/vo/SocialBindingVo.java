@@ -25,6 +25,12 @@ public class SocialBindingVo {
     private String provider;
 
     /**
+     * 平台名称
+     */
+    @Schema(description = "平台名称")
+    private String label;
+
+    /**
      * 是否已绑定
      */
     @Schema(description = "是否已绑定")

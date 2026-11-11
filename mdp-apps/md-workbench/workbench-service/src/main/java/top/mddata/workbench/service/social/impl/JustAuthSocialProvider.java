@@ -51,7 +51,7 @@ public class JustAuthSocialProvider implements SocialProvider {
         }
         AuthUser user = response.getData();
         AuthToken token = user.getToken();
-        String openId = token == null ? null : token.getOpenId();
+        String openId = resolveOpenId(user, token);
         String unionId = token == null ? null : token.getUnionId();
         ArgumentAssert.isTrue(StrUtil.isNotBlank(openId), "第三方未返回有效用户标识");
         return SocialIdentity.builder()
@@ -61,5 +61,13 @@ public class JustAuthSocialProvider implements SocialProvider {
                 .unionId(unionId)
                 .nickname(StrUtil.blankToDefault(user.getNickname(), provider.getLabel()))
                 .build();
+    }
+
+    private String resolveOpenId(AuthUser user, AuthToken token) {
+        // Gitee 的用户 id 位于 uuid；QQ 的 uuid 可能是 unionId，不能作为通用回退
+        if (provider == SocialProviderEnum.GITEE) {
+            return user.getUuid();
+        }
+        return token == null ? null : token.getOpenId();
     }
 }

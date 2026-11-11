@@ -61,7 +61,11 @@ public enum AuthTypeEnum implements BaseEnum<String> {
     /**
      * 钉钉扫码登录。仅用于登录日志，不注册账号密码策略
      */
-    DINGTALK("10", "钉钉扫码登录");
+    DINGTALK("10", "钉钉扫码登录"),
+    /**
+     * Gitee 登录。仅用于登录日志，不注册账号密码策略
+     */
+    GITEE("11", "Gitee登录");
 
     @Schema(description = "code")
     @EnumValue

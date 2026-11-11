@@ -112,10 +112,6 @@ public class SocialOnboardingServiceImpl implements SocialOnboardingService {
 
     private AuthTypeEnum authType(SocialProviderEnum provider) {
         ArgumentAssert.notNull(provider, () -> new BizException("第三方登录平台不能为空"));
-        return switch (provider) {
-            case WECHAT_OPEN -> AuthTypeEnum.WECHAT_OPEN;
-            case QQ -> AuthTypeEnum.QQ;
-            case DINGTALK -> AuthTypeEnum.DINGTALK;
-        };
+        return provider.getAuthType();
     }
 }

@@ -17,15 +17,18 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum SocialProviderEnum {
     /** 微信开放平台 */
-    WECHAT_OPEN("wechat-open", "微信"),
+    WECHAT_OPEN("wechat-open", "微信", AuthTypeEnum.WECHAT_OPEN),
     /** QQ */
-    QQ("qq", "QQ"),
+    QQ("qq", "QQ", AuthTypeEnum.QQ),
     /** 钉钉 */
-    DINGTALK("dingtalk", "钉钉");
+    DINGTALK("dingtalk", "钉钉", AuthTypeEnum.DINGTALK),
+    /** Gitee */
+    GITEE("gitee", "Gitee", AuthTypeEnum.GITEE);
 
     @JsonValue
     private final String code;
     private final String label;
+    private final AuthTypeEnum authType;
 
     /**
      * 按前端编码解析平台

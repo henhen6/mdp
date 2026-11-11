@@ -26,6 +26,8 @@ public class SocialLoginProperties {
     private ProviderConfig qq = new ProviderConfig();
     /** 钉钉 */
     private ProviderConfig dingTalk = new ProviderConfig();
+    /** Gitee */
+    private ProviderConfig gitee = new ProviderConfig();
 
     /**
      * 单个平台的连接配置
