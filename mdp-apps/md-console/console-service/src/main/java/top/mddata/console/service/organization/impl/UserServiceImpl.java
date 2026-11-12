@@ -59,6 +59,7 @@ import top.mddata.console.service.coderule.CodeRuleService;
 import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.UserIdentityService;
 import top.mddata.console.service.organization.UserOrgRelService;
+import top.mddata.console.service.organization.UserRoleRelService;
 import top.mddata.console.service.organization.UserService;
 import top.mddata.console.service.organization.accountop.AccountOperation;
 import top.mddata.console.service.organization.accountop.AccountOperationGuard;
@@ -89,6 +90,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implements UserService {
     private final UserOrgRelService userOrgRelService;
+    private final UserRoleRelService userRoleRelService;
     private final FileService fileService; // 同一个服务，直接调用 service。跨服务需要调用 facade
     private final ConfigService configService;  // 同一个服务，直接调用 service。跨服务需要调用 facade
     private final SystemProperties systemProperties;
@@ -459,6 +461,16 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         userIds.forEach(id -> accountOperationGuard.check(id, AccountOperation.DELETE));
         // 删除前取出头像对象id，用于删除后释放头像附件（注册流程创建的用户 avatar 为 null，需过滤）
         List<Long> avatarIds = listByIds(userIds).stream().map(User::getAvatar).filter(Objects::nonNull).toList();
+
+        // 级联清理用户关联数据：第三方绑定（逻辑删）、角色关系、组织关系（物理删）
+        if (CollUtil.isNotEmpty(userIds)) {
+            Long operatorId = ContextUtil.getUserId();
+            userSocialAuthMapper.logicalDeleteByUserIds(userIds, operatorId,
+                    System.currentTimeMillis(), LocalDateTime.now());
+            userRoleRelService.removeByUserIds(userIds);
+            userOrgRelService.removeByUserIds(userIds);
+        }
+
         boolean flag = super.removeByIds(idList);
         fileService.releaseFilesByBiz(FileObjectType.Console.USER_AVATAR, avatarIds);
         EventTriggerDto request = new EventTriggerDto();
@@ -548,6 +560,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean registerBySocial(User user, UserSocialAuth socialAuth) {
+        long registerUserStart = System.nanoTime();
         ArgumentAssert.notNull(user, "用户信息不能为空");
         ArgumentAssert.notNull(socialAuth, "第三方绑定信息不能为空");
         ArgumentAssert.isTrue(UserIdentityService.checkRegisterNature(user.getNature()),
@@ -555,6 +568,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         ArgumentAssert.isFalse(checkUsername(user.getUsername(), null),
                 "用户名：{}已经存在", user.getUsername());
         registerUser(user, user.getName());
+        log.info("[注册耗时] registerUser 总耗时 {} ms", elapsedMs(registerUserStart));
+
+        long bindStart = System.nanoTime();
         socialAuth.setUserId(user.getId());
         socialAuth.setBoundAt(LocalDateTime.now());
         try {
@@ -563,9 +579,18 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
             // 并发注册或第三方身份已被占用：唯一索引兜底，回滚新用户并转译可理解提示
             throw new BizException("第三方账号已被其他用户绑定，或当前平台已绑定", ex);
         }
+        log.info("[注册耗时] 写入第三方绑定，userId={}，耗时 {} ms", user.getId(), elapsedMs(bindStart));
+
         // 绑定写入成功后才允许发布用户新增事件
+        long pushStart = System.nanoTime();
         publishUserAdded(user);
+        log.info("[注册耗时] publishUserAdded 耗时 {} ms", elapsedMs(pushStart));
         return true;
+    }
+
+    /** 打印诊断耗时，不打印任何用户敏感信息 */
+    private static long elapsedMs(long startNanos) {
+        return (System.nanoTime() - startNanos) / 1_000_000;
     }
 
     /**
@@ -575,13 +600,18 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
      * @param displayName 显示姓名
      */
     private void registerUser(User user, String displayName) {
+        long codeRuleStart = System.nanoTime();
         initSsoUser(user);
         user.setName(displayName);
         // 人员编号：注册时由编码规则自动生成，终生绑定
         user.setUserNo(codeRuleService.generate(CodeRuleCode.USER_NO, null));
+        log.info("[注册耗时] 生成人员编号耗时 {} ms", elapsedMs(codeRuleStart));
+
+        long orgStart = System.nanoTime();
         save(user);
         saveDefOrg(user);
         saveDefRole(user);
+        log.info("[注册耗时] 保存用户+默认部门+默认角色耗时 {} ms", elapsedMs(orgStart));
     }
 
     private void publishUserAdded(User user) {

@@ -3,6 +3,7 @@ package top.mddata.workbench.service.social.impl;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.utils.ArgumentAssert;
@@ -32,6 +33,7 @@ import java.security.SecureRandom;
  * @author tangyh
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class SocialOnboardingServiceImpl implements SocialOnboardingService {
 
@@ -77,6 +79,7 @@ public class SocialOnboardingServiceImpl implements SocialOnboardingService {
 
     @Override
     public LoginVo register(SocialRegisterDto dto) {
+        long start = System.nanoTime();
         ArgumentAssert.notNull(dto, () -> new BizException("注册参数不能为空"));
         ArgumentAssert.isTrue(Boolean.TRUE.equals(dto.getAgreement()),
                 () -> new BizException("请先阅读并同意用户协议"));
@@ -97,11 +100,23 @@ public class SocialOnboardingServiceImpl implements SocialOnboardingService {
         binding.setUnionId(identity.getUnionId());
         binding.setNickname(identity.getNickname());
 
+        long registerStart = System.nanoTime();
         Long userId = userFacade.registerBySocial(new UserSocialRegisterDto(user, binding));
+        log.info("[社交注册耗时] 创建账号并绑定，userId={}，耗时 {} ms",
+                userId, elapsedMs(registerStart));
         ArgumentAssert.notNull(userId, () -> new BizException("社交账号注册未返回用户ID"));
         user.setId(userId);
-        return loginSessionService.loginAuthenticated(user, authType(identity.getProvider()),
+
+        long loginStart = System.nanoTime();
+        LoginVo loginVo = loginSessionService.loginAuthenticated(user, authType(identity.getProvider()),
                 user.getUsername(), dto.getDeviceId(), dto.getDeviceInfo(), DEVICE_TYPE_PC);
+        log.info("[社交注册耗时] 签发会话，userId={}，耗时 {} ms", userId, elapsedMs(loginStart));
+        log.info("[社交注册耗时] register 总耗时 {} ms", elapsedMs(start));
+        return loginVo;
+    }
+
+    private long elapsedMs(long startNanos) {
+        return (System.nanoTime() - startNanos) / 1_000_000;
     }
 
     private String randomPassword() {

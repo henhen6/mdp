@@ -101,7 +101,10 @@ public class AuthServiceImpl implements AuthService, LoginSessionService {
                 .setDeviceId(StrUtil.isEmpty(deviceId) ? SaFoxUtil.getRandomString(32) : deviceId));
 
         // 写入用户常用信息到 TokenSession
+        long fillStart = System.nanoTime();
         fillTokenSession(user);
+        log.info("[登录耗时] fillTokenSession，userId={}，耗时 {} ms",
+                user.getId(), (System.nanoTime() - fillStart) / 1_000_000);
 
         // 封装返回值
         JSONObject obj = new JSONObject();
@@ -116,7 +119,9 @@ public class AuthServiceImpl implements AuthService, LoginSessionService {
         LoginLogDto dto = LoginLogDto.success(authType, deviceInfo, account, "登录成功", JSON.toJSONString(tokenInfo))
                 // 登录时，默认是默认应用 工作台
                 .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
+        long eventStart = System.nanoTime();
         SpringUtil.publishEvent(new LoginEvent(dto));
+        log.info("[登录耗时] 发布 LoginEvent 耗时 {} ms", (System.nanoTime() - eventStart) / 1_000_000);
 
         return loginVo;
     }

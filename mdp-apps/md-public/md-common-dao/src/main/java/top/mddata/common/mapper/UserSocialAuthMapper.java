@@ -8,6 +8,7 @@ import top.mddata.common.entity.UserSocialAuth;
 import top.mddata.common.entity.base.UserSocialAuthBase;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 /**
  * 用户第三方身份绑定 映射层。
@@ -57,4 +58,30 @@ public interface UserSocialAuthMapper extends SuperMapper<UserSocialAuth> {
     int logicalDeleteByUser(@Param("id") Long id, @Param("userId") Long userId,
                             @Param("operatorId") Long operatorId,
                             @Param("deletedAt") Long deletedAt, @Param("now") LocalDateTime now);
+
+    /**
+     * 按用户ID批量逻辑删除第三方绑定（删除用户时级联清理）。
+     *
+     * @param userIds    用户ID集合
+     * @param operatorId 操作人ID
+     * @param deletedAt  删除时间戳
+     * @param now        当前时间
+     * @return 受影响行数
+     */
+    @Update("""
+            <script>
+            UPDATE\s""" + UserSocialAuthBase.TABLE_NAME + """
+               SET deleted_at = #{deletedAt}, deleted_by = #{operatorId},
+                   updated_at = #{now}, updated_by = #{operatorId}
+             WHERE deleted_at = 0
+               AND user_id IN
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+              #{userId}
+            </foreach>
+            </script>
+            """)
+    int logicalDeleteByUserIds(@Param("userIds") Collection<Long> userIds,
+                               @Param("operatorId") Long operatorId,
+                               @Param("deletedAt") Long deletedAt,
+                               @Param("now") LocalDateTime now);
 }

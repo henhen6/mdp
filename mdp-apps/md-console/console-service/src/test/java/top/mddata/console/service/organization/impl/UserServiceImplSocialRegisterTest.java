@@ -18,6 +18,7 @@ import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.service.coderule.CodeRuleService;
 import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.UserOrgRelService;
+import top.mddata.console.service.organization.UserRoleRelService;
 import top.mddata.console.service.organization.UserService;
 import top.mddata.console.service.organization.accountop.AccountOperationGuard;
 import top.mddata.console.service.permission.RoleService;
@@ -90,7 +91,8 @@ class UserServiceImplSocialRegisterTest {
         UidGenerator uidGenerator = mock(UidGenerator.class);
         when(uidGenerator.getUid()).thenReturn(NEW_USER_ID);
 
-        service = new UserServiceImpl(userOrgRelService, mock(FileService.class),
+        service = new UserServiceImpl(userOrgRelService, mock(UserRoleRelService.class),
+                mock(FileService.class),
                 configService, systemProperties, uidGenerator, notifyFacade, roleService,
                 mock(OrgVisibilityService.class), mock(AccountOperationGuard.class),
                 codeRuleService, userSocialAuthMapper);

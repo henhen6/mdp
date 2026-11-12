@@ -253,6 +253,24 @@ class UserRoleRelServiceImplAssignRoleTest {
     }
 
     @Test
+    void 批量删除用户角色关系_物理删除并失效缓存() {
+        service.removeByUserIds(List.of(USER_ID));
+
+        ArgumentCaptor<QueryWrapper> captor = ArgumentCaptor.forClass(QueryWrapper.class);
+        verify(mapper).deleteByQuery(captor.capture());
+        String sql = captor.getValue().toSQL().replaceAll("\\s+", " ").toLowerCase();
+        assertTrue(sql.contains("user_id"), "删除条件应包含用户ID列，实际SQL：" + sql);
+        verify(cacheOps).del(anyCollection());
+    }
+
+    @Test
+    void 批量删除用户角色关系_空集合_不删库() {
+        service.removeByUserIds(List.of());
+        verify(mapper, never()).deleteByQuery(any(QueryWrapper.class));
+        verifyNoInteractions(cacheOps);
+    }
+
+    @Test
     void 回显_只返回可分配范围内的角色ID() {
         // 非运营分支需公司性质上下文，否则 fail fast 会提前抛出
         ContextUtil.setCurrentCompanyNature(OrgNatureEnum.HEAD_COMPANY.getCode());

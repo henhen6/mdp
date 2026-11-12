@@ -16,13 +16,21 @@ import top.mddata.console.dto.organization.UserResetPasswordDto;
 import top.mddata.console.dto.organization.UserUpdateDto;
 import top.mddata.console.service.organization.accountop.AccountOperation;
 import top.mddata.console.service.organization.accountop.AccountOperationGuard;
+import top.mddata.common.mapper.UserSocialAuthMapper;
+import top.mddata.console.service.organization.UserOrgRelService;
+import top.mddata.console.service.organization.UserRoleRelService;
+import top.mddata.console.service.system.FileService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -45,6 +53,14 @@ class UserServiceImplAccountOpTest {
     private top.mddata.console.service.organization.SystemProtectService systemProtectService;
     @Mock
     private top.mddata.open.facade.admin.NotifyAndEventPushFacade notifyAndEventPushFacade;
+    @Mock
+    private FileService fileService;
+    @Mock
+    private UserOrgRelService userOrgRelService;
+    @Mock
+    private UserRoleRelService userRoleRelService;
+    @Mock
+    private UserSocialAuthMapper userSocialAuthMapper;
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -146,5 +162,16 @@ class UserServiceImplAccountOpTest {
                 () -> userService.removeByIds(List.of(BuiltInUserId.OPS_ADMIN)));
         verify(accountOperationGuard).check(BuiltInUserId.OPS_ADMIN, AccountOperation.DELETE);
         verify(mapper, never()).deleteBatchByIds(anyCollection());
+    }
+
+    @Test
+    void 删除用户级联清理第三方绑定与角色组织关系() {
+        userService.removeByIds(List.of(31L, 32L));
+
+        // 第三方绑定逻辑删除：operatorId 未登录为 null，deletedAt/now 为当前时间
+        verify(userSocialAuthMapper).logicalDeleteByUserIds(eq(List.of(31L, 32L)),
+                isNull(), anyLong(), any(LocalDateTime.class));
+        verify(userRoleRelService).removeByUserIds(List.of(31L, 32L));
+        verify(userOrgRelService).removeByUserIds(List.of(31L, 32L));
     }
 }

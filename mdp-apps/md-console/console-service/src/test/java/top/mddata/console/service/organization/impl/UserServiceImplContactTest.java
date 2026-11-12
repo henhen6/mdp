@@ -13,6 +13,7 @@ import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.dto.organization.UserDto;
 import top.mddata.console.service.organization.OrgVisibilityService;
 import top.mddata.console.service.organization.UserOrgRelService;
+import top.mddata.console.service.organization.UserRoleRelService;
 import top.mddata.console.service.organization.accountop.AccountOperationGuard;
 import top.mddata.console.service.permission.RoleService;
 import top.mddata.console.service.system.ConfigService;
@@ -51,7 +52,8 @@ class UserServiceImplContactTest {
         when(uidGenerator.getUid()).thenReturn(123L);
         when(configService.getString(any(), any())).thenReturn("3M");
         when(systemProperties.getDefPwd()).thenReturn("123456");
-        userService = new UserServiceImpl(mock(UserOrgRelService.class), mock(FileService.class),
+        userService = new UserServiceImpl(mock(UserOrgRelService.class), mock(UserRoleRelService.class),
+                mock(FileService.class),
                 configService, systemProperties, uidGenerator, mock(NotifyAndEventPushFacade.class),
                 mock(RoleService.class), mock(OrgVisibilityService.class), mock(AccountOperationGuard.class),
                 mock(top.mddata.console.service.coderule.CodeRuleService.class),

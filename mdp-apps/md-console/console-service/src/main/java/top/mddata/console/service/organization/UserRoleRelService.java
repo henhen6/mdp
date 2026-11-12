@@ -24,6 +24,12 @@ public interface UserRoleRelService extends SuperService<UserRoleRel> {
     void removeByRoleIds(Collection<? extends Serializable> roleIdList);
 
     /**
+     * 批量删除用户-角色关系（物理删除），删除后失效对应用户的接口放行集与字段受限集缓存。
+     * @param userIds 用户ID
+     */
+    void removeByUserIds(Collection<Long> userIds);
+
+    /**
      * 保存角色-用户关系
      * @param dto 角色-用户关系
      * @return 保存结果

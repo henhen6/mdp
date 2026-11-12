@@ -73,6 +73,17 @@ public class UserRoleRelServiceImpl extends SuperServiceImpl<UserRoleRelMapper, 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void removeByUserIds(Collection<Long> userIds) {
+        if (CollUtil.isEmpty(userIds)) {
+            return;
+        }
+        super.remove(QueryWrapper.create().in(UserRoleRel::getUserId, userIds));
+        // 用户角色级联删除，失效受影响用户的接口放行集与字段受限集缓存
+        invalidateUserResourceApiCache(userIds);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean saveByDto(UserRoleRelDto dto) {
         checkRoleUserNatureMatch(dto.getRoleId(), dto.getUserIdList());
 
