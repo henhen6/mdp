@@ -54,6 +54,29 @@ class JustAuthRequestFactoryTest {
         assertEquals(redirectUri, queryParam(accessTokenUrl(request), "redirect_uri"));
     }
 
+    @Test
+    void 钉钉配置corpId时授权范围包含corpid() {
+        SocialLoginProperties.ProviderConfig config = config("https://example.com/callback");
+        config.setCorpId("test-corp-id");
+        AuthRequest request = factory.create(SocialProviderEnum.DINGTALK, config);
+
+        String authorizeUrl = request.authorize("test-state");
+
+        assertEquals("test-corp-id", queryParam(authorizeUrl, "corpId"));
+        assertEquals("openid,corpid", queryParam(authorizeUrl, "scope"));
+    }
+
+    @Test
+    void 钉钉未配置corpId时保持默认授权范围() {
+        AuthRequest request = factory.create(SocialProviderEnum.DINGTALK,
+                config("https://example.com/callback"));
+
+        String authorizeUrl = request.authorize("test-state");
+
+        assertEquals("openid", queryParam(authorizeUrl, "scope"));
+        assertEquals("", queryParam(authorizeUrl, "corpId"));
+    }
+
     private SocialLoginProperties.ProviderConfig config(String redirectUri) {
         SocialLoginProperties.ProviderConfig config = new SocialLoginProperties.ProviderConfig();
         config.setClientId("test-client-id");

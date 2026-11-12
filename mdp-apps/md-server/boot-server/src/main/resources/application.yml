@@ -159,7 +159,7 @@ mdp:
       client-id: ${DINGTALK_CLIENT_ID:5}
       client-secret: ${DINGTALK_CLIENT_SECRET:6}
       redirect-uri: ${DINGTALK_REDIRECT_URI:http://localhost:7700/#/auth/social/callback/dingtalk}
-      corp-id: ${DINGTALK_CORP_ID:7}
+      corp-id: ${DINGTALK_CORP_ID:}
       http-timeout-millis: 10000
     gitee:
       enabled: ${GITEE_ENABLED:true}
