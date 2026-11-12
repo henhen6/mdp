@@ -29,7 +29,7 @@ public interface UserSocialAuthMapper extends SuperMapper<UserSocialAuth> {
      * @return 受影响行数，为 1 表示转移成功
      */
     @Update("""
-            UPDATE """ + UserSocialAuthBase.TABLE_NAME + """
+            UPDATE\s""" + UserSocialAuthBase.TABLE_NAME + """
                SET user_id = #{targetUserId}, bound_at = #{now},
                    updated_at = #{now}, updated_by = #{operatorId}
              WHERE id = #{id} AND user_id = #{sourceUserId} AND deleted_at = 0
@@ -49,7 +49,7 @@ public interface UserSocialAuthMapper extends SuperMapper<UserSocialAuth> {
      * @return 受影响行数，为 1 表示解绑成功
      */
     @Update("""
-            UPDATE """ + UserSocialAuthBase.TABLE_NAME + """
+            UPDATE\s""" + UserSocialAuthBase.TABLE_NAME + """
                SET deleted_at = #{deletedAt}, deleted_by = #{operatorId},
                    updated_at = #{now}, updated_by = #{operatorId}
              WHERE id = #{id} AND user_id = #{userId} AND deleted_at = 0
