@@ -87,13 +87,8 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     public Long updateProfile(ProfileUserDto dto) {
         ArgumentAssert.isTrue(dto.getId().equals(ContextUtil.getUserId()), "只能修改个人信息");
 
-        // 手机号允许手动修改（不验证真实性），但需保证唯一
-        String oldPhone = null;
-        if (StrUtil.isNotEmpty(dto.getPhone())) {
-            ArgumentAssert.isFalse(checkPhone(dto.getPhone(), dto.getId()), "该手机号已经被他人使用");
-            User current = getById(dto.getId());
-            oldPhone = current != null ? current.getPhone() : null;
-        }
+        // 身份证号必填且全局唯一（与 console 用户管理保持一致）
+        ArgumentAssert.isFalse(checkIdCard(dto.getIdCard(), dto.getId()), "该身份证号已经被他人使用");
 
         User entity = UpdateEntity.of(User.class, dto.getId());
         BeanUtil.copyProperties(dto, entity);
@@ -101,16 +96,6 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
 
         updateById(entity);
         delCache(entity.getId());
-
-        // 手机号变更时同步清理 手机号->用户id 的查询缓存
-        if (StrUtil.isNotEmpty(dto.getPhone())) {
-            List<CacheKey> cacheKeyList = new ArrayList<>();
-            if (StrUtil.isNotEmpty(oldPhone)) {
-                cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(oldPhone));
-            }
-            cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(dto.getPhone()));
-            cacheOps.del(cacheKeyList);
-        }
 
         // 关联附件 注意：dto.logo 是前端传递过来的文件id， entity.logo 是在存入数据库前，设置的唯一对象id（为了节约雪花id，可以复用entity.getId(), 也可生成新的唯一id）
         // 仅在显式传了头像文件id时才更新文件关联：keepFileIds 为空会删除原头像，
@@ -205,6 +190,14 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     public boolean checkEmail(String email, Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(User::getEmail, email).ne(User::getId, id);
+        return getMapper().selectCountByQuery(queryWrapper) > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkIdCard(String idCard, Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(User::getIdCard, idCard).ne(User::getId, id);
         return getMapper().selectCountByQuery(queryWrapper) > 0;
     }
 

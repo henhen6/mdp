@@ -1,6 +1,7 @@
 package top.mddata.workbench.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -10,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import static top.mddata.base.utils.ValidatorUtil.REGEX_MOBILE;
+import static top.mddata.base.utils.ValidatorUtil.REGEX_ID_CARD;
 
 /**
  * 个人中心-用户信息
@@ -56,10 +57,11 @@ public class ProfileUserDto {
     private String name;
 
     /**
-     * 手机号（手动填写，仅做格式与唯一性校验，不验证真实性）
+     * 身份证号（个人中心唯一可编辑的证件字段，必填且全局唯一）
      */
-    @Pattern(regexp = REGEX_MOBILE, message = "请输入11位合法的手机号")
-    @Schema(description = "手机号")
-    private String phone;
+    @NotBlank(message = "请填写身份证号")
+    @Pattern(regexp = REGEX_ID_CARD, message = "请输入正确的身份证号")
+    @Schema(description = "身份证号")
+    private String idCard;
 
 }

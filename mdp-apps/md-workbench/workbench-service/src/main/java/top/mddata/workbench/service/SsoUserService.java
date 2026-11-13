@@ -87,6 +87,14 @@ public interface SsoUserService extends SuperService<User> {
     boolean checkEmail(String email, Long id);
 
     /**
+     * 检测身份证号是否已被他人使用
+     * @param idCard 身份证号
+     * @param id 用户id
+     * @return 存在=true
+     */
+    boolean checkIdCard(String idCard, Long id);
+
+    /**
      * 根据用户id，查询指定公司{companyId}下的所有部门
      * @param userId 用户id
      * @param companyId 单位id
