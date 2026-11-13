@@ -48,6 +48,7 @@ import top.mddata.workbench.dto.ProfileEmailDto;
 import top.mddata.workbench.dto.ProfilePasswordDto;
 import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
+import top.mddata.workbench.dto.ProfileUsernameDto;
 import top.mddata.workbench.service.SsoUserService;
 import top.mddata.workbench.service.VerificationCodeService;
 
@@ -340,7 +341,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     public String sendPhoneCode(String oldPhone, String phone) {
         User current = getById(ContextUtil.getUserId());
         ArgumentAssert.notNull(current, "用户不存在");
-        ArgumentAssert.isTrue(StrUtil.equals(current.getPhone(), oldPhone), "原手机号不一致");
+        assertOldContactMatches(current.getPhone(), oldPhone, "原手机号不一致");
         ArgumentAssert.isFalse(checkPhone(phone, null), "该手机号已经被他人使用");
 
         return verificationCodeService.sendPhoneCode(phone, MsgTemplateKey.Sms.PHONE_EDIT);
@@ -350,9 +351,20 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
     public String sendEmailCode(String oldEmail, String email) {
         User current = getById(ContextUtil.getUserId());
         ArgumentAssert.notNull(current, "用户不存在");
-        ArgumentAssert.isTrue(StrUtil.equals(current.getEmail(), oldEmail), "原邮箱不一致");
+        assertOldContactMatches(current.getEmail(), oldEmail, "原邮箱不一致");
         ArgumentAssert.isFalse(checkEmail(email, null), "该邮箱已经被他人使用");
         return verificationCodeService.sendEmailCode(email, MsgTemplateKey.Email.EMAIL_EDIT);
+    }
+
+    /**
+     * 首次绑定场景（当前联系方式为空，如社交注册用户）无需校验原值；
+     * 已有原值时才要求与传入的原值一致，防止越权改绑他人联系方式。
+     */
+    private void assertOldContactMatches(String currentContact, String oldContact, String message) {
+        if (StrUtil.isEmpty(currentContact)) {
+            return;
+        }
+        ArgumentAssert.isTrue(StrUtil.equals(currentContact, oldContact), message);
     }
 
     @Override
@@ -362,7 +374,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         ArgumentAssert.notNull(userId, "用户不存在");
         User current = getById(userId);
         ArgumentAssert.notNull(current, "用户不存在");
-        ArgumentAssert.isTrue(StrUtil.equals(current.getPhone(), dto.getOldPhone()), "原手机号不一致");
+        assertOldContactMatches(current.getPhone(), dto.getOldPhone(), "原手机号不一致");
         ArgumentAssert.isFalse(checkPhone(dto.getPhone(), null), "该手机号已经被他人使用");
 
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateKey.Sms.PHONE_EDIT);
@@ -372,11 +384,15 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         User user = UpdateEntity.of(User.class, userId);
         user.setPhone(dto.getPhone());
         updateById(user);
+//        delCache(userId);
 
-        List<CacheKey> cacheKeyList = Arrays.asList(
-                cacheKey,
-                SsoUserPhoneCacheKeyBuilder.builder(dto.getOldPhone()),
-                SsoUserPhoneCacheKeyBuilder.builder(dto.getPhone()));
+        // 首次绑定（原手机号为空）时无需清理旧缓存键
+        List<CacheKey> cacheKeyList = new ArrayList<>();
+        cacheKeyList.add(cacheKey);
+        if (StrUtil.isNotEmpty(current.getPhone())) {
+            cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(current.getPhone()));
+        }
+        cacheKeyList.add(SsoUserPhoneCacheKeyBuilder.builder(dto.getPhone()));
         cacheOps.del(cacheKeyList);
 
         EventTriggerDto request = new EventTriggerDto();
@@ -399,6 +415,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         User user = UpdateEntity.of(User.class, userId);
         user.setPhone(phone);
         updateById(user);
+        delCache(userId);
 
         // 换绑可能发生在用户尚未设置手机号的场景（如微信自动注册），旧手机号为空时跳过
         List<CacheKey> cacheKeyList = new ArrayList<>();
@@ -423,8 +440,8 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         ArgumentAssert.notNull(userId, "用户不存在");
         User current = getById(userId);
         ArgumentAssert.notNull(current, "用户不存在");
-        ArgumentAssert.isTrue(StrUtil.equals(current.getEmail(), dto.getOldEmail()), "原邮箱不一致");
-        ArgumentAssert.isFalse(checkPhone(dto.getEmail(), null), "该邮箱已经被他人使用");
+        assertOldContactMatches(current.getEmail(), dto.getOldEmail(), "原邮箱不一致");
+        ArgumentAssert.isFalse(checkEmail(dto.getEmail(), null), "该邮箱已经被他人使用");
 
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(dto.getKey(), MsgTemplateKey.Email.EMAIL_EDIT);
         CacheResult<String> result = cacheOps.get(cacheKey);
@@ -433,11 +450,15 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         User user = UpdateEntity.of(User.class, userId);
         user.setEmail(dto.getEmail());
         updateById(user);
+        delCache(userId);
 
-        List<CacheKey> cacheKeyList = Arrays.asList(
-                cacheKey,
-                SsoUserEmailCacheKeyBuilder.builder(dto.getOldEmail()),
-                SsoUserEmailCacheKeyBuilder.builder(dto.getEmail()));
+        // 首次绑定（原邮箱为空）时无需清理旧缓存键
+        List<CacheKey> cacheKeyList = new ArrayList<>();
+        cacheKeyList.add(cacheKey);
+        if (StrUtil.isNotEmpty(current.getEmail())) {
+            cacheKeyList.add(SsoUserEmailCacheKeyBuilder.builder(current.getEmail()));
+        }
+        cacheKeyList.add(SsoUserEmailCacheKeyBuilder.builder(dto.getEmail()));
         cacheOps.del(cacheKeyList);
 
         // 广播
@@ -470,7 +491,40 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
 
         updateById(user);
+        delCache(userId);
         // 广播
+        EventTriggerDto request = new EventTriggerDto();
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
+                .setEventContent(IdDto.builder().id(user.getId()).build().toString())
+                .setTriggerAt(LocalDateTime.now());
+        notifyAndEventPushFacade.eventPush(request);
+        return userId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long updateUsername(ProfileUsernameDto dto) {
+        Long userId = ContextUtil.getUserId();
+        ArgumentAssert.notNull(userId, "用户不存在");
+        User current = getById(userId);
+        ArgumentAssert.notNull(current, "用户不存在");
+
+        // 修改登录账号属于敏感操作，先校验当前密码确认身份
+        String passwordMd5 = SecureUtil.sha256(dto.getPassword() + current.getSalt());
+        ArgumentAssert.isTrue(StrUtil.equals(passwordMd5, current.getPassword()), "当前密码不正确");
+        ArgumentAssert.isFalse(checkUsername(dto.getUsername(), userId), "该用户名已经被使用");
+
+        User user = UpdateEntity.of(User.class, userId);
+        user.setUsername(dto.getUsername());
+        updateById(user);
+        delCache(userId);
+
+        // 清理 旧用户名->用户id、新用户名->用户id 的查询缓存，避免旧映射残留
+        List<CacheKey> cacheKeyList = Arrays.asList(
+                SsoUserUserNameCacheKeyBuilder.builder(current.getUsername()),
+                SsoUserUserNameCacheKeyBuilder.builder(dto.getUsername()));
+        cacheOps.del(cacheKeyList);
+
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
                 .setEventContent(IdDto.builder().id(user.getId()).build().toString())
@@ -494,6 +548,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
 
         updateById(user);
+        delCache(oldUser.getId());
         // 广播
         EventTriggerDto request = new EventTriggerDto();
         request.setEventCode(EventTypeCode.Workbench.USER_EDIT)

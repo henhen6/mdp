@@ -7,6 +7,7 @@ import top.mddata.workbench.dto.ProfileEmailDto;
 import top.mddata.workbench.dto.ProfilePasswordDto;
 import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
+import top.mddata.workbench.dto.ProfileUsernameDto;
 
 import java.util.List;
 
@@ -193,6 +194,14 @@ public interface SsoUserService extends SuperService<User> {
      * @return 用户id
      */
     Long updatePassword(ProfilePasswordDto dto);
+
+    /**
+     * 修改用户名（登录账号）
+     *
+     * @param dto 用户名信息
+     * @return 用户id
+     */
+    Long updateUsername(ProfileUsernameDto dto);
 
     /**
      * 根据邮箱重置密码

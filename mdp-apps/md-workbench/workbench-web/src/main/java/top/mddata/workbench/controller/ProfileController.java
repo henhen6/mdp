@@ -21,6 +21,7 @@ import top.mddata.workbench.dto.ProfileEmailDto;
 import top.mddata.workbench.dto.ProfilePasswordDto;
 import top.mddata.workbench.dto.ProfilePhoneDto;
 import top.mddata.workbench.dto.ProfileUserDto;
+import top.mddata.workbench.dto.ProfileUsernameDto;
 import top.mddata.workbench.dto.WxMaPhoneBindDto;
 import top.mddata.workbench.service.SsoUserService;
 import top.mddata.workbench.service.WxMaAuthService;
@@ -109,6 +110,19 @@ public class ProfileController {
         return R.success(ssoUserService.updatePassword(dto));
     }
 
+    /**
+     * 修改用户名（登录账号）
+     *
+     * @param dto 用户
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/updateUsername")
+    @Operation(summary = "修改用户名", description = "修改用户名（登录账号）")
+    @RequestLog(value = "修改用户名", logType = RequestLog.LogType.UPDATE)
+    public R<Long> updateUsername(@Validated @RequestBody ProfileUsernameDto dto) {
+        return R.success(ssoUserService.updateUsername(dto));
+    }
+
     @Operation(summary = "发送短信验证码", description = "修改个人手机号并校验旧手机号，发送短信验证码")
     @Parameters({
             @Parameter(name = "phone", description = "手机号", schema = @Schema(type = DATA_TYPE_STRING), in = ParameterIn.QUERY),
@@ -116,7 +130,7 @@ public class ProfileController {
     })
     @GetMapping(value = "/sendPhoneCode")
     @RequestLog(value = "发送短信验证码", logType = RequestLog.LogType.OTHER)
-    public R<String> sendPhoneCode(@RequestParam(value = "phone") String phone, @RequestParam(value = "oldPhone") String oldPhone) {
+    public R<String> sendPhoneCode(@RequestParam(value = "phone") String phone, @RequestParam(value = "oldPhone", required = false) String oldPhone) {
         return R.success(ssoUserService.sendPhoneCode(oldPhone, phone));
     }
 
@@ -127,7 +141,7 @@ public class ProfileController {
     @Operation(summary = "发送邮箱验证码", description = "修改个人邮箱并校验旧邮箱，发送邮箱验证码")
     @GetMapping(value = "/sendEmailCode")
     @RequestLog(value = "发送邮箱验证码", logType = RequestLog.LogType.OTHER)
-    public R<String> sendEmailCode(@RequestParam(value = "email") String email, @RequestParam(value = "oldEmail") String oldEmail) {
+    public R<String> sendEmailCode(@RequestParam(value = "email") String email, @RequestParam(value = "oldEmail", required = false) String oldEmail) {
         return R.success(ssoUserService.sendEmailCode(oldEmail, email));
     }
 }
