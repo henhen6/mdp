@@ -8,6 +8,7 @@ import top.mddata.base.exception.BizException;
 import top.mddata.common.dto.UserSocialRegisterDto;
 import top.mddata.common.entity.User;
 import top.mddata.common.entity.UserSocialAuth;
+import top.mddata.common.properties.SystemProperties;
 import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.console.facade.organization.UserFacade;
 import top.mddata.workbench.dto.LoginDto;
@@ -26,7 +27,6 @@ import top.mddata.workbench.vo.LoginVo;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -45,14 +45,16 @@ import static org.mockito.Mockito.when;
  * {@link SocialOnboardingServiceImpl} 首次选择行为单测。
  *
  * <p>覆盖绑定已有账号的成功路径、凭据失败累计但不消费票据、目标冲突与身份
- * 冲突快速失败，以及社交注册的协议确认、票据消费顺序、随机用户名与随机
- * 高强度密码、远程返回新用户 ID 后自动登录。</p>
+ * 冲突快速失败，以及社交注册的协议确认、票据消费顺序、随机用户名与系统
+ * 默认密码、远程返回新用户 ID 后自动登录。</p>
  *
  * @author tangyh
  */
 class SocialOnboardingServiceImplTest {
 
     private static final String PENDING_TICKET = "pending-ticket";
+
+    private static final String DEF_PWD = "social-default-pwd";
 
     private SocialTicketService ticketService;
     private UserSocialAuthService userSocialAuthService;
@@ -68,8 +70,10 @@ class SocialOnboardingServiceImplTest {
         accountAuthenticator = mock(AccountAuthenticator.class);
         loginSessionService = mock(LoginSessionService.class);
         userFacade = mock(UserFacade.class);
+        SystemProperties systemProperties = new SystemProperties();
+        systemProperties.setDefPwd(DEF_PWD);
         service = new SocialOnboardingServiceImpl(ticketService, userSocialAuthService,
-                accountAuthenticator, loginSessionService, userFacade);
+                accountAuthenticator, loginSessionService, userFacade, systemProperties);
 
         when(ticketService.getPending(PENDING_TICKET))
                 .thenReturn(new PendingSocialUser(identity()));
@@ -168,7 +172,7 @@ class SocialOnboardingServiceImplTest {
     }
 
     @Test
-    void 社交注册不强制联系方式且密码使用随机值() {
+    void 社交注册不强制联系方式且密码使用系统默认密码() {
         SocialRegisterDto dto = registerDto();
         when(userFacade.registerBySocial(any())).thenReturn(99L);
 
@@ -181,9 +185,7 @@ class SocialOnboardingServiceImplTest {
         assertNull(user.getPhone());
         assertNull(user.getEmail());
         assertNotNull(user.getPassword());
-        assertNotEquals("123456", user.getPassword());
-        assertTrue(user.getPassword().matches("[A-Za-z0-9_-]{43}"),
-                "随机密码必须为32字节URL-safe随机串");
+        assertEquals(DEF_PWD, user.getPassword());
         assertFalse(user.getUsername().contains(identity().getOpenId()));
         assertTrue(user.getUsername().startsWith("social_"));
         assertEquals(99L, user.getId());

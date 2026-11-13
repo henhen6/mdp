@@ -10,6 +10,7 @@ import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.common.dto.UserSocialRegisterDto;
 import top.mddata.common.entity.User;
 import top.mddata.common.entity.UserSocialAuth;
+import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.facade.organization.UserFacade;
 import top.mddata.workbench.dto.SocialBindExistingDto;
 import top.mddata.workbench.dto.SocialRegisterDto;
@@ -24,8 +25,6 @@ import top.mddata.workbench.service.social.model.PendingSocialUser;
 import top.mddata.workbench.service.social.model.SocialIdentity;
 import top.mddata.workbench.vo.LoginVo;
 
-import java.util.Base64;
-import java.security.SecureRandom;
 
 /**
  * 第三方登录首次选择服务实现。
@@ -40,16 +39,12 @@ public class SocialOnboardingServiceImpl implements SocialOnboardingService {
     /** 网站应用登录固定为 PC 设备类型 */
     private static final String DEVICE_TYPE_PC = "PC";
 
-    /** 初始密码随机字节数 */
-    private static final int PASSWORD_BYTES = 32;
-
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-
     private final SocialTicketService ticketService;
     private final UserSocialAuthService userSocialAuthService;
     private final AccountAuthenticator accountAuthenticator;
     private final LoginSessionService loginSessionService;
     private final UserFacade userFacade;
+    private final SystemProperties systemProperties;
 
     @Override
     public LoginVo bindExisting(SocialBindExistingDto dto) {
@@ -89,7 +84,7 @@ public class SocialOnboardingServiceImpl implements SocialOnboardingService {
 
         User user = new User();
         user.setUsername("social_" + UUID.randomUUID().toString(true));
-        user.setPassword(randomPassword());
+        user.setPassword(systemProperties.getDefPwd());
         user.setName(StrUtil.blankToDefault(dto.getName(), identity.getNickname()));
         user.setNature(dto.getNature());
 
@@ -117,12 +112,6 @@ public class SocialOnboardingServiceImpl implements SocialOnboardingService {
 
     private long elapsedMs(long startNanos) {
         return (System.nanoTime() - startNanos) / 1_000_000;
-    }
-
-    private String randomPassword() {
-        byte[] bytes = new byte[PASSWORD_BYTES];
-        SECURE_RANDOM.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     private AuthTypeEnum authType(SocialProviderEnum provider) {
