@@ -87,6 +87,18 @@ public interface CacheKeyTable {
          * 完整key: social.reauth:id:{ticket}
          */
         String SOCIAL_REAUTH = "social.reauth";
+
+        /**
+         * 指纹登录挑战（一次性消费）
+         * 完整key: fingerprint.challenge:id:{challengeId}
+         */
+        String FINGERPRINT_CHALLENGE = "fingerprint.challenge";
+
+        /**
+         * 指纹录入前密码验证票据（一次性消费）
+         * 完整key: fingerprint.pwdVerified:id:{userId}
+         */
+        String FINGERPRINT_PWD_VERIFIED = "fingerprint.pwdVerified";
     }
 
     interface Open {

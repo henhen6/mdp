@@ -65,7 +65,11 @@ public enum AuthTypeEnum implements BaseEnum<String> {
     /**
      * Gitee 登录。仅用于登录日志，不注册账号密码策略
      */
-    GITEE("11", "Gitee登录");
+    GITEE("11", "Gitee登录"),
+    /**
+     * 指纹免密登录。仅用于登录日志与登录编排，不注册账号密码策略
+     */
+    FINGERPRINT("12", "指纹登录");
 
     @Schema(description = "code")
     @EnumValue

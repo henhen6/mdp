@@ -167,6 +167,15 @@ mdp:
       client-secret: ${GITEE_CLIENT_SECRET:7}
       redirect-uri: ${GITEE_REDIRECT_URI:http://localhost:7700/#/auth/social/callback/gitee}
       http-timeout-millis: 10000
+  # 指纹登录（WebAuthn），配置详情看 FingerprintProperties
+  fingerprint:
+    enabled: ${FINGERPRINT_ENABLED:true}
+    # RP ID：必须等于登录页部署域名（或其父域）
+    rp-id: ${FINGERPRINT_RP_ID:localhost}
+    rp-name: ${FINGERPRINT_RP_NAME:MDP主数据平台}
+    # 允许的前端 origin，严格匹配，多个用英文逗号分隔
+    origins: ${FINGERPRINT_ORIGINS:http://localhost:7700}
+    max-credentials-per-user: ${FINGERPRINT_MAX_CREDENTIALS:10}
 
 spring:
   main:

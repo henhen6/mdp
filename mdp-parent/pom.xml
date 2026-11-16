@@ -102,6 +102,8 @@
         <antisamy.version>1.7.8</antisamy.version>
         <!-- 三方登录-->
         <just-auth.version>1.16.7</just-auth.version>
+        <!-- WebAuthn 指纹登录 -->
+        <webauthn-server-core.version>2.8.0</webauthn-server-core.version>
 
         <!-- 线程变量 -->
         <transmittable-thread-local.version>2.14.0</transmittable-thread-local.version>
@@ -764,6 +766,13 @@
                 <groupId>me.zhyd.oauth</groupId>
                 <artifactId>JustAuth</artifactId>
                 <version>${just-auth.version}</version>
+            </dependency>
+
+            <!-- WebAuthn 指纹登录 -->
+            <dependency>
+                <groupId>com.yubico</groupId>
+                <artifactId>webauthn-server-core</artifactId>
+                <version>${webauthn-server-core.version}</version>
             </dependency>
 
             <!-- 对象转换 -->
