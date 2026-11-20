@@ -43,14 +43,10 @@ mdp:
       http-timeout-millis: 10000
   # 指纹登录（WebAuthn），配置详情看 FingerprintProperties
   fingerprint:
-    enabled: ${FINGERPRINT_ENABLED:true}
     # RP ID：必须等于登录页部署域名（或其父域）
     rp-id: ${FINGERPRINT_RP_ID:workbench.mddata.top}
-    rp-name: ${FINGERPRINT_RP_NAME:MDP主数据平台}
     # 允许的前端 origin，严格匹配，多个用英文逗号分隔
-    origins: ${FINGERPRINT_ORIGINS:http://workbench.mddata.top}
-    max-credentials-per-user: ${FINGERPRINT_MAX_CREDENTIALS:10}
-
+    origins: ${FINGERPRINT_ORIGINS:https://workbench.mddata.top}
 
 spring:
   data:
