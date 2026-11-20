@@ -4,6 +4,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import top.mddata.base.exception.ArgumentException;
 import top.mddata.base.exception.BizException;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.utils.ArgumentAssert;
@@ -30,7 +31,7 @@ public class UserSocialAuthServiceImpl extends SuperServiceImpl<UserSocialAuthMa
     @Override
     public UserSocialAuth bind(Long userId, SocialIdentity identity) {
         findByIdentity(identity).ifPresent(item -> {
-            throw new BizException("该第三方账号已绑定其他用户");
+            throw new ArgumentException("该第三方账号已绑定其他用户");
         });
         findByUserAndProvider(userId, identity.getProvider()).ifPresent(item -> {
             throw new BizException("当前账号已绑定该平台，请先解绑");
