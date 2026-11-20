@@ -7,6 +7,7 @@ import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.dto.RegisterByUsernameDto;
+import top.mddata.workbench.dto.TwoFactorVerifyDto;
 import top.mddata.workbench.dto.WxMaLoginDto;
 import top.mddata.workbench.vo.LoginVo;
 
@@ -43,6 +44,15 @@ public interface AuthService {
      * @return 用户信息
      */
     R<LoginVo> loginByWxMa(WxMaLoginDto login);
+
+    /**
+     * 双因素登录第二步：校验一次性票据与 OTP，复核账号仍然存在且未被禁用后签发会话。
+     * 票据签发于第一步密码验证之后，签发会话前必须重新加载用户，防止期间账号被删除/禁用。
+     *
+     * @param dto 票据与验证码
+     * @return 用户信息
+     */
+    R<LoginVo> verifyTwoFactorLogin(TwoFactorVerifyDto dto);
 
     /**
      * 根据邮箱注册

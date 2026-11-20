@@ -16,6 +16,10 @@ public interface CacheKeyTable {
      * 完整key: forget_pwd:{key} -> str
      */
     String FORGET_PWD = "forget_pwd";
+    /**
+     * 双因素认证（ticket、otp）
+     */
+    String TWO_FACTOR = "two_factor";
 
 
     interface Console {

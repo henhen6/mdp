@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.mddata.base.base.R;
 import top.mddata.base.cache.redis.CacheResult;
 import top.mddata.base.cache.repository.CacheOps;
+import top.mddata.base.exception.BizException;
 import top.mddata.base.model.cache.CacheKey;
 import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
@@ -46,6 +47,7 @@ import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
 import top.mddata.workbench.dto.RegisterByPhoneDto;
 import top.mddata.workbench.dto.RegisterByUsernameDto;
+import top.mddata.workbench.dto.TwoFactorVerifyDto;
 import top.mddata.workbench.dto.WxMaLoginDto;
 import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.event.LoginEvent;
@@ -53,10 +55,14 @@ import top.mddata.workbench.service.AccountAuthenticator;
 import top.mddata.workbench.service.AuthService;
 import top.mddata.workbench.service.LoginSessionService;
 import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.TwoFactorAuthService;
+import top.mddata.workbench.service.TwoFactorTicketService.TwoFactorTicketPayload;
 import top.mddata.workbench.service.WxMaAuthService;
 import top.mddata.workbench.vo.LoginVo;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
 import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
@@ -76,6 +82,17 @@ import static top.mddata.base.constant.ContextConstants.USER_ID;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService, LoginSessionService {
+
+    /** 登录返回状态：已颁发令牌 */
+    private static final String STATUS_TOKEN = "TOKEN";
+
+    /**
+     * 需评估双因素策略的密码类登录方式。
+     * 手机/邮箱验证码登录本身已是"持有验证码"这一因素，不再触发二次验证（spec 3.2）。
+     */
+    private static final Set<AuthTypeEnum> PASSWORD_AUTH_TYPES = EnumSet.of(
+            AuthTypeEnum.CAPTCHA, AuthTypeEnum.USERNAME);
+
     private final SystemProperties systemProperties;
     private final SaTokenConfig saTokenConfig;
     private final CacheOps cacheOps;
@@ -84,12 +101,33 @@ public class AuthServiceImpl implements AuthService, LoginSessionService {
     private final MsgFacade msgFacade;
     private final WxMaAuthService wxMaAuthService;
     private final AccountAuthenticator accountAuthenticator;
+    private final TwoFactorAuthService twoFactorAuthService;
 
     @Override
     public R<LoginVo> login(LoginDto login) {
         User user = accountAuthenticator.authenticate(login);
+        // 仅密码类登录评估双因素策略；验证码登录（手机/邮箱）本身已是持有因素，直接签发会话
+        if (PASSWORD_AUTH_TYPES.contains(login.getAuthType()) && twoFactorAuthService.shouldTrigger(user)) {
+            // 命中双因素策略时只签发 2FA 票据，不创建登录会话
+            return R.success(twoFactorAuthService.startTwoFactor(user, login.getAuthType(),
+                    login.getUsername(), login.getDeviceId(), login.getDeviceInfo()));
+        }
         return R.success(loginAuthenticated(user, login.getAuthType(), login.getUsername(),
                 login.getDeviceId(), login.getDeviceInfo(), "PC"));
+    }
+
+    @Override
+    public R<LoginVo> verifyTwoFactorLogin(TwoFactorVerifyDto dto) {
+        // OTP 校验通过后一次性票据才被消费，取回第一步密码验证留下的登录上下文
+        TwoFactorTicketPayload payload = twoFactorAuthService.verifyLogin(dto);
+        // 会话颁发前的安全门禁：票据有效期内账号可能已被删除或禁用，必须重新加载并复核，
+        // 与 loginByTicket、指纹登录颁发前的存在性/状态复核同性质
+        User user = ssoUserService.getById(payload.getUserId());
+        ArgumentAssert.notNull(user, () -> new BizException("账号不存在或已被删除"));
+        ArgumentAssert.isTrue(user.getState() == null || user.getState(),
+                "账号已被禁用，请联系管理员");
+        return R.success(loginAuthenticated(user, AuthTypeEnum.valueOf(payload.getAuthType()),
+                payload.getAccount(), payload.getDeviceId(), payload.getDeviceInfo(), "PC"));
     }
 
     @Override
@@ -114,6 +152,7 @@ public class AuthServiceImpl implements AuthService, LoginSessionService {
         loginVo.setExpire(tokenInfo.getTokenTimeout());
         loginVo.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
         loginVo.setId(user.getId());
+        loginVo.setStatus(STATUS_TOKEN);
 
         // 发送登录成功事件
         LoginLogDto dto = LoginLogDto.success(authType, deviceInfo, account, "登录成功", JSON.toJSONString(tokenInfo))

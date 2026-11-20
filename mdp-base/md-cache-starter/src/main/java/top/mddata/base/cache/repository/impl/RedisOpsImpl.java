@@ -40,6 +40,31 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
      */
     private final StringRedisTemplate stringRedisTemplate;
 
+    /**
+     * 计数初始化并自增脚本。
+     * <p>
+     * key 不存在时以裸字符串 "0" 占位，并按 ARGV[1]（毫秒，&lt;=0 表示不过期）设置 TTL；
+     * key 已存在但值不是整数时（如曾被对象通道的 NullVal 占位污染），按 0 次失败重置
+     * 裸字符串 "0" 并同样设置 TTL；随后统一 INCR。全程字符串编码，与原生 INCR 兼容；
+     * 整段脚本由 Redis 原子执行。
+     */
+    private static final RedisScript<Long> INIT_AND_INCR_SCRIPT = RedisScript.of("""
+            local ttl = tonumber(ARGV[1])
+            local needInit = 0
+            if redis.call('exists', KEYS[1]) == 0 then
+                needInit = 1
+            elseif tonumber(redis.call('get', KEYS[1])) == nil then
+                needInit = 1
+            end
+            if needInit == 1 then
+                redis.call('set', KEYS[1], '0')
+                if ttl > 0 then
+                    redis.call('pexpire', KEYS[1], ttl)
+                end
+            end
+            return redis.call('incr', KEYS[1])
+            """, Long.class);
+
     public RedisOpsImpl(RedisOps redisOps, StringRedisTemplate stringRedisTemplate) {
         this.redisOps = redisOps;
         this.stringRedisTemplate = stringRedisTemplate;
@@ -126,6 +151,14 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
             connection.flushDb();
             return "ok";
         });
+    }
+
+    @Override
+    public Long initAndIncr(@NonNull CacheKey key) {
+        // 固定窗口：TTL 仅在 Lua 内首次占位时设置，后续自增不续期
+        long ttlMillis = key.getExpire() == null ? 0L : key.getExpire().toMillis();
+        return stringRedisTemplate.execute(INIT_AND_INCR_SCRIPT,
+                List.of(key.getKey()), String.valueOf(ttlMillis));
     }
 
     @Override

@@ -110,6 +110,21 @@ public interface CacheOps {
     void flushDb();
 
     /**
+     * 原子计数原语：key 不存在时先以裸字符串 "0" 占位（携带 key.getExpire() 的 TTL），再自增 1；
+     * key 已存在且为整数时直接自增；key 已存在但值不是整数时（脏值，如被对象通道的
+     * NullVal 占位污染），按 0 次语义重置为 "0" 并设置同样的 TTL 后再自增，完成自愈。
+     * <p>
+     * 占位与自增必须走字符串通道（Redis 原生 INCR 整数编码）。不能用
+     * {@link #setIfAbsent(CacheKey, Object)} 占位：对象序列化器会把 0L 写成 JSON/JDK 字节，
+     * 随后 INCR 报 "value is not an integer"，任何序列化器配置下都不兼容。
+     * TTL 仅在首次占位或脏值重置时设置，正常自增不续期（固定窗口）。
+     *
+     * @param key 缓存键（TTL 由 key.getExpire() 携带；为 null 时计数键不过期）
+     * @return 返回键 key 在自增之后的值。
+     */
+    Long initAndIncr(@NonNull CacheKey key);
+
+    /**
      * 为键 key 储存的数字值加上一。
      *
      * @param key 一定不能为 {@literal null}.

@@ -310,7 +310,7 @@ public class MsgTaskServiceImpl extends SuperServiceImpl<MsgTaskMapper, MsgTask>
         if (StrUtil.isNotEmpty(data.getTemplateKey())) {
             msgTemplate = msgTemplateService.getByTemplateKey(data.getTemplateKey());
         }
-        ArgumentAssert.notNull(msgTemplate, "消息模板不存在");
+        ArgumentAssert.notNull(msgTemplate, "消息模板不存在: {}", data.getTemplateKey());
 
         //1，验证必要参数
         if (data instanceof MsgSendNoticeDto noticeDto) {
