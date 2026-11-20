@@ -34,7 +34,7 @@ import top.mddata.base.oauth2.core.request.Oauth2TokenRequest;
 import top.mddata.base.oauth2.core.response.Oauth2TokenResponse;
 import top.mddata.base.oauth2.core.response.Oauth2UserInfoResponse;
 import top.mddata.common.entity.User;
-import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.user.SsoUserService;
 
 import java.util.List;
 

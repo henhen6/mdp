@@ -13,8 +13,8 @@ import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.enumeration.LoginEventTypeEnum;
 import top.mddata.workbench.enumeration.LoginStatusEnum;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.service.LoginLogService;
-import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.audit.LoginLogService;
+import top.mddata.workbench.service.user.SsoUserService;
 
 /**
  * 登录事件监听，用于记录登录日志

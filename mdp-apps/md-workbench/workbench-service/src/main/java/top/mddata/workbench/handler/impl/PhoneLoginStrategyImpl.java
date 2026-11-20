@@ -18,7 +18,7 @@ import top.mddata.console.facade.system.ConfigFacade;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.user.SsoUserService;
 
 /**
  * 手机 + 短信验证码

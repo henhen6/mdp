@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import top.mddata.base.base.R;
 import top.mddata.workbench.entity.Notice;
 import top.mddata.workbench.entity.NoticeRecipient;
-import top.mddata.workbench.service.NoticeRecipientService;
-import top.mddata.workbench.service.NoticeService;
+import top.mddata.workbench.service.notice.NoticeRecipientService;
+import top.mddata.workbench.service.notice.NoticeService;
 
 import java.time.LocalDateTime;
 import java.util.List;

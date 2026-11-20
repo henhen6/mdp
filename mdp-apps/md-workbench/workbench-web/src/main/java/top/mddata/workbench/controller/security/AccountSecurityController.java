@@ -1,0 +1,136 @@
+package top.mddata.workbench.controller.security;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import top.mddata.base.annotation.log.RequestLog;
+import top.mddata.base.base.R;
+import top.mddata.workbench.dto.ProfileEmailDto;
+import top.mddata.workbench.dto.ProfilePasswordDto;
+import top.mddata.workbench.dto.ProfilePhoneDto;
+import top.mddata.workbench.dto.ProfileUsernameDto;
+import top.mddata.workbench.dto.WxMaPhoneBindDto;
+import top.mddata.workbench.service.auth.WxMaAuthService;
+import top.mddata.workbench.service.user.SsoUserService;
+
+import static top.mddata.common.constant.SwaggerConstants.DATA_TYPE_STRING;
+
+/**
+ * 安全设置中的登录账号、联系方式与密码管理。
+ *
+ * @author henhen6
+ */
+@RestController
+@RequestMapping("/profile")
+@AllArgsConstructor
+@Tag(name = "账号安全设置", description = "登录账号、手机号、邮箱与密码管理")
+public class AccountSecurityController {
+
+    private final SsoUserService ssoUserService;
+    private final WxMaAuthService wxMaAuthService;
+
+    /**
+     * 修改个人手机号
+     *
+     * @param dto 用户
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/updatePhone")
+    @Operation(summary = "修改个人手机号", description = "修改个人手机号")
+    @RequestLog(value = "修改个人手机号", logType = RequestLog.LogType.UPDATE)
+    public R<Long> updatePhone(@Validated @RequestBody ProfilePhoneDto dto) {
+        return R.success(ssoUserService.updatePhone(dto));
+    }
+
+    /**
+     * 微信授权换绑个人手机号
+     *
+     * @param dto 手机号授权凭证
+     * @return 用户id
+     */
+    @PostMapping("/updatePhoneByWxMa")
+    @Operation(summary = "微信授权换绑个人手机号", description = "通过 getPhoneNumber 授权码换取手机号并换绑")
+    @RequestLog(value = "微信授权换绑个人手机号", logType = RequestLog.LogType.UPDATE)
+    public R<Long> updatePhoneByWxMa(@Validated @RequestBody WxMaPhoneBindDto dto) {
+        String phone = wxMaAuthService.getPhoneNumber(dto.getPhoneCode());
+        return R.success(ssoUserService.updatePhoneByWxMa(phone));
+    }
+
+    /**
+     * 修改个人邮箱
+     *
+     * @param dto 用户
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/updateEmail")
+    @Operation(summary = "修改个人邮箱", description = "修改个人邮箱")
+    @RequestLog(value = "修改个人邮箱", logType = RequestLog.LogType.UPDATE)
+    public R<Long> updateEmail(@Validated @RequestBody ProfileEmailDto dto) {
+        return R.success(ssoUserService.updateEmail(dto));
+    }
+
+    /**
+     * 修改个人密码
+     *
+     * @param dto 用户
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/updatePassword")
+    @Operation(summary = "修改个人密码", description = "修改个人密码")
+    @RequestLog(value = "修改个人密码", logType = RequestLog.LogType.UPDATE)
+    public R<Long> updatePassword(@Validated @RequestBody ProfilePasswordDto dto) {
+        return R.success(ssoUserService.updatePassword(dto));
+    }
+
+    /**
+     * 修改用户名（登录账号）
+     *
+     * @param dto 用户
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PostMapping("/updateUsername")
+    @Operation(summary = "修改用户名", description = "修改用户名（登录账号）")
+    @RequestLog(value = "修改用户名", logType = RequestLog.LogType.UPDATE)
+    public R<Long> updateUsername(@Validated @RequestBody ProfileUsernameDto dto) {
+        return R.success(ssoUserService.updateUsername(dto));
+    }
+
+    @Operation(summary = "发送短信验证码", description = "修改个人手机号并校验旧手机号，发送短信验证码")
+    @Parameters({
+            @Parameter(name = "phone", description = "手机号", schema = @Schema(type = DATA_TYPE_STRING),
+                    in = ParameterIn.QUERY),
+            @Parameter(name = "oldPhone", description = "原手机号", schema = @Schema(type = DATA_TYPE_STRING),
+                    in = ParameterIn.QUERY),
+    })
+    @GetMapping("/sendPhoneCode")
+    @RequestLog(value = "发送短信验证码", logType = RequestLog.LogType.OTHER)
+    public R<String> sendPhoneCode(@RequestParam(value = "phone") String phone,
+                                   @RequestParam(value = "oldPhone", required = false) String oldPhone) {
+        return R.success(ssoUserService.sendPhoneCode(oldPhone, phone));
+    }
+
+    @Parameters({
+            @Parameter(name = "email", description = "邮箱", schema = @Schema(type = DATA_TYPE_STRING),
+                    in = ParameterIn.QUERY),
+            @Parameter(name = "oldEmail", description = "原邮箱", schema = @Schema(type = DATA_TYPE_STRING),
+                    in = ParameterIn.QUERY),
+    })
+    @Operation(summary = "发送邮箱验证码", description = "修改个人邮箱并校验旧邮箱，发送邮箱验证码")
+    @GetMapping("/sendEmailCode")
+    @RequestLog(value = "发送邮箱验证码", logType = RequestLog.LogType.OTHER)
+    public R<String> sendEmailCode(@RequestParam(value = "email") String email,
+                                   @RequestParam(value = "oldEmail", required = false) String oldEmail) {
+        return R.success(ssoUserService.sendEmailCode(oldEmail, email));
+    }
+}

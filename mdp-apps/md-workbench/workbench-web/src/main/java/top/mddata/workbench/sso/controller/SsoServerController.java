@@ -44,7 +44,7 @@ import static top.mddata.base.exception.code.ExceptionCode.JWT_TOKEN_EXPIRED;
 /**
  * 单点登录 服务端Controller
  *
- * 此模块只处理SSO路由跳转，具体的登录接口在 AuthController
+ * 此模块只处理SSO路由跳转，具体的登录接口在 LoginController
  *
  * @author henhen6
  * @since 2025/7/6 15:59
@@ -53,7 +53,7 @@ import static top.mddata.base.exception.code.ExceptionCode.JWT_TOKEN_EXPIRED;
 @RestController
 @RequestMapping
 @AllArgsConstructor
-@Tag(name = "单点登录服务端", description = "此模块只处理SSO路由跳转，具体的登录接口在 AuthController")
+@Tag(name = "单点登录服务端", description = "此模块只处理SSO路由跳转，具体的登录接口在 LoginController")
 public class SsoServerController {
 
     @Autowired

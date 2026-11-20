@@ -47,8 +47,8 @@ import top.mddata.workbench.oauth2.dto.RedirectUriDto;
 import top.mddata.workbench.oauth2.handler.MdPasswordGrantTypeHandler;
 import top.mddata.workbench.oauth2.vo.ConfirmInfoVo;
 import top.mddata.workbench.oauth2.vo.ConfirmVo;
-import top.mddata.workbench.service.AuthService;
-import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.auth.AuthService;
+import top.mddata.workbench.service.user.SsoUserService;
 import top.mddata.workbench.vo.SsoUserVo;
 
 import java.util.List;

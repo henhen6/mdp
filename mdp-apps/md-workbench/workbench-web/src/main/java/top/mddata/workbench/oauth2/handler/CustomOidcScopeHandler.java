@@ -6,7 +6,7 @@ import cn.dev33.satoken.util.SaFoxUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.mddata.common.entity.User;
-import top.mddata.workbench.service.SsoUserService;
+import top.mddata.workbench.service.user.SsoUserService;
 
 /**
  * 扩展 OIDC 权限处理器，返回更多字段

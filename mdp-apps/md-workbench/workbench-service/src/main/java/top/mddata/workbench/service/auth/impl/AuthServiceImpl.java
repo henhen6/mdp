@@ -1,0 +1,461 @@
+package top.mddata.workbench.service.auth.impl;
+
+import cn.dev33.satoken.config.SaTokenConfig;
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import cn.dev33.satoken.temp.SaTempUtil;
+import cn.dev33.satoken.util.SaFoxUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.mybatisflex.core.util.UpdateEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import top.mddata.base.base.R;
+import top.mddata.base.cache.redis.CacheResult;
+import top.mddata.base.cache.repository.CacheOps;
+import top.mddata.base.exception.BizException;
+import top.mddata.base.model.cache.CacheKey;
+import top.mddata.base.utils.ArgumentAssert;
+import top.mddata.base.utils.MyTreeUtil;
+import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
+import top.mddata.common.cache.workbench.ForgetPasswordCacheKeyBuilder;
+import top.mddata.common.constant.DefValConstants;
+import top.mddata.common.constant.MsgTemplateKey;
+import top.mddata.common.entity.Org;
+import top.mddata.common.entity.User;
+import top.mddata.common.properties.SystemProperties;
+import top.mddata.console.dto.message.MsgSendDto;
+import top.mddata.console.dto.message.MsgSendMailDto;
+import top.mddata.console.facade.message.MsgFacade;
+import top.mddata.console.facade.organization.UserFacade;
+import top.mddata.workbench.dto.ForgetPasswordByEmailDto;
+import top.mddata.workbench.dto.LoginDto;
+import top.mddata.workbench.dto.LoginLogDto;
+import top.mddata.workbench.dto.RegisterByEmailDto;
+import top.mddata.workbench.dto.RegisterByPhoneDto;
+import top.mddata.workbench.dto.RegisterByUsernameDto;
+import top.mddata.workbench.dto.TwoFactorVerifyDto;
+import top.mddata.workbench.dto.WxMaLoginDto;
+import top.mddata.workbench.enumeration.AuthTypeEnum;
+import top.mddata.workbench.event.LoginEvent;
+import top.mddata.workbench.service.auth.AccountAuthenticator;
+import top.mddata.workbench.service.auth.AuthService;
+import top.mddata.workbench.service.session.LoginSessionService;
+import top.mddata.workbench.service.user.SsoUserService;
+import top.mddata.workbench.service.twofactor.TwoFactorAuthService;
+import top.mddata.workbench.service.twofactor.TwoFactorTicketService.TwoFactorTicketPayload;
+import top.mddata.workbench.service.auth.WxMaAuthService;
+import top.mddata.workbench.vo.LoginVo;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+import static top.mddata.base.constant.ContextConstants.COMPANY_ID;
+import static top.mddata.base.constant.ContextConstants.COMPANY_NATURE;
+import static top.mddata.base.constant.ContextConstants.DEPT_ID;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_ID;
+import static top.mddata.base.constant.ContextConstants.TOP_COMPANY_NATURE;
+import static top.mddata.base.constant.ContextConstants.USER_ID;
+
+
+/**
+ * 认证
+ *
+ * @author henhen6
+ * @since 2025/6/30 16:41
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService, LoginSessionService {
+
+    /** 登录返回状态：已颁发令牌 */
+    private static final String STATUS_TOKEN = "TOKEN";
+
+    /**
+     * 需评估双因素策略的密码类登录方式。
+     * 手机/邮箱验证码登录本身已是"持有验证码"这一因素，不再触发二次验证（spec 3.2）。
+     */
+    private static final Set<AuthTypeEnum> PASSWORD_AUTH_TYPES = EnumSet.of(
+            AuthTypeEnum.CAPTCHA, AuthTypeEnum.USERNAME);
+
+    private final SystemProperties systemProperties;
+    private final SaTokenConfig saTokenConfig;
+    private final CacheOps cacheOps;
+    private final SsoUserService ssoUserService;
+    private final UserFacade userFacade;
+    private final MsgFacade msgFacade;
+    private final WxMaAuthService wxMaAuthService;
+    private final AccountAuthenticator accountAuthenticator;
+    private final TwoFactorAuthService twoFactorAuthService;
+
+    @Override
+    public R<LoginVo> login(LoginDto login) {
+        User user = accountAuthenticator.authenticate(login);
+        // 仅密码类登录评估双因素策略；验证码登录（手机/邮箱）本身已是持有因素，直接签发会话
+        if (PASSWORD_AUTH_TYPES.contains(login.getAuthType()) && twoFactorAuthService.shouldTrigger(user)) {
+            // 命中双因素策略时只签发 2FA 票据，不创建登录会话
+            return R.success(twoFactorAuthService.startTwoFactor(user, login.getAuthType(),
+                    login.getUsername(), login.getDeviceId(), login.getDeviceInfo()));
+        }
+        return R.success(loginAuthenticated(user, login.getAuthType(), login.getUsername(),
+                login.getDeviceId(), login.getDeviceInfo(), "PC"));
+    }
+
+    @Override
+    public R<LoginVo> verifyTwoFactorLogin(TwoFactorVerifyDto dto) {
+        // OTP 校验通过后一次性票据才被消费，取回第一步密码验证留下的登录上下文
+        TwoFactorTicketPayload payload = twoFactorAuthService.verifyLogin(dto);
+        // 会话颁发前的安全门禁：票据有效期内账号可能已被删除或禁用，必须重新加载并复核，
+        // 与 loginByTicket、指纹登录颁发前的存在性/状态复核同性质
+        User user = ssoUserService.getById(payload.getUserId());
+        ArgumentAssert.notNull(user, () -> new BizException("账号不存在或已被删除"));
+        ArgumentAssert.isTrue(user.getState() == null || user.getState(),
+                "账号已被禁用，请联系管理员");
+        return R.success(loginAuthenticated(user, AuthTypeEnum.valueOf(payload.getAuthType()),
+                payload.getAccount(), payload.getDeviceId(), payload.getDeviceInfo(), "PC"));
+    }
+
+    @Override
+    public LoginVo loginAuthenticated(User user, AuthTypeEnum authType, String account,
+                                      String deviceId, String deviceInfo, String deviceType) {
+        // 创建Account-Session
+        StpUtil.login(user.getId(), new SaLoginParameter()
+                .setDeviceType(deviceType)
+                .setDeviceId(StrUtil.isEmpty(deviceId) ? SaFoxUtil.getRandomString(32) : deviceId));
+
+        // 写入用户常用信息到 TokenSession
+        long fillStart = System.nanoTime();
+        fillTokenSession(user);
+        log.info("[登录耗时] fillTokenSession，userId={}，耗时 {} ms",
+                user.getId(), (System.nanoTime() - fillStart) / 1_000_000);
+
+        // 封装返回值
+        JSONObject obj = new JSONObject();
+        obj.put(USER_ID, user.getId());
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        LoginVo loginVo = BeanUtil.toBean(tokenInfo, LoginVo.class);
+        loginVo.setExpire(tokenInfo.getTokenTimeout());
+        loginVo.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
+        loginVo.setId(user.getId());
+        loginVo.setStatus(STATUS_TOKEN);
+
+        // 发送登录成功事件
+        LoginLogDto dto = LoginLogDto.success(authType, deviceInfo, account, "登录成功", JSON.toJSONString(tokenInfo))
+                // 登录时，默认是默认应用 工作台
+                .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
+        long eventStart = System.nanoTime();
+        SpringUtil.publishEvent(new LoginEvent(dto));
+        log.info("[登录耗时] 发布 LoginEvent 耗时 {} ms", (System.nanoTime() - eventStart) / 1_000_000);
+
+        return loginVo;
+    }
+
+    @Override
+    public R<LoginVo> loginByWxMa(WxMaLoginDto login) {
+        User user = wxMaAuthService.findOrRegisterUser(login.getLoginCode(), login.getPhoneCode());
+        ArgumentAssert.isTrue(user.getState() == null || user.getState(), "账号已被禁用，请联系管理员");
+
+        // 创建Account-Session
+        StpUtil.login(user.getId(), new SaLoginParameter()
+                .setDeviceType("MINIAPP")
+                .setDeviceId(StrUtil.isEmpty(login.getDeviceId()) ? SaFoxUtil.getRandomString(32) : login.getDeviceId()));
+
+        // 写入用户常用信息到 TokenSession
+        fillTokenSession(user);
+
+        // 封装返回值
+        JSONObject obj = new JSONObject();
+        obj.put(USER_ID, user.getId());
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        LoginVo loginVO = BeanUtil.toBean(tokenInfo, LoginVo.class);
+        loginVO.setExpire(tokenInfo.getTokenTimeout());
+        loginVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
+        loginVO.setId(user.getId());
+
+        // 发送登录成功事件
+        LoginLogDto dto = LoginLogDto.success(AuthTypeEnum.WX_MA, login.getDeviceInfo(), user.getPhone(), "微信登录成功", JSON.toJSONString(tokenInfo))
+                // 登录时，默认是默认应用 工作台
+                .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
+        SpringUtil.publishEvent(new LoginEvent(dto));
+
+        return R.success(loginVO);
+    }
+
+    @Override
+    public String loginByTicket(Object loginId, Long remainTokenTimeout, String deviceId) {
+        // fail fast：loginId 非法或用户不存在时直接终止，不发 token
+        Long userId = Convert.toLong(loginId);
+        ArgumentAssert.notNull(userId, "SSO ticket 登录失败，loginId 非法: {}", loginId);
+
+        User user = ssoUserService.getById(userId);
+        ArgumentAssert.notNull(user, "SSO ticket 登录失败，用户不存在: userId={}", userId);
+
+        StpUtil.login(userId, new SaLoginParameter()
+                .setTimeout(remainTokenTimeout)
+                .setDeviceId(deviceId));
+
+        // 与普通登录同源写入用户常用信息，保证两种登录方式的会话数据权限等价
+        fillTokenSession(user);
+
+        // 登录日志事件统一在 SsoServerController#getRedirectUrl 签发 ticket 时推送
+        // （第三方应用换 ticket 不经过本方法，在此记录会导致 MDP 前端一次登录记两条、第三方漏记）
+        return StpUtil.getTokenValue();
+    }
+
+    /**
+     * 将用户常用信息（loginId、当前组织上下文）写入当前 TokenSession。
+     * <p>
+     * 普通登录与 SSO ticket 登录共用，必须在 StpUtil.login 之后调用。
+     *
+     * @param user 用户
+     */
+    private void fillTokenSession(User user) {
+        // 查询用户部门信息
+        TempOrg org = findOrg(user);
+
+        SaSession session = StpUtil.getTokenSession();
+        session.setLoginId(user.getId());
+        if (org.getCurrentTopCompanyId() != null) {
+            session.set(TOP_COMPANY_ID, org.getCurrentTopCompanyId());
+        } else {
+            session.delete(TOP_COMPANY_ID);
+        }
+        if (org.getCurrentTopCompanyNature() != null) {
+            session.set(TOP_COMPANY_NATURE, org.getCurrentTopCompanyNature());
+        } else {
+            session.delete(TOP_COMPANY_NATURE);
+        }
+        if (org.getCurrentCompanyNature() != null) {
+            session.set(COMPANY_NATURE, org.getCurrentCompanyNature());
+        } else {
+            session.delete(COMPANY_NATURE);
+        }
+        if (org.getCurrentCompanyId() != null) {
+            session.set(COMPANY_ID, org.getCurrentCompanyId());
+        } else {
+            session.delete(COMPANY_ID);
+        }
+        if (org.getCurrentDeptId() != null) {
+            session.set(DEPT_ID, org.getCurrentDeptId());
+        } else {
+            session.delete(DEPT_ID);
+        }
+    }
+
+    /**
+     * 解析用户当前组织上下文（部门/单位/顶级单位）。
+     *
+     * <p>包可见以便单测。</p>
+     */
+    TempOrg findOrg(User sysUser) {
+        if (sysUser == null) {
+            return TempOrg.builder().build();
+        }
+        Long userId = sysUser.getId();
+
+        List<Long> orgIdList = ssoUserService.findOrgIdByUserId(userId);
+        Long currentDeptId = resolveDeptId(sysUser, userId, orgIdList);
+        Org company = resolveCompany(sysUser, userId, currentDeptId);
+        Org topCompany = resolveTopCompany(company);
+
+        User updateUser = UpdateEntity.of(User.class, userId);
+        updateUser.setLastDeptId(currentDeptId);
+        updateUser.setLastCompanyId(company != null ? company.getId() : null);
+        updateUser.setLastTopCompanyId(topCompany != null ? topCompany.getId() : null);
+        ssoUserService.updateById(updateUser);
+
+        return TempOrg.builder()
+                .currentDeptId(currentDeptId)
+                .currentCompanyId(company != null ? company.getId() : null)
+                .currentCompanyNature(company != null ? ssoUserService.getOrgNatureByOrgId(company.getId()) : null)
+                .currentTopCompanyId(topCompany != null ? topCompany.getId() : null)
+                .currentTopCompanyNature(topCompany != null ? ssoUserService.getOrgNatureByOrgId(topCompany.getId()) : null)
+                .build();
+    }
+
+    /**
+     * 解析当前部门：上次部门仍属于用户直属机构时保留，否则从其部门中重选一个。
+     */
+    private Long resolveDeptId(User sysUser, Long userId, List<Long> orgIdList) {
+        Long lastDeptId = sysUser.getLastDeptId();
+        if (lastDeptId != null && CollUtil.contains(orgIdList, lastDeptId)) {
+            return lastDeptId;
+        }
+        List<Org> deptList = ssoUserService.findDeptByUserId(userId, null);
+        Org defaultDept = ssoUserService.getDefaultOrg(deptList, null);
+        return defaultDept != null ? defaultDept.getId() : null;
+    }
+
+    /**
+     * 解析当前单位：上次单位仍在用户所属单位（含上级单位）中时保留；
+     * 否则优先按当前部门推导（保证单位与部门一致），再退化为单位列表首个。
+     *
+     * <p>保留校验必须用"所属单位及上级单位"集合，而非直属机构集合：
+     * 只挂部门的用户直属集合不含公司，用后者校验会把单位恒判失效并清空
+     * （SSO 换 token 时公司参数丢失的历史 bug）。</p>
+     */
+    private Org resolveCompany(User sysUser, Long userId, Long currentDeptId) {
+        List<Org> companyList = ssoUserService.findCompanyByUserId(userId);
+        Long lastCompanyId = sysUser.getLastCompanyId();
+        Org company = null;
+        if (lastCompanyId != null) {
+            company = companyList.stream()
+                    .filter(item -> lastCompanyId.equals(item.getId()))
+                    .findFirst().orElse(null);
+        }
+        if (company == null && currentDeptId != null) {
+            company = ssoUserService.getCompanyByDeptId(currentDeptId);
+        }
+        if (company == null && !companyList.isEmpty()) {
+            company = companyList.get(0);
+        }
+        return company;
+    }
+
+    /**
+     * 解析顶级单位：由当前单位的 treePath 唯一推导，保证顶级单位与当前单位同源，
+     * 不信任可能残留脏值的 lastTopCompanyId。
+     */
+    private Org resolveTopCompany(Org company) {
+        if (company == null) {
+            return null;
+        }
+        Long rootId = MyTreeUtil.getTopNodeId(company.getTreePath());
+        return rootId != null ? ssoUserService.getOrgByIdCache(rootId) : company;
+    }
+
+
+    @Override
+    public String registerByEmail(RegisterByEmailDto register) {
+        if (systemProperties.getVerifyCaptcha()) {
+            CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(register.getKey(), MsgTemplateKey.Email.EMAIL_REGISTER);
+            CacheResult<String> code = cacheOps.get(cacheKey);
+            ArgumentAssert.equals(code.getValue(), register.getCode(), "验证码不正确");
+        }
+        User defUser = BeanUtil.toBean(register, User.class);
+        defUser.setNature(register.getNature());
+        userFacade.registerByEmail(defUser);
+        if (systemProperties.getVerifyCaptcha()) {
+            CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(register.getKey(), MsgTemplateKey.Email.EMAIL_REGISTER);
+            cacheOps.del(cacheKey);
+        }
+        return defUser.getEmail();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String registerByPhone(RegisterByPhoneDto register) {
+        if (systemProperties.getVerifyCaptcha()) {
+            CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(register.getKey(), MsgTemplateKey.Sms.PHONE_REGISTER);
+            CacheResult<String> code = cacheOps.get(cacheKey);
+            ArgumentAssert.equals(code.getValue(), register.getCode(), "验证码不正确");
+        }
+        User defUser = BeanUtil.toBean(register, User.class);
+        defUser.setNature(register.getNature());
+        userFacade.registerByPhone(defUser);
+
+        if (systemProperties.getVerifyCaptcha()) {
+            CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(register.getKey(), MsgTemplateKey.Sms.PHONE_REGISTER);
+            cacheOps.del(cacheKey);
+        }
+
+        return defUser.getPhone();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String registerByUsername(RegisterByUsernameDto register) {
+        ArgumentAssert.equals(register.getPassword(), register.getConfirmPassword(), "密码不一致");
+        User defUser = BeanUtil.toBean(register, User.class);
+        defUser.setNature(register.getNature());
+        userFacade.registerByUsername(defUser);
+        return defUser.getUsername();
+    }
+
+    @Override
+    public Boolean forgetPassword(String email) {
+        User user = ssoUserService.getByEmail(email);
+        if (user == null) {
+            return false;
+        }
+
+        String token = UUID.randomUUID().toString();
+        CacheKey cacheKey = ForgetPasswordCacheKeyBuilder.build(token);
+        cacheOps.set(cacheKey, email);
+
+//        String url = "http://localhost:7700/#/auth/forget-password-update?token=" + token;
+        String url = systemProperties.getForgetPasswordUrl() + token;
+
+        MsgSendDto msgSendDto = MsgSendMailDto.buildApiSender()
+                .addRecipient(email)
+                .setTemplateKey(MsgTemplateKey.Email.FORGET_PASSWORD_BY_EMAIL)
+                .addParam("resetPasswordUrl", url)
+                .addParam("expireTime", String.valueOf(cacheKey.getExpire().toHours()));
+        msgFacade.sendByTemplateKey(msgSendDto);
+        return true;
+    }
+
+    @Override
+    public Boolean checkToken(String token) {
+        CacheKey cacheKey = ForgetPasswordCacheKeyBuilder.build(token);
+        CacheResult<String> result = cacheOps.get(cacheKey);
+        return !result.isNull() && !result.isNullVal();
+    }
+
+    @Override
+    public Boolean updateEmailByToken(ForgetPasswordByEmailDto dto) {
+        ArgumentAssert.equals(dto.getPassword(), dto.getConfirmPassword(), "密码不一致");
+        CacheKey cacheKey = ForgetPasswordCacheKeyBuilder.build(dto.getToken());
+        CacheResult<String> result = cacheOps.get(cacheKey);
+        String email = result.getValue();
+        ArgumentAssert.notEmpty(email, "token无效或已过期");
+
+        Boolean b = ssoUserService.resetPwByEmail(email, dto.getPassword());
+        cacheOps.del(cacheKey);
+        return b;
+    }
+
+    /**
+     * 组织上下文解析结果。包可见以便单测断言。
+     */
+    @Builder
+    @AllArgsConstructor
+    @Getter
+    static class TempOrg {
+        /**
+         * 当前公司id
+         */
+        private Long currentCompanyId;
+        /**
+         * 当前公司性质
+         */
+        private Integer currentCompanyNature;
+        /**
+         * 当前顶级公司id
+         */
+        private Long currentTopCompanyId;
+        /**
+         * 当前顶级公司性质
+         */
+        private Integer currentTopCompanyNature;
+        /**
+         * 当前部门id
+         */
+        private Long currentDeptId;
+    }
+}

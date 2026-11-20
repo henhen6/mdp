@@ -19,7 +19,7 @@ import top.mddata.base.mvcflex.utils.WrapperUtil;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.workbench.entity.LoginLog;
 import top.mddata.workbench.query.LoginLogQuery;
-import top.mddata.workbench.service.LoginLogService;
+import top.mddata.workbench.service.audit.LoginLogService;
 import top.mddata.workbench.vo.LoginLogVo;
 
 import java.util.List;

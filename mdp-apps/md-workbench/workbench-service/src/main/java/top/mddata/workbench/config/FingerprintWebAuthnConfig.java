@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.mddata.base.utils.ArgumentAssert;
-import top.mddata.workbench.service.impl.FingerprintCredentialRepositoryImpl;
+import top.mddata.workbench.service.fingerprint.impl.FingerprintCredentialRepositoryImpl;
 
 import java.util.HashSet;
 import java.util.List;

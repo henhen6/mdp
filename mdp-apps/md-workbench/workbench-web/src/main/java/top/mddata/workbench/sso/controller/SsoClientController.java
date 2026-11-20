@@ -25,7 +25,7 @@ import top.mddata.open.facade.admin.AppFacade;
 import top.mddata.open.vo.admin.AppVo;
 import top.mddata.workbench.dto.LoginLogDto;
 import top.mddata.workbench.event.LoginEvent;
-import top.mddata.workbench.service.AuthService;
+import top.mddata.workbench.service.auth.AuthService;
 
 /**
  * 单点登录 客户端接口
