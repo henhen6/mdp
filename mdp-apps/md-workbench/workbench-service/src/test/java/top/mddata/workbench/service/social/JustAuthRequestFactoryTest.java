@@ -3,6 +3,8 @@ package top.mddata.workbench.service.social;
 import me.zhyd.oauth.request.AuthDefaultRequest;
 import me.zhyd.oauth.request.AuthRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import top.mddata.workbench.config.SocialLoginProperties;
 import top.mddata.workbench.enumeration.SocialProviderEnum;
 
@@ -23,21 +25,24 @@ class JustAuthRequestFactoryTest {
 
     private final JustAuthRequestFactory factory = new JustAuthRequestFactory();
 
-    @Test
-    void Gitee授权地址保留完整hash回调() {
-        String redirectUri = "http://localhost:7700/#/auth/social/callback/gitee";
-        AuthRequest request = factory.create(SocialProviderEnum.GITEE, config(redirectUri));
+    @ParameterizedTest
+    @EnumSource(SocialProviderEnum.class)
+    void 所有平台授权地址保留完整hash回调(SocialProviderEnum provider) {
+        String redirectUri = "http://localhost:7700/#/auth/social/callback/" + provider.getCode();
+        AuthRequest request = factory.create(provider, config(redirectUri));
 
         String authorizeUrl = request.authorize("test-state");
 
         assertEquals(redirectUri, queryParam(authorizeUrl, "redirect_uri"));
     }
 
-    @Test
-    void Gitee令牌地址保留完整hash回调且不修改原配置() throws ReflectiveOperationException {
-        String redirectUri = "http://localhost:7700/#/auth/social/callback/gitee";
+    @ParameterizedTest
+    @EnumSource(value = SocialProviderEnum.class, names = {"QQ", "GITEE"})
+    void QQ和Gitee令牌地址保留完整hash回调且不修改原配置(SocialProviderEnum provider)
+            throws ReflectiveOperationException {
+        String redirectUri = "http://localhost:7700/#/auth/social/callback/" + provider.getCode();
         SocialLoginProperties.ProviderConfig config = config(redirectUri);
-        AuthRequest request = factory.create(SocialProviderEnum.GITEE, config);
+        AuthRequest request = factory.create(provider, config);
 
         String tokenUrl = accessTokenUrl(request);
 

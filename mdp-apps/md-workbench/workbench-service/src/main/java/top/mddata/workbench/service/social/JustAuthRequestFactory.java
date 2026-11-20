@@ -37,7 +37,7 @@ public class JustAuthRequestFactory {
         HttpConfig httpConfig = new HttpConfig();
         httpConfig.setTimeout(config.getHttpTimeoutMillis());
         String redirectUri = config.getRedirectUri();
-        if (provider == SocialProviderEnum.GITEE && redirectUri != null && redirectUri.contains("#")) {
+        if (redirectUri != null && redirectUri.contains("#")) {
             // JustAuth 不编码查询参数，hash 会导致授权和令牌请求中的回调地址被截断
             redirectUri = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
         }
