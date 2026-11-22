@@ -1,5 +1,7 @@
 package top.mddata.workbench.controller;
 
+import com.anji.captcha.model.vo.CaptchaVO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +11,7 @@ import top.mddata.workbench.controller.security.AccountSecurityController;
 import top.mddata.workbench.controller.security.FingerprintSecurityController;
 import top.mddata.workbench.controller.security.SocialSecurityController;
 import top.mddata.workbench.controller.security.TwoFactorSecurityController;
+import top.mddata.workbench.dto.ForgetPasswordByCodeDto;
 import top.mddata.workbench.dto.ForgetPasswordByEmailDto;
 import top.mddata.workbench.dto.FingerprintLoginVerifyDto;
 import top.mddata.workbench.dto.FingerprintRegisterVerifyDto;
@@ -74,12 +77,18 @@ class ControllerRouteContractTest {
         assertPost(RegisterController.class, "registerByUsername", "/anyUser/auth/registerByUsername",
                 RegisterByUsernameDto.class);
         assertGet(RegisterController.class, "checkPhone", "/anyUser/auth/checkPhone", String.class);
-        assertPost(RegisterController.class, "register", "/anyUser/social/register", SocialRegisterDto.class);
+        assertPost(RegisterController.class, "registerBySocial", "/anyUser/social/register",
+                SocialRegisterDto.class);
 
         assertPost(PasswordRecoveryController.class, "forgetPassword", "/anyUser/auth/forgetPassword", String.class);
         assertPost(PasswordRecoveryController.class, "checkToken", "/anyUser/auth/checkToken", String.class);
         assertPost(PasswordRecoveryController.class, "updateEmailByToken", "/anyUser/auth/updateEmailByToken",
                 ForgetPasswordByEmailDto.class);
+        assertGet(PasswordRecoveryController.class, "sendForgetPasswordCode",
+                "/anyUser/auth/forgetPassword/sendCode",
+                String.class, CaptchaVO.class, HttpServletRequest.class);
+        assertPost(PasswordRecoveryController.class, "resetPasswordByCode",
+                "/anyUser/auth/forgetPassword/resetByCode", ForgetPasswordByCodeDto.class);
     }
 
     @Test

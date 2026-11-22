@@ -218,4 +218,12 @@ public interface SsoUserService extends SuperService<User> {
      * @return 是否成功
      */
     Boolean resetPwByEmail(String email, String password);
+
+    /**
+     * 根据手机号重置密码
+     * @param phone 手机号
+     * @param password 密码
+     * @return 是否成功
+     */
+    Boolean resetPwByPhone(String phone, String password);
 }

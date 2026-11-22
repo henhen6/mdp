@@ -32,6 +32,7 @@ import top.mddata.base.utils.ArgumentAssert;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
 import top.mddata.common.cache.workbench.ForgetPasswordCacheKeyBuilder;
+import top.mddata.common.cache.workbench.TwoFactorCacheKeyBuilder;
 import top.mddata.common.constant.DefValConstants;
 import top.mddata.common.constant.MsgTemplateKey;
 import top.mddata.common.entity.Org;
@@ -41,6 +42,7 @@ import top.mddata.console.dto.message.MsgSendDto;
 import top.mddata.console.dto.message.MsgSendMailDto;
 import top.mddata.console.facade.message.MsgFacade;
 import top.mddata.console.facade.organization.UserFacade;
+import top.mddata.workbench.dto.ForgetPasswordByCodeDto;
 import top.mddata.workbench.dto.ForgetPasswordByEmailDto;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.LoginLogDto;
@@ -56,6 +58,7 @@ import top.mddata.workbench.service.auth.AuthService;
 import top.mddata.workbench.service.session.LoginSessionService;
 import top.mddata.workbench.service.user.SsoUserService;
 import top.mddata.workbench.service.twofactor.TwoFactorAuthService;
+import top.mddata.workbench.service.twofactor.TwoFactorOtpService;
 import top.mddata.workbench.service.twofactor.TwoFactorTicketService.TwoFactorTicketPayload;
 import top.mddata.workbench.service.auth.WxMaAuthService;
 import top.mddata.workbench.vo.LoginVo;
@@ -102,6 +105,7 @@ public class AuthServiceImpl implements AuthService, LoginSessionService {
     private final WxMaAuthService wxMaAuthService;
     private final AccountAuthenticator accountAuthenticator;
     private final TwoFactorAuthService twoFactorAuthService;
+    private final TwoFactorOtpService twoFactorOtpService;
 
     @Override
     public R<LoginVo> login(LoginDto login) {
@@ -428,6 +432,45 @@ public class AuthServiceImpl implements AuthService, LoginSessionService {
         Boolean b = ssoUserService.resetPwByEmail(email, dto.getPassword());
         cacheOps.del(cacheKey);
         return b;
+    }
+
+    /** 手机号格式，与 TwoFactorOtpService 中的目标校验保持同一规则 */
+    private static final String FORGET_MOBILE_PATTERN = "^1\\d{10}$";
+
+    /** 邮箱基本格式，仅作发送前格式兜底 */
+    private static final String FORGET_EMAIL_PATTERN = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
+
+    @Override
+    public String sendForgetPasswordCode(String account) {
+        // 格式先行：非法输入不触达用户查询与消息通道
+        boolean isPhone = account.matches(FORGET_MOBILE_PATTERN);
+        boolean isEmail = account.matches(FORGET_EMAIL_PATTERN);
+        ArgumentAssert.isTrue(isPhone || isEmail, "请输入正确的手机号或邮箱");
+
+        User user = isPhone
+                ? ssoUserService.getByPhone(account)
+                : ssoUserService.getByEmail(account);
+        // 忘记密码为匿名接口，明确报错帮助用户及时发现输错账号；内部系统不规避账号枚举
+        ArgumentAssert.notNull(user, "账号不存在，请确认手机号或邮箱是否正确");
+
+        return twoFactorOtpService.send(
+                TwoFactorCacheKeyBuilder.SCENE_FORGET_PASSWORD, account);
+    }
+
+    @Override
+    public Boolean resetPasswordByCode(ForgetPasswordByCodeDto dto) {
+        ArgumentAssert.equals(dto.getPassword(), dto.getConfirmPassword(), "密码不一致");
+        boolean isPhone = dto.getAccount().matches(FORGET_MOBILE_PATTERN);
+        ArgumentAssert.isTrue(
+                isPhone || dto.getAccount().matches(FORGET_EMAIL_PATTERN),
+                "请输入正确的手机号或邮箱");
+
+        // OTP 校验失败直接抛出（过期/错误/超限），通过后按账号类型重置
+        twoFactorOtpService.verify(
+                TwoFactorCacheKeyBuilder.SCENE_FORGET_PASSWORD, dto.getAccount(), dto.getCode());
+        return isPhone
+                ? ssoUserService.resetPwByPhone(dto.getAccount(), dto.getPassword())
+                : ssoUserService.resetPwByEmail(dto.getAccount(), dto.getPassword());
     }
 
     /**

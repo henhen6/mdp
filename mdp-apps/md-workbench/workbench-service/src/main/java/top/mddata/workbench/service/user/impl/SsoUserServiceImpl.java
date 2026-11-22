@@ -551,4 +551,33 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         return true;
     }
 
+    /**
+     * 手机号找回密码的重置入口：重置逻辑与邮箱版本保持一致（换盐、清错误计数、重算过期时间），
+     * 仅查询维度不同；不合并两方法以避免调用方在 account 维度上做类型分支。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean resetPwByPhone(String phone, String password) {
+        User oldUser = getByPhone(phone);
+        ArgumentAssert.notNull(oldUser, "用户不存在");
+
+        User user = UpdateEntity.of(User.class, oldUser.getId());
+        user.setSalt(RandomUtil.randomString(20));
+        user.setPassword(SecureUtil.sha256(password + user.getSalt()));
+        user.setPwErrorNum(0);
+        user.setPwErrorLastTime(null);
+        String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
+        user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
+
+        updateById(user);
+        delCache(oldUser.getId());
+        // 广播
+        EventTriggerDto request = new EventTriggerDto();
+        request.setEventCode(EventTypeCode.Workbench.USER_EDIT)
+                .setEventContent(IdDto.builder().id(user.getId()).build().toString())
+                .setTriggerAt(LocalDateTime.now());
+        notifyAndEventPushFacade.eventPush(request);
+        return true;
+    }
+
 }

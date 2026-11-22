@@ -59,6 +59,18 @@ public class TwoFactorOtpService {
 
     /** 邮件模板标识缺省值：系统配置未录入该项时的兜底，对应控制台消息管理中的模板 */
     private static final String EMAIL_DEFAULT_TEMPLATE = "LOGIN_TWO_FACTOR_EMAIL";
+
+    /** 忘记密码场景短信模板的系统配置键 */
+    private static final String FORGET_SMS_TEMPLATE_KEY = "FORGET_PASSWORD_SMS_TEMPLATE";
+
+    /** 忘记密码场景短信模板缺省值：对应控制台消息管理中的模板 */
+    private static final String FORGET_SMS_DEFAULT_TEMPLATE = "FORGET_PASSWORD_SMS";
+
+    /** 忘记密码场景邮件模板的系统配置键 */
+    private static final String FORGET_EMAIL_TEMPLATE_KEY = "FORGET_PASSWORD_EMAIL_TEMPLATE";
+
+    /** 忘记密码场景邮件模板缺省值：对应控制台消息管理中的模板 */
+    private static final String FORGET_EMAIL_DEFAULT_TEMPLATE = "FORGET_PASSWORD_EMAIL";
     /** 邮件模板中的有效期参数（分钟），与 OTP 键 5 分钟 TTL 对应 */
     private static final String EMAIL_VALIDITY_MINUTES = "5";
 
@@ -99,16 +111,14 @@ public class TwoFactorOtpService {
         if (target.matches(MOBILE_PATTERN)) {
             MsgSendDto sms = MsgSendSmsDto.buildApiSender()
                     .addRecipient(target)
-                    .setTemplateKey(configFacade.getString(
-                            SMS_TEMPLATE_KEY, SMS_DEFAULT_TEMPLATE))
+                    .setTemplateKey(resolveSmsTemplateKey(scene))
                     .addParam("code", code);
             msgFacade.sendByTemplateKey(sms);
             masked = DesensitizedUtil.mobilePhone(target);
         } else {
             MsgSendDto mail = MsgSendMailDto.buildApiSender()
                     .addRecipient(target)
-                    .setTemplateKey(configFacade.getString(
-                            EMAIL_TEMPLATE_KEY, EMAIL_DEFAULT_TEMPLATE))
+                    .setTemplateKey(resolveEmailTemplateKey(scene))
                     .addParam("code", code)
                     .addParam("validityPeriod", EMAIL_VALIDITY_MINUTES);
             msgFacade.sendByTemplateKey(mail);
@@ -117,6 +127,25 @@ public class TwoFactorOtpService {
         // 只记录场景与脱敏目标，禁止打印验证码明文
         log.info("双因素验证码已发送 scene={}, target={}", scene, masked);
         return masked;
+    }
+
+    /**
+     * 按场景解析短信模板标识。忘记密码场景使用专属模板键（文案可写"重置密码"），
+     * 其余场景维持双因素模板键，已有配置不受影响。
+     */
+    private String resolveSmsTemplateKey(String scene) {
+        return TwoFactorCacheKeyBuilder.SCENE_FORGET_PASSWORD.equals(scene)
+                ? configFacade.getString(FORGET_SMS_TEMPLATE_KEY, FORGET_SMS_DEFAULT_TEMPLATE)
+                : configFacade.getString(SMS_TEMPLATE_KEY, SMS_DEFAULT_TEMPLATE);
+    }
+
+    /**
+     * 按场景解析邮件模板标识，策略同 {@link #resolveSmsTemplateKey(String)}。
+     */
+    private String resolveEmailTemplateKey(String scene) {
+        return TwoFactorCacheKeyBuilder.SCENE_FORGET_PASSWORD.equals(scene)
+                ? configFacade.getString(FORGET_EMAIL_TEMPLATE_KEY, FORGET_EMAIL_DEFAULT_TEMPLATE)
+                : configFacade.getString(EMAIL_TEMPLATE_KEY, EMAIL_DEFAULT_TEMPLATE);
     }
 
     /**

@@ -25,6 +25,7 @@ import top.mddata.workbench.enumeration.AuthTypeEnum;
 import top.mddata.workbench.service.auth.AccountAuthenticator;
 import top.mddata.workbench.service.user.SsoUserService;
 import top.mddata.workbench.service.twofactor.TwoFactorAuthService;
+import top.mddata.workbench.service.twofactor.TwoFactorOtpService;
 import top.mddata.workbench.service.twofactor.TwoFactorTicketService.TwoFactorTicketPayload;
 import top.mddata.workbench.service.auth.WxMaAuthService;
 import top.mddata.workbench.vo.LoginVo;
@@ -77,7 +78,8 @@ class AuthServiceImplTwoFactorTest {
         twoFactorAuthService = mock(TwoFactorAuthService.class);
         authService = new AuthServiceImpl(mock(SystemProperties.class), saTokenConfig,
                 mock(CacheOps.class), ssoUserService, mock(UserFacade.class), mock(MsgFacade.class),
-                mock(WxMaAuthService.class), accountAuthenticator, twoFactorAuthService);
+                mock(WxMaAuthService.class), accountAuthenticator, twoFactorAuthService,
+                mock(TwoFactorOtpService.class));
 
         stpMock = mockStatic(StpUtil.class);
         saTempMock = mockStatic(SaTempUtil.class);

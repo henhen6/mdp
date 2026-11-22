@@ -21,6 +21,8 @@ public class TwoFactorCacheKeyBuilder implements CacheKeyBuilder {
     public static final String SCENE_LOGIN = "login";
     /** 开通/关闭/换渠道验证 OTP 场景 */
     public static final String SCENE_MANAGE = "manage";
+    /** 忘记密码验证 OTP 场景 */
+    public static final String SCENE_FORGET_PASSWORD = "forget.password";
 
     /** ticket 有效期：5 分钟 */
     private static final Duration TICKET_EXPIRE = Duration.ofMinutes(5);

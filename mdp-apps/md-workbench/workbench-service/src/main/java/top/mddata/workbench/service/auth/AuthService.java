@@ -2,6 +2,7 @@ package top.mddata.workbench.service.auth;
 
 
 import top.mddata.base.base.R;
+import top.mddata.workbench.dto.ForgetPasswordByCodeDto;
 import top.mddata.workbench.dto.ForgetPasswordByEmailDto;
 import top.mddata.workbench.dto.LoginDto;
 import top.mddata.workbench.dto.RegisterByEmailDto;
@@ -96,4 +97,20 @@ public interface AuthService {
      * @return 是否成功
      */
     Boolean updateEmailByToken(ForgetPasswordByEmailDto dto);
+
+    /**
+     * 忘记密码-发送验证码（手机号走短信、邮箱走邮件），账号不存在时明确报错
+     *
+     * @param account 接收账号（手机号或邮箱）
+     * @return 脱敏后的接收目标
+     */
+    String sendForgetPasswordCode(String account);
+
+    /**
+     * 忘记密码-凭验证码重置密码：校验找回场景 OTP 后按账号类型重置
+     *
+     * @param dto 账号、验证码与新密码
+     * @return 是否成功
+     */
+    Boolean resetPasswordByCode(ForgetPasswordByCodeDto dto);
 }
