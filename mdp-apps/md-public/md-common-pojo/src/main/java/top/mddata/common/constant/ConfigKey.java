@@ -15,10 +15,6 @@ public interface ConfigKey {
     interface Console {
         /** 消息管理页发送消息使用的内置模版 */
         String MESSAGE_NOTICE = "NOTICE";
-        /**
-         * 登录验证码是否启用
-         */
-        String LOGIN_CAPTCHA_ENABLED = "LOGIN_CAPTCHA_ENABLED";
     }
 
     interface Workbench {
