@@ -105,5 +105,22 @@ public class UserinfoVo {
     @Schema(description = "最后登录时间")
     private LocalDateTime lastLoginTime;
 
+    /**
+     * 密码状态 NEVER/NORMAL/EXPIRING/EXPIRED
+     */
+    @Schema(description = "密码状态 NEVER/NORMAL/EXPIRING/EXPIRED")
+    private String passwordExpireStatus;
+
+    /**
+     * 密码剩余有效自然日数，永不过期为null
+     */
+    @Schema(description = "密码剩余有效自然日数，永不过期为null")
+    private Long passwordExpireRemainDays;
+
+    /**
+     * 密码临期提醒阈值
+     */
+    @Schema(description = "密码临期提醒阈值")
+    private Integer passwordExpireRemindDays;
 
 }

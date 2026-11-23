@@ -105,6 +105,10 @@ public enum ExceptionCode implements BaseExceptionCode {
     IDEMPOTENT_CONFLICT(-15, "幂等令牌不能用于不同的请求内容"),
     IDEMPOTENT_TOKEN_INVALID(-16, "幂等令牌缺失、失效或身份不匹配"),
 
+    /**
+     * 密码已过期，禁止登录
+     */
+    PASSWORD_EXPIRED(-17, "密码已过期，请通过忘记密码重置后再登录"),
 
     // ==================== HTTP 标准状态码 ====================
     

@@ -49,6 +49,7 @@ import top.mddata.common.enumeration.organization.OrgNatureEnum;
 import top.mddata.common.enumeration.organization.UserSourceEnum;
 import top.mddata.common.mapper.UserMapper;
 import top.mddata.common.mapper.UserSocialAuthMapper;
+import top.mddata.common.password.PasswordExpiryCalculator;
 import top.mddata.common.properties.SystemProperties;
 import top.mddata.console.dto.organization.UserDto;
 import top.mddata.console.dto.organization.UserResetPasswordDto;
@@ -382,6 +383,8 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
     @Transactional(rollbackFor = Exception.class)
     public Boolean resetPassword(UserResetPasswordDto data) {
         accountOperationGuard.check(data.getId(), AccountOperation.RESET_PASSWORD);
+        User oldUser = getById(data.getId());
+        ArgumentAssert.notNull(oldUser, "用户不存在");
         User user = UpdateEntity.of(User.class, data.getId());
         user.setPwErrorLastTime(null);
         user.setPwErrorNum(0);
@@ -396,7 +399,11 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         user.setPassword(password);
 
         String expireTime = configService.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
-        user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
+        LocalDateTime renewedExpireTime =
+                PasswordExpiryCalculator.renewExpireTime(oldUser.getPwExpireTime(), expireTime);
+        if (renewedExpireTime != null) {
+            user.setPwExpireTime(renewedExpireTime);
+        }
 
         boolean flag = updateById(user);
         delCache(data.getId());

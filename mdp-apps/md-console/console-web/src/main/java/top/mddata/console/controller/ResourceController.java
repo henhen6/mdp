@@ -15,15 +15,19 @@ import top.mddata.base.base.R;
 import top.mddata.base.fieldperm.model.FieldRule;
 import top.mddata.base.fieldperm.spi.FieldPermProvider;
 import top.mddata.base.util.ContextUtil;
+import top.mddata.common.constant.ConfigKey;
 import top.mddata.common.entity.User;
+import top.mddata.common.password.PasswordExpiryCalculator;
 import top.mddata.common.properties.IgnoreProperties;
 import top.mddata.console.service.organization.UserService;
 import top.mddata.console.service.permission.ResourceMenuService;
 import top.mddata.console.service.permission.RoleService;
+import top.mddata.console.service.system.ConfigService;
 import top.mddata.console.vo.permission.ResourceMenuVo;
 import top.mddata.console.vo.permission.UserAccessInfoVo;
 import top.mddata.console.vo.permission.UserinfoVo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +40,7 @@ public class ResourceController {
     private final ResourceMenuService resourceMenuService;
     private final RoleService roleService;
     private final UserService userService;
+    private final ConfigService configService;
     private final IgnoreProperties ignoreProperties;
     private final FieldPermProvider fieldPermProvider;
 
@@ -89,7 +94,36 @@ public class ResourceController {
     public R<UserinfoVo> getUserinfo() {
         long userId = StpUtil.getLoginIdAsLong();
         User user = userService.getByIdCache(userId);
-        return R.success(BeanUtil.toBean(user, UserinfoVo.class));
+        UserinfoVo vo = BeanUtil.toBean(user, UserinfoVo.class);
+        if (user == null) {
+            // Hutool 对 null 源返回 null，显式回空对象保持响应 data 结构，且不读取密码策略配置
+            return R.success(new UserinfoVo());
+        }
+        int remindDays = loadPasswordExpireRemindDays();
+        PasswordExpiryCalculator.Result result = PasswordExpiryCalculator.evaluate(
+                LocalDateTime.now(), user.getPwExpireTime(), remindDays);
+        vo.setPasswordExpireStatus(result.status().name());
+        vo.setPasswordExpireRemainDays(result.remainDays());
+        vo.setPasswordExpireRemindDays(remindDays);
+        return R.success(vo);
+    }
+
+    /**
+     * 读取密码临期提醒天数，配置缺失、读取失败或值非法时降级为 0（关闭提醒），不阻断用户信息查询
+     */
+    private int loadPasswordExpireRemindDays() {
+        try {
+            Integer days = configService.getInteger(
+                    ConfigKey.Workbench.PASSWORD_EXPIRE_REMIND_DAYS, 7);
+            if (days == null || days < 0) {
+                log.error("[密码策略] 临期提醒天数非法，value={}，降级为0", days);
+                return 0;
+            }
+            return days;
+        } catch (Exception e) {
+            log.error("[密码策略] 读取临期提醒天数失败，降级为0", e);
+            return 0;
+        }
     }
 
     /**

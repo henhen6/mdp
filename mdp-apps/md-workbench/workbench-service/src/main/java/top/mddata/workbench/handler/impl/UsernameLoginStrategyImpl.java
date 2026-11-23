@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import top.mddata.base.exception.BizException;
+import top.mddata.base.exception.code.ExceptionCode;
 import top.mddata.base.utils.DateUtils;
 import top.mddata.base.utils.StrHelper;
 import top.mddata.base.utils.UaSecureUtil;
@@ -61,18 +62,6 @@ public class UsernameLoginStrategyImpl implements LoginStrategy {
             return;
         }
 
-        // 是否启用 密码过期禁止登录
-        Boolean passwordExpireNotAllowLogin = configFacade.getBoolean(ConfigKey.Workbench.PASSWORD_EXPIRE_NOT_ALLOW_LOGIN, false);
-
-        // 密码过期
-        if (passwordExpireNotAllowLogin && user.getPwExpireTime() != null && LocalDateTime.now().isAfter(user.getPwExpireTime())) {
-            String msg = "用户密码已过期，请修改密码或者联系管理员重置!";
-            LoginLogDto dto = LoginLogDto.failByCheck(login.getAuthType(), login.getDeviceInfo(), user.getUsername(), msg)
-                    .setAppKey(DefValConstants.WORKBENCH_APP_KEY).setAppName(DefValConstants.WORKBENCH_APP_NAME);
-            SpringUtil.publishEvent(new LoginEvent(dto));
-            throw new BizException(msg);
-        }
-
         // 用户锁定
         Integer passwordErrorNum = Convert.toInt(user.getPwErrorNum(), 0);
 
@@ -114,6 +103,35 @@ public class UsernameLoginStrategyImpl implements LoginStrategy {
             throw new BizException(msg);
         }
 
+        // 密码验证通过后，再校验密码过期门禁，避免密码错误时泄露过期状态
+        Boolean notAllowLogin;
+        try {
+            notAllowLogin = configFacade.getBooleanRequired(
+                    ConfigKey.Workbench.PASSWORD_EXPIRE_NOT_ALLOW_LOGIN, false);
+        } catch (Exception e) {
+            // 安全策略读取失败必须 fail-closed，禁止默认放行
+            log.error("[密码策略] 读取过期登录配置失败，拒绝本次登录，uniqKey={}",
+                    ConfigKey.Workbench.PASSWORD_EXPIRE_NOT_ALLOW_LOGIN, e);
+            throw new BizException("读取密码安全策略失败，请稍后重试", e);
+        }
+        LocalDateTime now = now();
+        if (Boolean.TRUE.equals(notAllowLogin)
+                && user.getPwExpireTime() != null
+                && !now.isBefore(user.getPwExpireTime())) {
+            String msg = ExceptionCode.PASSWORD_EXPIRED.getMsg();
+            LoginLogDto dto = LoginLogDto.failByCheck(login.getAuthType(), login.getDeviceInfo(), user.getUsername(), msg)
+                    .setAppKey(DefValConstants.WORKBENCH_APP_KEY)
+                    .setAppName(DefValConstants.WORKBENCH_APP_NAME);
+            SpringUtil.publishEvent(new LoginEvent(dto));
+            throw BizException.wrap(ExceptionCode.PASSWORD_EXPIRED);
+        }
+    }
+
+    /**
+     * 当前时间，protected 便于边界时间场景（如恰好到期）固定时钟测试
+     */
+    protected LocalDateTime now() {
+        return LocalDateTime.now();
     }
 
     @Override

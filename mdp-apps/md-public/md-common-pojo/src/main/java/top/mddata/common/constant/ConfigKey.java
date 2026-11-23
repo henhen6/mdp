@@ -58,6 +58,11 @@ public interface ConfigKey {
          */
         String PASSWORD_EXPIRE_NOT_ALLOW_LOGIN = "PASSWORD_EXPIRE_NOT_ALLOW_LOGIN";
 
+        /**
+         * 密码临期提醒自然日数，0表示关闭
+         */
+        String PASSWORD_EXPIRE_REMIND_DAYS = "PASSWORD_EXPIRE_REMIND_DAYS";
+
     }
 
     interface Open {

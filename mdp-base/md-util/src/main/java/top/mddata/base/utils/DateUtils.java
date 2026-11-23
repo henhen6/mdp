@@ -1009,7 +1009,7 @@ public final class DateUtils {
             return endOfDay(LocalDateTime.now());
         }
 
-        char unit = Character.toLowerCase(time.charAt(time.length() - 1));
+        char unit = time.charAt(time.length() - 1);
         if (time.length() == 1) {
             unit = 'd';
         }

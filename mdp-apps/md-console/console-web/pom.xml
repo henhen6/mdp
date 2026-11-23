@@ -19,6 +19,7 @@
             <artifactId>console-service</artifactId>
             <version>${revision}</version>
         </dependency>
+        <!-- 用户信息接口密码过期状态计算（PasswordExpiryCalculator） -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-core</artifactId>

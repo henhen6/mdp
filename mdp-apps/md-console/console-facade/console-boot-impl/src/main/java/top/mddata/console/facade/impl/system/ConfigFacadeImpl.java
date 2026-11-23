@@ -40,4 +40,10 @@ public class ConfigFacadeImpl implements ConfigFacade {
     public Boolean getBoolean(String uniqKey, Boolean defaultValue) {
         return configService.getBoolean(uniqKey, defaultValue);
     }
+
+    @Override
+    public Boolean getBooleanRequired(String uniqKey, Boolean defaultValue) {
+        // 安全敏感读取：不吞异常，让读取失败自然向上抛出
+        return configService.getBoolean(uniqKey, defaultValue);
+    }
 }

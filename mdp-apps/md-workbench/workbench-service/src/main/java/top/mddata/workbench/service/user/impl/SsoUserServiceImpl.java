@@ -21,7 +21,6 @@ import top.mddata.base.model.cache.CacheKeyBuilder;
 import top.mddata.base.mvcflex.service.impl.SuperServiceImpl;
 import top.mddata.base.util.ContextUtil;
 import top.mddata.base.utils.ArgumentAssert;
-import top.mddata.base.utils.DateUtils;
 import top.mddata.base.utils.MyTreeUtil;
 import top.mddata.common.cache.console.organization.OrgCacheKeyBuilder;
 import top.mddata.common.cache.console.organization.UserCacheKeyBuilder;
@@ -39,6 +38,7 @@ import top.mddata.common.entity.User;
 import top.mddata.common.enumeration.organization.OrgTypeEnum;
 import top.mddata.common.mapper.OrgMapper;
 import top.mddata.common.mapper.UserMapper;
+import top.mddata.common.password.PasswordExpiryCalculator;
 import top.mddata.console.dto.system.RelateFilesToBizDto;
 import top.mddata.console.facade.system.ConfigFacade;
 import top.mddata.console.facade.system.FileFacade;
@@ -377,7 +377,7 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         User user = UpdateEntity.of(User.class, userId);
         user.setPhone(dto.getPhone());
         updateById(user);
-//        delCache(userId);
+        delCache(userId);
 
         // 首次绑定（原手机号为空）时无需清理旧缓存键
         List<CacheKey> cacheKeyList = new ArrayList<>();
@@ -481,7 +481,11 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         user.setPwErrorNum(0);
         user.setPwErrorLastTime(null);
         String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
-        user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
+        LocalDateTime renewedExpireTime =
+                PasswordExpiryCalculator.renewExpireTime(current.getPwExpireTime(), expireTime);
+        if (renewedExpireTime != null) {
+            user.setPwExpireTime(renewedExpireTime);
+        }
 
         updateById(user);
         delCache(userId);
@@ -538,7 +542,11 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         user.setPwErrorNum(0);
         user.setPwErrorLastTime(null);
         String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
-        user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
+        LocalDateTime renewedExpireTime =
+                PasswordExpiryCalculator.renewExpireTime(oldUser.getPwExpireTime(), expireTime);
+        if (renewedExpireTime != null) {
+            user.setPwExpireTime(renewedExpireTime);
+        }
 
         updateById(user);
         delCache(oldUser.getId());
@@ -567,7 +575,11 @@ public class SsoUserServiceImpl extends SuperServiceImpl<UserMapper, User> imple
         user.setPwErrorNum(0);
         user.setPwErrorLastTime(null);
         String expireTime = configFacade.getString(ConfigKey.Workbench.PASSWORD_EXPIRE_TIME, "3M");
-        user.setPwExpireTime(DateUtils.conversionDateTime(LocalDateTime.now(), expireTime));
+        LocalDateTime renewedExpireTime =
+                PasswordExpiryCalculator.renewExpireTime(oldUser.getPwExpireTime(), expireTime);
+        if (renewedExpireTime != null) {
+            user.setPwExpireTime(renewedExpireTime);
+        }
 
         updateById(user);
         delCache(oldUser.getId());

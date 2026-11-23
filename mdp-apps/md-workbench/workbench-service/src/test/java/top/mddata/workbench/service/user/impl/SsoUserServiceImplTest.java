@@ -28,9 +28,12 @@ import top.mddata.workbench.dto.ProfileUsernameDto;
 import top.mddata.workbench.service.verification.VerificationCodeService;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import top.mddata.common.cache.workbench.CaptchaCacheKeyBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -351,5 +354,83 @@ class SsoUserServiceImplTest {
 
         assertTrue(ok);
         verify(cacheOps).del(any(CacheKey[].class));
+    }
+
+    private User oldUser(LocalDateTime pwExpireTime) {
+        User user = currentUser();
+        user.setPwExpireTime(pwExpireTime);
+        return user;
+    }
+
+    @Test
+    void updatePassword_旧值null_不覆盖过期时间() {
+        doReturn(oldUser(null)).when(service).getById(USER_ID);
+        doReturn(true).when(service).updateById(any(User.class));
+        ProfilePasswordDto dto = new ProfilePasswordDto();
+        dto.setOldPassword(PASSWORD);
+        dto.setPassword("new-password");
+        dto.setConfirmPassword("new-password");
+        service.updatePassword(dto);
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(service).updateById(captor.capture());
+        assertNull(captor.getValue().getPwExpireTime());
+    }
+
+    @Test
+    void updatePassword_旧值有值_重算过期时间() {
+        doReturn(oldUser(LocalDateTime.now().plusDays(1))).when(service).getById(USER_ID);
+        doReturn(true).when(service).updateById(any(User.class));
+        when(configFacade.getString(anyString(), anyString())).thenReturn("3M");
+        ProfilePasswordDto dto = new ProfilePasswordDto();
+        dto.setOldPassword(PASSWORD);
+        dto.setPassword("new-password");
+        dto.setConfirmPassword("new-password");
+        service.updatePassword(dto);
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(service).updateById(captor.capture());
+        assertNotNull(captor.getValue().getPwExpireTime());
+        assertTrue(captor.getValue().getPwExpireTime().isAfter(LocalDateTime.now()));
+    }
+
+    @Test
+    void resetPwByEmail_旧值null_不覆盖过期时间() {
+        doReturn(oldUser(null)).when(service).getByEmail("a@b.com");
+        doReturn(true).when(service).updateById(any(User.class));
+        service.resetPwByEmail("a@b.com", "new-password");
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(service).updateById(captor.capture());
+        assertNull(captor.getValue().getPwExpireTime());
+    }
+
+    @Test
+    void resetPwByEmail_旧值有值_重算过期时间() {
+        doReturn(oldUser(LocalDateTime.now().plusDays(1))).when(service).getByEmail("a@b.com");
+        doReturn(true).when(service).updateById(any(User.class));
+        when(configFacade.getString(anyString(), anyString())).thenReturn("3M");
+        service.resetPwByEmail("a@b.com", "new-password");
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(service).updateById(captor.capture());
+        assertNotNull(captor.getValue().getPwExpireTime());
+    }
+
+    @Test
+    void resetPwByPhone_旧值null_不覆盖过期时间() {
+        doReturn(oldUser(null)).when(service).getByPhone("13800000000");
+        doReturn(true).when(service).updateById(any(User.class));
+        service.resetPwByPhone("13800000000", "new-password");
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(service).updateById(captor.capture());
+        assertNull(captor.getValue().getPwExpireTime());
+    }
+
+    @Test
+    void resetPwByPhone_旧值有值_重算过期时间() {
+        doReturn(oldUser(LocalDateTime.now().plusDays(1))).when(service).getByPhone("13800000000");
+        doReturn(true).when(service).updateById(any(User.class));
+        when(configFacade.getString(anyString(), anyString())).thenReturn("3M");
+        service.resetPwByPhone("13800000000", "new-password");
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(service).updateById(captor.capture());
+        assertNotNull(captor.getValue().getPwExpireTime());
     }
 }

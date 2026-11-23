@@ -47,4 +47,16 @@ public interface ConfigFacade {
      * @return 参数值
      */
     Boolean getBoolean(String uniqKey, Boolean defaultValue);
+
+    /**
+     * 严格读取布尔型系统参数，仅供安全敏感调用使用。
+     * <p>
+     * 与 {@link #getBoolean(String, Boolean)} 不同：远程调用失败或响应异常时不回退默认值，
+     * 直接抛出业务异常，避免安全策略因读取失败而被静默放行。
+     *
+     * @param uniqKey 参数标识
+     * @param defaultValue 默认值（仅在服务端正常响应且值为空时使用）
+     * @return 参数值
+     */
+    Boolean getBooleanRequired(String uniqKey, Boolean defaultValue);
 }
