@@ -2,7 +2,6 @@ package top.mddata.console.service.organization.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
@@ -496,7 +495,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
                 "不支持的注册身份：{}", user.getNature());
         ArgumentAssert.isFalse(checkEmail(user.getEmail(), null), "邮箱：{}已经存在", user.getEmail());
         user.setPassword(systemProperties.getDefPwd());
-        user.setUsername(UUID.randomUUID().toString(true));
+        user.setUsername(user.getEmail());
         initSsoUser(user);
         user.setName(user.getEmail());
         // 人员编号：注册时由编码规则自动生成，终生绑定
@@ -537,7 +536,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
                 "不支持的注册身份：{}", user.getNature());
         ArgumentAssert.isFalse(checkPhone(user.getPhone(), null), "手机号：{}已经存在", user.getPhone());
         user.setPassword(systemProperties.getDefPwd());
-        user.setUsername(UUID.randomUUID().toString(true));
+        user.setUsername(user.getPhone());
         initSsoUser(user);
         user.setName(user.getPhone());
         user.setUserNo(codeRuleService.generate(CodeRuleCode.USER_NO, null));
