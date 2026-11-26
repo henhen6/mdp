@@ -183,7 +183,7 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
         if (sysParam == null) {
             return defaultValue;
         }
-        ArgumentAssert.isTrue(DataTypeEnum.STRING.eq(sysParam.getDataType()), "系统参数[{}]不是[{}]", uniqKey, DataTypeEnum.INTEGER.getDesc());
+        ArgumentAssert.isTrue(DataTypeEnum.STRING.eq(sysParam.getDataType()), "系统参数[{}]不是[{}]", uniqKey, DataTypeEnum.STRING.getDesc());
 
         return Convert.toStr(sysParam.getValue(), defaultValue);
     }
@@ -195,7 +195,7 @@ public class ConfigServiceImpl extends SuperServiceImpl<ConfigMapper, Config> im
         if (sysParam == null) {
             return defaultValue;
         }
-        ArgumentAssert.isTrue(DataTypeEnum.BOOLEAN.eq(sysParam.getDataType()), "系统参数[{}]不是[{}]", uniqKey, DataTypeEnum.INTEGER.getDesc());
+        ArgumentAssert.isTrue(DataTypeEnum.BOOLEAN.eq(sysParam.getDataType()), "系统参数[{}]不是[{}]", uniqKey, DataTypeEnum.BOOLEAN.getDesc());
 
         return Convert.toBool(sysParam.getValue(), defaultValue);
     }
